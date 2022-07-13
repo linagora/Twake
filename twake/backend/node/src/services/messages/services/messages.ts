@@ -1,5 +1,6 @@
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   Paginable,
@@ -123,7 +124,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
     let message = getDefaultMessageInstance(item, context);
     if (pk.id) {
-      const existingMessage = await this.repository.findOne(pk);
+      const existingMessage = await this.repository.findOne(pk, {}, context);
       if (!existingMessage && !serverRequest) {
         logger.error(`This message ${item.id} doesn't exists in thread ${item.thread_id}`);
         throw Error("This message doesn't exists.");
@@ -175,13 +176,17 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       }
 
       logger.info(`Saved message in thread ${message.thread_id}`);
-      await this.repository.save(message);
+      await this.repository.save(message, context);
     } else {
       logger.info(`Did not save ephemeral message in thread ${message.thread_id}`);
     }
 
     if (serverRequest || messageOwnerAndNotRemoved) {
-      message = await this.completeMessage(message, { files: item.files || message.files || [] });
+      message = await this.completeMessage(
+        message,
+        { files: item.files || message.files || [] },
+        context,
+      );
     }
 
     await this.onSaved(message, { created: messageCreated }, context);
@@ -259,10 +264,14 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       } while (nextPage.page_token);
     }
 
-    const messageInOldThread = await this.repository.findOne({
-      thread_id: options.previous_thread,
-      id: pk.id,
-    });
+    const messageInOldThread = await this.repository.findOne(
+      {
+        thread_id: options.previous_thread,
+        id: pk.id,
+      },
+      {},
+      context,
+    );
 
     if (!messageInOldThread) {
       logger.error(`Unable to find message ${pk.id} in old thread ${context.thread.id}`);
@@ -270,10 +279,13 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     }
 
     //Check new thread exists
-    let thread = await gr.services.messages.threads.get({ id: context.thread.id });
+    let thread = await gr.services.messages.threads.get({ id: context.thread.id }, context);
     if (!thread && `${context.thread.id}` === `${pk.id}`) {
       logger.info("Create empty thread for message moved out of thread");
-      const oldThread = await gr.services.messages.threads.get({ id: options.previous_thread });
+      const oldThread = await gr.services.messages.threads.get(
+        { id: options.previous_thread },
+        context,
+      );
       const upgradedContext = _.cloneDeep(context);
       upgradedContext.user.server_request = true;
       thread = (
@@ -294,12 +306,12 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     const messageInNewThread = _.cloneDeep(messageInOldThread);
     messageInNewThread.thread_id = context.thread.id;
 
-    await this.repository.save(messageInNewThread);
+    await this.repository.save(messageInNewThread, context);
 
     await this.onSaved(messageInNewThread, { created: true }, context);
 
-    await this.repository.remove(messageInOldThread);
-    await gr.services.messages.threads.addReply(messageInOldThread.thread_id, -1);
+    await this.repository.remove(messageInOldThread, context);
+    await gr.services.messages.threads.addReply(messageInOldThread.thread_id, -1, context);
 
     logger.info(
       `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
@@ -325,10 +337,14 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       throw Error("Can't edit this message.");
     }
 
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: pk.id,
-    });
+    const message = await this.repository.findOne(
+      {
+        thread_id: context.thread.id,
+        id: pk.id,
+      },
+      {},
+      context,
+    );
 
     if (!message) {
       logger.error(
@@ -368,7 +384,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     message.files = [];
 
     logger.info(`Deleted message ${pk.id} from thread ${message.thread_id}`);
-    await this.repository.save(message);
+    await this.repository.save(message, context);
     await this.onSaved(message, { created: false }, context);
 
     //Only server and application can definively remove a message
@@ -376,7 +392,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       (forceDelete && (context.user.server_request || context.user.application_id)) ||
       message.application_id
     ) {
-      await this.repository.remove(message);
+      await this.repository.remove(message, context);
     }
 
     return new DeleteResult<Message>("message", message, true);
@@ -390,9 +406,9 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
     let message;
     if (thread) {
-      message = await this.getThread(thread, options);
+      message = await this.getThread(thread, options, context);
     } else {
-      message = await this.getSingleMessage(pk, options);
+      message = await this.getSingleMessage(pk, options, context);
     }
     return message;
   }
@@ -400,13 +416,18 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
   private async getSingleMessage(
     pk: Pick<Message, "thread_id" | "id">,
     options?: { includeQuoteInMessage?: boolean },
+    context?: ExecutionContext,
   ) {
-    let message = await this.repository.findOne(pk);
+    let message = await this.repository.findOne(pk, {}, context);
     if (message) {
-      message = await this.completeMessage(message, {
-        files: message.files || [],
-        includeQuoteInMessage: options?.includeQuoteInMessage,
-      });
+      message = await this.completeMessage(
+        message,
+        {
+          files: message.files || [],
+          includeQuoteInMessage: options?.includeQuoteInMessage,
+        },
+        context,
+      );
     }
     return message;
   }
@@ -414,6 +435,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
   async getThread(
     thread: Thread,
     options: MessagesGetThreadOptions = {},
+    context: ExecutionContext,
   ): Promise<MessageWithReplies> {
     const lastRepliesUncompleted = (
       await this.repository.find(
@@ -423,19 +445,26 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
         {
           pagination: new Pagination("", `${options?.replies_per_thread || 3}`, false),
         },
+        context,
       )
     ).getEntities();
 
     const lastReplies: Message[] = [];
     for (const lastReply of lastRepliesUncompleted) {
       if (lastReply)
-        lastReplies.push(await this.completeMessage(lastReply, { files: lastReply.files || [] }));
+        lastReplies.push(
+          await this.completeMessage(lastReply, { files: lastReply.files || [] }, context),
+        );
     }
 
-    const firstMessage = await this.getSingleMessage({
-      thread_id: thread.id,
-      id: thread.id,
-    });
+    const firstMessage = await this.getSingleMessage(
+      {
+        thread_id: thread.id,
+        id: thread.id,
+      },
+      {},
+      context,
+    );
 
     return {
       ...firstMessage,
@@ -455,6 +484,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     const list = await this.repository.find(
       { thread_id: context.thread.id },
       buildMessageListPagination(Pagination.fromPaginable(pagination), "id"),
+      context,
     );
 
     //Get complete details about initial message
@@ -478,13 +508,16 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
     const extendedList = [];
     for (const m of list.getEntities()) {
-      extendedList.push(await this.completeMessage(m));
+      extendedList.push(await this.completeMessage(m, {}, context));
     }
 
     return new ListResult("messages", extendedList, list.nextPage);
   }
 
-  async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
+  async includeUsersInMessage(
+    message: Message,
+    context: ExecutionContext,
+  ): Promise<MessageWithUsers> {
     let ids: string[] = [];
     if (message.user_id) ids.push(message.user_id);
     if (message.pinned_info?.pinned_by) ids.push(message.pinned_info?.pinned_by);
@@ -504,9 +537,12 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
     let application = null;
     if (message.application_id) {
-      application = await gr.services.applications.marketplaceApps.get({
-        id: message.application_id,
-      });
+      application = await gr.services.applications.marketplaceApps.get(
+        {
+          id: message.application_id,
+        },
+        context,
+      );
     }
 
     const messageWithUsers: MessageWithUsers = { ...message, users, application };
@@ -514,6 +550,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     if (message.quote_message && (message.quote_message as any).id) {
       messageWithUsers.quote_message = await this.includeUsersInMessage(
         message.quote_message as any,
+        context,
       );
     }
 
@@ -522,27 +559,28 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
   async includeUsersInMessageWithReplies(
     message: MessageWithReplies,
+    context: ExecutionContext,
   ): Promise<MessageWithRepliesWithUsers> {
     let last_replies = undefined;
     for (const reply of message.last_replies || []) {
       if (!last_replies) last_replies = [];
-      last_replies.push(await this.includeUsersInMessage(reply));
+      last_replies.push(await this.includeUsersInMessage(reply, context));
     }
 
     let highlighted_replies = undefined;
     for (const reply of message.highlighted_replies || []) {
       if (!highlighted_replies) highlighted_replies = [];
-      highlighted_replies.push(await this.includeUsersInMessage(reply));
+      highlighted_replies.push(await this.includeUsersInMessage(reply, context));
     }
 
     let thread: MessageWithRepliesWithUsers = undefined;
     if (message.thread) {
-      thread = await this.includeUsersInMessageWithReplies(message.thread);
+      thread = await this.includeUsersInMessageWithReplies(message.thread, context);
     }
 
     const messageWithUsers = {
       ...message,
-      users: (await this.includeUsersInMessage(message)).users,
+      users: (await this.includeUsersInMessage(message, context)).users,
       last_replies,
       ...(highlighted_replies ? { highlighted_replies } : {}),
       ...(thread ? { thread } : {}),
@@ -576,7 +614,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
         },
       });
 
-      await gr.services.messages.threads.addReply(message.thread_id);
+      await gr.services.messages.threads.addReply(message.thread_id, 1, context);
     }
 
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
@@ -629,8 +667,9 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
   async completeMessage(
     message: Message,
     options: { files?: Message["files"]; includeQuoteInMessage?: boolean } = {},
+    context: ExecutionContext,
   ) {
-    this.fixReactionsFormat(message);
+    this.fixReactionsFormat(message, context);
     try {
       if (options.files) message = await this.completeMessageFiles(message, options.files || []);
     } catch (err) {
@@ -669,7 +708,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
   }
 
   //Fix https://github.com/linagora/Twake/issues/1559
-  async fixReactionsFormat(message: Message) {
+  async fixReactionsFormat(message: Message, context: ExecutionContext) {
     if (message.reactions?.length > 0) {
       let foundError = false;
       message.reactions.map(r => {
@@ -678,11 +717,15 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
           r.users = Object.values(r.users);
         }
       });
-      if (foundError) await this.repository.save(message);
+      if (foundError) await this.repository.save(message, context);
     }
   }
 
-  async completeMessageFiles(message: Message, files: Message["files"]) {
+  async completeMessageFiles(
+    message: Message,
+    files: Message["files"],
+    context?: ExecutionContext,
+  ) {
     if (files.length === 0 && (message.files || []).length === 0) {
       return message;
     }
@@ -700,13 +743,17 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
     //Delete all existing msg files not in the new files object
     const existingMsgFiles = (
-      await this.msgFilesRepository.find({
-        message_id: message.id,
-      })
+      await this.msgFilesRepository.find(
+        {
+          message_id: message.id,
+        },
+        {},
+        context,
+      )
     ).getEntities();
     for (const entity of existingMsgFiles) {
       if (!files.some(f => sameFile(f.metadata, entity.metadata))) {
-        await this.msgFilesRepository.remove(entity);
+        await this.msgFilesRepository.remove(entity, context);
       }
     }
 
@@ -731,10 +778,14 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       //If it is defined it should exists
       let messageFileExistOnDb = false;
       try {
-        messageFileExistOnDb = !!(await this.msgFilesRepository.findOne({
-          message_id: message.id,
-          id: entity.id,
-        }));
+        messageFileExistOnDb = !!(await this.msgFilesRepository.findOne(
+          {
+            message_id: message.id,
+            id: entity.id,
+          },
+          {},
+          context,
+        ));
       } catch (e) {}
       if (entity.id && !messageFileExistOnDb) {
         existing = null;
@@ -779,7 +830,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
       if (!existing || !_.isEqual(existing.metadata, entity.metadata)) {
         didChange = true;
-        await this.msgFilesRepository.save(entity);
+        await this.msgFilesRepository.save(entity, context);
       }
 
       message.files.push(entity);
@@ -788,7 +839,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     if (!_.isEqual(previousMessageFiles.sort(), message.files.sort())) didChange = true;
 
     if (didChange) {
-      await this.repository.save(message);
+      await this.repository.save(message, context);
     }
 
     return message;
@@ -814,6 +865,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
               user_id: userId,
             },
             { pagination: new Pagination(lastPageToken, pagination.limitStr) },
+            context,
           )
           .then((a: ListResult<MessageUserInboxRef>) => {
             lastPageToken = a.nextPage.page_token;
@@ -847,7 +899,9 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       }
     }
 
-    const msgPromises = threadsIds.map(id => this.repository.findOne({ thread_id: id, id }));
+    const msgPromises = threadsIds.map(id =>
+      this.repository.findOne({ thread_id: id, id }, {}, context),
+    );
     return new ListResult<Message>("message", await Promise.all(msgPromises), nextPage);
   }
 

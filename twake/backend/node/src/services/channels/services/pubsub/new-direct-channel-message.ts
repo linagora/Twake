@@ -4,6 +4,7 @@ import { getLogger } from "../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../core/platform/services/pubsub/api";
 import { MessageNotification } from "../../../messages/types";
 import gr from "../../../global-resolver";
+import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
 const logger = getLogger("channel.pubsub.new-direct-channel-message");
 
@@ -24,18 +25,21 @@ export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNo
     return !!(message && message.channel_id && message.company_id && message.workspace_id);
   }
 
-  async process(message: MessageNotification): Promise<void> {
+  async process(message: MessageNotification, context?: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
     );
     logger.debug(`${this.name} - Notification message ${JSON.stringify(message)}`);
 
     try {
-      const channel = await gr.services.channels.channels.get({
-        company_id: message.company_id,
-        id: message.channel_id,
-        workspace_id: message.workspace_id,
-      });
+      const channel = await gr.services.channels.channels.get(
+        {
+          company_id: message.company_id,
+          id: message.channel_id,
+          workspace_id: message.workspace_id,
+        },
+        context,
+      );
 
       if (!channel || !Channel.isDirectChannel(channel)) {
         logger.debug(`${this.name} - Not a direct channel`);

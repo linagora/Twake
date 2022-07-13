@@ -5,6 +5,7 @@ import { Channel, ChannelMember } from "../../../../channels/entities";
 import { isDirectChannel } from "../../../../channels/utils";
 import gr from "../../../../global-resolver";
 import { NotificationPubsubHandler } from "../../../types";
+import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 type LeaveChannelMessage = { channel: Channel; member: ChannelMember };
 
@@ -26,7 +27,7 @@ export class LeaveChannelMessageProcessor
     return !!(message && message.channel && message.member);
   }
 
-  async process(message: LeaveChannelMessage): Promise<void> {
+  async process(message: LeaveChannelMessage, context?: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Processing leave channel message for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
@@ -38,10 +39,10 @@ export class LeaveChannelMessageProcessor
       return;
     }
 
-    await Promise.all([this.removeBadges(message), this.removePreferences(message)]);
+    await Promise.all([this.removeBadges(message, context), this.removePreferences(message)]);
   }
 
-  async removeBadges(message: LeaveChannelMessage): Promise<void> {
+  async removeBadges(message: LeaveChannelMessage, context: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Removing badges for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
@@ -56,6 +57,7 @@ export class LeaveChannelMessageProcessor
       });
       const removedBadges = await gr.services.notifications.badges.removeUserChannelBadges(
         badgeEntity,
+        context,
       );
 
       logger.info(

@@ -281,12 +281,17 @@ class MessageMigrator {
           channel_id: channel.id,
         },
         { pagination: pageMessages },
+        undefined,
       );
 
       for (const messageRef of messages.getEntities()) {
-        const messages = await messageRepository.find({
-          thread_id: messageRef.thread_id,
-        });
+        const messages = await messageRepository.find(
+          {
+            thread_id: messageRef.thread_id,
+          },
+          {},
+          undefined,
+        );
 
         for (const message of messages.getEntities()) {
           const uuidv1_channel_id =
@@ -353,7 +358,7 @@ class MessageMigrator {
             };
 
             if (!this.options.dryRun) {
-              await this.phpMessageService.repository.save(newPhpMessage);
+              await this.phpMessageService.repository.save(newPhpMessage, undefined);
             }
 
             this.migratedMessages++;

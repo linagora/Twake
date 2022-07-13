@@ -5,6 +5,7 @@ import ExternalGroup from "../../entities/external_company";
 import Company from "../../entities/company";
 import User from "../../entities/user";
 import gr from "../../../global-resolver";
+import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
 export class UserExternalLinksServiceImpl {
   version: "1";
@@ -28,29 +29,36 @@ export class UserExternalLinksServiceImpl {
     return this;
   }
 
-  async createExternalUser(user: ExternalUser): Promise<ExternalUser> {
-    await this.externalUserRepository.save(user);
+  async createExternalUser(user: ExternalUser, context?: ExecutionContext): Promise<ExternalUser> {
+    await this.externalUserRepository.save(user, context);
 
     //Save user provider and provider id here
-    const internalUser = await this.userRepository.findOne({ id: user.user_id });
+    const internalUser = await this.userRepository.findOne({ id: user.user_id }, {}, context);
     if (internalUser) {
       internalUser.identity_provider = user.service_id;
       internalUser.identity_provider_id = user.external_id;
-      this.userRepository.save(internalUser);
+      this.userRepository.save(internalUser, context);
     }
 
     return user;
   }
 
-  async createExternalGroup(group: ExternalGroup): Promise<ExternalGroup> {
-    await this.externalGroupRepository.save(group);
+  async createExternalGroup(
+    group: ExternalGroup,
+    context?: ExecutionContext,
+  ): Promise<ExternalGroup> {
+    await this.externalGroupRepository.save(group, context);
 
     //Save company provider and provider id here
-    const internalCompany = await this.companyRepository.findOne({ id: group.company_id });
+    const internalCompany = await this.companyRepository.findOne(
+      { id: group.company_id },
+      {},
+      context,
+    );
     if (internalCompany) {
       internalCompany.identity_provider = group.service_id;
       internalCompany.identity_provider_id = group.external_id;
-      this.companyRepository.save(internalCompany);
+      this.companyRepository.save(internalCompany, context);
     }
 
     return group;

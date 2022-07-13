@@ -68,6 +68,7 @@ export default class DefaultChannelListener implements Initializable {
             company_id: event.channel.company_id,
             workspace_id: event.channel.workspace_id,
           }),
+          undefined,
         )
         .catch((err: Error) => {
           logger.error({ err }, "Default channel %id can not be updated", event.channel.id);
@@ -103,6 +104,7 @@ export default class DefaultChannelListener implements Initializable {
           company_id: event.channel.company_id,
           workspace_id: event.channel.workspace_id,
         }),
+        undefined,
       )
       .catch((err: Error) => {
         logger.warn({ err }, "Default channel %id can not be created", event.channel.id);

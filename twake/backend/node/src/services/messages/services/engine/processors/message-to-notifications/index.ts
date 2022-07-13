@@ -5,7 +5,10 @@ import { Channel } from "../../../../../channels/entities";
 import { isDirectChannel } from "../../../../../channels/utils";
 import { ChannelActivityNotification } from "../../../../../channels/types";
 import { getMentions } from "../../../utils";
-import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
+import {
+  ExecutionContext,
+  Pagination,
+} from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../../../services/messages/entities/messages";
 import gr from "../../../../../global-resolver";
 
@@ -16,7 +19,11 @@ export class MessageToNotificationsProcessor {
     //
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     logger.debug(`${this.name} - Share message with notification microservice`);
 
     if (message.resource.ephemeral) {
@@ -32,11 +39,14 @@ export class MessageToNotificationsProcessor {
           continue;
         }
 
-        const channel: Channel = await gr.services.channels.channels.get({
-          id: participant.id,
-          company_id: participant.company_id,
-          workspace_id: participant.workspace_id,
-        });
+        const channel: Channel = await gr.services.channels.channels.get(
+          {
+            id: participant.id,
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+          },
+          context,
+        );
 
         if (!channel) {
           continue;

@@ -6,6 +6,7 @@ import StatisticsEntity, {
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
 import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
+import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 
 export class StatisticsServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -31,12 +32,20 @@ export class StatisticsServiceImpl implements TwakeServiceProvider, Initializabl
     //]).then(() => null);
   }
 
-  async get(companyId: string = STATISTICS_GLOBAL_KEY, eventName: string): Promise<number> {
-    const res = await this.repository.findOne({
-      company_id: companyId,
-      event_name: eventName,
-      month_id: 0,
-    });
+  async get(
+    companyId: string = STATISTICS_GLOBAL_KEY,
+    eventName: string,
+    context?: ExecutionContext,
+  ): Promise<number> {
+    const res = await this.repository.findOne(
+      {
+        company_id: companyId,
+        event_name: eventName,
+        month_id: 0,
+      },
+      {},
+      context,
+    );
 
     return res?.value || 0;
   }
@@ -46,6 +55,7 @@ export class StatisticsServiceImpl implements TwakeServiceProvider, Initializabl
     eventName: string,
     monthId: number,
     value: number = 1,
+    context?: ExecutionContext,
   ): Promise<void> {
     const entity = getStatisticsEntityInstance({
       company_id: companyId,
@@ -54,6 +64,6 @@ export class StatisticsServiceImpl implements TwakeServiceProvider, Initializabl
     });
 
     entity.value = value;
-    return this.repository.save(entity);
+    return this.repository.save(entity, context);
   }
 }

@@ -31,7 +31,7 @@ export class PhpMessagesService implements PhpMessagesServiceAPI {
       pk.channel_id = `${pk.channel_id}`;
       pk.channel_id.substring(0, 14) + "1" + pk.channel_id.substring(14 + 1);
     }
-    return this.repository.findOne(pk);
+    return this.repository.findOne(pk, {}, undefined);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,7 +53,7 @@ export class PhpMessagesService implements PhpMessagesServiceAPI {
       //id: context.id,
     };
 
-    const list = await this.repository.find(findFilter, { pagination });
+    const list = await this.repository.find(findFilter, { pagination }, undefined);
     return list;
   }
 }

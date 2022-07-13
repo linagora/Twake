@@ -7,6 +7,7 @@ import User from "../user/entities/user";
 import gr from "../global-resolver";
 import { Configuration, TwakeServiceProvider } from "../../core/platform/framework";
 import assert from "assert";
+import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 
 export class ConsoleServiceImpl implements TwakeServiceProvider {
   version: "1";
@@ -57,6 +58,7 @@ export class ConsoleServiceImpl implements TwakeServiceProvider {
     link: boolean = true,
     client: string,
     secret: string,
+    context?: ExecutionContext,
   ): MergeProgress {
     return new MergeProcess(this.services.database, dryRun, console, link, {
       type: "remote",
@@ -70,7 +72,7 @@ export class ConsoleServiceImpl implements TwakeServiceProvider {
     return ConsoleClientFactory.create(this);
   }
 
-  async processPendingUser(user: User): Promise<void> {
-    await gr.services.workspaces.processPendingUser(user);
+  async processPendingUser(user: User, context?: ExecutionContext): Promise<void> {
+    await gr.services.workspaces.processPendingUser(user, context);
   }
 }

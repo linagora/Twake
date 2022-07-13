@@ -4,7 +4,10 @@ import Repository from "../../../../../../core/platform/services/database/servic
 import { getInstance, MessageFileRef } from "../../../../entities/message-file-refs";
 import gr from "../../../../../global-resolver";
 import uuid from "node-uuid";
-import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
+import {
+  ExecutionContext,
+  Pagination,
+} from "../../../../../../core/platform/framework/api/crud-service";
 import { MessageFile } from "../../../../entities/message-files";
 
 export class FilesViewProcessor {
@@ -25,21 +28,30 @@ export class FilesViewProcessor {
   async processDownloaded(
     userId: string,
     operation: { message_id: string; thread_id: string; message_file_id: string },
+    context?: ExecutionContext,
   ): Promise<void> {
-    const messageFile = await this.messageFileRepository.findOne({
-      message_id: operation.message_id,
-      id: operation.message_file_id,
-    });
+    const messageFile = await this.messageFileRepository.findOne(
+      {
+        message_id: operation.message_id,
+        id: operation.message_file_id,
+      },
+      {},
+      context,
+    );
 
-    const thread = await gr.services.messages.threads.get({
-      id: operation.thread_id,
-    });
+    const thread = await gr.services.messages.threads.get(
+      {
+        id: operation.thread_id,
+      },
+      context,
+    );
 
     const refs = await this.repository.find(
       { target_type: "user_download", target_id: userId, company_id: messageFile.company_id },
       {
         pagination: new Pagination("", "100"),
       },
+      context,
     );
     if (refs.getEntities().some(r => r.message_file_id === messageFile.id)) {
       //File already in the recent list
@@ -60,10 +72,14 @@ export class FilesViewProcessor {
       message_id: messageFile.message_id,
       message_file_id: messageFile.id,
     });
-    this.repository.save(fileRef);
+    this.repository.save(fileRef, context);
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     if (!message.resource.ephemeral) {
       for (const file of message.resource.files || []) {
         //For each channel, we add the media
@@ -81,7 +97,7 @@ export class FilesViewProcessor {
             company_id: file.company_id,
             file_id: file.metadata.external_id,
           });
-          this.repository.save(fileRef);
+          this.repository.save(fileRef, context);
         }
 
         //For the user we add it as uploaded by user
@@ -99,7 +115,7 @@ export class FilesViewProcessor {
           company_id: file.company_id,
           file_id: file.metadata.external_id,
         });
-        this.repository.save(fileRef);
+        this.repository.save(fileRef, context);
       }
     }
   }

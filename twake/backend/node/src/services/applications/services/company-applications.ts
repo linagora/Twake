@@ -40,18 +40,26 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
     return this;
   }
 
+  // TODO: remove logic from context
   async get(
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<CompanyApplicationWithApplication> {
-    const companyApplication = await this.repository.findOne({
-      group_id: context ? context.company.id : pk.company_id,
-      app_id: pk.application_id,
-    });
+    const companyApplication = await this.repository.findOne(
+      {
+        group_id: context ? context.company.id : pk.company_id,
+        app_id: pk.application_id,
+      },
+      {},
+      context,
+    );
 
-    const application = await gr.services.applications.marketplaceApps.get({
-      id: pk.application_id,
-    });
+    const application = await gr.services.applications.marketplaceApps.get(
+      {
+        id: pk.application_id,
+      },
+      context,
+    );
 
     return {
       ...companyApplication,
@@ -78,10 +86,14 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
     }
 
     let operation = OperationType.UPDATE;
-    let companyApplication = await this.repository.findOne({
-      group_id: context?.company.id,
-      app_id: item.application_id,
-    });
+    let companyApplication = await this.repository.findOne(
+      {
+        group_id: context?.company.id,
+        app_id: item.application_id,
+      },
+      {},
+      context,
+    );
     if (!companyApplication) {
       operation = OperationType.CREATE;
 
@@ -91,7 +103,7 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
       companyApplication.created_at = new Date().getTime();
       companyApplication.created_by = context?.user?.id || "";
 
-      await this.repository.save(companyApplication);
+      await this.repository.save(companyApplication, context);
     }
 
     return new SaveResult(TYPE, companyApplication, operation);
@@ -101,7 +113,7 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
     companyId: string,
     context: CompanyExecutionContext,
   ): Promise<void> {
-    const defaultApps = await gr.services.applications.marketplaceApps.listDefaults();
+    const defaultApps = await gr.services.applications.marketplaceApps.listDefaults(context);
     for (const defaultApp of defaultApps.getEntities()) {
       await this.save({ company_id: companyId, application_id: defaultApp.id }, {}, context);
     }
@@ -120,14 +132,18 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<CompanyApplication>> {
-    const companyApplication = await this.repository.findOne({
-      group_id: context.company.id,
-      app_id: pk.application_id,
-    });
+    const companyApplication = await this.repository.findOne(
+      {
+        group_id: context.company.id,
+        app_id: pk.application_id,
+      },
+      {},
+      context,
+    );
 
     let deleted = false;
     if (companyApplication) {
-      this.repository.remove(companyApplication);
+      this.repository.remove(companyApplication, context);
       deleted = true;
     }
 
@@ -144,14 +160,18 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
         group_id: context.company.id,
       },
       { pagination: Pagination.fromPaginable(pagination) },
+      context,
     );
 
     const applications = [];
 
     for (const companyApplication of companyApplications.getEntities()) {
-      const application = await gr.services.applications.marketplaceApps.get({
-        id: companyApplication.application_id,
-      });
+      const application = await gr.services.applications.marketplaceApps.get(
+        {
+          id: companyApplication.application_id,
+        },
+        context,
+      );
       if (application)
         applications.push({
           ...companyApplication,

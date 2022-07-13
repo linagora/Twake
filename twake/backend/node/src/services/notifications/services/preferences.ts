@@ -1,6 +1,7 @@
 import {
   CrudException,
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   SaveResult,
@@ -32,14 +33,18 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
     throw new Error("Not implemented");
   }
 
-  async get(pk: UserNotificationPreferencesPrimaryKey): Promise<UserNotificationPreferences> {
-    return await this.repository.findOne(pk);
+  async get(
+    pk: UserNotificationPreferencesPrimaryKey,
+    context: ExecutionContext,
+  ): Promise<UserNotificationPreferences> {
+    return await this.repository.findOne(pk, {}, context);
   }
 
   async delete(
     pk: UserNotificationPreferencesPrimaryKey,
+    context?: ExecutionContext,
   ): Promise<DeleteResult<UserNotificationPreferences>> {
-    await this.repository.remove(pk as UserNotificationPreferences);
+    await this.repository.remove(pk as UserNotificationPreferences, context);
 
     return new DeleteResult(
       UserNotificationPreferencesType,
@@ -53,26 +58,32 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
     company_id: string,
     user_id: string,
     filter: Pick<UserNotificationPreferencesPrimaryKey, "user_id">,
+    context?: ExecutionContext,
   ): Promise<ListResult<UserNotificationPreferences>> {
     if (!workspace_id || !company_id || !user_id) {
       throw CrudException.badRequest("workspace_id, company_id and user_id are required");
     }
 
-    return await this.repository.find({
-      workspace_id,
-      company_id,
-      user_id,
-      ...pick(filter, ["user_id"]),
-    });
+    return await this.repository.find(
+      {
+        workspace_id,
+        company_id,
+        user_id,
+        ...pick(filter, ["user_id"]),
+      },
+      {},
+      context,
+    );
   }
 
   async savePreferences(
     notificationPreferences: UserNotificationPreferences,
+    context: ExecutionContext,
   ): Promise<SaveResult<UserNotificationPreferences>> {
     const notificationPreferencesEntity = new UserNotificationPreferences();
     assign(notificationPreferencesEntity, notificationPreferences);
 
-    await this.repository.save(notificationPreferencesEntity);
+    await this.repository.save(notificationPreferencesEntity, context);
 
     return new SaveResult(
       UserNotificationPreferencesType,

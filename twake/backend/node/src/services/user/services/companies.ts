@@ -59,8 +59,8 @@ export class CompanyServiceImpl {
     return this;
   }
 
-  private getExtCompany(pk: ExternalGroupPrimaryKey) {
-    return this.externalCompanyRepository.findOne(pk);
+  private getExtCompany(pk: ExternalGroupPrimaryKey, context?: ExecutionContext) {
+    return this.externalCompanyRepository.findOne(pk, {}, context);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,13 +77,13 @@ export class CompanyServiceImpl {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _options?: SaveOptions,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _context?: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<SaveResult<Company>> {
     if (company.identity_provider_id && !company.identity_provider) {
       company.identity_provider = "console";
     }
 
-    await this.companyRepository.save(company);
+    await this.companyRepository.save(company, context);
 
     if (company.identity_provider_id) {
       const key = {
@@ -91,13 +91,13 @@ export class CompanyServiceImpl {
         external_id: company.identity_provider_id,
       };
 
-      const extCompany = (await this.getExtCompany(key)) || getExternalGroupInstance(key);
+      const extCompany = (await this.getExtCompany(key, context)) || getExternalGroupInstance(key);
 
       extCompany.company_id = company.id;
       extCompany.external_id = company.identity_provider_id;
       extCompany.service_id = company.identity_provider;
 
-      await this.externalCompanyRepository.save(extCompany);
+      await this.externalCompanyRepository.save(extCompany, context);
     }
 
     return new SaveResult<Company>("company", company, OperationType.UPDATE);
@@ -129,16 +129,19 @@ export class CompanyServiceImpl {
     context?: ExecutionContext,
   ): Promise<Company> {
     if (companySearchKey.id) {
-      return this.companyRepository.findOne(companySearchKey);
+      return this.companyRepository.findOne(companySearchKey, {}, context);
     } else if (companySearchKey.identity_provider_id) {
-      const extCompany = await this.getExtCompany({
-        external_id: companySearchKey.identity_provider_id,
-        service_id: companySearchKey.identity_provider || "console",
-      });
+      const extCompany = await this.getExtCompany(
+        {
+          external_id: companySearchKey.identity_provider_id,
+          service_id: companySearchKey.identity_provider || "console",
+        },
+        context,
+      );
       if (!extCompany) {
         return null;
       }
-      return await this.companyRepository.findOne({ id: extCompany.company_id });
+      return await this.companyRepository.findOne({ id: extCompany.company_id }, {}, context);
     }
   }
 
@@ -147,17 +150,21 @@ export class CompanyServiceImpl {
     user: UserPrimaryKey,
     context?: ExecutionContext,
   ): Promise<CompanyUser> {
-    const companyUser = await this.companyUserRepository.findOne({
-      group_id: company.id,
-      user_id: user.id,
-    });
+    const companyUser = await this.companyUserRepository.findOne(
+      {
+        group_id: company.id,
+        user_id: user.id,
+      },
+      {},
+      context,
+    );
     if (companyUser) companyUser.applications = [];
     return companyUser;
   }
 
   async getAllForUser(userId: uuid, context?: ExecutionContext): Promise<CompanyUser[]> {
     const list = await this.companyUserRepository
-      .find({ user_id: userId })
+      .find({ user_id: userId }, {}, context)
       .then(a => a.getEntities());
 
     // Update user cache with companies
@@ -187,6 +194,7 @@ export class CompanyServiceImpl {
           paginable?.reversed,
         ),
       },
+      context,
     );
   }
 
@@ -203,12 +211,16 @@ export class CompanyServiceImpl {
     userPk: UserPrimaryKey,
     context?: ExecutionContext,
   ): Promise<DeleteResult<CompanyUser>> {
-    const entity = await this.companyUserRepository.findOne({
-      group_id: companyPk.id,
-      user_id: userPk.id,
-    });
+    const entity = await this.companyUserRepository.findOne(
+      {
+        group_id: companyPk.id,
+        user_id: userPk.id,
+      },
+      {},
+      context,
+    );
     if (entity) {
-      await Promise.all([this.companyUserRepository.remove(entity)]);
+      await Promise.all([this.companyUserRepository.remove(entity, context)]);
 
       const user = await gr.services.users.get(userPk);
       if ((user.cache?.companies || []).includes(companyPk.id)) {
@@ -240,12 +252,12 @@ export class CompanyServiceImpl {
       findOptions.$in = [["user_id", options.userIds]];
     }
 
-    return this.companyUserRepository.find({ group_id: companyId.group_id }, findOptions);
+    return this.companyUserRepository.find({ group_id: companyId.group_id }, findOptions, context);
   }
 
   async delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>> {
-    const instance = await this.companyRepository.findOne(pk);
-    if (instance) await this.companyRepository.remove(instance);
+    const instance = await this.companyRepository.findOne(pk, {}, context);
+    if (instance) await this.companyRepository.remove(instance, context);
     return new DeleteResult<Company>("company", instance, !!instance);
   }
 
@@ -268,7 +280,7 @@ export class CompanyServiceImpl {
       group_id: companyId,
       user_id: userId,
     };
-    let entity = await this.companyUserRepository.findOne(key);
+    let entity = await this.companyUserRepository.findOne(key, {}, context);
 
     if (entity == null) {
       entity = getCompanyUserInstance(merge(key, { dateAdded: Date.now() }));
@@ -276,7 +288,7 @@ export class CompanyServiceImpl {
 
     entity.role = role;
     entity.applications = applications;
-    await this.companyUserRepository.save(entity);
+    await this.companyUserRepository.save(entity, context);
 
     const user = await gr.services.users.get({ id: userId });
     if (!(user.cache?.companies || []).includes(companyId)) {
@@ -291,14 +303,17 @@ export class CompanyServiceImpl {
 
   async removeCompany(searchKey: CompanySearchKey, context?: ExecutionContext): Promise<void> {
     if (searchKey.identity_provider_id) {
-      const extCompany = await this.getExtCompany({
-        service_id: searchKey.identity_provider,
-        external_id: searchKey.identity_provider_id,
-      });
+      const extCompany = await this.getExtCompany(
+        {
+          service_id: searchKey.identity_provider,
+          external_id: searchKey.identity_provider_id,
+        },
+        context,
+      );
       if (!extCompany) {
         throw CrudException.notFound(`Company ${searchKey.identity_provider_id} not found`);
       }
-      await this.externalCompanyRepository.remove(extCompany);
+      await this.externalCompanyRepository.remove(extCompany, context);
       searchKey.id = extCompany.company_id;
     }
 
@@ -307,7 +322,7 @@ export class CompanyServiceImpl {
       throw CrudException.notFound(`Company ${searchKey.id} not found`);
     }
 
-    await this.companyRepository.remove(company);
+    await this.companyRepository.remove(company, context);
 
     return Promise.resolve(null);
   }

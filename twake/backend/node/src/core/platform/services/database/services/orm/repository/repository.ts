@@ -1,6 +1,10 @@
 import { localEventBus } from "../../../../../../../core/platform/framework/pubsub";
 import { logger } from "../../../../../../../core/platform/framework";
-import { ListResult, Pagination } from "../../../../../framework/api/crud-service";
+import {
+  ExecutionContext,
+  ListResult,
+  Pagination,
+} from "../../../../../framework/api/crud-service";
 import { Connector } from "../connectors";
 import Manager from "../manager";
 import { EntityTarget } from "../types";
@@ -64,7 +68,11 @@ export default class Repository<EntityType> {
     return this;
   }
 
-  async find(filters: FindFilter, options: FindOptions = {}): Promise<ListResult<EntityType>> {
+  async find(
+    filters: FindFilter,
+    options: FindOptions = {},
+    context: ExecutionContext,
+  ): Promise<ListResult<EntityType>> {
     if (!this.entityType) {
       throw Error(`Unable to find or findOne: EntityType ${this.table} not initialized`);
     }
@@ -76,26 +84,30 @@ export default class Repository<EntityType> {
     return await this.connector.find(this.entityType, filters, options);
   }
 
-  async findOne(filters: FindFilter, options: FindOptions = {}): Promise<EntityType> {
+  async findOne(
+    filters: FindFilter,
+    options: FindOptions = {},
+    context: ExecutionContext,
+  ): Promise<EntityType> {
     if (!options.pagination) {
       options.pagination = new Pagination("", "1");
     }
 
-    return (await this.find(filters, options)).getEntities()[0] || null;
+    return (await this.find(filters, options, context)).getEntities()[0] || null;
   }
 
-  async save(entity: EntityType): Promise<void> {
+  async save(entity: EntityType, context: ExecutionContext): Promise<void> {
     (await this.manager.persist(entity).flush()).reset();
   }
 
-  async saveAll(entities: EntityType[] = []): Promise<void> {
+  async saveAll(entities: EntityType[] = [], context: ExecutionContext): Promise<void> {
     logger.debug("services.database.repository - Saving entities");
 
     entities.forEach(entity => this.manager.persist(entity));
     await (await this.manager.flush()).reset();
   }
 
-  async remove(entity: EntityType): Promise<void> {
+  async remove(entity: EntityType, context?: ExecutionContext): Promise<void> {
     await (await this.manager.remove(entity).flush()).reset();
   }
 

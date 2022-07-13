@@ -70,12 +70,13 @@ export class UserServiceImpl {
     return this;
   }
 
-  private async updateExtRepository(user: User) {
+  private async updateExtRepository(user: User, context?: ExecutionContext) {
     if (user.identity_provider_id) {
       const key = { service_id: user.identity_provider, external_id: user.identity_provider_id };
-      const extUser = (await this.extUserRepository.findOne(key)) || getExternalUserInstance(key);
+      const extUser =
+        (await this.extUserRepository.findOne(key, {}, context)) || getExternalUserInstance(key);
       extUser.user_id = user.id;
-      await this.extUserRepository.save(extUser);
+      await this.extUserRepository.save(extUser, context);
     }
   }
 
@@ -92,7 +93,7 @@ export class UserServiceImpl {
   async create(user: User, context?: ExecutionContext): Promise<CreateResult<User>> {
     this.assignDefaults(user);
 
-    await this.repository.save(user);
+    await this.repository.save(user, context);
     await this.updateExtRepository(user);
     const result = new CreateResult("user", user);
 
@@ -130,14 +131,14 @@ export class UserServiceImpl {
   })
   async save<SaveOptions>(user: User, context?: ExecutionContext): Promise<SaveResult<User>> {
     this.assignDefaults(user);
-    await this.repository.save(user);
+    await this.repository.save(user, context);
     await this.updateExtRepository(user);
     return new SaveResult("user", user, OperationType.UPDATE);
   }
 
   async delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
-    const instance = await this.repository.findOne(pk);
-    if (instance) await this.repository.remove(instance);
+    const instance = await this.repository.findOne(pk, {}, context);
+    if (instance) await this.repository.remove(instance, context);
     return new DeleteResult<User>("user", instance, !!instance);
   }
 
@@ -181,6 +182,7 @@ export class UserServiceImpl {
           $search: options.search,
         },
       },
+      context,
     );
   }
 
@@ -198,11 +200,11 @@ export class UserServiceImpl {
       findOptions.$in = [["id", options.userIds]];
     }
 
-    return this.repository.find(findFilter, findOptions);
+    return this.repository.find(findFilter, findOptions, context);
   }
 
   getByEmail(email: string, context?: ExecutionContext): Promise<User> {
-    return this.repository.findOne({ email_canonical: email });
+    return this.repository.findOne({ email_canonical: email }, {}, context);
   }
 
   getByEmails(emails: string[], context?: ExecutionContext): Promise<User[]> {
@@ -216,7 +218,7 @@ export class UserServiceImpl {
     preferences: User["preferences"],
     context?: ExecutionContext,
   ): Promise<User["preferences"]> {
-    const user = await this.repository.findOne(pk);
+    const user = await this.repository.findOne(pk, {}, context);
     if (!user.preferences) user.preferences = {};
     for (const key in preferences) {
       //@ts-ignore
@@ -228,7 +230,7 @@ export class UserServiceImpl {
   }
 
   async get(pk: UserPrimaryKey, context?: ExecutionContext): Promise<User> {
-    return await this.repository.findOne(pk);
+    return await this.repository.findOne(pk, {}, context);
   }
 
   async getCached(pk: UserPrimaryKey, context?: ExecutionContext): Promise<User> {
@@ -239,9 +241,13 @@ export class UserServiceImpl {
   }
 
   async getByUsername(username: string, context?: ExecutionContext): Promise<User> {
-    return await this.repository.findOne({
-      username_canonical: (username || "").toLocaleLowerCase(),
-    });
+    return await this.repository.findOne(
+      {
+        username_canonical: (username || "").toLocaleLowerCase(),
+      },
+      {},
+      context,
+    );
   }
 
   async getByConsoleId(
@@ -249,19 +255,27 @@ export class UserServiceImpl {
     service_id: string = "console",
     context?: ExecutionContext,
   ): Promise<User> {
-    const extUser = await this.extUserRepository.findOne({ service_id, external_id: id });
+    const extUser = await this.extUserRepository.findOne(
+      { service_id, external_id: id },
+      {},
+      context,
+    );
     if (!extUser) {
       return null;
     }
-    return this.repository.findOne({ id: extUser.user_id });
+    return this.repository.findOne({ id: extUser.user_id }, {}, context);
   }
 
   async getUserCompanies(pk: UserPrimaryKey, context?: ExecutionContext): Promise<CompanyUser[]> {
-    return await this.companyUserRepository.find({ user_id: pk.id }).then(a => a.getEntities());
+    return await this.companyUserRepository
+      .find({ user_id: pk.id }, {}, context)
+      .then(a => a.getEntities());
   }
 
   async isEmailAlreadyInUse(email: string, context?: ExecutionContext): Promise<boolean> {
-    return this.repository.findOne({ email_canonical: email }).then(user => Boolean(user));
+    return this.repository
+      .findOne({ email_canonical: email }, {}, context)
+      .then(user => Boolean(user));
   }
   async getAvailableUsername(username: string, context?: ExecutionContext): Promise<string> {
     const user = await this.getByUsername(username);
@@ -293,9 +307,9 @@ export class UserServiceImpl {
     if (!user.devices || user.devices.length == 0) {
       return [];
     }
-    return Promise.all(user.devices.map(id => this.deviceRepository.findOne({ id }))).then(a =>
-      a.filter(a => a),
-    );
+    return Promise.all(
+      user.devices.map(id => this.deviceRepository.findOne({ id }, {}, context)),
+    ).then(a => a.filter(a => a));
   }
 
   async registerUserDevice(
@@ -314,20 +328,23 @@ export class UserServiceImpl {
     user.devices = user.devices || [];
     user.devices.push(id);
 
-    await this.repository.save(user);
-    await this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id }));
+    await this.repository.save(user, context);
+    await this.deviceRepository.save(
+      getDeviceInstance({ id, type, version, user_id: user.id }),
+      context,
+    );
   }
 
   async deregisterUserDevice(id: string, context?: ExecutionContext): Promise<void> {
-    const existedDevice = await this.deviceRepository.findOne({ id });
+    const existedDevice = await this.deviceRepository.findOne({ id }, {}, context);
 
     if (existedDevice) {
       const user = await this.get({ id: existedDevice.user_id });
       if (user) {
         user.devices = (user.devices || []).filter(d => d !== id);
-        await this.repository.save(user);
+        await this.repository.save(user, context);
       }
-      await this.deviceRepository.remove(existedDevice);
+      await this.deviceRepository.remove(existedDevice, context);
     }
   }
 
@@ -344,7 +361,7 @@ export class UserServiceImpl {
     }
     user.password = await passwordEncoder.encodePassword(password);
     user.salt = null;
-    await this.repository.save(user);
+    await this.repository.save(user, context);
   }
 
   async getHashedPassword(

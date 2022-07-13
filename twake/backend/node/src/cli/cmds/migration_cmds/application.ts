@@ -7,7 +7,7 @@ import PhpApplication, {
   DepreciatedDisplayConfiguration,
   TYPE as phpTYPE,
 } from "./php-application/php-application-entity";
-import { Pagination } from "../../../core/platform/framework/api/crud-service";
+import { ExecutionContext, Pagination } from "../../../core/platform/framework/api/crud-service";
 import Application, {
   ApplicationPublication,
   TYPE,
@@ -32,18 +32,22 @@ class ApplicationMigrator {
 
     let page: Pagination = { limitStr: "100" };
     do {
-      const applicationListResult = await phpRepository.find({}, { pagination: page });
+      const applicationListResult = await phpRepository.find({}, { pagination: page }, undefined);
       page = applicationListResult.nextPage as Pagination;
 
       for (const application of applicationListResult.getEntities()) {
         if (
-          !(await repository.findOne({
-            id: application.id,
-          })) ||
+          !(await repository.findOne(
+            {
+              id: application.id,
+            },
+            {},
+            undefined,
+          )) ||
           options.replaceExisting
         ) {
           const newApplication = importDepreciatedFields(application);
-          await repository.save(newApplication);
+          await repository.save(newApplication, undefined);
         }
       }
     } while (page.page_token);

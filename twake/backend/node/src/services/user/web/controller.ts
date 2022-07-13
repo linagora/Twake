@@ -291,7 +291,7 @@ export class UsersCrudController
     const companyId = request.params.id;
 
     let channels: UserChannel[] = await gr.services.channels.channels
-      .getChannelsForUsersInWorkspace(companyId, "direct", userId)
+      .getChannelsForUsersInWorkspace(companyId, "direct", userId, undefined, context)
       .then(list => list.getEntities());
 
     channels = channels.sort((a, b) => b.last_activity - a.last_activity);

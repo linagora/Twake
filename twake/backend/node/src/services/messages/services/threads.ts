@@ -51,7 +51,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
         remove: [],
       };
 
-      const thread = await this.repository.findOne({ id: item.id });
+      const thread = await this.repository.findOne({ id: item.id }, {}, context);
 
       if (thread) {
         // Add the created_by information
@@ -72,7 +72,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
           p => p.id,
         ) as ParticipantObject[];
 
-        await this.repository.save(thread);
+        await this.repository.save(thread, context);
 
         //TODO ensure the thread is in all participants views (and removed from deleted participants)
 
@@ -129,7 +129,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
     if (message && message.ephemeral) {
       //We should not save if this is an ephemeral message
     } else {
-      await this.repository.save(thread);
+      await this.repository.save(thread, context);
     }
 
     if (message) {
@@ -155,15 +155,17 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
   /**
    * Add reply to thread: increase last_activity time and number of answers
    * @param threadId
+   * @param increment
+   * @param context
    */
-  async addReply(threadId: string, increment: number = 1) {
-    const thread = await this.repository.findOne({ id: threadId });
+  async addReply(threadId: string, increment: number = 1, context: ExecutionContext) {
+    const thread = await this.repository.findOne({ id: threadId }, {}, context);
     if (thread) {
       thread.answers = Math.max(0, (thread.answers || 0) + increment);
       if (increment > 0) {
         thread.last_activity = new Date().getTime();
       }
-      await this.repository.save(thread);
+      await this.repository.save(thread, context);
     } else {
       throw new Error("Try to add reply count to inexistent thread");
     }
@@ -173,11 +175,11 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
    * Add reply to thread: increase last_activity time and number of answers
    * @param threadId
    */
-  async setReplyCount(threadId: string, count: number) {
-    const thread = await this.repository.findOne({ id: threadId });
+  async setReplyCount(threadId: string, count: number, context: ExecutionContext) {
+    const thread = await this.repository.findOne({ id: threadId }, {}, context);
     if (thread) {
       thread.answers = count;
-      await this.repository.save(thread);
+      await this.repository.save(thread, context);
     } else {
       throw new Error("Try to add reply count to inexistent thread");
     }
@@ -197,9 +199,13 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
       `Check access to thread ${context.thread.id} in company ${context.company.id} for user ${context.user.id} and app ${context?.user?.application_id}`,
     );
 
-    const thread = await this.repository.findOne({
-      id: context.thread.id,
-    });
+    const thread = await this.repository.findOne(
+      {
+        id: context.thread.id,
+      },
+      {},
+      context,
+    );
 
     if (!thread) {
       logger.info("No such thread");
@@ -222,15 +228,15 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
     return false;
   }
 
-  get(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<Thread> {
-    return this.repository.findOne(pk);
+  get(pk: Pick<Thread, "id">, context: ExecutionContext): Promise<Thread> {
+    return this.repository.findOne(pk, {}, context);
   }
 
   async getWithMessage(
     pk: Pick<Thread, "id">,
     context?: ExecutionContext,
   ): Promise<Thread & { message: Message }> {
-    const thread = await this.get(pk);
+    const thread = await this.get(pk, context);
     return {
       ...thread,
       message: await gr.services.messages.messages.get(
@@ -241,9 +247,9 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
   }
 
   async delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {
-    const thread = await this.repository.findOne({ id: pk.id });
+    const thread = await this.repository.findOne({ id: pk.id }, {}, context);
     if (context.user.server_request) {
-      await this.repository.remove(thread);
+      await this.repository.remove(thread, context);
     }
     return new DeleteResult("thread", thread, context.user.server_request && !!thread);
   }

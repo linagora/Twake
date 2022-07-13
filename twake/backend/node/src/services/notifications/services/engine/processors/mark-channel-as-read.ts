@@ -3,6 +3,7 @@ import { UserNotificationBadge } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
 import { ChannelReadMessage, NotificationPubsubHandler } from "../../../types";
 import gr from "../../../../global-resolver";
+import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 export class MarkChannelAsReadMessageProcessor
   implements NotificationPubsubHandler<ChannelReadMessage, void>
@@ -30,15 +31,15 @@ export class MarkChannelAsReadMessageProcessor
     );
   }
 
-  async process(message: ChannelReadMessage): Promise<void> {
+  async process(message: ChannelReadMessage, context?: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Processing message for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
 
-    await this.removeBadges(message);
+    await this.removeBadges(message, context);
   }
 
-  async removeBadges(message: ChannelReadMessage): Promise<void> {
+  async removeBadges(message: ChannelReadMessage, context: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Removing badges for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
@@ -53,6 +54,7 @@ export class MarkChannelAsReadMessageProcessor
       });
       const removedBadges = await gr.services.notifications.badges.removeUserChannelBadges(
         badgeEntity,
+        context,
       );
 
       logger.info(

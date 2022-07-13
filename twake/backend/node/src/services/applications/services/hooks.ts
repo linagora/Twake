@@ -5,7 +5,7 @@ import {
   logger as log,
   TwakeServiceProvider,
 } from "../../../core/platform/framework";
-import { CrudException } from "../../../core/platform/framework/api/crud-service";
+import { CrudException, ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import axios from "axios";
 import * as crypto from "crypto";
@@ -30,8 +30,9 @@ export class ApplicationHooksService implements TwakeServiceProvider, Initializa
     content: any,
     company_id: string,
     workspace_id: string,
+    context: ExecutionContext,
   ): Promise<void> {
-    const app = await gr.services.applications.marketplaceApps.get({ id: application_id });
+    const app = await gr.services.applications.marketplaceApps.get({ id: application_id }, context);
     if (!app) {
       throw CrudException.notFound("Application not found");
     }

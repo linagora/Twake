@@ -126,13 +126,17 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       const page = await gr.services.channels.channels.getDirectChannelsInCompany(
         pagination,
         company.id,
+        undefined,
       );
       for (const channel of page.getEntities()) {
-        const channelDetail = await gr.services.channels.channels.get({
-          company_id: channel.company_id,
-          workspace_id: "direct",
-          id: channel.id,
-        });
+        const channelDetail = await gr.services.channels.channels.get(
+          {
+            company_id: channel.company_id,
+            workspace_id: "direct",
+            id: channel.id,
+          },
+          undefined,
+        );
         directChannels.push(channelDetail);
       }
       pagination = page.nextPage as Pagination;

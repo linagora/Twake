@@ -42,13 +42,14 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
     return this;
   }
 
-  async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<Application> {
-    return await this.repository.findOne(pk);
+  async get(pk: ApplicationPrimaryKey, context: ExecutionContext): Promise<Application> {
+    return await this.repository.findOne(pk, {}, context);
   }
 
   async list<ListOptions>(
     pagination: Pagination,
     options?: { search?: string },
+    context?: ExecutionContext,
   ): Promise<ListResult<PublicApplicationObject>> {
     let entities: ListResult<Application>;
     if (options.search) {
@@ -60,9 +61,10 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
             $search: options.search,
           },
         },
+        context,
       );
     } else {
-      entities = await this.repository.find({}, { pagination });
+      entities = await this.repository.find({}, { pagination }, context);
     }
     entities.filterEntities(app => app.publication.published);
 
@@ -73,18 +75,20 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
     return new ListResult(entities.type, applications, entities.nextPage);
   }
 
-  async listUnpublished(): Promise<Application[]> {
-    const entities = await this.repository.find({}, {});
+  async listUnpublished(context: ExecutionContext): Promise<Application[]> {
+    const entities = await this.repository.find({}, {}, context);
     entities.filterEntities(app => !app.publication.published);
     return entities.getEntities();
   }
 
-  async listDefaults<ListOptions>(): Promise<ListResult<PublicApplicationObject>> {
+  async listDefaults<ListOptions>(
+    context: ExecutionContext,
+  ): Promise<ListResult<PublicApplicationObject>> {
     const entities = [];
 
     let page: Pagination = { limitStr: "100" };
     do {
-      const applicationListResult = await this.repository.find({}, { pagination: page });
+      const applicationListResult = await this.repository.find({}, { pagination: page }, context);
       page = applicationListResult.nextPage as Pagination;
       applicationListResult.filterEntities(app => app.publication.published && app.is_default);
 
@@ -105,7 +109,7 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
 
     try {
       const entity = getApplicationInstance(item);
-      await this.repository.save(entity);
+      await this.repository.save(entity, context);
       return new SaveResult<Application>("application", entity, OperationType.UPDATE);
     } catch (e) {
       throw e;
@@ -116,26 +120,26 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
     pk: ApplicationPrimaryKey,
     context?: ExecutionContext,
   ): Promise<DeleteResult<Application>> {
-    const entity = await this.get(pk);
-    await this.repository.remove(entity);
+    const entity = await this.get(pk, context);
+    await this.repository.remove(entity, context);
     return new DeleteResult<Application>("application", entity, true);
   }
 
-  async publish(pk: ApplicationPrimaryKey): Promise<void> {
-    const entity = await this.get(pk);
+  async publish(pk: ApplicationPrimaryKey, context: ExecutionContext): Promise<void> {
+    const entity = await this.get(pk, context);
     if (!entity) {
       throw new Error("Entity not found");
     }
     entity.publication.published = true;
-    await this.repository.save(entity);
+    await this.repository.save(entity, context);
   }
 
-  async unpublish(pk: ApplicationPrimaryKey): Promise<void> {
-    const entity = await this.get(pk);
+  async unpublish(pk: ApplicationPrimaryKey, context: ExecutionContext): Promise<void> {
+    const entity = await this.get(pk, context);
     if (!entity) {
       throw new Error("Entity not found");
     }
     entity.publication.published = false;
-    await this.repository.save(entity);
+    await this.repository.save(entity, context);
   }
 }

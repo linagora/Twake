@@ -30,23 +30,26 @@ class DeviceMigrator {
     let page: Pagination = { limitStr: "100" };
     // For each devices
     do {
-      const deviceListResult = await phpRepository.find({}, { pagination: page });
+      const deviceListResult = await phpRepository.find({}, { pagination: page }, undefined);
       page = deviceListResult.nextPage as Pagination;
 
       for (const device of deviceListResult.getEntities()) {
-        if (!(await repository.findOne({ id: device.value })) || options.replaceExisting) {
+        if (
+          !(await repository.findOne({ id: device.value }, {}, undefined)) ||
+          options.replaceExisting
+        ) {
           if (device.type === "FCM" || device.type === "fcm") {
             const newDevice = new Device();
             newDevice.id = device.value;
             newDevice.type = "FCM";
             newDevice.user_id = device.user_id;
             newDevice.version = device.version;
-            await repository.save(newDevice);
+            await repository.save(newDevice, undefined);
 
-            const user = await userRepository.findOne({ id: device.user_id });
+            const user = await userRepository.findOne({ id: device.user_id }, {}, undefined);
             if (user) {
               user.devices = _.uniq([...(user.devices || []), newDevice.id]);
-              await userRepository.save(user);
+              await userRepository.save(user, undefined);
             }
           }
         }

@@ -38,10 +38,14 @@ export class ThreadMessagesOperationsService {
       throw Error("Can't edit this message.");
     }
 
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: operation.id,
-    });
+    const message = await this.repository.findOne(
+      {
+        thread_id: context.thread.id,
+        id: operation.id,
+      },
+      {},
+      context,
+    );
 
     if (!message) {
       logger.error("This message doesn't exists");
@@ -60,7 +64,7 @@ export class ThreadMessagesOperationsService {
         message.thread_id
       }`,
     );
-    await this.repository.save(message);
+    await this.repository.save(message, context);
     this.threadMessagesService.onSaved(message, { created: false }, context);
     return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }
@@ -78,10 +82,14 @@ export class ThreadMessagesOperationsService {
       throw Error("Can't edit this message.");
     }
 
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: operation.id,
-    });
+    const message = await this.repository.findOne(
+      {
+        thread_id: context.thread.id,
+        id: operation.id,
+      },
+      {},
+      context,
+    );
 
     if (!message) {
       logger.error("This message doesn't exists");
@@ -96,7 +104,7 @@ export class ThreadMessagesOperationsService {
         message.thread_id
       }`,
     );
-    await this.repository.save(message);
+    await this.repository.save(message, context);
     this.threadMessagesService.onSaved(message, { created: false }, context);
     return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }
@@ -106,10 +114,14 @@ export class ThreadMessagesOperationsService {
     options: Record<string, unknown>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: operation.id,
-    });
+    const message = await this.repository.findOne(
+      {
+        thread_id: context.thread.id,
+        id: operation.id,
+      },
+      {},
+      context,
+    );
 
     if (!message) {
       logger.error("This message doesn't exists");
@@ -133,7 +145,7 @@ export class ThreadMessagesOperationsService {
         message.bookmarks,
       )} to thread ${message.thread_id}`,
     );
-    await this.repository.save(message);
+    await this.repository.save(message, context);
     this.threadMessagesService.onSaved(message, { created: false }, context);
 
     return new SaveResult<Message>("message", message, OperationType.UPDATE);
@@ -174,10 +186,14 @@ export class ThreadMessagesOperationsService {
       throw Error("can't remove link preview from message.");
     }
 
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: operation.message_id,
-    });
+    const message = await this.repository.findOne(
+      {
+        thread_id: context.thread.id,
+        id: operation.message_id,
+      },
+      {},
+      context,
+    );
 
     if (!message) {
       logger.error("This message doesn't exists");
@@ -191,7 +207,7 @@ export class ThreadMessagesOperationsService {
 
     message.links = message.links.filter(({ url }: { url: string }) => url !== operation.link);
 
-    await this.repository.save(message);
+    await this.repository.save(message, context);
     this.threadMessagesService.onSaved(message, { created: false }, context);
 
     return new SaveResult<Message>("message", message, OperationType.UPDATE);

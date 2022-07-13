@@ -7,6 +7,7 @@ import { DISCONNECTED_DELAY } from "../constants";
 import UserOnline, { getInstance, TYPE as ONLINE_TYPE } from "../entities/user-online";
 import gr from "../../global-resolver";
 import { getLogger, TwakeLogger, TwakeServiceProvider } from "../../../core/platform/framework";
+import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 
 export default class OnlineServiceImpl implements TwakeServiceProvider {
   version = "1";
@@ -59,11 +60,18 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
     return this;
   }
 
-  private async getOnlineStatuses(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
-    return this.areOnline(ids);
+  private async getOnlineStatuses(
+    ids: Array<string> = [],
+    context?: ExecutionContext,
+  ): Promise<Array<[string, boolean]>> {
+    return this.areOnline(ids, context);
   }
 
-  async setLastSeenOnline(userIds: Array<string> = [], date: number): Promise<void> {
+  async setLastSeenOnline(
+    userIds: Array<string> = [],
+    date: number,
+    context?: ExecutionContext,
+  ): Promise<void> {
     this.logger.debug(`setLastSeenOnline ${userIds.join(",")}`);
     if (!userIds.length) {
       return;
@@ -74,11 +82,11 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
     const onlineUsers: UserOnline[] = Array.from(uniqueIds.values()).map(user_id =>
       getInstance({ user_id, last_seen }),
     );
-    await this.onlineRepository.saveAll(onlineUsers);
+    await this.onlineRepository.saveAll(onlineUsers, context);
   }
 
-  async isOnline(userId: string): Promise<boolean> {
-    const user = await this.onlineRepository.findOne({ user_id: userId });
+  async isOnline(userId: string, context?: ExecutionContext): Promise<boolean> {
+    const user = await this.onlineRepository.findOne({ user_id: userId }, {}, context);
 
     if (!user) {
       return false;
@@ -87,13 +95,20 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
     return Date.now() - user.last_seen < DISCONNECTED_DELAY;
   }
 
-  private async areOnline(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
+  private async areOnline(
+    ids: Array<string> = [],
+    context?: ExecutionContext,
+  ): Promise<Array<[string, boolean]>> {
     const users = [];
     //This foreach is needed for $in operators https://github.com/linagora/Twake/issues/1246
     for (let i = 0; i < ids.length; i += 100) {
       users.push(
         ...(
-          await this.onlineRepository.find({}, { $in: [["user_id", ids.slice(i, i + 100)]] })
+          await this.onlineRepository.find(
+            {},
+            { $in: [["user_id", ids.slice(i, i + 100)]] },
+            context,
+          )
         ).getEntities(),
       );
     }

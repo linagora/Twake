@@ -2,6 +2,7 @@ import _ from "lodash";
 import { RealtimeDeleted, RealtimeSaved } from "../../../core/platform/framework";
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   Pagination,
@@ -42,7 +43,7 @@ export class TabServiceImpl {
       id: tab.id,
     };
 
-    let tabEntity = await this.repository.findOne(pk);
+    let tabEntity = await this.repository.findOne(pk, {}, context);
     if (!tabEntity || !tab.id) {
       tabEntity = new ChannelTab();
       tabEntity = _.merge(tabEntity, pk);
@@ -54,7 +55,7 @@ export class TabServiceImpl {
       _.pick(tab, ["name", "configuration", "application_id", "order"]),
     );
 
-    await this.repository.save(tabEntity);
+    await this.repository.save(tabEntity, context);
 
     return new SaveResult("channel_tabs", tabEntity, OperationType.CREATE);
   }
@@ -66,7 +67,7 @@ export class TabServiceImpl {
       channel_id: context.channel.id,
       id: tabPk.id,
     };
-    return await this.repository.findOne(pk);
+    return await this.repository.findOne(pk, {}, context);
   }
 
   @RealtimeDeleted<ChannelTab>((tab, context) => [
@@ -75,10 +76,13 @@ export class TabServiceImpl {
       path: getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
     },
   ])
-  async delete(pk: ChannelTabPrimaryKey): Promise<DeleteResult<ChannelTab>> {
-    const tabEntity = await this.repository.findOne(pk);
+  async delete(
+    pk: ChannelTabPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<DeleteResult<ChannelTab>> {
+    const tabEntity = await this.repository.findOne(pk, {}, context);
     if (tabEntity) {
-      await this.repository.remove(tabEntity);
+      await this.repository.remove(tabEntity, context);
     }
 
     return new DeleteResult("channel_tabs", tabEntity, true);
@@ -94,7 +98,7 @@ export class TabServiceImpl {
       workspace_id: context.channel.workspace_id,
       channel_id: context.channel.id,
     };
-    return await this.repository.find(pk, { pagination });
+    return await this.repository.find(pk, { pagination }, context);
   }
 
   onUpdated(

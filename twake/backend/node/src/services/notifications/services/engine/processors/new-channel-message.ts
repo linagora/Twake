@@ -10,6 +10,7 @@ import { ChannelMemberNotificationLevel } from "../../../../channels/types";
 import { MentionNotification, NotificationPubsubHandler } from "../../../types";
 import { ChannelType } from "../../../../../utils/types";
 import gr from "../../../../global-resolver";
+import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification>
@@ -97,7 +98,10 @@ export class NewChannelMessageProcessor
     }
   }
 
-  async getUsersToNotify(message: MessageNotification): Promise<string[]> {
+  async getUsersToNotify(
+    message: MessageNotification,
+    context?: ExecutionContext,
+  ): Promise<string[]> {
     let channelPreferencesForUsers: ChannelMemberNotificationPreference[];
     const threadId = message.thread_id || message.id;
     const isNewThread = !message.thread_id || `${message.thread_id}` === `${message.id}`;
@@ -128,7 +132,7 @@ export class NewChannelMessageProcessor
         : []),
     ];
 
-    await gr.services.notifications.channelThreads.bulkSave(users);
+    await gr.services.notifications.channelThreads.bulkSave(users, context);
 
     if (isNewThread || isDirect || isAllOrHereMention) {
       //get the channel level preferences
@@ -143,11 +147,14 @@ export class NewChannelMessageProcessor
     }
 
     // get the preferences of the users involved in the thread
-    channelPreferencesForUsers = await this.getAllInvolvedUsersPreferences({
-      channel_id: message.channel_id,
-      company_id: message.company_id,
-      thread_id: threadId,
-    });
+    channelPreferencesForUsers = await this.getAllInvolvedUsersPreferences(
+      {
+        channel_id: message.channel_id,
+        company_id: message.company_id,
+        thread_id: threadId,
+      },
+      context,
+    );
 
     return this.filterThreadMembersToNotify(message, channelPreferencesForUsers).map(
       m => m.user_id,
@@ -211,13 +218,16 @@ export class NewChannelMessageProcessor
    * When message is a response in a thread, get all the users involved in the thread
    * ie the ones who where initially mentionned, mentionned in children messages, and the ones who replied
    */
-  protected async getAllInvolvedUsersPreferences(thread: {
-    company_id: string;
-    channel_id: string;
-    thread_id: string;
-  }): Promise<ChannelMemberNotificationPreference[]> {
+  protected async getAllInvolvedUsersPreferences(
+    thread: {
+      company_id: string;
+      channel_id: string;
+      thread_id: string;
+    },
+    context: ExecutionContext,
+  ): Promise<ChannelMemberNotificationPreference[]> {
     const usersIds: string[] = (
-      await gr.services.notifications.channelThreads.getUsersInThread(thread)
+      await gr.services.notifications.channelThreads.getUsersInThread(thread, context)
     )
       .getEntities()
       .map(thread => thread.user_id);
@@ -226,6 +236,8 @@ export class NewChannelMessageProcessor
       await gr.services.notifications.channelPreferences.getChannelPreferencesForUsers(
         { company_id: thread.company_id, channel_id: thread.channel_id },
         usersIds,
+        undefined,
+        context,
       )
     ).getEntities();
   }

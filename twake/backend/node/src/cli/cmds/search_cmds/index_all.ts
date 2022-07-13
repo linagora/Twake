@@ -67,13 +67,18 @@ class SearchIndexAll {
       let page: Pagination = { limitStr: "100" };
       // For each rows
       do {
-        const list = await userRepository.find({}, { pagination: page });
+        const list = await userRepository.find({}, { pagination: page }, undefined);
 
         for (const user of list.getEntities()) {
-          const companies = await companiesUsersRepository.find({ user_id: user.id });
+          const companies = await companiesUsersRepository.find(
+            { user_id: user.id },
+            {},
+            undefined,
+          );
+
           user.cache ||= { companies: [] };
           user.cache.companies = companies.getEntities().map(company => company.group_id);
-          await repositories.get("users").save(user);
+          await repositories.get("users").save(user, undefined);
         }
 
         page = list.nextPage as Pagination;
@@ -87,7 +92,7 @@ class SearchIndexAll {
     let page: Pagination = { limitStr: "100" };
     do {
       console.log("Indexed " + count + " items...");
-      const list = await repository.find({}, { pagination: page });
+      const list = await repository.find({}, { pagination: page }, undefined);
       page = list.nextPage as Pagination;
       await this.search.upsert(list.getEntities());
       count += list.getEntities().length;

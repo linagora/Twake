@@ -56,9 +56,12 @@ export class MessagesController
         );
       }
 
-      const thread = await gr.services.messages.threads.get({
-        id: context.thread.id,
-      } as ThreadPrimaryKey);
+      const thread = await gr.services.messages.threads.get(
+        {
+          id: context.thread.id,
+        } as ThreadPrimaryKey,
+        context,
+      );
 
       if (!thread) {
         throw "Message must be in a thread";
@@ -76,7 +79,7 @@ export class MessagesController
       let entity = result.entity;
 
       if (request.query.include_users) {
-        entity = await gr.services.messages.messages.includeUsersInMessage(entity);
+        entity = await gr.services.messages.messages.includeUsersInMessage(entity, context);
       }
 
       return {
@@ -163,7 +166,7 @@ export class MessagesController
       );
 
       if (request.query.include_users) {
-        resource = await gr.services.messages.messages.includeUsersInMessage(resource);
+        resource = await gr.services.messages.messages.includeUsersInMessage(resource, context);
       }
 
       return {
@@ -199,7 +202,7 @@ export class MessagesController
       let entities = [];
       if (request.query.include_users) {
         for (const msg of resources.getEntities()) {
-          entities.push(await gr.services.messages.messages.includeUsersInMessage(msg));
+          entities.push(await gr.services.messages.messages.includeUsersInMessage(msg, context));
         }
       } else {
         entities = resources.getEntities();

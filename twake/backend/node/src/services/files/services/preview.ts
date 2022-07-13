@@ -4,6 +4,7 @@ import Repository from "../../../../src/core/platform/services/database/services
 import { File } from "../entities/file";
 import { FileServiceImpl } from "./index";
 import { PubsubHandler } from "../../../core/platform/services/pubsub/api";
+import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 
 /**
  * Update the file metadata and upload the thumbnails in storage
@@ -30,13 +31,13 @@ export class PreviewFinishedProcessor implements PubsubHandler<PreviewPubsubCall
     return !!(message && message.document && message.thumbnails);
   }
 
-  async process(message: PreviewPubsubCallback): Promise<string> {
+  async process(message: PreviewPubsubCallback, context?: ExecutionContext): Promise<string> {
     logger.info(
       `${this.name} - Updating file metadata with preview generation ${message.thumbnails.length}`,
     );
 
     const pk: { company_id: string; id: string } = JSON.parse(message.document.id);
-    const entity = await this.repository.findOne(pk);
+    const entity = await this.repository.findOne(pk, {}, context);
 
     if (!entity) {
       logger.info(`This file ${message.document.id} does not exists anymore.`);
@@ -58,7 +59,7 @@ export class PreviewFinishedProcessor implements PubsubHandler<PreviewPubsubCall
     if (!entity.metadata) entity.metadata = {};
     entity.metadata.thumbnails_status = "done";
 
-    await this.repository.save(entity);
+    await this.repository.save(entity, context);
     return "done";
   }
 }

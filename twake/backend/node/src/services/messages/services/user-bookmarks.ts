@@ -34,9 +34,9 @@ export class UserBookmarksService implements TwakeServiceProvider, Initializable
 
   get(
     pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "id">,
-    context?: CompanyExecutionContext,
+    context: CompanyExecutionContext,
   ): Promise<UserMessageBookmark> {
-    return this.repository.findOne(pk);
+    return this.repository.findOne(pk, {}, context);
   }
 
   @RealtimeSaved<UserMessageBookmark>((bookmark, context) => [
@@ -50,7 +50,7 @@ export class UserBookmarksService implements TwakeServiceProvider, Initializable
     context: CompanyExecutionContext,
   ): Promise<SaveResult<UserMessageBookmark>> {
     //Disallow duplicates
-    const entities = (await this.list({ user_id, company_id })).getEntities();
+    const entities = (await this.list({ user_id, company_id }, context)).getEntities();
 
     for (const entity of entities) {
       if (name === entity.name) {
@@ -70,7 +70,7 @@ export class UserBookmarksService implements TwakeServiceProvider, Initializable
     if (id) {
       instance.id = id;
     }
-    await this.repository.save(instance);
+    await this.repository.save(instance, context);
 
     return new SaveResult<UserMessageBookmark>(
       "user_message_bookmark",
@@ -89,17 +89,16 @@ export class UserBookmarksService implements TwakeServiceProvider, Initializable
     pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "id">,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<UserMessageBookmark>> {
-    const instance = await this.repository.findOne(pk);
-    if (instance) await this.repository.remove(instance);
+    const instance = await this.repository.findOne(pk, {}, context);
+    if (instance) await this.repository.remove(instance, context);
     return new DeleteResult<UserMessageBookmark>("user_message_bookmark", instance, !!instance);
   }
 
-  async list({
-    user_id,
-    company_id,
-    pagination,
-  }: ListParams): Promise<ListResult<UserMessageBookmark>> {
-    return this.repository.find({ user_id, company_id }, { pagination });
+  async list(
+    { user_id, company_id, pagination }: ListParams,
+    context: ExecutionContext,
+  ): Promise<ListResult<UserMessageBookmark>> {
+    return this.repository.find({ user_id, company_id }, { pagination }, context);
   }
 }
 

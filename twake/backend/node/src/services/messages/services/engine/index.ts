@@ -17,6 +17,7 @@ import { MessageToHooksProcessor } from "./processors/message-to-hooks";
 import gr from "../../../global-resolver";
 import { MessageLinksPreviewFinishedProcessor } from "./processors/links";
 import { Message } from "../../entities/messages";
+import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -40,10 +41,14 @@ export class MessagesEngine implements Initializable {
     this.messageToHooks = new MessageToHooksProcessor();
   }
 
-  async dispatchMessage(e: MessageLocalEvent) {
-    const thread = await this.threadRepository.findOne({
-      id: e.resource.thread_id,
-    });
+  async dispatchMessage(e: MessageLocalEvent, context?: ExecutionContext) {
+    const thread = await this.threadRepository.findOne(
+      {
+        id: e.resource.thread_id,
+      },
+      {},
+      context,
+    );
 
     if (e.resource.ephemeral) {
       await this.channelViewProcessor.process(thread || null, e);

@@ -1,6 +1,7 @@
 import _ from "lodash";
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   SaveResult,
@@ -30,6 +31,7 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
 
   async save(
     entity: ChannelMemberNotificationPreference,
+    context: ExecutionContext,
   ): Promise<SaveResult<ChannelMemberNotificationPreference>> {
     const pk: ChannelMemberNotificationPreferencePrimaryKey = {
       user_id: entity.user_id,
@@ -37,7 +39,7 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
       channel_id: entity.channel_id,
     };
 
-    let preference = await this.repository.findOne(pk);
+    let preference = await this.repository.findOne(pk, {}, context);
 
     if (!preference) {
       preference = new ChannelMemberNotificationPreference();
@@ -46,21 +48,23 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
 
     preference = _.merge(preference, entity);
 
-    await this.repository.save(preference);
+    await this.repository.save(preference, context);
 
     return new SaveResult(TYPE, preference, OperationType.CREATE);
   }
 
   async get(
     pk: ChannelMemberNotificationPreferencePrimaryKey,
+    context: ExecutionContext,
   ): Promise<ChannelMemberNotificationPreference> {
-    return await this.repository.findOne(pk);
+    return await this.repository.findOne(pk, {}, context);
   }
 
   async delete(
     pk: ChannelMemberNotificationPreferencePrimaryKey,
+    context?: ExecutionContext,
   ): Promise<DeleteResult<ChannelMemberNotificationPreference>> {
-    await this.repository.remove(pk as ChannelMemberNotificationPreference);
+    await this.repository.remove(pk as ChannelMemberNotificationPreference, context);
 
     return new DeleteResult(TYPE, pk as ChannelMemberNotificationPreference, true);
   }
@@ -78,6 +82,7 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
     lastRead?: {
       lessThan: number;
     },
+    context?: ExecutionContext,
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {
     logger.debug(
       `ChannelMemberPreferenceService - Get Channel preferences for users ${JSON.stringify(
@@ -87,6 +92,7 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
     const result = await this.repository.find(
       users ? { ...channelAndCompany, ...{ user_id: users } } : channelAndCompany,
       {},
+      context,
     );
 
     if (result.getEntities().length > 0 && lastRead && lastRead.lessThan) {
@@ -109,8 +115,13 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
     >,
     users: string[] = [],
     lastRead: number,
+    context?: ExecutionContext,
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
+    const result = await this.repository.find(
+      { ...channelAndCompany, ...{ user_id: users } },
+      {},
+      context,
+    );
 
     if (result.getEntities().length > 0 && lastRead) {
       result.filterEntities(entity => entity.last_read < lastRead);
@@ -123,6 +134,7 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
     channelAndCompany: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
     user_id: string,
     lastRead: number,
+    context?: ExecutionContext,
   ): Promise<ChannelMemberNotificationPreference> {
     const pk: ChannelMemberNotificationPreferencePrimaryKey = {
       user_id,
@@ -130,7 +142,7 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
       channel_id: channelAndCompany.channel_id,
     };
 
-    const preference = await this.repository.findOne(pk);
+    const preference = await this.repository.findOne(pk, {}, context);
 
     if (!preference) {
       return;
@@ -138,7 +150,7 @@ export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider
 
     preference.last_read = lastRead;
 
-    await this.repository.save(preference);
+    await this.repository.save(preference, context);
 
     return preference;
   }

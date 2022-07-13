@@ -1,5 +1,6 @@
 import { Subject } from "rxjs";
 import { logger as rootLogger } from "./logger";
+import { ExecutionContext } from "./api/crud-service";
 
 const logger = rootLogger.child({
   component: "twake.core.platform.framework.pubsub",
@@ -32,7 +33,7 @@ class EventBus {
     return this;
   }
 
-  publish<T>(name: string, data: T): boolean {
+  publish<T>(name: string, data: T, context?: ExecutionContext): boolean {
     if (!this.subjects.has(name)) {
       return false;
     }

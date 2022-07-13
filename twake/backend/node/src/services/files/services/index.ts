@@ -10,7 +10,11 @@ import { PreviewClearPubsubRequest, PreviewPubsubRequest } from "../../previews/
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
-import { CrudException, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  DeleteResult,
+  ExecutionContext,
+} from "../../../core/platform/framework/api/crud-service";
 import gr from "../../global-resolver";
 
 export class FileServiceImpl {
@@ -44,10 +48,14 @@ export class FileServiceImpl {
 
     let entity: File = null;
     if (id) {
-      entity = await this.repository.findOne({
-        company_id: context.company.id,
-        id: id,
-      });
+      entity = await this.repository.findOne(
+        {
+          company_id: context.company.id,
+          id: id,
+        },
+        {},
+        context,
+      );
       if (!entity) {
         throw new Error(`This file ${id} does not exist`);
       }
@@ -67,7 +75,7 @@ export class FileServiceImpl {
       entity.application_id = applicationId;
       entity.upload_data = null;
 
-      this.repository.save(entity);
+      this.repository.save(entity, context);
     }
 
     if (file) {
@@ -89,7 +97,7 @@ export class FileServiceImpl {
             size: options.totalSize,
             chunks: options.totalChunks || 1,
           };
-          this.repository.save(entity);
+          this.repository.save(entity, context);
         }
       }
 
@@ -105,7 +113,7 @@ export class FileServiceImpl {
 
       if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         entity.upload_data.size = totalUploadedSize;
-        await this.repository.save(entity);
+        await this.repository.save(entity, context);
       }
 
       //Fixme: detect in multichunk when all chunks are uploaded to trigger this. For now we do only single chunks for preview
@@ -133,7 +141,7 @@ export class FileServiceImpl {
           };
 
           entity.metadata.thumbnails_status = "waiting";
-          await this.repository.save(entity);
+          await this.repository.save(entity, context);
 
           try {
             await gr.platformServices.pubsub.publish<PreviewPubsubRequest>("services:preview", {
@@ -142,10 +150,14 @@ export class FileServiceImpl {
 
             if (options.waitForThumbnail) {
               for (let i = 1; i < 100; i++) {
-                entity = await this.repository.findOne({
-                  company_id: context.company.id,
-                  id: entity.id,
-                });
+                entity = await this.repository.findOne(
+                  {
+                    company_id: context.company.id,
+                    id: entity.id,
+                  },
+                  {},
+                  context,
+                );
                 if (entity.metadata.thumbnails_status === "done") {
                   break;
                 }
@@ -154,7 +166,7 @@ export class FileServiceImpl {
             }
           } catch (err) {
             entity.metadata.thumbnails_status = "error";
-            await this.repository.save(entity);
+            await this.repository.save(entity, context);
 
             logger.warn({ err }, "Previewing - Error while sending ");
           }
@@ -224,11 +236,11 @@ export class FileServiceImpl {
     if (!id || !context.company.id) {
       return null;
     }
-    return this.getFile({ id, company_id: context.company.id });
+    return this.getFile({ id, company_id: context.company.id }, context);
   }
 
-  async getFile(pk: Pick<File, "company_id" | "id">): Promise<File> {
-    return this.repository.findOne(pk);
+  async getFile(pk: Pick<File, "company_id" | "id">, context: ExecutionContext): Promise<File> {
+    return this.repository.findOne(pk, {}, context);
   }
 
   getThumbnailRoute(file: File, index: string) {
@@ -246,7 +258,7 @@ export class FileServiceImpl {
       throw new CrudException("File not found", 404);
     }
 
-    await this.repository.remove(fileToDelete);
+    await this.repository.remove(fileToDelete, context);
 
     const path = getFilePath(fileToDelete);
 

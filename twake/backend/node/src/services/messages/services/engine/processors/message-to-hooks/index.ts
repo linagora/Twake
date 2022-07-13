@@ -2,7 +2,10 @@ import { MessageHook, MessageLocalEvent } from "../../../../types";
 import { ParticipantObject, Thread } from "../../../../entities/threads";
 import { logger } from "../../../../../../core/platform/framework";
 import { Channel } from "../../../../../channels/entities";
-import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
+import {
+  ExecutionContext,
+  Pagination,
+} from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../entities/messages";
 import gr from "../../../../../global-resolver";
 
@@ -13,7 +16,11 @@ export class MessageToHooksProcessor {
     return this;
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     logger.debug(`${this.name} - Share message with channel microservice for hooks`);
 
     if (message.resource.ephemeral) {
@@ -29,11 +36,14 @@ export class MessageToHooksProcessor {
           continue;
         }
 
-        const channel: Channel = await gr.services.channels.channels.get({
-          id: participant.id,
-          company_id: participant.company_id,
-          workspace_id: participant.workspace_id,
-        });
+        const channel: Channel = await gr.services.channels.channels.get(
+          {
+            id: participant.id,
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+          },
+          context,
+        );
 
         if (!channel) {
           continue;

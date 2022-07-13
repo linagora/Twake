@@ -38,9 +38,12 @@ export class ApplicationController
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await gr.services.applications.marketplaceApps.get({
-      id: request.params.application_id,
-    });
+    const entity = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.params.application_id,
+      },
+      context,
+    );
 
     const companyUser = await gr.services.companies.getCompanyUser(
       { id: entity.company_id },
@@ -75,7 +78,7 @@ export class ApplicationController
     }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
-    // const context = getExecutionContext(request);
+    const context = getExecutionContext(request);
 
     try {
       const app = request.body.resource;
@@ -84,9 +87,12 @@ export class ApplicationController
       let entity: Application;
 
       if (request.params.application_id) {
-        entity = await gr.services.applications.marketplaceApps.get({
-          id: request.params.application_id,
-        });
+        entity = await gr.services.applications.marketplaceApps.get(
+          {
+            id: request.params.application_id,
+          },
+          context,
+        );
 
         if (!entity) {
           throw CrudException.notFound("Application not found");
@@ -153,9 +159,12 @@ export class ApplicationController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const application = await gr.services.applications.marketplaceApps.get({
-      id: request.params.application_id,
-    });
+    const application = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.params.application_id,
+      },
+      context,
+    );
 
     const compUser = await gr.services.companies.getCompanyUser(
       { id: application.company_id },
@@ -196,9 +205,12 @@ export class ApplicationController
 
     const content = request.body.data;
 
-    const applicationEntity = await gr.services.applications.marketplaceApps.get({
-      id: request.params.application_id,
-    });
+    const applicationEntity = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.params.application_id,
+      },
+      context,
+    );
 
     if (!applicationEntity) {
       throw CrudException.notFound("Application not found");
@@ -234,6 +246,7 @@ export class ApplicationController
       content,
       request.body.company_id,
       request.body.workspace_id,
+      context,
     );
 
     return {

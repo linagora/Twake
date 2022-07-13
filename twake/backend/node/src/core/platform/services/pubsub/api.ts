@@ -2,6 +2,7 @@ import { Subject } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
 import { Initializable, logger, TwakeServiceProvider } from "../../framework";
 import { Processor } from "./processor";
+import { ExecutionContext } from "../../framework/api/crud-service";
 
 export type PubsubType = "local" | "amqp";
 
@@ -64,8 +65,9 @@ export interface PubsubServiceAPI extends TwakeServiceProvider {
    * Publish a message to a given topic
    * @param topic The topic to publish the message to
    * @param message The message to publish to the topic
+   * @param context
    */
-  publish<T>(topic: string, message: PubsubMessage<T>): Promise<void>;
+  publish<T>(topic: string, message: PubsubMessage<T>, context?: ExecutionContext): Promise<void>;
 
   /**
    * Subscribe the a topic. The listener will be called when a new message is published in the topic (this may not be true based on the options parameters).

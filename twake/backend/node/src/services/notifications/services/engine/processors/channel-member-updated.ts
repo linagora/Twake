@@ -4,6 +4,7 @@ import { logger } from "../../../../../core/platform/framework";
 import { Channel, ChannelMember } from "../../../../channels/entities";
 import gr from "../../../../global-resolver";
 import { NotificationPubsubHandler } from "../../../types";
+import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 type UpdateChannelMessage = { channel: Channel; member: ChannelMember };
 
@@ -25,7 +26,7 @@ export class UpdateChannelMemberMessageProcessor
     return !!(message && message.channel && message.member);
   }
 
-  async process(message: UpdateChannelMessage): Promise<void> {
+  async process(message: UpdateChannelMessage, context?: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Processing update channel member message for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
@@ -39,7 +40,7 @@ export class UpdateChannelMemberMessageProcessor
     });
 
     try {
-      await gr.services.notifications.channelPreferences.save(preference);
+      await gr.services.notifications.channelPreferences.save(preference, context);
 
       logger.info(
         `${this.name} - Channel member notification preference has been updated for user ${message.member.user_id} in channel ${message.channel.id}`,

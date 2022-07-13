@@ -1,5 +1,6 @@
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   SaveResult,
@@ -26,18 +27,27 @@ export class ChannelThreadUsersServiceImpl implements TwakeServiceProvider, Init
     return this;
   }
 
-  async bulkSave(entities: ChannelThreadUsers[]): Promise<SaveResult<ChannelThreadUsers[]>> {
-    await this.repository.saveAll(entities);
+  async bulkSave(
+    entities: ChannelThreadUsers[],
+    context: ExecutionContext,
+  ): Promise<SaveResult<ChannelThreadUsers[]>> {
+    await this.repository.saveAll(entities, context);
 
     return new SaveResult(ChannelThreadUsersType, entities, OperationType.CREATE);
   }
 
-  async get(pk: ChannelThreadUsersPrimaryKey): Promise<ChannelThreadUsers> {
-    return await this.repository.findOne(pk);
+  async get(
+    pk: ChannelThreadUsersPrimaryKey,
+    context: ExecutionContext,
+  ): Promise<ChannelThreadUsers> {
+    return await this.repository.findOne(pk, {}, context);
   }
 
-  async delete(pk: ChannelThreadUsersPrimaryKey): Promise<DeleteResult<ChannelThreadUsers>> {
-    await this.repository.remove(pk as ChannelThreadUsers);
+  async delete(
+    pk: ChannelThreadUsersPrimaryKey,
+    context: ExecutionContext,
+  ): Promise<DeleteResult<ChannelThreadUsers>> {
+    await this.repository.remove(pk as ChannelThreadUsers, context);
 
     return new DeleteResult(ChannelThreadUsersType, pk as ChannelThreadUsers, true);
   }
@@ -48,10 +58,11 @@ export class ChannelThreadUsersServiceImpl implements TwakeServiceProvider, Init
 
   async getUsersInThread(
     pk: ChannelThreadUsersPrimaryKey,
+    context: ExecutionContext,
   ): Promise<ListResult<ChannelThreadUsers>> {
     if (!pk.company_id || !pk.channel_id || !pk.thread_id) {
       throw new Error("Missing required fields");
     }
-    return this.repository.find(pk);
+    return this.repository.find(pk, {}, context);
   }
 }

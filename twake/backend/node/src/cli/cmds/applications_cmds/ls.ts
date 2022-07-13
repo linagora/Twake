@@ -35,7 +35,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     const platform = await twake.run(services);
     await gr.doInit(platform);
     //
-    const unpublished = await gr.services.applications.marketplaceApps.listUnpublished();
+    const unpublished = await gr.services.applications.marketplaceApps.listUnpublished(undefined);
     //
     const table = new Table({
       head: ["ID", "Name", "Description"],
