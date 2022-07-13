@@ -104,7 +104,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     }
 
     if (options.flat) {
-      const files: FlatFileFromMessage[] = [];
+      let files: FlatFileFromMessage[] = [];
       for (const thread of threads) {
         for (const reply of thread.highlighted_replies) {
           for (const file of reply.files || []) {
@@ -116,6 +116,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           }
         }
       }
+      files = _.uniqBy(files, "id");
       return new ListResult("file", files, refs.nextPage);
     }
 

@@ -34,8 +34,6 @@ export default async (
   request: FastifyRequest<{
     Querystring: MessageViewSearchFilesQueryParameters & {
       page_token: string;
-      type: "user_upload" | "user_download";
-      media: "media_only" | "file_only";
     };
     Params: {
       company_id: string;
@@ -51,8 +49,8 @@ export default async (
         new Pagination(request.query.page_token, limit.toString()),
         {
           flat: true,
-          ...(request.query.media === "file_only" ? { file_only: true } : {}),
-          ...(request.query.media === "media_only" ? { media_only: true } : {}),
+          ...(request.query.is_file ? { file_only: true } : {}),
+          ...(request.query.is_media ? { media_only: true } : {}),
         },
         {
           ...context,
@@ -82,7 +80,17 @@ export default async (
         next_page_token: tmp.nextPage.page_token,
       };
     } else {
-      return recentFiles(request);
+      return recentFiles({
+        ...request,
+        query: {
+          ...request.query,
+          media: request.query.is_media
+            ? "media_only"
+            : request.query.is_file
+            ? "file_only"
+            : undefined,
+        },
+      });
     }
   }
 
