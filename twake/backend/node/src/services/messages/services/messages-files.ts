@@ -87,7 +87,7 @@ export class MessagesFilesService implements Initializable {
       company_id: channel.company_id,
       target_id: channel.id,
     };
-    const { previous, next } = await this.getMessageFileNavigation(navigationPk, id);
+    const { previous, next } = await this.getMessageFileNavigation(navigationPk, msgFile.id);
 
     return {
       ...msgFile,
@@ -151,7 +151,7 @@ export class MessagesFilesService implements Initializable {
           limitStr: "2",
           reversed: false,
         },
-        $gte: [["id", offsetRef?.id || id]],
+        $lte: [["id", offsetRef?.id || id]],
       })
     )
       .getEntities()
