@@ -62,7 +62,7 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
       );
 
       const update = {
-        results: [...result.results, ...results],
+        results: _.uniqBy([...result.results, ...results] || [], 'id'),
         nextPage: response.next_page_token || null,
       };
 
