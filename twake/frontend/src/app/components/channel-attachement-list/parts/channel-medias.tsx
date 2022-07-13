@@ -10,11 +10,7 @@ type PropsType = {
 };
 
 export default ({ maxItems }: PropsType): React.ReactElement => {
-  const { loading, result, loadMore} = useChannelMediaList();
-
-  if (loading) return <LoadingAttachements />;
-
-  if (result.length === 0 && !loading) return <NoAttachements />;
+  const { loading, result, loadMore } = useChannelMediaList();
 
   return (
     <>
@@ -25,15 +21,20 @@ export default ({ maxItems }: PropsType): React.ReactElement => {
         component="div"
         onYReachEnd={() => loadMore()}
       >
-      {result
-        .slice(0, maxItems || result.length)
-        .map(file => {
-          const url = fileUploadApiClient.getFileThumbnailUrlFromMessageFile(file);
-          
-          return url && <ChannelAttachment key={file.id} file={file} is_media={true} />;
-        })
-        .filter(Boolean)}
-        </PerfectScrollbar>
+        {result.length === 0 && !loading && <NoAttachements />}
+        {loading ? (
+          <LoadingAttachements />
+        ) : (
+          result
+            .slice(0, maxItems || result.length)
+            .map(file => {
+              const url = fileUploadApiClient.getFileThumbnailUrlFromMessageFile(file);
+
+              return url && <ChannelAttachment key={file.id} file={file} is_media={true} />;
+            })
+            .filter(Boolean)
+        )}
+      </PerfectScrollbar>
     </>
   );
 };

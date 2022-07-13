@@ -11,10 +11,6 @@ type PropsType = {
 export default ({ maxItems }: PropsType): React.ReactElement => {
   const { loading, result, loadMore } = useChannelFileList();
 
-  if (loading) return <LoadingAttachements />;
-
-  if (result.length === 0 && !loading) return <NoAttachements />;
-
   return (
     <PerfectScrollbar
       className="-mb-4 py-3 overflow-hidden -mx-2 px-2"
@@ -23,9 +19,14 @@ export default ({ maxItems }: PropsType): React.ReactElement => {
       component="div"
       onYReachEnd={() => loadMore()}
     >
-      {result.slice(0, maxItems || result.length).map(file => (
-        <ChannelAttachment key={file.id} file={file} is_media={false} />
-      ))}
+      {result.length === 0 && !loading && <NoAttachements />}
+      {loading ? (
+        <LoadingAttachements />
+      ) : (
+        result
+          .slice(0, maxItems || result.length)
+          .map(file => <ChannelAttachment key={file.id} file={file} is_media={false} />)
+      )}
     </PerfectScrollbar>
   );
 };
