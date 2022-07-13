@@ -108,15 +108,18 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       for (const thread of threads) {
         for (const reply of thread.highlighted_replies) {
           for (const file of reply.files || []) {
-            files.push({
-              file: file as MessageFile,
-              thread,
-              context: thread.context,
-            });
+            if (file.id === thread.context.message_file_id) {
+              files.push({
+                file: file as MessageFile,
+                thread,
+                context: thread.context,
+              });
+            }
           }
         }
       }
       files = _.uniqBy(files, f => f.file.id);
+      refs.nextPage.page_token = files.length > 0 ? files[files.length - 1].context?.id : null;
       return new ListResult("file", files, refs.nextPage);
     }
 
