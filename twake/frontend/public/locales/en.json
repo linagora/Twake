@@ -912,5 +912,9 @@
     "components.open_desktop_popup.open_here_link": "Open in web instead",
     "components.open_desktop_popup.open_here_link_forever": "Never try to open app again",
     "molecules.download_banner.title": "Get the most out of Twake, download the desktop app now",
-    "molecules.download_banner.download_button": "Download desktop app"
+    "molecules.download_banner.download_button": "Download desktop app",
+    "components.channel_attachement_list.medias": "Medias",
+    "components.channel_attachement_list.files": "Files",
+    "components.channel_attachement_list.title": "Channel files and medias",
+    "components.channel_attachement_list.nothing_found": "Nothing here yet"
 }
