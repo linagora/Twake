@@ -44,8 +44,6 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
     const results = (response.resources || []).sort(
       (a, b) => (b?.message?.created_at || 0) - (a?.message?.created_at || 0),
     );
-    
-    console.debug('useChannelAttachmentList- r', results);
 
     const update = {
       results,
@@ -59,7 +57,6 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
   useGlobalEffect(
     `useChannelAttachmentList${type}`,
     () => {
-      console.debug('useChannelAttachmentList', type, companyId, workspaceId, channelId, isOpen);
       if (isOpen) {
         (async () => {
           setLoading(true);
