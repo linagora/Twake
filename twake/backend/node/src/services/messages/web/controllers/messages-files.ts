@@ -7,7 +7,7 @@ export class MessagesFilesController {
       Params: {
         company_id: string;
         message_id: string;
-        id: string;
+        message_file_id: string;
       };
     }>,
     reply: FastifyReply,
@@ -15,7 +15,7 @@ export class MessagesFilesController {
     const user = request.currentUser;
     const resp = await gr.services.messages.messagesFiles.deleteMessageFile(
       request.params.message_id,
-      request.params.id,
+      request.params.message_file_id,
       user.id,
     );
 
@@ -29,7 +29,7 @@ export class MessagesFilesController {
       Params: {
         company_id: string;
         message_id: string;
-        id: string;
+        message_file_id: string;
       };
     }>,
     reply: FastifyReply,
@@ -37,7 +37,7 @@ export class MessagesFilesController {
     const user = request.currentUser;
     const resp = await gr.services.messages.messagesFiles.getMessageFile(
       request.params.message_id,
-      request.params.id,
+      request.params.message_file_id,
     );
 
     if (!resp) reply.code(404).send();
