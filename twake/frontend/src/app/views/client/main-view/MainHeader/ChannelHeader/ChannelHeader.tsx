@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock } from 'react-feather';
+import { File, Info, Lock, Users } from 'react-feather';
 import { Button, Col, Row, Typography } from 'antd';
 
 import Emojione from 'app/components/emojione/emojione';
@@ -16,12 +16,19 @@ import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useRecoilState } from 'recoil';
 import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
+import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
   const { channel } = useChannel(channelId || '');
   const members = channel?.members || [];
   const [, setChannelAttachmentState] = useRecoilState(channelAttachmentListState);
+  const { user: currentUser } = useCurrentUser();
+  const canAccessChannelParameters =
+    AccessRightsService.hasLevel(workspaceId, 'member') &&
+    AccessRightsService.getCompanyLevel(companyId) !== 'guest';
 
   useUsersListener(members);
 
@@ -88,9 +95,32 @@ export default (): JSX.Element => {
             )}
             {channel.visibility !== 'direct' && (
               <>
+                {canAccessChannelParameters && (
+                  <Button
+                    size="small"
+                    type="text"
+                    className="px-1"
+                    onClick={() => {
+                      ModalManager.open(
+                        <ChannelWorkspaceEditor
+                          title={Languages.t('scenes.app.channelsbar.modify_channel_menu')}
+                          channel={channel || {}}
+                          currentUserId={currentUser?.id}
+                        />,
+                        {
+                          position: 'center',
+                          size: { width: '600px' },
+                        },
+                      );
+                    }}
+                  >
+                    <Info className="h-5" />
+                  </Button>
+                )}
                 <Button
                   size="small"
                   type="text"
+                  className="px-1"
                   onClick={() => {
                     ModalManager.open(<ChannelMembersList channel={channel} closable />, {
                       position: 'center',
@@ -98,18 +128,17 @@ export default (): JSX.Element => {
                     });
                   }}
                 >
-                  <Typography.Text>
-                    {Languages.t('scenes.apps.parameters.workspace_sections.members')}
-                  </Typography.Text>
+                  <Users className="h-5" />
                 </Button>
                 <Button
                   size="small"
                   type="text"
+                  className="w-auto px-1 mr-2"
                   onClick={() => {
                     setChannelAttachmentState(true);
                   }}
                 >
-                  <Typography.Text>Media</Typography.Text>
+                  <File className="h-5" />
                 </Button>
               </>
             )}
