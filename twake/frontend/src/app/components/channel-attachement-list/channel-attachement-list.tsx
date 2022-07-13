@@ -6,7 +6,6 @@ import {
 import Languages from 'app/features/global/services/languages-service';
 import Tab from 'app/molecules/tabs';
 import React from 'react';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import ChannelFiles from './parts/channel-files';
 import ChannelMedias from './parts/channel-medias';
@@ -37,17 +36,8 @@ export default (): React.ReactElement => {
           selected={activeTab}
           onClick={index => setActiveTab(index)}
         />
-        <>
-          <PerfectScrollbar
-            className="-mb-4 py-3 overflow-hidden -mx-2 px-2"
-            style={{ maxHeight: 'calc(80vh - 100px)', minHeight: 'calc(80vh - 100px)' }}
-            options={{ suppressScrollX: true, suppressScrollY: false }}
-            component="div"
-          >
-            {activeTab === Tabs.Medias && <ChannelMedias />}
-            {activeTab === Tabs.Files && <ChannelFiles />}
-          </PerfectScrollbar>
-        </>
+        {activeTab === Tabs.Medias && <ChannelMedias />}
+        {activeTab === Tabs.Files && <ChannelFiles />}
       </ModalContent>
     </Modal>
   );

@@ -54,6 +54,22 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
     setLoading(false);
   };
 
+  const loadMore = async () => {
+    if (result.nextPage) {
+      const response = await messageApiClient.searchFile(null, { ...options, next_page_token: result.nextPage });
+      const results = (response.resources || []).sort(
+        (a, b) => (b?.message?.created_at || 0) - (a?.message?.created_at || 0),
+      );
+
+      const update = {
+        results: [...result.results, ...results],
+        nextPage: response.next_page_token || null,
+      };
+
+      setResult(update);
+    }
+  }
+
   useGlobalEffect(
     `useChannelAttachmentList${type}`,
     () => {
@@ -71,6 +87,7 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
     loading,
     result: result.results,
     loadItems,
+    loadMore,
   };
 };
 
