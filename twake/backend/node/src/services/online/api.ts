@@ -15,5 +15,5 @@ export type OnlineGetResponse = {
 
 export interface OnlineServiceAPI extends TwakeServiceProvider {
   isOnline(userId: string): Promise<boolean>;
-  setLastSeenOnline(userIds: Array<string>, lastSeen: number): Promise<void>;
+  setLastSeenOnline(userIds: Array<string>, lastSeen: number, is_connected: boolean): Promise<void>;
 }
