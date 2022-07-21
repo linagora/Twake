@@ -27,6 +27,7 @@ import useUsetiful from 'app/features/global/hooks/use-usetiful';
 
 import './styles.scss';
 import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
+import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -85,6 +86,7 @@ export default React.memo((): JSX.Element => {
       <Viewer />
       <ModalComponent />
       <SearchPopup />
+      <ChannelAttachementList />
       <ConnectionIndicator />
       <ChatUploadsViewer />
     </>
