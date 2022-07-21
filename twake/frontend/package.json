@@ -185,7 +185,7 @@
     "markdown-to-jsx": "^7.1.5",
     "mini-css-extract-plugin": "0.12.0",
     "minimongo": "^6.10.0",
-    "moment": "^2.29.3",
+    "moment": "^2.29.4",
     "moment-timezone": "^0.5.4",
     "oidc-client": "^1.11.5",
     "oidc-react": "^1.5.1",
