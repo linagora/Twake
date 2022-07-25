@@ -69,7 +69,7 @@ RUN yarn install
 RUN ls
 RUN ls public
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev:debug"]
 
 
 

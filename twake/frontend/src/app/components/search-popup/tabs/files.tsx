@@ -10,18 +10,18 @@ import FileResult from '../parts/file-result';
 
 export default () => {
   const input = useRecoilValue(SearchInputState);
-  const isRecent = input?.query?.length === 0;
+  const isRecent = input?.query?.trim()?.length === 0;
   const { files, loading, loadMore } = useSearchMessagesFiles();
 
   if (files.length === 0 && !loading) return <NothingFound />;
 
   return (
     <div>
-      <Text.Subtitle className="block">
-        {isRecent
-          ? Languages.t('components.searchpopup.recent_files')
-          : Languages.t('components.searchpopup.files')}
-      </Text.Subtitle>
+      {!!isRecent && (
+        <Text.Subtitle className="block">
+          {Languages.t('components.searchpopup.recent_files')}
+        </Text.Subtitle>
+      )}
 
       <div className={'-mx-2'}>
         <FilesResults />

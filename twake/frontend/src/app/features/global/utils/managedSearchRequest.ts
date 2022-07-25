@@ -6,22 +6,35 @@
  * - we can avoid the initial instant callback with options.doInitialCallback
  */
 
-const delayedRequests: Map<string, Function> = new Map();
+const delayedRequests: Map<string, () => Promise<void>> = new Map();
 const delayedRequestsHasTimout: Map<string, boolean> = new Map();
 
-export const delayRequest = (
+const requestIsInProgress: { [key: string]: boolean } = {};
+
+export const delayRequest = async (
   key: string,
-  request: Function,
+  request: () => Promise<void>,
   options: { timeout: number; doInitialCall: boolean } = { timeout: 1000, doInitialCall: true },
 ) => {
   if (!delayedRequestsHasTimout.has(key)) {
     delayedRequestsHasTimout.set(key, true);
-    if (options.doInitialCall) request();
-    else delayedRequests.set(key, request);
+
+    if (options.doInitialCall) {
+      requestIsInProgress[key] = true;
+      try {
+        await request();
+      } catch (e) {
+        requestIsInProgress[key] = false;
+        throw e;
+      }
+      requestIsInProgress[key] = false;
+    } else delayedRequests.set(key, request);
+
     setTimeout(() => {
       const request = delayedRequests.get(key);
       delayedRequestsHasTimout.delete(key);
-      request && delayRequest(key, request, { ...options, doInitialCall: true });
+      request &&
+        delayRequest(key, request, { ...options, doInitialCall: !requestIsInProgress[key] });
       delayedRequests.delete(key);
     }, options.timeout);
   } else {

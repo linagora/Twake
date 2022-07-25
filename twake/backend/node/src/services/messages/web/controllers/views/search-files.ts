@@ -2,7 +2,10 @@ import { FastifyRequest } from "fastify";
 import { ListResult, Pagination } from "../../../../../core/platform/framework/api/crud-service";
 import { MessageFile } from "../../../../../services/messages/entities/message-files";
 import { Message } from "../../../../../services/messages/entities/messages";
-import { ChannelViewExecutionContext } from "../../../../../services/messages/types";
+import {
+  ChannelViewExecutionContext,
+  FlatFileFromMessage,
+} from "../../../../../services/messages/types";
 import { UserObject } from "../../../../../services/user/web/types";
 import { PaginationQueryParameters, ResourceListResponse } from "../../../../../utils/types";
 import { formatUser } from "../../../../../utils/users";
@@ -31,8 +34,6 @@ export default async (
   request: FastifyRequest<{
     Querystring: MessageViewSearchFilesQueryParameters & {
       page_token: string;
-      type: "user_upload" | "user_download";
-      media: "media_only" | "file_only";
     };
     Params: {
       company_id: string;
@@ -40,11 +41,58 @@ export default async (
   }>,
   context: ChannelViewExecutionContext,
 ): Promise<ResourceListResponse<MessageFile>> => {
-  if (isEmpty(request.query?.q)) {
-    return recentFiles(request);
-  }
-
   const limit = +request.query.limit || 100;
+
+  if (isEmpty(request.query?.q)) {
+    if (request.query.channel_id) {
+      const tmp = await gr.services.messages.views.listChannelFiles(
+        new Pagination(request.query.page_token, limit.toString()),
+        {
+          flat: true,
+          ...(request.query.is_file ? { file_only: true } : {}),
+          ...(request.query.is_media ? { media_only: true } : {}),
+        },
+        {
+          ...context,
+          channel: {
+            id: request.query.channel_id,
+            workspace_id: request.query.workspace_id || context.channel.workspace_id,
+            company_id: request.params.company_id,
+          },
+        },
+      );
+
+      let resources: FileSearchResult[] = [];
+      for (let flatFile of tmp.getEntities()) {
+        flatFile = flatFile as FlatFileFromMessage;
+        resources.push({
+          ...flatFile.file,
+          message: flatFile.thread,
+          context: flatFile.context,
+          user: await formatUser(
+            await gr.services.users.getCached({ id: flatFile.thread.user_id }),
+          ),
+        });
+      }
+
+      return {
+        resources,
+        next_page_token: tmp.nextPage.page_token,
+      };
+    } else {
+      return recentFiles({
+        ...request,
+        query: {
+          ...request.query,
+          media: request.query.is_media
+            ? "media_only"
+            : request.query.is_file
+            ? "file_only"
+            : undefined,
+        },
+      });
+    }
+  }
 
   async function* getNextMessageFiles(initialPageToken?: string): AsyncIterableIterator<{
     msgFile: MessageFile;

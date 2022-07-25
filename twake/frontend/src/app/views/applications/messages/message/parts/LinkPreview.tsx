@@ -51,6 +51,10 @@ export default ({ preview }: PropsType): React.ReactElement => {
               alt={preview.title}
               src={preview.img}
               onClick={() => window.open(preview.url, '_blank')}
+              style={{
+                maxWidth: preview.img_width ?? '100%',
+                maxHeight: preview.img_height ?? '100%',
+              }}
             />
           </div>
         )}

@@ -38,6 +38,7 @@ export interface FileSearchOptions extends BaseSearchOptions {
   extension?: string;
   workspace_id?: string;
   channel_id?: string;
+  next_page_token?: string;
 }
 
 @TwakeService('MessageAPIClientService')

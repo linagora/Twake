@@ -6,7 +6,6 @@ import ChannelAvatar from 'app/components/search-popup/parts/channel-avatar/chan
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { ChannelType } from 'app/features/channels/types/channel';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import routerService from 'app/features/router/services/router-service';
 import { useSearchModal } from 'app/features/search/hooks/use-search';
 import { SearchInputState } from 'app/features/search/state/search-input';
 import { useUser } from 'app/features/users/hooks/use-user';
@@ -15,6 +14,7 @@ import { useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
 import { openMessage } from '../common';
+import MessageResultFile from './message-result-file';
 import ResultContext from './result-context';
 
 export default ({
@@ -61,11 +61,26 @@ export default ({
               textToHighlight={message.text?.substring(0, truncated ? 500 : message.text.length)}
             />
             {truncated && (message.text?.length || 0) > 500 && (
-              <A className="ml-3" onClick={() => setTruncated(false)}>
+              <A
+                className="ml-3"
+                onClick={(e: any) => {
+                  e.stopPropagation();
+                  setTruncated(false);
+                }}
+              >
                 See more
               </A>
             )}
           </Text.BaseSmall>
+          {(message.files || []).map(file => (
+            <div
+              key={file.id}
+              onClick={(e: any) => e.stopPropagation()}
+              className="rounded-md border bg-white border-gray-200 hover:border-gray-300 mb-1"
+            >
+              <MessageResultFile file={{ ...file, message, user }} />
+            </div>
+          ))}
         </div>
         <Text.Info className="block">{formatDate(message.created_at)}</Text.Info>
       </div>

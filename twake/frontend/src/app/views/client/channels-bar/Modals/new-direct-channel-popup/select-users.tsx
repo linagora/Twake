@@ -7,6 +7,8 @@ import { UserType } from 'app/features/users/types/user';
 import { Trash, Trash2, X, XCircle } from 'react-feather';
 import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
 import { SearchIcon } from '@heroicons/react/solid';
+import { Info } from 'app/atoms/text';
+import Languages from 'app/features/global/services/languages-service';
 
 export default (props: { onChange: (users: UserType[]) => void; initialUsers: UserType[] }) => {
   const [users, setUsers] = useState<UserType[]>(props.initialUsers);
@@ -30,7 +32,7 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
   };
 
   return (
-    <div style={{ width: '100vw', maxWidth: '400px' }}>
+    <div style={{ width: '100vw', maxWidth: '500px' }}>
       <InputDecorationIcon
         prefix={SearchIcon}
         input={({ className }) => (
@@ -43,8 +45,13 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
           />
         )}
       />
-      {query &&
-        result
+      <div style={{ minHeight: 200 }}>
+        {result.length === 0 && (
+          <div className="text-center pt-8">
+            <Info>{Languages.t('components.user_picker.modal_no_result')}</Info>
+          </div>
+        )}
+        {result
           .filter(a => !users.map(a => a.id).includes(a.id))
           .slice(0, 5)
           .map(user => {
@@ -64,9 +71,9 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
               </div>
             );
           })}
-
+      </div>
       {users.length > 0 && (
-        <div style={{ marginBottom: '12px' }}>
+        <div className="border-t border-t-zinc-200 py-4">
           {users.map(user => {
             return (
               <div key={user.id} className="new-direct-channel-added-user">

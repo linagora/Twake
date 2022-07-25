@@ -10,15 +10,15 @@ import NothingFound from '../parts/nothing-found';
 
 export default () => {
   const input = useRecoilValue(SearchInputState);
-  const isRecent = input?.query?.length === 0;
+  const isRecent = input?.query?.trim()?.length === 0;
 
   return (
     <div>
-      <Text.Subtitle className="block">
-        {isRecent
-          ? Languages.t('components.searchpopup.recent_media')
-          : Languages.t('components.searchpopup.media')}
-      </Text.Subtitle>
+      {!!isRecent && (
+        <Text.Subtitle className="block">
+          {Languages.t('components.searchpopup.recent_media')}
+        </Text.Subtitle>
+      )}
 
       <div className="-mx-2">
         <MediasResults showAsFiles={!isRecent} />
@@ -38,7 +38,7 @@ export const MediasResults = (props: { max?: number; showAsFiles?: boolean }) =>
         .slice(0, props?.max || files.length)
         .map(file => {
           const url = FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file);
-          if (url)
+          if (url || props.showAsFiles)
             return props.showAsFiles ? (
               <FileResult key={file.id} file={file} />
             ) : (

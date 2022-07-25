@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import DownloadAppBanner from './index';
 
 export default {
-  title: 'molecules/DownloadAppBanner',
+  title: 'molecules/download-app-banner',
   component: DownloadAppBanner,
 } as ComponentMeta<typeof DownloadAppBanner>;
 

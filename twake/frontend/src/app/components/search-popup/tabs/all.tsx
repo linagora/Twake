@@ -18,7 +18,7 @@ export default () => {
   const setTab = useSetRecoilState(SearchTabsState);
 
   const input = useRecoilValue(SearchInputState);
-  const isRecent = input?.query?.length === 0;
+  const isRecent = input?.query?.trim()?.length === 0;
 
   const { channels } = useSearchChannels();
   const { messages } = useSearchMessages();
@@ -27,21 +27,32 @@ export default () => {
 
   return (
     <div className="-mt-4">
-      {(!input.channelId || true) && channels.length > 0 && (
+      {channels.length > 0 && (
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">
-              {Languages.t('components.searchpopup.channels')}
+              {isRecent
+                ? Languages.t('components.searchpopup.recent_channels_and_contacts')
+                : Languages.t('components.searchpopup.channels')}
             </Text.Subtitle>
-            <div className="w-auto">
-              <A onClick={() => setTab('channels')}>
-                {Languages.t('components.searchpopup.see_more')}
-              </A>
+            {channels.length > 6 && (
+              <div className="w-auto">
+                <A onClick={() => setTab('channels')}>
+                  {Languages.t('components.searchpopup.see_more')}
+                </A>
+              </div>
+            )}
+          </div>
+          {isRecent && (
+            <div className="-mx-2 mt-2">
+              <ChannelsRowResults max={6} />
             </div>
-          </div>
-          <div className="-mx-2 mt-2">
-            <ChannelsRowResults max={6} />
-          </div>
+          )}
+          {!isRecent && (
+            <div className="-mx-2">
+              <ChannelsResults max={6} />
+            </div>
+          )}
         </>
       )}
 
@@ -49,13 +60,17 @@ export default () => {
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">
-              {Languages.t('components.searchpopup.media')}
+              {isRecent
+                ? Languages.t('components.searchpopup.recent_media')
+                : Languages.t('components.searchpopup.media')}
             </Text.Subtitle>
-            <div className="w-auto">
-              <A onClick={() => setTab('medias')}>
-                {Languages.t('components.searchpopup.see_more')}
-              </A>
-            </div>
+            {medias.length > 6 && (
+              <div className="w-auto">
+                <A onClick={() => setTab('medias')}>
+                  {Languages.t('components.searchpopup.see_more')}
+                </A>
+              </div>
+            )}
           </div>
           <div className={'-mx-2'}>
             <MediasResults max={6} showAsFiles={!isRecent} />
@@ -67,13 +82,17 @@ export default () => {
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">
-              {Languages.t('components.searchpopup.files')}
+              {isRecent
+                ? Languages.t('components.searchpopup.recent_files')
+                : Languages.t('components.searchpopup.files')}
             </Text.Subtitle>
-            <div className="w-auto">
-              <A onClick={() => setTab('files')}>
-                {Languages.t('components.searchpopup.see_more')}
-              </A>
-            </div>
+            {files.length > 6 && (
+              <div className="w-auto">
+                <A onClick={() => setTab('files')}>
+                  {Languages.t('components.searchpopup.see_more')}
+                </A>
+              </div>
+            )}
           </div>
           <div className={'-mx-2'}>
             <FilesResults max={6} />
