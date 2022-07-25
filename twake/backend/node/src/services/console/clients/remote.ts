@@ -280,7 +280,10 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         const user = await gr.services.users.getByEmail(userDTO.email);
 
         if (user.identity_provider === "console") {
-          const emailUserOnConsole = await this.fetchUserInfo(user.identity_provider_id);
+          let emailUserOnConsole = null;
+          try {
+            emailUserOnConsole = await this.fetchUserInfo(user.identity_provider_id);
+          } catch (err) {}
           if (emailUserOnConsole?._id) {
             throw CrudException.badRequest(
               `Console user not created because email already exists on console with different id: ${emailUserOnConsole._id} while requested to provision user with id: ${userDTO._id}`,
@@ -288,9 +291,12 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
           }
 
           //If not present on console, then anonymise this one and create a new one
-          await gr.services.users.anonymizeAndDelete(user, {
-            user: { id: user.id, server_request: true },
-          });
+          await gr.services.users.anonymizeAndDelete(
+            { id: user.id },
+            {
+              user: { id: user.id, server_request: true },
+            },
+          );
 
           //Now we can create the new user
         }
