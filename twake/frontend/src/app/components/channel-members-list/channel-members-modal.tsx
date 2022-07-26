@@ -1,141 +1,133 @@
-import { useChannelMembers } from "app/features/channel-members.global/hooks/members-hook"
-import Languages from "app/features/global/services/languages-service";
-import { MemberItem } from "./member-item";
+import { InformationCircleIcon, MailIcon } from '@heroicons/react/outline';
+import { PlusIcon, SearchIcon } from '@heroicons/react/solid';
+import { Alert } from 'app/atoms/alert';
+import { Button } from 'app/atoms/button/button';
+import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
 import { Input } from 'app/atoms/input/input-text';
-import { useChannelPendingEmails } from "app/features/channel-members.global/hooks/pending-emails-hook";
-import { SearchIcon } from "@heroicons/react/solid";
-import { InputDecorationIcon } from "app/atoms/input/input-decoration-icon";
-import { EmailItem } from "./email-item";
-import { useSearchChannelMembers } from "app/features/channel-members.global/hooks/search-channel-member";
-import { SearchChannelMemberInputState } from "app/features/channel-members.global/state/search-channel-member";
-import { useRecoilState } from "recoil";
-import { useSearchChannelPendingEmail } from "app/features/channel-members.global/hooks/search-pending-email";
-import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
-import { UserItem } from "./user-item";
-import { ChannelMemberWithUser } from "app/features/channel-members.global/types/channel-members";
-import { UserType } from 'app/features/users/types/user';
-import _ from "lodash";
-import Strings from "app/features/global/utils/strings";
-import { useEffect, useState } from "react";
-import { Button } from "app/atoms/button/button";
-import { PlusIcon } from '@heroicons/react/solid';
-import useRouterChannel from "app/features/router/hooks/use-router-channel";
-import { usePendingEmail } from "app/features/channel-members.global/hooks/pending-email-hook";
+import { Info, Base, BaseSmall } from 'app/atoms/text';
+import { usePendingEmail } from 'app/features/channel-members-search/hooks/use-pending-email-hook';
+import { useSearchChannelMembersAll } from 'app/features/channel-members-search/hooks/use-search-all';
+import Languages from 'app/features/global/services/languages-service';
+import Strings from 'app/features/global/utils/strings';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { EmailItem } from './email-item';
+import { MemberItem } from './member-item';
+import { UserItem } from './user-item';
 
-export const ChannelMembersListModal = (props: { channelId: string}): JSX.Element => {
-    const channelId = useRouterChannel();
+export const ChannelMembersListModal = (props: { channelId: string }): JSX.Element => {
+  const channelId = useRouterChannel();
 
-    const { channelMembers } = useChannelMembers();
-    const {listChannelMembers, } = useSearchChannelMembers(props.channelId || channelId);
+  const { addEmailSuggestion, pendingEmailList, channelMembersList, usersList, search, query } =
+    useSearchChannelMembersAll({
+      channelId,
+    });
 
-    const [searchState, setSearchState] = useRecoilState(SearchChannelMemberInputState);
+  return (
+    <div
+      className="flex flex-col max-w-full space-y-1"
+      style={{ height: '80vh', maxHeight: '400px' }}
+    >
+      <div>
+        <InputDecorationIcon
+          className="mb-2"
+          suffix={SearchIcon}
+          input={({ className }) => (
+            <Input
+              className={className}
+              placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.search_invite')}
+              onChange={e => search(e.target.value)}
+              value={query}
+            />
+          )}
+        />
+        {pendingEmailList?.length === 0 && channelMembersList?.length <= 1 && (
+          <Alert
+            className="mb-0"
+            theme="primary"
+            title={Languages.t('scenes.client.channelbar.channelmemberslist.search_invite_notice')}
+            icon={InformationCircleIcon}
+          />
+        )}
+      </div>
+      <div className="-mx-3">
+        <PerfectScrollbar
+          options={{ suppressScrollX: true, suppressScrollY: false }}
+          component="div"
+          style={{ width: '100%', height: '100%' }}
+        >
+          <div className="mx-1">
+            {addEmailSuggestion &&
+              !pendingEmailList
+                .map(e => e.email.toLocaleLowerCase())
+                .includes((query || '').toLocaleLowerCase()) && <EmailSuggestion email={query} />}
+            {pendingEmailList?.length > 0 && (
+              <>
+                <Info className="px-2 mt-2 block">
+                  {Languages.t('scenes.client.channelbar.channelmemberslist.pending_section')}
+                </Info>
+              </>
+            )}
+            {pendingEmailList &&
+              pendingEmailList.map((item, index) => {
+                return (
+                  <div key={`key_${index}`} className="flex  py-1 hover:bg-zinc-50 rounded-sm px-2">
+                    <EmailItem email={item} />
+                  </div>
+                );
+              })}
+            {channelMembersList?.length > 0 && (
+              <>
+                <Info className="px-2 mt-2 block">
+                  {Languages.t('scenes.client.channelbar.channelmemberslist.members_section')}
+                </Info>
+              </>
+            )}
+            {channelMembersList &&
+              channelMembersList.map(cMember => {
+                return (
+                  <div
+                    key={cMember.user_id}
+                    className="flex  py-1 hover:bg-zinc-50 rounded-sm px-2"
+                  >
+                    <MemberItem userId={cMember.user_id} member={cMember} />
+                  </div>
+                );
+              })}
+            {usersList?.length > 0 && (
+              <>
+                <Info className="px-2 mt-2 block">
+                  {Languages.t('scenes.client.channelbar.channelmemberslist.not_members_section')}
+                </Info>
+              </>
+            )}
+            {usersList &&
+              usersList.map(user => {
+                return (
+                  <div key={user.id} className="flex  py-1 hover:bg-zinc-50 rounded-sm px-2">
+                    <UserItem userId={user.id || ''} />
+                  </div>
+                );
+              })}
+          </div>
+        </PerfectScrollbar>
+      </div>
+    </div>
+  );
+};
 
-    const { pendingEmails } = useChannelPendingEmails();
-    const { filteredPendingEmails  } = useSearchChannelPendingEmail();
+const EmailSuggestion = ({ email }: { email: string }) => {
+  const { addInvite } = usePendingEmail(email);
 
-    const { result: filteredUsers, } = useSearchUsers({scope:'company'});
+  if (!email || !Strings.verifyMail(email)) {
+    return <></>;
+  }
 
-    const pendingEmailList = searchState ? filteredPendingEmails : pendingEmails;
-    const channelMembersList = searchState ? listChannelMembers : channelMembers;
-    
-    const usersList = searchState ? 
-        filteredUsers.filter(({ username, email, first_name, last_name }) =>
-            searchState
-                .split(' ')
-                .every(
-                    word =>
-                    Strings.removeAccents(`${username} ${email} ${first_name} ${last_name}`)
-                        .toLocaleLowerCase()
-                        .indexOf(Strings.removeAccents(word).toLocaleLowerCase()) > -1,
-                ),
-        )
-        : filteredUsers;
-    
-    const [addEmailSuggestion, setEmailSuggestion] = useState<boolean>(false);
-    useEffect(() => {
-        if(!pendingEmailList.length && !!searchState.length) {
-            setEmailSuggestion(true)
-        }
-
-    }, [searchState]);
-
-    return (
-        <div className="flex flex-col max-w-full space-y-1">
-            <div>
-                <InputDecorationIcon
-                    suffix={SearchIcon}
-                    input={({ className }) => (
-                        <Input
-                            className={className}
-                            placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.autocomplete')}
-                            onChange={e => setSearchState(e.target.value)}
-                            value={searchState}
-                        />
-                    )}
-                />
-            </div>
-            <div>
-                <PerfectScrollbar
-                    options={{ suppressScrollX: true, suppressScrollY: false }}
-                    component="div"
-                    style={{ width: '100%', height: '200px' }}
-                >
-                    <div>
-                        {addEmailSuggestion && (
-                            <EmailSuggestion email={searchState} />
-                        )}
-                        { pendingEmailList && pendingEmailList.map((item, index) => {
-                            return (
-                                <div key={`key_${index}`}>
-                                    <EmailItem email={item} />
-                                </div>
-                            )
-                        })}
-                        { channelMembersList && channelMembersList.map(cMember => {
-                            return (
-                                <div key={cMember.user_id}>
-                                    <MemberItem 
-                                        userId={cMember.user_id}
-                                        member={cMember}
-                                    />
-                                </div>
-                            )
-                        })}
-                        { 
-                        usersList &&
-                        _.differenceBy(usersList, channelMembersList || [], 
-                            (item) => (item as ChannelMemberWithUser).user_id || (item as UserType).id).map(user => {
-                            return (
-                                <div key={user.id}>
-                                    <UserItem userId={user.id || ''} />
-                                </div>
-                            )
-                        })}
-                    </div>
-                </PerfectScrollbar>
-            </div>
-        </div>
-    )
-}
-
-const EmailSuggestion = ({ email }: {email: string}) => {
-    const { addInvite } = usePendingEmail(email);
-
-    if (!email || !Strings.verifyMail(email)) {
-        return <></>;
-    }
-
-    return (
-        <div className="flex p-2 hover:bg-zinc-200">
-            <Button
-                className="my-2 mx-2"
-                theme="outline"
-                icon={PlusIcon}
-                onClick={() => addInvite()}
-            >
-                { email }
-            </Button>
-        </div>
-    )
-}
+  return (
+    <div className="flex">
+      <Button className="my-2" theme="outline" icon={PlusIcon} onClick={() => addInvite()}>
+        {email}
+      </Button>
+    </div>
+  );
+};

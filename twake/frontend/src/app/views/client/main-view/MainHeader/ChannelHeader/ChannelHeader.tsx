@@ -14,7 +14,7 @@ import Languages from 'app/features/global/services/languages-service';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
-import { useUsersSearchModal } from 'app/features/channel-members.global/state/search-channel-member';
+import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import { useRecoilState } from 'recoil';
 import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';

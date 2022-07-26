@@ -7,6 +7,8 @@ import { Modal, ModalContent } from '../modal';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   theme?: 'primary' | 'secondary' | 'danger' | 'default';
+  size?: 'md' | 'lg' | 'sm';
+  icon?: (props: any) => JSX.Element;
   loading?: boolean;
   disabled?: boolean;
   confirmTitle?: string;
@@ -15,7 +17,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   confirmButtonTheme?: 'primary' | 'secondary' | 'danger' | 'default';
   confirmButtonText?: string;
   cancelButtonText?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const ButtonConfirm = (props: ButtonProps) => {

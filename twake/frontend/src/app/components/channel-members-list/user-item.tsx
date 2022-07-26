@@ -2,43 +2,48 @@ import Avatar from 'app/atoms/avatar';
 import UsersService from 'app/features/users/services/current-user-service';
 import { useUser } from 'app/features/users/hooks/use-user';
 import { Button } from 'app/atoms/button/button';
-import Languages from "app/features/global/services/languages-service";
-import { useChannelMember } from 'app/features/channel-members.global/hooks/member-hook';
+import Languages from 'app/features/global/services/languages-service';
+import { useChannelMember } from 'app/features/channel-members-search/hooks/member-hook';
+import { Tooltip } from 'antd';
+import { PlusIcon } from '@heroicons/react/solid';
 
 type IUserProps = {
-    userId: string;
+  userId: string;
 };
 
-export const UserItem = (props : IUserProps): JSX.Element => {
-    const { userId } = props;
-    const user = useUser(userId || '');
-    
-    if (!user) {
-        return <></>;
-    }
+export const UserItem = (props: IUserProps): JSX.Element => {
+  const { userId } = props;
+  const user = useUser(userId || '');
 
-    const {addMember, loading} = useChannelMember(userId || '');
-    const [full_name, avatar] = [UsersService.getFullName(user), UsersService.getThumbnail(user)];
+  if (!user) {
+    return <></>;
+  }
 
-    return (
-        <div className="flex justify-between py-1 hover:bg-zinc-200" key={userId}>
-            <div className="flex items-center space-x-1">
-                <Avatar size="xs" avatar={avatar} />
-                <div>
-                    <span className="font-bold">{ full_name }</span>
-                    <span className="pl-2">{ user.email }</span>
-                </div>
-            </div>
-            <div>
-                <Button
-                    theme="primary"
-                    size="sm"
-                    loading={loading}
-                    onClick={() => addMember(userId || '')}
-                >
-                    {Languages.t('general.add')}
-                </Button>
-            </div>
+  const { addMember, loading } = useChannelMember(userId || '');
+  const [full_name, avatar] = [UsersService.getFullName(user), UsersService.getThumbnail(user)];
+
+  console.log('user', user);
+
+  return (
+    <>
+      <div className="w-8 flex items-center ">
+        <Avatar size="xs" avatar={avatar} />
+      </div>
+      <div className="grow flex items-center overflow-hidden ">
+        <div className="whitespace-nowrap overflow-hidden text-ellipsis">
+          <span className="font-bold">{full_name}</span>
+          <span className="pl-2">{user.email}</span>
         </div>
-    )
+      </div>
+      <div>
+        <Button
+          theme="primary"
+          size="sm"
+          icon={PlusIcon}
+          loading={loading}
+          onClick={() => addMember(userId || '')}
+        />
+      </div>
+    </>
+  );
 };
