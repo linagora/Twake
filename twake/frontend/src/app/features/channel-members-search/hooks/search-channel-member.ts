@@ -8,14 +8,14 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { SearchChannelMemberInputState } from '../state/search-channel-member';
-import { listChannelMembersStateFamily } from '../state/store';
+import { SearchChannelMembersStateFamily } from '../state/store';
 import { ParamsChannelMember, ChannelMemberWithUser } from '../types/channel-members';
 
 export const useRefreshSearchChannelMembers = (context: ParamsChannelMember) => {
   const searchInput = useRecoilValue(SearchChannelMemberInputState);
   const setLoading = useSetRecoilState(LoadingState('useSearchChannelMembers'));
   const [listChannelMembers, setChannelMembers] = useRecoilState<ChannelMemberWithUser[]>(
-    listChannelMembersStateFamily(context),
+    SearchChannelMembersStateFamily(context),
   );
 
   const refresh = async () => {

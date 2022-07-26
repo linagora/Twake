@@ -4,7 +4,7 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { getChannelMember } from '../state/store';
+import { ChannelMemberSelector } from '../state/store';
 import { ParamsChannelMember } from '../types/channel-members';
 import { useRefreshChannelMembers } from './members-hook';
 
@@ -14,7 +14,7 @@ export function useChannelMember(userId: string, params?: ParamsChannelMember) {
   const companyId = params?.companyId ? params.companyId : useRouterCompany();
   const parameters = { companyId, workspaceId, channelId };
 
-  const member = useRecoilValue(getChannelMember({ channelId, userId }));
+  const member = useRecoilValue(ChannelMemberSelector({ channelId, userId }));
   const { refresh } = useRefreshChannelMembers(parameters);
   const [loading, setLoading] = useState<boolean>(false);
 

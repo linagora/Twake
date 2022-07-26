@@ -1,47 +1,62 @@
-import { atomFamily, selectorFamily, SerializableParam } from "recoil";
-import { ChannelMemberType, ChannelPendingEmail, ChannelMemberWithUser } from "../types/channel-members";
+import { atomFamily, selectorFamily, SerializableParam } from 'recoil';
+import { ChannelMemberWithUser, ChannelPendingEmail } from '../types/channel-members';
 
 // ChannelMemberType
-export const listChannelMembersStateFamily = atomFamily<ChannelMemberWithUser[], SerializableParam>({
-    key: 'list-channel-members-state',
-    default: []
-})
-
-export const listPendingEmailsStateFamily = atomFamily<ChannelPendingEmail[], SerializableParam>({
-    key: 'list-pending-emails-state',
-    default: []
-})
-
-export const getChannelMember = selectorFamily<ChannelMemberWithUser | null, {channelId: string, userId: string}>({
-    key: 'get-channel-member',
-    get: 
-        ({ channelId, userId }) => 
-        ({ get }) => {
-            const members = get(listChannelMembersStateFamily(channelId));
-
-            const member = (members || []).find(m => m.user_id === userId);
-
-            if(member) {
-                return member;
-            }
-
-            return null;
-        }
+export const ListChannelMembersStateFamily = atomFamily<ChannelMemberWithUser[], SerializableParam>(
+  {
+    key: 'ListChannelMembersStateFamily',
+    default: [],
+  },
+);
+export const SearchChannelMembersStateFamily = atomFamily<
+  ChannelMemberWithUser[],
+  SerializableParam
+>({
+  key: 'SearchChannelMembersStateFamily',
+  default: [],
 });
 
-export const getPendingEmail = selectorFamily<ChannelPendingEmail | null, {channelId: string, email: string}>({
-    key: 'get-pending-email',
-    get: 
-        ({ channelId, email }) =>
-        ({ get }) => {
-            const pendingEmails = get(listPendingEmailsStateFamily(channelId));
+export const ListPendingEmailsStateFamily = atomFamily<ChannelPendingEmail[], SerializableParam>({
+  key: 'ListPendingEmailsStateFamily',
+  default: [],
+});
 
-            const guest = (pendingEmails || []).find(m => m.email === email);
+export const ChannelMemberSelector = selectorFamily<
+  ChannelMemberWithUser | null,
+  { channelId: string; userId: string }
+>({
+  key: 'ChannelMemberSelector',
+  get:
+    ({ channelId, userId }) =>
+    ({ get }) => {
+      const members = get(ListChannelMembersStateFamily(channelId));
 
-            if(guest) {
-                return guest;
-            }
+      const member = (members || []).find(m => m.user_id === userId);
 
-            return null;
-        }
+      if (member) {
+        return member;
+      }
+
+      return null;
+    },
+});
+
+export const PendingEmailSelector = selectorFamily<
+  ChannelPendingEmail | null,
+  { channelId: string; email: string }
+>({
+  key: 'PendingEmailSelector',
+  get:
+    ({ channelId, email }) =>
+    ({ get }) => {
+      const pendingEmails = get(ListPendingEmailsStateFamily(channelId));
+
+      const guest = (pendingEmails || []).find(m => m.email === email);
+
+      if (guest) {
+        return guest;
+      }
+
+      return null;
+    },
 });

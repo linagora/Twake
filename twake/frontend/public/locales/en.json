@@ -103,7 +103,7 @@
     "scenes.apps.messages.left_bar.stream.notifications.me": "{{$1}} only",
     "scenes.apps.messages.left_bar.stream.notifications.never": "Nothing",
     "scenes.apps.parameters.workspace_sections.workspace": "Workspace",
-    "scenes.apps.parameters.workspace_sections.members": "Participants",
+    "scenes.apps.parameters.workspace_sections.members": "Channel participants",
     "scenes.apps.parameters.group_sections.workspaces": "Workspaces",
     "scenes.apps.parameters.group_sections.apps": "Apps",
     "scenes.apps.account.title": "Account parameters",

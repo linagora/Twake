@@ -105,7 +105,7 @@
     "scenes.apps.messages.left_bar.stream.notifications.me": "{{$1}} seulement",
     "scenes.apps.messages.left_bar.stream.notifications.never": "Aucun message",
     "scenes.apps.parameters.workspace_sections.workspace": "Espace de travail",
-    "scenes.apps.parameters.workspace_sections.members": "Participants",
+    "scenes.apps.parameters.workspace_sections.members": "Participants de la chaîne",
     "scenes.apps.parameters.group_sections.workspaces": "Espaces de travail",
     "scenes.apps.parameters.group_sections.apps": "Applications",
     "scenes.apps.account.title": "Paramètres du compte",

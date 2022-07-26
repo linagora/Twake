@@ -3,7 +3,7 @@ import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { listPendingEmailsStateFamily } from '../state/store';
+import { ListPendingEmailsStateFamily } from '../state/store';
 import { ChannelPendingEmail, ParamsChannelMember } from '../types/channel-members';
 import ChannelPendingEmailApiClient from 'app/features/channel-members-search/api/pending-emails-api-client';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
@@ -21,7 +21,7 @@ export function useChannelPendingEmails(params?: ParamsChannelMember): {
   const parameters = { companyId, workspaceId, channelId };
 
   const [loading, setLoading] = useRecoilState(LoadingState('useChannelPendingEmails'));
-  const [emails, setEmails] = useRecoilState(listPendingEmailsStateFamily(parameters));
+  const [emails, setEmails] = useRecoilState(ListPendingEmailsStateFamily(parameters));
 
   const refresh = async () => {
     setLoading(true);

@@ -6,7 +6,7 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { SearchChannelMemberInputState } from '../state/search-channel-member';
-import { getPendingEmail } from '../state/store';
+import { PendingEmailSelector } from '../state/store';
 import { useChannelPendingEmails } from './use-pending-emails';
 
 export function usePendingEmail(email: string) {
@@ -14,7 +14,7 @@ export function usePendingEmail(email: string) {
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
 
-  const pEmail = useRecoilValue(getPendingEmail({ channelId, email }));
+  const pEmail = useRecoilValue(PendingEmailSelector({ channelId, email }));
   const { refresh } = useChannelPendingEmails();
   const [loading, setLoading] = useState<boolean>(false);
 

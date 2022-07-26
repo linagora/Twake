@@ -2,14 +2,14 @@ import ChannelMembersApiClient from 'app/features/channel-members-search/api/mem
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useRecoilState } from 'recoil';
 import { ChannelMemberWithUser, ParamsChannelMember } from '../types/channel-members';
-import { listChannelMembersStateFamily } from '../state/store';
+import { ListChannelMembersStateFamily } from '../state/store';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 export const useRefreshChannelMembers = (parameters: ParamsChannelMember) => {
-  const [members, setMembers] = useRecoilState(listChannelMembersStateFamily(parameters));
+  const [members, setMembers] = useRecoilState(ListChannelMembersStateFamily(parameters));
   const [loading, setLoading] = useRecoilState(LoadingState('useChannelMembers'));
 
   const refresh = async () => {
