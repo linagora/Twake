@@ -18,6 +18,8 @@
     "general.update": "Mettre à jour",
     "general.remove": "Supprimer",
     "general.add": "Ajouter",
+    "general.yes": "Oui",
+    "general.no": "Non",
     "general.connexion_status.disconnected": "Vous êtes hors ligne",
     "general.connexion_status.connected": "Vous êtes connecté",
     "general.connexion_status.connecting": "Reconnexion en cours…",

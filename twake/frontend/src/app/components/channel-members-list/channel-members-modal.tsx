@@ -1,10 +1,11 @@
-import { InformationCircleIcon, MailIcon } from '@heroicons/react/outline';
+import { InformationCircleIcon, MailOpenIcon } from '@heroicons/react/outline';
 import { PlusIcon, SearchIcon } from '@heroicons/react/solid';
 import { Alert } from 'app/atoms/alert';
 import { Button } from 'app/atoms/button/button';
+import { ButtonConfirm } from 'app/atoms/button/confirm';
 import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
 import { Input } from 'app/atoms/input/input-text';
-import { Info, Base, BaseSmall } from 'app/atoms/text';
+import { Info } from 'app/atoms/text';
 import { usePendingEmail } from 'app/features/channel-members-search/hooks/use-pending-email-hook';
 import { useSearchChannelMembersAll } from 'app/features/channel-members-search/hooks/use-search-all';
 import Languages from 'app/features/global/services/languages-service';
@@ -58,9 +59,19 @@ export const ChannelMembersListModal = (props: { channelId: string }): JSX.Eleme
         >
           <div className="mx-1">
             {addEmailSuggestion &&
-              !pendingEmailList
-                .map(e => e.email.toLocaleLowerCase())
-                .includes((query || '').toLocaleLowerCase()) && <EmailSuggestion email={query} />}
+              pendingEmailList?.length === 0 &&
+              channelMembersList?.length === 0 &&
+              usersList?.length === 0 &&
+              !Strings.verifyMail(query) && (
+                <>
+                  <Info className="px-2 mt-2 block">
+                    {Languages.t(
+                      'scenes.client.channelbar.channelmemberslist.search_invite_type_email',
+                    )}
+                  </Info>
+                </>
+              )}
+            {addEmailSuggestion && <EmailSuggestion email={query} />}
             {pendingEmailList?.length > 0 && (
               <>
                 <Info className="px-2 mt-2 block">
@@ -124,10 +135,26 @@ const EmailSuggestion = ({ email }: { email: string }) => {
   }
 
   return (
-    <div className="flex">
-      <Button className="my-2" theme="outline" icon={PlusIcon} onClick={() => addInvite()}>
-        {email}
+    <div>
+      <Info className="px-2 mt-2 mb-2 block items-center flex">
+        <MailOpenIcon className="h-5 w-5 inline mr-2" /> <b>{email}</b>
+      </Info>
+      <Button className="my-2 mx-2" theme="outline" icon={PlusIcon} onClick={() => addInvite()}>
+        {Languages.t('scenes.client.channelbar.channelmemberslist.invite_email_button')}
       </Button>
+      <br />
+      <ButtonConfirm
+        confirmTitle={Languages.t(
+          'scenes.client.channelbar.channelmemberslist.invite_email_button_workspace_confirm',
+          [email],
+        )}
+        className="my-2 mx-2"
+        theme="outline"
+        icon={PlusIcon}
+        onClick={() => addInvite('member')}
+      >
+        {Languages.t('scenes.client.channelbar.channelmemberslist.invite_email_button_workspace')}
+      </ButtonConfirm>
     </div>
   );
 };

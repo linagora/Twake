@@ -25,13 +25,18 @@ export const useSearchChannelMembersAll = (params: ParamsChannelMember) => {
   const pendingEmailList = searchState ? filteredPendingEmails : pendingEmails;
   const channelMembersList = searchState ? listChannelMembers : channelMembers;
 
-  const [addEmailSuggestion, setEmailSuggestion] = useState<boolean>(false);
   useEffect(() => {
-    if (!pendingEmailList.length && !!searchState.length) {
-      setEmailSuggestion(true);
-    }
     searchUsers(searchState);
   }, [searchState]);
+
+  const addEmailSuggestion =
+    !pendingEmailList.length &&
+    !!searchState.length &&
+    ![
+      ...pendingEmailList.map(e => e.email.toLocaleLowerCase()),
+      ...channelMembersList.map(e => e.user.email.toLocaleLowerCase()),
+      ...usersList.map(e => e.email.toLocaleLowerCase()),
+    ].includes((searchState || '').toLocaleLowerCase());
 
   return {
     addEmailSuggestion,

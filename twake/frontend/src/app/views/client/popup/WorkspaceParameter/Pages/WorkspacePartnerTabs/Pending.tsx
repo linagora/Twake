@@ -9,6 +9,7 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import WorkspaceUserAPIClient from 'app/features/workspace-members/api/workspace-members-api-client';
 
 type PendingEmailResourceType = {
   company_role: string;
@@ -42,30 +43,25 @@ export default (props: { filter: string }) => {
   }, [props.filter, data]);
 
   const refreshPendingEmails = async () => {
-    const pendingEmailRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/pending`;
-
     try {
       setLoading(true);
-      await Api.get(pendingEmailRoute, setData);
+      setData(await WorkspaceUserAPIClient.listPending(companyId, workspaceId));
       setLoading(false);
     } catch (e) {
       console.error(e);
     }
   };
 
-  const deletePendingEmail = (col: ColumnObjectType) => {
-    const removePendingEmailRoute = `/internal/services/workspaces/v1/companies/${companyId}/workspaces/${workspaceId}/pending/${col.email}`;
+  const deletePendingEmail = async (col: ColumnObjectType) => {
     setLoading(true);
-    Api.delete(removePendingEmailRoute).finally(() => {
-      refreshPendingEmails();
-      setLoading(false);
-    });
+    await WorkspaceUserAPIClient.cancelPending(companyId, workspaceId, col.email);
+    refreshPendingEmails();
+    setLoading(false);
   };
 
-  const setData = (res: any) => {
-    const resources: PendingEmailResourceType[] = res.resources;
+  const setData = (resources: any) => {
     if (resources) {
-      _setData(resources.map((o, key) => ({ key: key + 1, ...o })));
+      _setData(resources.map((o: any, key: any) => ({ key: key + 1, ...o })));
     }
   };
 

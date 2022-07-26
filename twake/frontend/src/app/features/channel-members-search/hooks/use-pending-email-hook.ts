@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { getPendingEmail } from '../state/store';
-import { useChannelPendingEmails } from './use-pending-emails';
 import ChannelPendingEmailApiClient from 'app/features/channel-members-search/api/pending-emails-api-client';
+import ConsoleService from 'app/features/console/services/console-service';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import useRouterChannel from 'app/features/router/hooks/use-router-channel';
+import { useState } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { SearchChannelMemberInputState } from '../state/search-channel-member';
+import { getPendingEmail } from '../state/store';
+import { useChannelPendingEmails } from './use-pending-emails';
 
 export function usePendingEmail(email: string) {
   const companyId = useRouterCompany();
@@ -32,8 +33,7 @@ export function usePendingEmail(email: string) {
     });
   };
 
-  const addInvite = async () => {
-    console.log('addInvite', email);
+  const addInvite = async (role: 'guest' | 'member' = 'guest') => {
     setLoading(true);
 
     const guest = {
@@ -51,6 +51,14 @@ export function usePendingEmail(email: string) {
       setLoading(false);
       setSearchState('');
       refresh();
+    });
+
+    await ConsoleService.addMailsInWorkspace({
+      workspace_id: workspaceId,
+      company_id: companyId,
+      emails: [email],
+      workspace_role: 'member',
+      company_role: role,
     });
   };
 

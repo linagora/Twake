@@ -6,7 +6,7 @@ import { Button } from './button';
 import { Modal, ModalContent } from '../modal';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  theme?: 'primary' | 'secondary' | 'danger' | 'default';
+  theme?: 'primary' | 'secondary' | 'danger' | 'default' | 'outline';
   size?: 'md' | 'lg' | 'sm';
   icon?: (props: any) => JSX.Element;
   loading?: boolean;
