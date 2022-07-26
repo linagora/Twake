@@ -7,6 +7,8 @@ import UserOnline, { getInstance, TYPE as ONLINE_TYPE } from "../entities/user-o
 import gr from "../../global-resolver";
 import { getLogger, TwakeLogger, TwakeServiceProvider } from "../../../core/platform/framework";
 import { getUserRoom } from "../../../services/user/realtime";
+import User from "../../../services/user/entities/user";
+import { WebsocketUserEvent } from "../../../core/platform/services/websocket/types";
 
 export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineServiceAPI {
   version = "1";
@@ -30,28 +32,35 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
 
     await this.pubsubService.init();
 
-    gr.platformServices.websocket.onUserConnected(event => {
+    gr.platformServices.websocket.onUserConnected(async event => {
+      const user: User = await gr.services.users.get({
+        id: event.user.id,
+      });
+
+      const companies = user.cache?.companies;
+
       this.logger.info("User connected", event.user.id);
       // save the last connection date
       this.setLastSeenOnline([event.user.id], Date.now(), true);
       // broadcast to global pubsub so that everyone can publish to websockets
-      this.pubsubService.broadcastOnline([[event.user.id, true]]);
+      this.broadcastOnline(event, companies);
 
       event.socket.on(
         "online:get",
         async (request: OnlineGetRequest, ack: (response: OnlineGetResponse) => void) => {
           this.logger.debug(`Got an online:get request for ${(request.data || []).length} users`);
-
           ack({ data: await this.getOnlineStatuses(request.data) });
         },
       );
 
       event.socket.on(
         "online:set",
-        async (request: OnlineGetRequest, ack: (response: OnlineGetResponse) => void) => {
+        async (request: OnlineGetRequest, ack: () => void): Promise<void> => {
           this.logger.debug(`Got an online:set request for ${(request.data || []).length} users`);
 
-          ack({ data: await this.getOnlineStatuses(request.data) });
+          this.broadcastOnline(event, companies);
+          this.setLastSeenOnline([event.user.id], Date.now(), false);
+          ack();
         },
       );
     });
@@ -63,7 +72,13 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
       const userSockets = await event.socket.in(room).allSockets();
 
       if (userSockets.size === 0) {
-        this.pubsubService.broadcastOnline([[event.user.id, false]]);
+        this.pubsubService.broadcastOnline([
+          {
+            company_id: "toBeFetched",
+            user_id: event.user.id,
+            is_online: false,
+          },
+        ]);
         this.setLastSeenOnline([event.user.id], Date.now(), false);
       }
     });
@@ -71,7 +86,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
     return this;
   }
 
-  private async getOnlineStatuses(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
+  private async getOnlineStatuses(ids: Array<string>): Promise<Array<[string, boolean]>> {
     console.log("socket getOnlineStatuses", ids);
     return this.areOnline(ids);
   }
@@ -126,5 +141,17 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
    */
   private isStillConnected(date: number, is_connected: boolean): boolean {
     return Date.now() - date < DISCONNECTED_DELAY && is_connected;
+  }
+
+  private broadcastOnline(event: WebsocketUserEvent, companies: Array<string>): void {
+    companies.forEach(company => {
+      this.pubsubService.broadcastOnline([
+        {
+          company_id: company,
+          user_id: event.user.id,
+          is_online: true,
+        },
+      ]);
+    });
   }
 }

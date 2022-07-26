@@ -7,6 +7,7 @@ import {
 import { eventBus } from "../../../core/platform/services/realtime/bus";
 import { UsersOnlineMessage } from "../api";
 import { ONLINE_TOPIC } from "../constants";
+import _ from "lodash";
 
 export class UserOnlineProcessor implements PubsubHandler<UsersOnlineMessage, void> {
   private logger: TwakeLogger;
@@ -30,16 +31,20 @@ export class UserOnlineProcessor implements PubsubHandler<UsersOnlineMessage, vo
   }
 
   async process(message: UsersOnlineMessage): Promise<void> {
-    this.logger.debug(`Pushing user online status for users ${message.map(u => u[0]).join(",")}`);
+    this.logger.debug(
+      `Pushing user online status for users ${message.map(u => u.user_id).join(",")}`,
+    );
 
-    // TODO: We can not push all users to all websockets, we need to categorize them per company and then push them in specific topic per company
+    const grouped_data = _.groupBy(message, "company_id");
 
-    eventBus.publish(RealtimeEntityActionType.Event, {
-      type: "user:online",
-      room: ResourcePath.get("/users/online"),
-      entity: message,
-      resourcePath: null,
-      result: null,
+    Object.values(grouped_data).forEach((messagePerCompany: UsersOnlineMessage) => {
+      eventBus.publish(RealtimeEntityActionType.Event, {
+        type: "user:online",
+        room: ResourcePath.get(`/users/online/${messagePerCompany[0].company_id}`),
+        entity: messagePerCompany,
+        resourcePath: null,
+        result: null,
+      });
     });
 
     return;
