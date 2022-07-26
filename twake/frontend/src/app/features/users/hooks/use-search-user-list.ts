@@ -5,7 +5,7 @@ import { UserType } from 'app/features/users/types/user';
 import { getCurrentUserList, setUserList, useSetUserList, useUserList } from './use-user-list';
 import UserAPIClient, { SearchContextType } from '../api/user-api-client';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-import Strings, { distanceFromQuery } from 'app/features/global/utils/strings';
+import Strings, { distanceFromQuery, matchQuery } from 'app/features/global/utils/strings';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import _ from 'lodash';
 
@@ -73,14 +73,7 @@ export const searchFrontend = (
   if (query) {
     result = _.sortBy(
       result.filter(({ email, first_name, last_name, username }) =>
-        query
-          .split(' ')
-          .every(
-            word =>
-              Strings.removeAccents(`${email} ${first_name} ${last_name} ${username}`)
-                .toLocaleLowerCase()
-                .indexOf(Strings.removeAccents(word).toLocaleLowerCase()) > -1,
-          ),
+        matchQuery(query, `${email} ${first_name} ${last_name} ${username}`),
       ),
       a =>
         distanceFromQuery([a.last_name, a.first_name, a.email, a.username].join(' '), query, {

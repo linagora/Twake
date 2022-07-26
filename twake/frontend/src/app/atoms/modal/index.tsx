@@ -84,9 +84,9 @@ export const Modal = (props: {
           className={
             'fixed z-10 inset-0 overflow-y-auto transition-transform ' +
             (level !== visibleModals && open
-              ? '-translate-y-6 sm:scale-95 opacity-75 '
+              ? '-translate-y-6 sm:scale-95 brightness-75 '
               : level !== visibleModals && !open
-              ? 'translate-y-6 sm:scale-95 opacity-75 '
+              ? 'translate-y-6 sm:scale-95 brightness-75 '
               : '')
           }
         >

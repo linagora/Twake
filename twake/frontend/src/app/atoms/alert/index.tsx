@@ -1,7 +1,8 @@
 export const Alert = (props: {
-  theme: 'success' | 'danger' | 'warning' | 'gray';
+  theme: 'success' | 'danger' | 'warning' | 'gray' | 'primary';
   title: string;
   icon: any;
+  className?: string;
   bullets?: string[];
   children?: React.ReactNode;
 }) => {
@@ -11,13 +12,22 @@ export const Alert = (props: {
   if (props.theme === 'danger') color = 'red-500';
   if (props.theme === 'warning') color = 'orange-500';
   if (props.theme === 'gray') {
-    color = 'zinc-200';
+    color = 'zinc-50';
+    textColor = 'zinc-900';
+  }
+  if (props.theme === 'primary') {
+    color = 'blue-100';
     textColor = 'zinc-900';
   }
 
   return (
-    <div className={`my-4 text-${textColor} bg-${color} p-4 flex items-center rounded-md`}>
-      <div className="flex items-center h-full" style={{ minHeight: 48 }}>
+    <div
+      className={
+        `my-4 text-${textColor} bg-${color} p-4 flex items-center rounded-md ` +
+        (props.className || '')
+      }
+    >
+      <div className="flex items-center h-full" style={{ minHeight: 32 }}>
         <div className="flex-shrink-0">
           <props.icon className={`h-6 w-6`} aria-hidden="true" />
         </div>
