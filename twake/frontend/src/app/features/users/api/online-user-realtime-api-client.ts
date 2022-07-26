@@ -17,6 +17,8 @@ export type SubscribeReturn = {
 export type OnlineUserRealtimeAPIType = {
   getUserStatus: (id: GetUserRequestType) => Promise<GetUserResponseType>;
   getUsersStatus: (ids: GetUsersRequestType) => Promise<GetUsersResponseType>;
+  setUserStatus: (id: GetUserRequestType) => Promise<GetUserResponseType>;
+  setUsersStatus: (ids: GetUsersRequestType) => Promise<GetUsersResponseType>;
   subscribe: (onUpdate: (users: RealtimeUpdateMessageType) => void) => SubscribeReturn;
 };
 
@@ -32,6 +34,18 @@ export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRe
     logger.debug(`Get users statuses ${ids.join(',')}`);
     return websocket
       .get<GetUsersRequestType, GetUsersResponseType>('online:get', ids)
+      .then(result => result || []);
+  };
+
+  const setUserStatus = (id: GetUserRequestType): Promise<GetUserResponseType> => {
+    logger.debug(`Set user online status ${id}`);
+    return setUsersStatus([id]).then(response => response?.[0] || [id, false]);
+  };
+
+  const setUsersStatus = (ids: GetUsersRequestType = []): Promise<GetUsersResponseType> => {
+    logger.debug(`Set users statuses`);
+    return websocket
+      .get<GetUsersRequestType, GetUsersResponseType>('online:set', ids)
       .then(result => result || []);
   };
 
@@ -68,5 +82,7 @@ export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRe
     getUserStatus,
     getUsersStatus,
     subscribe,
+    setUserStatus,
+    setUsersStatus,
   };
 };

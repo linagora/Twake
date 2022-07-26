@@ -16,6 +16,8 @@ const logger = Logger.getLogger('useOnlineUsers');
 
 const INTERVAL = 10000;
 
+const SET_ONLINE_USERS_INTERVAL = 600000;
+
 export const useOnlineUsers = (): void => {
   logger.trace('Running online hook');
   const { websocket } = useWebSocket();
@@ -52,6 +54,7 @@ export const useOnlineUsers = (): void => {
 
   useEffect(() => {
     let id: any;
+    let setId: any;
     if (websocket) {
       // got some local users, ask if there are still online
       const api = OnlineUserRealtimeAPI(websocket);
@@ -60,10 +63,17 @@ export const useOnlineUsers = (): void => {
         const status = await api.getUsersStatus(users);
         updateOnline(status);
       }, INTERVAL);
+
+      setId = setInterval(async () => {
+        const users = onlineUsers.map(u => u.id).filter(<T>(n?: T): n is T => Boolean(n));
+        const status = await api.setUsersStatus(users);
+        updateOnline(status);
+      }, SET_ONLINE_USERS_INTERVAL);
     }
 
     return () => {
       id && clearInterval(id);
+      setId && clearInterval(setId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [websocket, onlineUsers]);

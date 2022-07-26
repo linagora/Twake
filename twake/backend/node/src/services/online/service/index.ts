@@ -45,6 +45,15 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
           ack({ data: await this.getOnlineStatuses(request.data) });
         },
       );
+
+      event.socket.on(
+        "online:set",
+        async (request: OnlineGetRequest, ack: (response: OnlineGetResponse) => void) => {
+          this.logger.debug(`Got an online:set request for ${(request.data || []).length} users`);
+
+          ack({ data: await this.getOnlineStatuses(request.data) });
+        },
+      );
     });
 
     gr.platformServices.websocket.onUserDisconnected(async event => {
