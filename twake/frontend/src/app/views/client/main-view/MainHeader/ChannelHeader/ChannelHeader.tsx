@@ -1,24 +1,23 @@
-import React from 'react';
-import { File, Info, Lock, Users } from 'react-feather';
 import { Button, Col, Row, Typography } from 'antd';
+import { File, Info, Lock, Users } from 'react-feather';
 
 import Emojione from 'app/components/emojione/emojione';
 import ModalManager from 'app/components/modal/modal-manager';
-import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
-import RouterServices from 'app/features/router/services/router-service';
-import SearchInput from '../Search';
-import ChannelUsersHeader from './ChannelUsersHeader';
-import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
-import ChannelAvatars from './ChannelAvatars';
-import Languages from 'app/features/global/services/languages-service';
-import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
-import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
+import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
-import { useRecoilState } from 'recoil';
+import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
-import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
+import Languages from 'app/features/global/services/languages-service';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
+import RouterServices from 'app/features/router/services/router-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
+import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
+import { useRecoilState } from 'recoil';
+import SearchInput from '../Search';
+import ChannelAvatars from './ChannelAvatars';
+import ChannelUsersHeader from './ChannelUsersHeader';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
@@ -29,6 +28,8 @@ export default (): JSX.Element => {
   const canAccessChannelParameters =
     AccessRightsService.hasLevel(workspaceId, 'member') &&
     AccessRightsService.getCompanyLevel(companyId) !== 'guest';
+
+  const { setOpen: setParticipantsOpen } = useUsersSearchModal();
 
   useUsersListener(members);
 
@@ -121,12 +122,7 @@ export default (): JSX.Element => {
                   size="small"
                   type="text"
                   className="px-1"
-                  onClick={() => {
-                    ModalManager.open(<ChannelMembersList channel={channel} closable />, {
-                      position: 'center',
-                      size: { width: '600px', minHeight: '329px' },
-                    });
-                  }}
+                  onClick={() => setParticipantsOpen(true)}
                 >
                   <Users className="h-5" />
                 </Button>

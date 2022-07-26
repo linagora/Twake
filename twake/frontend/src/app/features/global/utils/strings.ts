@@ -57,6 +57,17 @@ export default class Strings {
   }
 }
 
+export const matchQuery = (query: string, candidate: string) => {
+  return query
+    .split(' ')
+    .every(
+      word =>
+        Strings.removeAccents(candidate)
+          .toLocaleLowerCase()
+          .indexOf(Strings.removeAccents(word).toLocaleLowerCase()) > -1,
+    );
+};
+
 /**
  * The goal of this score is to get closest match for a query and candidates based of
  * not only number of valid words but also how close words are.

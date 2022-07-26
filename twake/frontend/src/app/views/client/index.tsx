@@ -24,6 +24,7 @@ import UserContext from 'app/features/users/state/integration/user-context';
 import { useCurrentUser, useCurrentUserRealtime } from 'app/features/users/hooks/use-current-user';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 import useUsetiful from 'app/features/global/hooks/use-usetiful';
+import UsersSearchModal from 'app/components/channel-members-list/users-search-modal';
 
 import './styles.scss';
 import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
@@ -89,6 +90,7 @@ export default React.memo((): JSX.Element => {
       <ChannelAttachementList />
       <ConnectionIndicator />
       <ChatUploadsViewer />
+      <UsersSearchModal />
     </>
   );
 });
