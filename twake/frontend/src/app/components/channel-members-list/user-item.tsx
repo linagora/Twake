@@ -10,6 +10,7 @@ import React from 'react';
 import { Modal, ModalContent } from 'app/atoms/modal';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import ConsoleService from 'app/features/console/services/console-service';
+import MemberGrade from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/MemberGrade';
 
 type IUserProps = {
   userId: string;
@@ -78,6 +79,12 @@ export const UserItem = (props: IUserProps): JSX.Element => {
           <span className="font-bold">{full_name}</span>
           <span className="pl-2">{user.email}</span>
         </div>
+      </div>
+      <div className="mr-2 flex items-center">
+        <MemberGrade
+          companyRole={user.companies?.find(c => c.company.id === companyId)?.role || ''}
+          workspaceRole={user.workspaces?.find(c => c.id === workspaceId)?.role || ''}
+        />
       </div>
       <div>
         <Button

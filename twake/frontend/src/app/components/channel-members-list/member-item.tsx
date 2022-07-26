@@ -10,6 +10,7 @@ import { useChannelMember } from 'app/features/channel-members-search/hooks/memb
 import { LogoutIcon } from '@heroicons/react/outline';
 import { Tooltip } from 'antd';
 import { ButtonConfirm } from 'app/atoms/button/confirm';
+import MemberGrade from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/MemberGrade';
 
 type IMemberProps = {
   member: ChannelMemberWithUser;
@@ -43,6 +44,12 @@ export const MemberItem = (props: IMemberProps): JSX.Element => {
           <span className="font-bold">{first_name}</span>
           <span className="pl-2">{email}</span>
         </div>
+      </div>
+      <div className="mr-2 flex items-center">
+        <MemberGrade
+          companyRole={member.user.companies?.find(c => c.company.id === companyId)?.role || ''}
+          workspaceRole={member.user.workspaces?.find(c => c.id === workspaceId)?.role || ''}
+        />
       </div>
       <div>
         {isCurrentUser() ? (

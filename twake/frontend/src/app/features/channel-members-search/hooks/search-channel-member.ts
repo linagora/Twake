@@ -6,23 +6,24 @@ import { matchQuery } from 'app/features/global/utils/strings';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import _ from 'lodash';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { SearchChannelMemberInputState } from '../state/search-channel-member';
-import { SearchChannelMembersStateFamily } from '../state/store';
+import { ListChannelMembersStateFamily } from '../state/store';
 import { ParamsChannelMember, ChannelMemberWithUser } from '../types/channel-members';
 
 export const useRefreshSearchChannelMembers = (context: ParamsChannelMember) => {
   const searchInput = useRecoilValue(SearchChannelMemberInputState);
   const setLoading = useSetRecoilState(LoadingState('useSearchChannelMembers'));
   const [listChannelMembers, setChannelMembers] = useRecoilState<ChannelMemberWithUser[]>(
-    SearchChannelMembersStateFamily(context),
+    ListChannelMembersStateFamily(context),
   );
 
   const refresh = async () => {
     setLoading(true);
     const response = await ChannelMembersAPIClient.getMembers(context, searchInput);
 
-    setChannelMembers(response);
+    setChannelMembers(_.uniqBy([...listChannelMembers, ...response], 'user_id'));
     setLoading(false);
   };
 

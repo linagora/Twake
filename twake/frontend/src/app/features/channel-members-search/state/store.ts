@@ -8,13 +8,6 @@ export const ListChannelMembersStateFamily = atomFamily<ChannelMemberWithUser[],
     default: [],
   },
 );
-export const SearchChannelMembersStateFamily = atomFamily<
-  ChannelMemberWithUser[],
-  SerializableParam
->({
-  key: 'SearchChannelMembersStateFamily',
-  default: [],
-});
 
 export const ListPendingEmailsStateFamily = atomFamily<ChannelPendingEmail[], SerializableParam>({
   key: 'ListPendingEmailsStateFamily',
