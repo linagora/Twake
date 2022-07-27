@@ -15,8 +15,6 @@ import Shortcuts, {
 } from 'app/features/global/services/shortcut-service';
 import AddUserButton from 'components/add-user-button/add-user-button';
 import Workspaces from 'app/deprecated/workspaces/workspaces';
-import ModalManager from 'app/components/modal/modal-manager';
-import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/scroll-hidden-components/scroll-with-hidden-components';
 import HiddenNotificationsButton from 'app/components/scroll-hidden-components/hidden-notifications-button';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
@@ -119,9 +117,21 @@ export const ChannelLoading = () => {
   return (
     <div className="channels_view_loader ">
       <div className="small-x-margin">
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 3, width: '100%' }} />
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 3, width: '100%' }}
+        />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
       </div>
     </div>
   );

@@ -45,6 +45,8 @@ export class LinkPreviewProcessService implements TwakeServiceProvider, Initiali
       }
     }
 
-    return result.filter(Boolean);
+    return result.filter(
+      preview => preview && (preview.title || preview.description || preview.img),
+    );
   }
 }

@@ -275,8 +275,16 @@ export class ChannelServiceImpl {
 
   async get(pk: ChannelPrimaryKey, context: ExecutionContext): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
-    const channel = await this.channelRepository.findOne(primaryKey, {}, context);
-    const last_activity = await this.getChannelActivity(channel, context);
+    let channel = await this.channelRepository.findOne(primaryKey);
+    if (!channel) {
+      channel = await this.channelRepository.findOne({ ...primaryKey, workspace_id: "direct" });
+    }
+    if (!channel) return null;
+
+    const last_activity = await this.getChannelActivity(channel);
+
+    if (channel.visibility === ChannelVisibility.DIRECT)
+      channel = await this.includeUsersInDirectChannel(channel);
 
     return ChannelObject.mapTo(channel, { last_activity });
   }
@@ -755,13 +763,14 @@ export class ChannelServiceImpl {
       for (const user of channel.members) {
         if (user) {
           const e = await formatUser(await gr.services.users.getCached({ id: user }));
-          users.push(e);
+          if (e) users.push(e);
         }
       }
       channelWithUsers.users = users;
       channelWithUsers.name = users
         .filter(u => u.id != excludeUserId)
-        .map(u => u.full_name)
+        .map(u => u.full_name?.trim())
+        .filter(a => a)
         .join(", ");
     }
     return channelWithUsers;

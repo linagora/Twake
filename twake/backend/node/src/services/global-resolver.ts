@@ -24,6 +24,7 @@ import { UserExternalLinksServiceImpl } from "./user/services/external_links";
 import { UserNotificationBadgeService } from "./notifications/services/bages";
 import { NotificationPreferencesService } from "./notifications/services/preferences";
 import { ThreadMessagesService } from "./messages/services/messages";
+import { MessagesFilesService } from "./messages/services/messages-files";
 import { ThreadsService } from "./messages/services/threads";
 import { UserBookmarksService } from "./messages/services/user-bookmarks";
 import { UserServiceImpl } from "./user/services/users/service";
@@ -86,6 +87,7 @@ type TwakeServices = {
   };
   messages: {
     messages: ThreadMessagesService;
+    messagesFiles: MessagesFilesService;
     threads: ThreadsService;
     userBookmarks: UserBookmarksService;
     views: ViewsServiceImpl;
@@ -168,6 +170,7 @@ class GlobalResolver {
       },
       messages: {
         messages: await new ThreadMessagesService().init(platform),
+        messagesFiles: await new MessagesFilesService().init(),
         threads: await new ThreadsService().init(platform),
         userBookmarks: await new UserBookmarksService().init(platform),
         views: await new ViewsServiceImpl().init(platform),

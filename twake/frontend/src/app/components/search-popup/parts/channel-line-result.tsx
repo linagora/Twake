@@ -8,13 +8,13 @@ import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
 import { openChannel } from '../common';
 import { Button } from 'app/atoms/button/button';
-import { ArrowRight } from 'react-feather';
 import Languages from 'app/features/global/services/languages-service';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 import { Badge } from '@atoms/badge';
 import UserService from 'features/users/services/current-user-service';
 import ResultContext from './result-context';
+import _ from 'lodash';
 
 type PropsType = {
   channel: ChannelType;
@@ -24,17 +24,17 @@ export default ({ channel: _channel }: PropsType): JSX.Element => {
   const channel =
     (_channel.visibility !== 'direct'
       ? useChannel(_channel.id || '', {
-          companyId: _channel.company_id,
-          workspaceId: _channel.workspace_id,
+          companyId: _channel.company_id || '',
+          workspaceId: _channel.workspace_id || '',
         })?.channel
       : undefined) || _channel;
   const currentWorkspaceId = useRouterWorkspace();
   const input = useRecoilValue(SearchInputState);
   const name =
     channel.name ||
-    (channel.users || [])
+    _.uniqBy(channel.users || [], 'id')
       .filter(u => u.id != UserService.getCurrentUserId() || channel.users?.length === 1)
-      .map(u => UserService.getFullName(u))
+      .map(u => UserService.getFullName(u).trim())
       .join(', ');
   const { setOpen } = useSearchModal();
 

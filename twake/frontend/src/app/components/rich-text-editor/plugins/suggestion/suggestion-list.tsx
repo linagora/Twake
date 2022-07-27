@@ -62,10 +62,6 @@ export const SuggestionList = <T,>(props: Props<T>): JSX.Element => {
   }, [props.position, position, props.id, id]);
 
   useEffect(() => {
-    console.debug('Text which has been used for search:', `"${props.search}"`);
-  }, [props.search]);
-
-  useEffect(() => {
     const totalWidth = window.document.body.offsetWidth;
     if (x + suggestionWidth < totalWidth - suggestionMargin) {
       // keep the position just over the cursor

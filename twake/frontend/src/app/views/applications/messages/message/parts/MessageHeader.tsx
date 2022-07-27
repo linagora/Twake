@@ -24,6 +24,7 @@ import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
 import { CompanyApplicationsStateFamily } from 'app/features/applications/state/company-applications';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 
 type Props = {
   linkToThread?: boolean;
@@ -39,7 +40,10 @@ export default (props: Props) => {
 
   const context = useContext(MessageContext);
   const { message } = useMessage(context);
-  const parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
+  const parentMessage: NodeMessage | null = useMessage({
+    ...context,
+    id: message.thread_id,
+  }).message;
 
   const user = useUser(message.user_id);
 
@@ -119,7 +123,7 @@ export default (props: Props) => {
             className="date"
             // eslint-disable-next-line react/jsx-no-target-blank
             target="_BLANK"
-            href={messageLink || '#'}
+            href={messageLink ? addUrlTryDesktop(messageLink) : '#'}
             onMouseEnter={() => updateMessageLink()}
             rel="noreferrer"
           >

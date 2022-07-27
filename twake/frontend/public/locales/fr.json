@@ -18,6 +18,8 @@
     "general.update": "Mettre à jour",
     "general.remove": "Supprimer",
     "general.add": "Ajouter",
+    "general.yes": "Oui",
+    "general.no": "Non",
     "general.connexion_status.disconnected": "Vous êtes hors ligne",
     "general.connexion_status.connected": "Vous êtes connecté",
     "general.connexion_status.connecting": "Reconnexion en cours…",
@@ -103,7 +105,7 @@
     "scenes.apps.messages.left_bar.stream.notifications.me": "{{$1}} seulement",
     "scenes.apps.messages.left_bar.stream.notifications.never": "Aucun message",
     "scenes.apps.parameters.workspace_sections.workspace": "Espace de travail",
-    "scenes.apps.parameters.workspace_sections.members": "Participants",
+    "scenes.apps.parameters.workspace_sections.members": "Participants de la chaîne",
     "scenes.apps.parameters.group_sections.workspaces": "Espaces de travail",
     "scenes.apps.parameters.group_sections.apps": "Applications",
     "scenes.apps.account.title": "Paramètres du compte",
@@ -888,8 +890,8 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Application {{$1}} réussie !",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Paramètres du développeur",
     "scenes.app.integrations_parameters.add_application": "Nouvelle intégration",
-    "components.open_desktop_popup.subtitle": "ouvert dans l'application Twake",
-    "components.open_desktop_popup.open_here_link": "Ouvrez plutôt ici",
+    "components.open_desktop_popup.subtitle": "Ouvert dans l'application Twake",
+    "components.open_desktop_popup.open_here_link": "Ouvrir dans la version web",
     "molecules.download_banner.title": "Tirez le meilleur parti de Twake, téléchargez l'application de bureau maintenant",
     "molecules.download_banner.download_button": "Télécharger l'application de bureau"
 }

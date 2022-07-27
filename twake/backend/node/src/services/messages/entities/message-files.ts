@@ -15,6 +15,7 @@ export class MessageFile {
   @Column("message_id", "timeuuid", { order: "DESC" })
   message_id?: string;
 
+  //Timeuuid is used please do not change to uuid
   @Type(() => String)
   @Column("id", "timeuuid", { order: "DESC" })
   id: string;

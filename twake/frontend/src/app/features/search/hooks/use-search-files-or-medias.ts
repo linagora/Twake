@@ -11,6 +11,7 @@ import { SearchMediasResultsState } from '../state/search-medias-result';
 import _ from 'lodash';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import { useSearchModal } from './use-search';
 
 export const useSearchMessagesFilesLoading = () => {
   return useRecoilValue(LoadingState('useSearchMessagesFilesOrMedias-' + 'files'));
@@ -24,6 +25,7 @@ let currentQuery = '';
 
 export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
   const companyId = useRouterCompany();
+  const { open } = useSearchModal();
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(
     LoadingState('useSearchMessagesFilesOrMedias-' + mode),
@@ -38,7 +40,7 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
 
   const opt = _.omitBy(
     {
-      limit: 100,
+      limit: 25,
       is_file: mode === 'files' || undefined,
       is_media: mode === 'medias' || undefined,
       workspace_id: searchInput.workspaceId,
@@ -49,7 +51,7 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
 
   const refresh = async () => {
     setLoading(true);
-    const isRecent = !searchInput.query;
+    const isRecent = searchInput.query?.trim()?.length === 0;
 
     const query = searchInput.query;
     currentQuery = query;
@@ -83,18 +85,19 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
   useGlobalEffect(
     'useSearchFiles' + mode,
     () => {
-      (async () => {
-        setLoading(true);
-        if (searchInput) {
-          delayRequest('useSearchFiles' + mode, async () => {
-            await refresh();
-          });
-        } else {
-          refresh();
-        }
-      })();
+      if (open)
+        (async () => {
+          setLoading(true);
+          if (searchInput.query) {
+            delayRequest('useSearchFiles' + mode, async () => {
+              await refresh();
+            });
+          } else {
+            refresh();
+          }
+        })();
     },
-    [searchInput.query, searchInput.channelId, searchInput.workspaceId],
+    [searchInput.query, searchInput.channelId, searchInput.workspaceId, open],
   );
 
   return {

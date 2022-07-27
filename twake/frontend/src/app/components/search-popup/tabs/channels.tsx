@@ -9,7 +9,7 @@ import NothingFound from '../parts/nothing-found';
 
 export default () => {
   const input = useRecoilValue(SearchInputState);
-  const isRecent = input?.query?.length === 0;
+  const isRecent = input?.query?.trim()?.length === 0;
   const { channels, loading, loadMore } = useSearchChannels();
 
   if (channels.length === 0 && !loading) return <NothingFound />;
@@ -41,9 +41,11 @@ export default () => {
         </div>
       )}
 
-      <Text.Subtitle className="block">
-        {Languages.t('components.searchpopup.channels')}
-      </Text.Subtitle>
+      {!!isRecent && (
+        <Text.Subtitle className="block">
+          {Languages.t('components.searchpopup.channels')}
+        </Text.Subtitle>
+      )}
       <div className={'-mx-2'}>
         <ChannelsResults />
       </div>

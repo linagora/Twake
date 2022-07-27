@@ -73,6 +73,7 @@ module.exports = {
     'items-center',
     'border-b-2',
     'border-transparent',
+    'zinc-100',
     ...shades,
   ],
   plugins: [require('@tailwindcss/forms')],

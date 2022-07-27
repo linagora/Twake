@@ -1,3 +1,4 @@
+import { MessageFile } from "../messages/entities/message-files";
 import { File, PublicFile } from "./entities/file";
 
 const formatPublicFile = (file: Partial<File | PublicFile>): PublicFile => {
@@ -13,4 +14,12 @@ const formatPublicFile = (file: Partial<File | PublicFile>): PublicFile => {
       })),
     ],
   } as PublicFile;
+};
+
+export const fileIsMedia = (file: Partial<File | MessageFile>): boolean => {
+  return (
+    file.metadata?.mime?.startsWith("video/") ||
+    file.metadata?.mime?.startsWith("audio/") ||
+    file.metadata?.mime?.startsWith("image/")
+  );
 };

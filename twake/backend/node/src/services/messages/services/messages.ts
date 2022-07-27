@@ -836,7 +836,8 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       message.files.push(entity);
     }
 
-    if (!_.isEqual(previousMessageFiles.sort(), message.files.sort())) didChange = true;
+    if (!_.isEqual(previousMessageFiles.map(a => a.id).sort(), message.files.map(a => a.id).sort()))
+      didChange = true;
 
     if (didChange) {
       await this.repository.save(message, context);

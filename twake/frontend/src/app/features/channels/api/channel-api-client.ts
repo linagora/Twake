@@ -28,7 +28,7 @@ class ChannelAPIClientService {
   async get(companyId: string, workspaceId: string, channelId: string): Promise<ChannelType> {
     return Api.get<{ resource: ChannelType }>(
       `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
-    ).then(result => result.resource);
+    ).then(result => result?.resource);
   }
 
   async save(
@@ -57,8 +57,8 @@ class ChannelAPIClientService {
 
     delayRequest(
       'reach-end-read-channel-' + channelId,
-      () =>
-        Api.post<{ value: boolean }, void>(
+      async () =>
+        await Api.post<{ value: boolean }, void>(
           `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/read`,
           {
             value: status,

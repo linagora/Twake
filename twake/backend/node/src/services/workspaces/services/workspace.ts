@@ -421,8 +421,15 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     );
   }
 
-  async processPendingUser(user: User, context?: ExecutionContext): Promise<void> {
-    const userCompanies = await gr.services.companies.getAllForUser(user.id);
+  async processPendingUser(user: User, companyId?: string, context?: ExecutionContext): Promise<void> {
+    let userCompanies = [];
+    if (!companyId) {
+      userCompanies = await gr.services.companies.getAllForUser(user.id);
+    } else {
+      userCompanies = [
+        await gr.services.companies.getCompanyUser({ id: companyId }, { id: user.id }),
+      ];
+    }
     for (const userCompany of userCompanies) {
       const workspaces = await this.getAllForCompany(userCompany.group_id);
       for (const workspace of workspaces) {
@@ -450,8 +457,8 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     context?: ExecutionContext,
   ): Promise<WorkspaceUser[]> {
     //Process pending invitation to workspace for this user
-    const user = await gr.services.users.get({ id: userId.userId }, context);
-    await this.processPendingUser(user);
+    const user = await gr.services.users.get({ id: userId.userId });
+    await this.processPendingUser(user, companyId?.id);
 
     //Get all workspaces for this user
     const allCompanyWorkspaces = await this.getAllForCompany(companyId.id, context);

@@ -1,16 +1,16 @@
-import React, { FC, useState } from 'react';
-import Languages from 'app/features/global/services/languages-service';
-import ChannelTemplateEditor from 'app/views/client/channels-bar/Modals/ChannelTemplateEditor';
-import ModalManager from 'app/components/modal/modal-manager';
-import ObjectModal from 'components/object-modal/object-modal';
-import { ChannelType } from 'app/features/channels/types/channel';
 import { Button } from 'antd';
-import ChannelMembersList from './ChannelMembersList';
-import _ from 'lodash';
-import MainViewService from 'app/features/router/services/main-view-service';
+import ModalManager from 'app/components/modal/modal-manager';
+import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
+import { ChannelType } from 'app/features/channels/types/channel';
+import Languages from 'app/features/global/services/languages-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import MainViewService from 'app/features/router/services/main-view-service';
+import ChannelTemplateEditor from 'app/views/client/channels-bar/Modals/ChannelTemplateEditor';
+import ObjectModal from 'components/object-modal/object-modal';
+import _ from 'lodash';
+import { FC, useState } from 'react';
 
 type Props = {
   title: string;
@@ -27,6 +27,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
 }) => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
+  const { setOpen: setParticipantsOpen } = useUsersSearchModal();
 
   const [disabled, setDisabled] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
@@ -92,10 +93,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
 
       if (!channel && !response.is_default) {
         // Show channel member list only for non default channel
-        return ModalManager.open(<ChannelMembersList channel={response} closable />, {
-          position: 'center',
-          size: { width: '600px', minHeight: '329px' },
-        });
+        setParticipantsOpen(true);
       }
     }
 

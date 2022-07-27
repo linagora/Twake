@@ -1,6 +1,16 @@
+# Twake 2022.Q3.1065
+
+- New channel members invitation and management modal ⚙️
+- New file preview and medias gallery with navigation, caption, and message context 🕶
+- Fixed connection status of users 🟢
+- Notification when someone react to your message 👍
+- Backend simplification for faster development 👩‍💻
+
 # Twake 2022.Q3.1050
 
-- [Search anything on Twake](https://github.com/linagora/Twake/issues/1710)
+- Open desktop app if present in the system
+- Preview public channels before to join them
+- Updated [Search anything on Twake](https://github.com/linagora/Twake/issues/1710)
 - Started using Tailwindcss for future new design
 - Started using Storybooks
 

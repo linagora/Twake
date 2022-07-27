@@ -179,7 +179,16 @@ export class ChannelCrudController
         50,
         context,
       );
+
+      //If not public channel and not member then ignore
       if (!channelMember && ch.visibility !== "public") continue;
+
+      //If public channel but not in the workspace then ignore
+      if (
+        !channelMember &&
+        !(await gr.services.workspaces.getUser({ workspaceId: ch.workspace_id, userId }))
+      )
+        continue;
 
       const chWithUser = await gr.services.channels.channels.includeUsersInDirectChannel(
         ch,
@@ -507,6 +516,7 @@ export class ChannelCrudController
     const userId = request.currentUser.id;
 
     const context = getSimpleExecutionContext(request);
+    const limit = parseInt(request.query.limit) || 100;
 
     const workspaces = (
       await gr.services.workspaces.getAllForUser({ userId }, { id: companyId })
@@ -531,6 +541,26 @@ export class ChannelCrudController
     );
     channels = channels.slice(0, 100);
 
+    if (channels.length < limit) {
+      let otherChannels: UserChannel[] = [];
+      for (const workspaceId of workspaces) {
+        //Include channels we could join in this result
+        otherChannels = [
+          ...otherChannels,
+          ...(
+            await gr.services.channels.channels.getAllChannelsInWorkspace(companyId, workspaceId)
+          ).map(ch => {
+            return {
+              ...ch,
+              user_member: null,
+            } as UserChannel;
+          }),
+        ];
+      }
+
+      channels = _.unionBy(channels, otherChannels, "id");
+    }
+
     const userIncludedChannels: UsersIncludedChannel[] = await Promise.all(
       channels.map(channel => {
         return gr.services.channels.channels.includeUsersInDirectChannel(channel, userId);
@@ -538,7 +568,7 @@ export class ChannelCrudController
     );
 
     return {
-      resources: userIncludedChannels.slice(0, parseInt(request.query.limit) || 100),
+      resources: userIncludedChannels.slice(0, limit),
     };
   }
 }

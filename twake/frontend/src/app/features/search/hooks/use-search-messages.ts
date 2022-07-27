@@ -25,7 +25,7 @@ export const useSearchMessages = () => {
 
   const opt = _.omitBy(
     {
-      limit: 100,
+      limit: 50,
       company_id: companyId,
       workspace_id: searchInput.workspaceId,
       channel_id: searchInput.channelId,
@@ -65,7 +65,7 @@ export const useSearchMessages = () => {
     () => {
       (async () => {
         setLoading(true);
-        if (searchInput) {
+        if (searchInput.query) {
           delayRequest('useSearchMessages', async () => {
             await refresh();
           });

@@ -1,3 +1,5 @@
+import _, { uniqBy } from "lodash";
+import { TwakeContext } from "../../../core/platform/framework";
 import {
   ExecutionContext,
   ListResult,
@@ -10,6 +12,16 @@ import {
   TwakeServiceProvider,
 } from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import SearchRepository from "../../../core/platform/services/search/repository";
+import { fileIsMedia } from "../../../services/files/utils";
+import { formatUser } from "../../../utils/users";
+import gr from "../../global-resolver";
+import { MessageViewsServiceAPI } from "../api";
+import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
+import { MessageChannelRef } from "../entities/message-channel-refs";
+import { MessageFileRef } from "../entities/message-file-refs";
+import { MessageFile } from "../entities/message-files";
 import { Message } from "../entities/messages";
 import { Thread } from "../entities/threads";
 import {
@@ -22,15 +34,8 @@ import {
   SearchMessageFilesOptions,
   SearchMessageOptions,
 } from "../types";
-import { MessageChannelRef } from "../entities/message-channel-refs";
 import { buildMessageListPagination } from "./utils";
-import { uniqBy } from "lodash";
 import SearchRepository from "../../../core/platform/services/search/repository";
-import { MessageFileRef } from "../entities/message-file-refs";
-import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
-import gr from "../../global-resolver";
-import { MessageFile } from "../entities/message-files";
-import { formatUser } from "../../../utils/users";
 import { FileSearchResult } from "../web/controllers/views/search-files";
 
 export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
@@ -77,7 +82,11 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
   ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>> {
     const refs = await this.repositoryFilesRef.find(
       {
-        target_type: "channel",
+        target_type: options?.media_only
+          ? "channel_media"
+          : options?.file_only
+          ? "channel_file"
+          : "channel",
         target_id: context.channel.id,
         company_id: context.channel.company_id,
       },
@@ -85,7 +94,7 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
       context,
     );
 
-    const threads: MessageWithReplies[] = [];
+    const threads: (MessageWithReplies & { context: MessageFileRef })[] = [];
     for (const ref of refs.getEntities()) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id }, {}, context);
       const extendedThread = await gr.services.messages.messages.getThread(
@@ -102,22 +111,27 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
       });
       if (message && extendedThread) {
         extendedThread.highlighted_replies = [message];
-        threads.push(extendedThread);
+        threads.push({ ...extendedThread, context: ref });
       }
     }
 
     if (options.flat) {
-      const files: FlatFileFromMessage[] = [];
+      let files: FlatFileFromMessage[] = [];
       for (const thread of threads) {
         for (const reply of thread.highlighted_replies) {
           for (const file of reply.files || []) {
-            files.push({
-              file,
-              thread,
-            });
+            if (file.id === thread.context.message_file_id) {
+              files.push({
+                file: file as MessageFile,
+                thread,
+                context: thread.context,
+              });
+            }
           }
         }
       }
+      files = _.uniqBy(files, f => f.file.id);
+      refs.nextPage.page_token = files.length > 0 ? files[files.length - 1].context?.id : null;
       return new ListResult("file", files, refs.nextPage);
     }
 
@@ -158,7 +172,7 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
     for (const ref of refs.getEntities()) {
       const extendedThread = threads.find(th => th.id === ref.thread_id);
       if (extendedThread) {
-        extendedThread.highlighted_replies = [];
+        extendedThread.highlighted_replies = extendedThread.highlighted_replies || [];
         const message = await gr.services.messages.messages.get({
           thread_id: ref.thread_id,
           id: ref.message_id,
@@ -168,16 +182,16 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
     }
 
     if (options.flat) {
-      const files: FlatPinnedFromMessage[] = [];
+      const messages: FlatPinnedFromMessage[] = [];
       for (const thread of threads) {
         for (const message of thread.highlighted_replies) {
-          files.push({
+          messages.push({
             message,
             thread,
           });
         }
       }
-      return new ListResult("message", files, refs.nextPage);
+      return new ListResult("message", messages, refs.nextPage);
     }
 
     return new ListResult("thread", threads, null);
@@ -294,6 +308,9 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
           $text: {
             $search: options.search,
           },
+          $sort: {
+            created_at: "desc",
+          },
         },
         context,
       )
@@ -322,6 +339,9 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
           ...(options.extension ? { $in: [["extension", [options.extension]]] } : {}),
           $text: {
             $search: options.search,
+          },
+          $sort: {
+            created_at: "desc",
           },
         },
         context,
@@ -396,12 +416,14 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
         },
       );
 
-      const messageFiles = (await Promise.all(messageFilePromises)).filter(a => a);
+      const messageFiles = _.uniqBy(
+        (await Promise.all(messageFilePromises)).filter(a => a),
+        a => a.metadata?.source + JSON.stringify(a.metadata?.external_id),
+      );
 
       files = [...files, ...messageFiles.filter(a => a)].filter(ref => {
         //Apply media filer
-        const isMedia =
-          ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
+        const isMedia = fileIsMedia(ref);
         return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
       });
       files = files.sort((a, b) => b.created_at - a.created_at);
@@ -413,7 +435,7 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
     const fileWithUserAndMessagePromise: Promise<FileSearchResult>[] = files.map(
       async file =>
         ({
-          user: await formatUser(await gr.services.users.get({ id: file.cache.user_id })),
+          user: await formatUser(await gr.services.users.getCached({ id: file.cache?.user_id })),
           message: await gr.services.messages.messages.get({
             id: file.message_id,
             thread_id: file.thread_id,

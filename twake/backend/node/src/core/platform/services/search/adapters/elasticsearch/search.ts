@@ -75,6 +75,13 @@ export function buildSearchQuery<Entity>(
     }
   }
 
+  if (options.$sort) {
+    for (const [key, value] of Object.entries(options.$sort)) {
+      esBody.sort = esBody.sort || [];
+      esBody.sort.push({ [key]: value });
+    }
+  }
+
   //TODO implement regex search
 
   logger.debug(`Elasticsearch query: ${JSON.stringify(esBody)}`);

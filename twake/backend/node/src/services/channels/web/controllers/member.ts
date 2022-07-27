@@ -202,7 +202,7 @@ export class ChannelMemberCrudController
 
     for (const member of list) {
       if (member) {
-        const user = await formatUser(await gr.services.users.get({ id: member.user_id }), {
+        const user = await formatUser(await gr.services.users.getCached({ id: member.user_id }), {
           includeCompanies: true,
         });
         resources.push({ ...member, user });
