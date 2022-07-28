@@ -1,4 +1,5 @@
 import { TwakeServiceProvider } from "../../core/platform/framework";
+import UserOnline, { UserOnlinePrimaryKey } from "./entities/user-online";
 
 export type OnlineEvent = {
   company_id: string;
@@ -20,4 +21,5 @@ export type OnlineGetResponse = {
 export interface OnlineServiceAPI extends TwakeServiceProvider {
   isOnline(userId: string): Promise<boolean>;
   setLastSeenOnline(userIds: Array<string>, lastSeen: number, is_connected: boolean): Promise<void>;
+  get(userId: UserOnlinePrimaryKey): Promise<UserOnline>;
 }

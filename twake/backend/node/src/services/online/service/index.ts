@@ -3,7 +3,11 @@ import Repository from "../../../core/platform/services/database/services/orm/re
 import { OnlineGetRequest, OnlineGetResponse, OnlineServiceAPI } from "../api";
 import { OnlinePubsubService } from "../pubsub";
 import { DISCONNECTED_DELAY } from "../constants";
-import UserOnline, { getInstance, TYPE as ONLINE_TYPE } from "../entities/user-online";
+import UserOnline, {
+  getInstance,
+  TYPE as ONLINE_TYPE,
+  UserOnlinePrimaryKey,
+} from "../entities/user-online";
 import gr from "../../global-resolver";
 import { getLogger, TwakeLogger, TwakeServiceProvider } from "../../../core/platform/framework";
 import { getUserRoom } from "../../../services/user/realtime";
@@ -153,5 +157,9 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
         },
       ]);
     });
+  }
+
+  async get(pk: UserOnlinePrimaryKey): Promise<UserOnline> {
+    return await this.onlineRepository.findOne(pk);
   }
 }
