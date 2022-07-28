@@ -41,7 +41,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
         id: event.user.id,
       });
 
-      const companies = user.cache?.companies;
+      const companies = user?.cache?.companies;
 
       this.logger.info("User connected", event.user.id);
       // save the last connection date
