@@ -20,6 +20,9 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
     LoadingState(`useChannelAttachmentList-${type}-${companyId}-${workspaceId}-${channelId}`),
   );
   const [isOpen] = useRecoilState(channelAttachmentListState);
+  const [, setchannelFiles] = useRecoilState(channelAttachmentFileState(companyId));
+  const [, setchannelMedia] = useRecoilState(channelAttachmentMediaState(companyId));
+
   const [result, setResult] = useRecoilState(
     type === 'media'
       ? channelAttachmentMediaState(companyId)
@@ -70,6 +73,16 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
     }
   }
 
+  const reset = () => {
+    const update = {
+      results: [],
+      nextPage: null,
+    }
+
+    setchannelFiles(update);
+    setchannelMedia(update);
+  }
+
   useGlobalEffect(
     `useChannelAttachmentList${type}`,
     () => {
@@ -78,6 +91,8 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
           setLoading(true);
           await loadItems();
         })();
+      } else {
+        reset();
       }
     },
     [channelId, workspaceId, isOpen],
