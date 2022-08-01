@@ -24,7 +24,7 @@ export default class OIDCAuthProviderService
 {
   private logger: Logger.Logger;
   private userManager: Oidc.UserManager | null = null;
-  private initialized: boolean = false;
+  private initialized = false;
   private user!: Oidc.User;
   private params?: InitParameters;
 
@@ -79,6 +79,7 @@ export default class OIDCAuthProviderService
               'OIDC user loaded listener, error while getting the JWT from OIDC token',
               err,
             );
+            this.signinRedirect();
             // FIXME: Should we return?
             //return;
           }

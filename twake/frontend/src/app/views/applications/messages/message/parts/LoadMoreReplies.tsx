@@ -5,26 +5,33 @@ import Languages from 'app/features/global/services/languages-service';
 import ThreadSection from '../../parts/thread-section';
 import { MessageContext } from '../message-with-replies';
 
-export default () => {
+export default (props: { firstMessageId: string; onFirstMessageChanged: Function }) => {
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
-  let { messages, window, loadMore } = useThreadMessages({
+  const { message } = useMessage(context);
+  const { messages, window, loadMore } = useThreadMessages({
     companyId: context.companyId,
     threadId: message.thread_id,
   });
 
+  const loadMoreMessages = async (direction: 'history' | 'future') => {
+    const messages = await loadMore(direction, 10, props.firstMessageId);
+    props.onFirstMessageChanged && props.onFirstMessageChanged(messages[0]);
+  };
+
   return (
     <>
-      {!window.reachedStart && window.end && (
-        <ThreadSection gradient>
-          <div className="message-content">
-            <span onClick={() => loadMore('history')} className="link">
-              {Languages.t('scenes.apps.messages.message.show_responses_button')} (
-              {Math.max(message.stats.replies, messages.length)})
-            </span>
-          </div>
-        </ThreadSection>
-      )}
+      {!(window.reachedStart && window.start === props.firstMessageId) &&
+        window.end &&
+        messages.length < message.stats.replies && (
+          <ThreadSection gradient>
+            <div className="message-content">
+              <span onClick={() => loadMoreMessages('history')} className="link">
+                {Languages.t('scenes.apps.messages.message.show_responses_button')} (
+                {Math.max(message.stats.replies, messages.length)})
+              </span>
+            </div>
+          </ThreadSection>
+        )}
     </>
   );
 };

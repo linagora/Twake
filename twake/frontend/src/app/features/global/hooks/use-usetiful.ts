@@ -16,8 +16,8 @@ export default function useUsetiful() {
       if (Globals.environment.usetiful_token?.length) {
         (window as any).usetifulTags = { userId: user.id };
         (function (w, d, s) {
-          var a = d.getElementsByTagName('head')[0];
-          var r = d.createElement('script');
+          const a = d.getElementsByTagName('head')[0];
+          const r = d.createElement('script');
           r.async = true;
           r.src = s;
           r.setAttribute('id', 'usetifulScript');

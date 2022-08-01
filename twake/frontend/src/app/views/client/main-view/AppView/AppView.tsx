@@ -25,7 +25,7 @@ const AppView: FC<PropsType> = props => {
 
   const configuration = props.viewService.getConfiguration();
 
-  let { channel } = useChannel(props.id);
+  const { channel } = useChannel(props.id);
 
   const app = props.viewService.getConfiguration().app;
 

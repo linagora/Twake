@@ -29,12 +29,13 @@ services:
     container_name: node
     ports:
       - 3000:3000
+      - 8000:3000
+      - 9229:9229
     environment:
       - DEV=dev
       - SEARCH_DRIVER=mongodb
       - DB_DRIVER=mongodb
       - PUBSUB_TYPE=local
-      - PLUGINS_SERVER=plugins:3100
     build:
       context: .
       dockerfile: ./docker/twake-node/Dockerfile

@@ -1,36 +1,36 @@
-import { ContentState, EditorState, convertToRaw, convertFromRaw} from "draft-js";
-import { markdownToDraft, DraftToMarkdownOptions } from "markdown-draft-js";
-import draftToMarkdown from "./markdown/draft-to-markdown";
-import { EditorTextFormat } from "./editor";
-import { EditorSuggestionPlugin } from "./plugins";
-import { EntityItemsOptions } from "./markdown/types";
+import { ContentState, EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import { markdownToDraft, DraftToMarkdownOptions } from 'markdown-draft-js';
+import draftToMarkdown from './markdown/draft-to-markdown';
+import { EditorTextFormat } from './editor';
+import { EditorSuggestionPlugin } from './plugins';
+import { EntityItemsOptions } from './markdown/types';
 
 export default class EditorDataParser {
   private entityItems: EntityItemsOptions = {};
-  private styleItems: DraftToMarkdownOptions["styleItems"] = {};
+  private styleItems: DraftToMarkdownOptions['styleItems'] = {};
 
   constructor(private plugins: EditorSuggestionPlugin<any>[] = []) {
     this.plugins.forEach(plugin => {
       if (plugin.serializer) {
         this.entityItems![plugin.resourceType] = {
-          open: (entity, block) => plugin.serializer?.open(entity, block) || "",
-          close: (entity, block) => plugin.serializer?.close(entity, block) || "",
+          open: (entity, block) => plugin.serializer?.open(entity, block) || '',
+          close: (entity, block) => plugin.serializer?.close(entity, block) || '',
         };
       }
     });
 
     // adding custom support for underline since it is not natively available in markdown
-    this.styleItems!["UNDERLINE"] = {
-      open: () => "__",
-      close: () => "__"
+    this.styleItems!['UNDERLINE'] = {
+      open: () => '__',
+      close: () => '__',
     };
   }
 
   toString(editorState: EditorState, format: EditorTextFormat): string {
-    let contentState = editorState.getCurrentContent();
+    const contentState = editorState.getCurrentContent();
 
     switch (format) {
-      case "markdown": {
+      case 'markdown': {
         let markdown = draftToMarkdown(convertToRaw(contentState), {
           entityItems: this.entityItems,
           styleItems: this.styleItems,
@@ -41,13 +41,13 @@ export default class EditorDataParser {
 
         // when empty the stateToMarkdown lib returns a zero-width-space character in first position
         if (markdown.length === 1 && markdown.charCodeAt(0) === 8203) {
-          markdown = "";
+          markdown = '';
         }
 
         return this.replaceElements(markdown);
       }
 
-      case "raw": {
+      case 'raw': {
         return JSON.stringify(convertToRaw(contentState));
       }
 
@@ -59,10 +59,10 @@ export default class EditorDataParser {
 
   fromString(markup: string, format: EditorTextFormat): ContentState {
     switch (format) {
-      case "markdown": {
+      case 'markdown': {
         return convertFromRaw(markdownToDraft(markup));
       }
-      case "raw": {
+      case 'raw': {
         return convertFromRaw(JSON.parse(markup));
       }
       default: {

@@ -17,9 +17,16 @@ class ConsoleService {
   public getCompanyManagementUrl(companyId: string) {
     const identity_provider_id =
       getCompany(companyId)?.identity_provider_id || getCompany(companyId)?.id;
-    console.log(identity_provider_id);
     return (
       InitService.server_infos?.configuration?.accounts?.console?.company_management_url || ''
+    ).replace('{company_id}', identity_provider_id);
+  }
+
+  public getCompanySubscriptionUrl(companyId: string) {
+    const identity_provider_id =
+      getCompany(companyId)?.identity_provider_id || getCompany(companyId)?.id;
+    return (
+      InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url || ''
     ).replace('{company_id}', identity_provider_id);
   }
 
@@ -75,20 +82,27 @@ class ConsoleService {
     }
 
     if (res.resources.filter((r: any) => r.status === 'error').length > 0) {
-      res.resources
-        .filter((r: any) => r.status === 'error')
-        .forEach(({ email, message }: { email: string; message: string }) => {
-          // possible error messages are
-          // 1. "User already belonged to the company" (Good typo in it...)
-          // 2. "Unable to invite user ${user.email} to company ${company.code}"
-          this.logger.error('Error while adding email', email, message);
+      if (
+        res.resources.filter((r: any) => r.message.includes('403') && r.status === 'error').length >
+        0
+      ) {
+        Toaster.warning('You have not the corresponding access rights to invite to this company.');
+      } else {
+        res.resources
+          .filter((r: any) => r.status === 'error')
+          .forEach(({ email, message }: { email: string; message: string }) => {
+            // possible error messages are
+            // 1. "User already belonged to the company" (Good typo in it...)
+            // 2. "Unable to invite user ${user.email} to company ${company.code}"
+            this.logger.error('Error while adding email', email, message);
 
-          Toaster.warning(
-            Languages.t('services.console_services.toaster.add_email_error_message', [
-              email + ` (${message})`,
-            ]),
-          );
-        });
+            Toaster.warning(
+              Languages.t('services.console_services.toaster.add_email_error_message', [
+                email + ` (${message})`,
+              ]),
+            );
+          });
+      }
     }
 
     if (res.resources.filter((r: any) => r.status !== 'error').length > 0) {

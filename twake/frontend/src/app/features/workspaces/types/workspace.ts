@@ -1,4 +1,4 @@
-import { UserType } from 'app/features/users/types/user';
+import { UserCompanyType, UserType } from 'app/features/users/types/user';
 
 export type WorkspaceType = {
   id: string;
@@ -15,42 +15,17 @@ export type WorkspaceType = {
   };
 };
 
-export type WorkspaceUserCompanyType = {
-  role: 'owner' | 'admin' | 'member' | 'guest';
-  status: 'active' | 'deactivated' | 'invited';
-  company: {
-    id: string; //Related to console "code"
-    name: string;
-    logo: string;
-  };
-};
-
 export type WorkspaceUserRole = 'moderator' | 'member';
-export type WorkspaceUserType = {
-  id: string;
-  provider: string; //"console",
-  provider_id: string;
-
-  email: string;
-  is_verified: boolean;
-  picture: string;
-  first_name: string;
-  last_name: string;
-  created_at: number;
-  deleted: boolean;
-
-  status: string; //Single string for the status
-  last_activity: number;
-
+export type WorkspaceUserType = UserType & {
   role: WorkspaceUserRole;
   user_id: string;
   workspace_id: string;
   user: UserType;
+  companies?: UserCompanyType[];
+};
 
-  //Below is only if this is myself
-  preference: {
-    locale: string; //"fr-FR",
-    timezone: number; //minutesFromGMT,
-  };
-  companies: WorkspaceUserCompanyType[];
+export type WorkspacePendingUserType = {
+  company_role: 'member' | 'guest' | 'admin';
+  role: 'member' | 'moderator';
+  email: string;
 };

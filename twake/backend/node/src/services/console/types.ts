@@ -20,9 +20,13 @@ export interface CreateConsoleCompany {
   applications?: string[];
   planId?: string;
   limits?: {
-    members: number;
-    guests: number;
-    storage: number;
+    members?: number; //Old console version
+    guests?: number; //Old console version
+    twake: {
+      members: number;
+      guests: number;
+      storage: number;
+    };
   };
 }
 
@@ -122,6 +126,7 @@ export type ConsoleType = "remote" | "internal";
 
 export type ConsoleOptions = {
   type: ConsoleType;
+  new_console: boolean;
   username: string;
   password: string;
   url: string;
@@ -134,7 +139,15 @@ export type ConsoleOptions = {
 
 export type ConsoleHookCompany = {
   stats: string;
-  limits: any;
+  limits: {
+    members?: number; //Old console version
+    guests?: number; //Old console version
+    twake: {
+      members: number;
+      guests: number;
+      storage: number;
+    };
+  };
   value: string;
   details: {
     code: string;
@@ -151,7 +164,16 @@ export type ConsoleHookCompany = {
 
 export type ConsoleHookUser = {
   _id: string;
-  roles: [{ targetCode: string; roleCode: CompanyUserRole; status: "active" | "deactivated" }];
+  roles: [
+    {
+      targetCode: string;
+      roleCode: CompanyUserRole;
+      status: "active" | "deactivated";
+      applications: {
+        code: "twake";
+      }[];
+    },
+  ];
   email: string;
   name: string;
   surname: string;

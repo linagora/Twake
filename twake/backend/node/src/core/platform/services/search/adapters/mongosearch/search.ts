@@ -8,6 +8,9 @@ export function buildSearchQuery<Entity>(
   filters: FindFilter,
   options: FindOptions = {},
 ): { project: any; query: any; sort: any } {
+  const instance = new (entityType as any)();
+  const { entityDefinition } = getEntityDefinition(instance);
+
   let project: any = false;
   let query: any = {};
   try {
@@ -19,11 +22,28 @@ export function buildSearchQuery<Entity>(
 
   //Build text searches
   if (options.$text) {
-    project = { score: { $meta: "textScore" } };
-    sort = { score: -1 };
-    if (options?.$text?.$search)
-      options.$text.$search = asciiFold(options.$text.$search || "").toLocaleLowerCase();
-    query.$text = options.$text || undefined;
+    const prefixMapping = entityDefinition?.options?.search?.mongoMapping?.prefix || {};
+    const textMapping = entityDefinition?.options?.search?.mongoMapping?.text || {};
+    //Try to detect when we need prefix search
+    if (Object.values(prefixMapping).length > 0 && options.$text.$search.indexOf(" ") < 0) {
+      query.$or = [...Object.keys(prefixMapping), ...Object.keys(textMapping)].map(k => {
+        if (prefixMapping[k] === "prefix") {
+          return {
+            [k]: new RegExp(`^${asciiFold(options.$text.$search || "")}`, "i"),
+          };
+        } else {
+          return {
+            [k]: new RegExp(`${asciiFold(options.$text.$search || "")}`, "i"),
+          };
+        }
+      });
+    } else {
+      project = { score: { $meta: "textScore" } };
+      sort = { score: -1 };
+      if (options?.$text?.$search)
+        options.$text.$search = asciiFold(options.$text.$search || "").toLocaleLowerCase();
+      query.$text = options.$text || undefined;
+    }
   }
 
   //Build regexes

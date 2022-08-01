@@ -1,5 +1,5 @@
 export default class LocalStorage {
-  static prefix: string = 'twake:';
+  static prefix = 'twake:';
 
   static setItem(key: string, value: any) {
     window.localStorage.setItem(`${LocalStorage.prefix}${key}`, JSON.stringify(value));
@@ -23,7 +23,7 @@ export default class LocalStorage {
   }
 
   static clear() {
-    for (var i = 0; i < localStorage.length; i++) {
+    for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key) {
         const depreciatedKeysRemove =

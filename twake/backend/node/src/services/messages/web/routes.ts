@@ -5,12 +5,15 @@ import {
   UserBookmarksController,
   ViewsController,
 } from "./controllers";
+import { MessagesFilesController } from "./controllers/messages-files";
+import { listUserFiles } from "./schemas";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
   const threadsController = new ThreadsController();
   const messagesController = new MessagesController();
   const userBookmarksController = new UserBookmarksController();
   const viewsController = new ViewsController();
+  const messagesFilesController = new MessagesFilesController();
 
   /**
    * User bookmarks collection
@@ -121,9 +124,23 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
 
   fastify.route({
     method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/download/:message_file_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.download.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
     url: "/companies/:company_id/threads/:thread_id/messages/:message_id/delete",
     preValidation: [fastify.authenticate],
     handler: messagesController.delete.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/deletelink",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.deleteLinkPreview.bind(messagesController),
   });
 
   /**
@@ -140,6 +157,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     method: "GET",
     url: "/companies/:company_id/files",
     preValidation: [fastify.authenticate],
+    schema: listUserFiles,
     handler: viewsController.files.bind(viewsController),
   });
 
@@ -162,6 +180,31 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     url: "/companies/:company_id/search",
     preValidation: [fastify.authenticate],
     handler: viewsController.search.bind(viewsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/files/search",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.searchFiles.bind(viewsController),
+  });
+
+  /**
+   * Messages files routes
+   */
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/messages/:message_id/files/:message_file_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesFilesController.getMessageFile.bind(messagesFilesController),
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: "/companies/:company_id/messages/:message_id/files/:message_file_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesFilesController.deleteMessageFile.bind(messagesFilesController),
   });
 
   next();

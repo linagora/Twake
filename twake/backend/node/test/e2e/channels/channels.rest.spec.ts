@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 import { v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
 import { init, TestPlatform } from "../setup";
@@ -7,8 +7,9 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
   User,
+  Workspace,
 } from "../../../src/utils/types";
-import { Channel } from "../../../src/services/channels/entities/channel";
+import { Channel, ChannelMember } from "../../../src/services/channels/entities";
 import {
   ChannelExecutionContext,
   ChannelVisibility,
@@ -18,12 +19,14 @@ import {
   getPrivateRoomName,
   getPublicRoomName,
 } from "../../../src/services/channels/services/channel/realtime";
-import { ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { TestDbService } from "../utils.prepare.db";
 import { ChannelObject } from "../../../src/services/channels/services/channel/types";
 import { Api } from "../utils.api";
 import gr from "../../../src/services/global-resolver";
+import { createMessage, e2e_createMessage, e2e_createThread } from "../messages/utils";
+import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
+import { ParticipantObject, Thread } from "../../../src/services/messages/entities/threads";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
@@ -31,6 +34,12 @@ describe("The /internal/services/channels/v1 API", () => {
   let channelUtils: ChannelUtils;
   let testDbService: TestDbService;
   let api: Api;
+
+  beforeAll(async end => {
+    // platform = await init();
+    // await platform.database.getConnector().drop();
+    end();
+  });
 
   beforeEach(async () => {
     platform = await init();
@@ -534,6 +543,9 @@ describe("The /internal/services/channels/v1 API", () => {
           { id: uuidv1() },
         ],
         creationResult.entity,
+        {
+          user: { id: platform.currentUser.id },
+        },
       );
 
       resource = await getChannelREST(channelId);
@@ -1223,6 +1235,115 @@ describe("The /internal/services/channels/v1 API", () => {
         );
         done();
       });
+    });
+  });
+
+  describe("The GET /companies/:companyId/workspaces/:workspaceId/recent route", () => {
+    it("should return list of recent channels for workspace", async done => {
+      await testDbService.createDefault(platform);
+
+      const channels = [];
+
+      for (let i = 0; i < 5; i++) {
+        const channel = new Channel();
+        channel.name = `Regular Channel ${i}`;
+        channel.visibility = ChannelVisibility.PUBLIC;
+        const creationResult = await gr.services.channels.channels.save(channel, {}, getContext());
+        channels.push(creationResult.entity);
+      }
+
+      for (let i = 0; i < 5; i++) {
+        // const channel = channelUtils.getChannel();
+        const directChannelIn = channelUtils.getDirectChannel();
+
+        const nextUser = await testDbService.createUser(
+          [{ id: platform.workspace.workspace_id, company_id: platform.workspace.company_id }],
+          { firstName: "FirstName" + i, lastName: "LastName" + i },
+        );
+
+        const members = [platform.currentUser.id, nextUser.id];
+        const directWorkspace: Workspace = {
+          company_id: platform.workspace.company_id,
+          workspace_id: ChannelVisibility.DIRECT,
+        };
+        await Promise.all([
+          // gr.services.channels.channels.save(channel, {}, getContext()),
+          gr.services.channels.channels.save<ChannelSaveOptions>(
+            directChannelIn,
+            {
+              members,
+            },
+            { ...getContext(), ...{ workspace: directWorkspace } },
+          ),
+        ]);
+        channels.push(directChannelIn);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      console.log("done awaiting");
+
+      await e2e_createThread(
+        platform,
+        [
+          {
+            company_id: platform.workspace.company_id,
+            created_at: 0,
+            created_by: "",
+            id: channels[2].id,
+            type: "channel",
+            workspace_id: platform.workspace.workspace_id,
+          },
+        ],
+        createMessage({ text: "Initial thread message for regular channel" }),
+      );
+
+      await e2e_createThread(
+        platform,
+        [
+          {
+            company_id: platform.workspace.company_id,
+            created_at: 0,
+            created_by: "",
+            id: channels[7].id,
+            type: "channel",
+            workspace_id: "direct",
+          },
+        ],
+        createMessage({ text: "Some message" }),
+      );
+
+      await gr.services.channels.channels.markAsRead(channels[2], { id: platform.currentUser.id });
+      await gr.services.channels.channels.markAsRead(channels[7], { id: platform.currentUser.id });
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const jwtToken = await platform.auth.getJWTToken();
+
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${platform.workspace.company_id}/channels/recent`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      const result: ResourceListResponse<ChannelObject> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
+
+      console.log(result.resources[0]);
+      console.log(result.resources.map(a => `${a.name} — ${a.last_activity}`));
+
+      expect(result.resources.length).toEqual(10);
+
+      expect(result.resources[0].name).toEqual("FirstName2 LastName2");
+      expect(result.resources[1].name).toEqual("Regular Channel 2");
+
+      done();
     });
   });
 });

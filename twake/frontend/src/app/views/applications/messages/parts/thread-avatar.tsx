@@ -22,13 +22,13 @@ type Props = {
 
 export default (props: Props) => {
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
+  const { message } = useMessage(context);
 
   const user =
     useUser(message.user_id) || (message.users || []).find(u => u.id === message.user_id);
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
-  let application = companyApplications.find(a => a.id === message.application_id);
+  const application = companyApplications.find(a => a.id === message.application_id);
 
   return (
     <>

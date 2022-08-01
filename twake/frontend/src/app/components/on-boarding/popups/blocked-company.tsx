@@ -10,6 +10,8 @@ import UserService from 'app/features/users/services/current-user-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import { AlertTriangle } from 'react-feather';
 import InitService from 'app/features/global/services/init-service';
+import consoleService from 'app/features/console/services/console-service';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 type SwitchCompanyPropsType = {
   placeholder?: string;
@@ -57,9 +59,10 @@ const SwitchCompany = ({ placeholder, companiesIds }: SwitchCompanyPropsType): J
 };
 
 export default (): JSX.Element => {
+  const companyId = useRouterCompany();
   const onClickButton = () =>
     window.open(
-      InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url || '',
+      consoleService.getCompanySubscriptionUrl(companyId),
       'blank',
     );
 

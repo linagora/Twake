@@ -2,7 +2,7 @@ import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
 import { FileServiceAPI, UploadOptions } from "../api";
-import { File } from "../entities/file";
+import { File, PublicFile } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
@@ -10,8 +10,19 @@ import { PreviewClearPubsubRequest, PreviewPubsubRequest } from "../../previews/
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
-import { CrudException, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  DeleteResult,
+  ListResult,
+  Paginable,
+  Pagination,
+} from "../../../core/platform/framework/api/crud-service";
 import gr from "../../global-resolver";
+import { MessageFileRef } from "../../messages/entities/message-file-refs";
+import { MessageFile } from "../../messages/entities/message-files";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { formatUser } from "../../../utils/users";
+import { UserObject } from "../../user/web/types";
 
 export class FileServiceImpl implements FileServiceAPI {
   version: "1";
@@ -224,7 +235,11 @@ export class FileServiceImpl implements FileServiceAPI {
     if (!id || !context.company.id) {
       return null;
     }
-    return this.repository.findOne({ id, company_id: context.company.id });
+    return this.getFile({ id, company_id: context.company.id });
+  }
+
+  async getFile(pk: Pick<File, "company_id" | "id">): Promise<File> {
+    return this.repository.findOne(pk);
   }
 
   getThumbnailRoute(file: File, index: string) {

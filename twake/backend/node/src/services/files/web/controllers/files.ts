@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Multipart } from "fastify-multipart";
-import { ResourceDeleteResponse } from "../../../../utils/types";
+import { ResourceDeleteResponse, ResourceListResponse } from "../../../../utils/types";
 import { CompanyExecutionContext } from "../types";
 import { UploadOptions } from "../../api";
-import { PublicFile } from "../../entities/file";
+import { File, PublicFile } from "../../entities/file";
 import gr from "../../../global-resolver";
 
 export class FileController {
@@ -63,6 +63,7 @@ export class FileController {
       const data = await gr.services.files.thumbnail(params.id, params.index, context);
 
       response.header("Content-disposition", "inline");
+      response.expires(new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 365));
       if (data.size) response.header("Content-Length", data.size);
       response.type(data.type);
       response.send(data.file);

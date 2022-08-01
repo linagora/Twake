@@ -1,8 +1,5 @@
-import { Divider } from 'antd';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { UserType } from 'app/features/users/types/user';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import RouterServices from 'app/features/router/services/router-service';
 import React from 'react';
 import DirectChannelRow from './DirectChannelRow';
 import WorkspaceChannelRow from './WorkspaceChannelRow';

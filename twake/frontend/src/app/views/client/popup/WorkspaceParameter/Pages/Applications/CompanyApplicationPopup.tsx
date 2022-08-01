@@ -78,7 +78,11 @@ const AccessDescriptions = ({ application }: { application: Application }) => (
       return (
         <Item key={key} label={capitalize(key === 'hooks' ? 'listened events' : key)} span={3}>
           {values?.length > 0 ? (
-            values.map(v => <Tag color="var(--success)">{v}</Tag>)
+            values.map(v => (
+              <Tag key={v} color="var(--success)">
+                {v}
+              </Tag>
+            ))
           ) : (
             <Text style={{ minHeight: 22 }} type="secondary">
               This integration doesn't have any {key} access

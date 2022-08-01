@@ -81,7 +81,7 @@ class User {
   }
 
   search(
-    query: string = '',
+    query = '',
     options: { scope: string; workspace_id: string; group_id: string },
     callback: (users: UserType[]) => void = () => {},
     noHttp?: boolean,

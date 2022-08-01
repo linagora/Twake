@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
-import UserListManager from 'components/user-list-manager/user-list-manager';
+import UserListManager from 'components/user-list-manager-depreciated/user-list-manager';
 import Menu from 'components/menus/menu.js';
 
 export default class Participants extends Component {

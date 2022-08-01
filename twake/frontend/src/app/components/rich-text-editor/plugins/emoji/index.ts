@@ -24,7 +24,11 @@ const findEmojiEntities = (
   }, callback);
 };
 
-const resolver = (text: string, max: number, callback: (emojis: EmojiSuggestionType[]) => void) => {
+const resolver = (
+  text: string,
+  max: number,
+  callback: (args: { items: EmojiSuggestionType[] }) => void,
+) => {
   EmojiService.search(text, (suggestions: EmojiSuggestionType[]) => {
     const result: Array<EmojiSuggestionType & { autocomplete_id: number }> = [];
 
@@ -32,7 +36,7 @@ const resolver = (text: string, max: number, callback: (emojis: EmojiSuggestionT
       suggestions[j] && (result[j] = { ...suggestions[j], ...{ autocomplete_id: j } });
     }
 
-    callback(result);
+    callback({ items: result });
   });
 };
 

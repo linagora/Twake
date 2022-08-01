@@ -34,11 +34,17 @@ const findMentionEntities = (
   }, callback);
 };
 
+let resolverId = 0;
+
 const resolver = async (
   text: string,
   max: number,
-  callback: (mentions: MentionSuggestionType[]) => void,
+  callback: (args: { items: MentionSuggestionType[]; loading?: boolean }) => void,
 ) => {
+  text = text.replace(/^@/, '');
+  resolverId++;
+  const currentResolverId = resolverId;
+
   const result: Array<MentionSuggestionType & { autocomplete_id: number }> = [];
   const { companyId, workspaceId, channelId } = RouterService.getStateFromRoute();
 
@@ -60,10 +66,15 @@ const resolver = async (
       result[j] = { ...users[j], ...{ autocomplete_id: j } };
     }
 
-    callback(result);
+    callback({ items: result });
   } else {
     if (companyId && workspaceId) {
-      const fn = () => {
+      const fn = (args: { loading: boolean }) => {
+        if (currentResolverId !== resolverId) {
+          //Search input was replaced by an other one
+          return;
+        }
+
         const resultFrontend = searchFrontend(text, {
           companyId,
           workspaceId,
@@ -74,7 +85,7 @@ const resolver = async (
           result[j] = { ...resultFrontend[j], ...{ autocomplete_id: j } };
         }
 
-        callback(result);
+        callback({ items: result, loading: args.loading });
       };
 
       searchBackend(text, {
@@ -82,11 +93,11 @@ const resolver = async (
         workspaceId,
         scope: 'workspace',
         callback: () => {
-          setTimeout(() => fn(), 500);
+          fn({ loading: false });
         },
       });
 
-      fn();
+      fn({ loading: true });
     }
   }
 };
@@ -158,7 +169,7 @@ export default (
     strategy: findMentionEntities,
     component: Mention,
   },
-  trigger: /\B@([^\s.,)(@<>;:\/?!]+)$/, //We can't use \w because of accents
+  trigger: /\B(@[^\s.,)(@<>;:\/?!]*)$/, //We can't use \w because of accents
   resourceType: MENTION_TYPE,
   getTextDisplay: (mention: MentionSuggestionType) => mention.username,
   onSelected: (

@@ -26,8 +26,8 @@ type State = {
 };
 
 export default class Table extends Component<Props, State> {
-  searchFieldValue: string = '';
-  searchRunning: boolean = false;
+  searchFieldValue = '';
+  searchRunning = false;
   searchRunningTimeout: number | null = null;
 
   constructor(props: Props) {
@@ -89,7 +89,7 @@ export default class Table extends Component<Props, State> {
     }
   }
 
-  requestMore(refresh: boolean = false) {
+  requestMore(refresh = false) {
     this.setState({ loading: true });
     this.props.onRequestMore(refresh).then(res => {
       const hasMore = res.length !== (this.state.data || []).length;
@@ -174,9 +174,10 @@ export default class Table extends Component<Props, State> {
         >
           {!this.props.noHeader && (
             <div className="headerTable">
-              {this.props.column.map((col: any) => {
+              {this.props.column.map((col: any, i: number) => {
                 return (
                   <div
+                    key={i}
                     className="headerItem"
                     style={{
                       width: col.width || 'inherit',
@@ -200,23 +201,22 @@ export default class Table extends Component<Props, State> {
             )}
             {(page_data || []).length === 0 &&
               !!this.state.loading &&
-              Array.apply(null, Array(this.state.searching ? 1 : this.getResultsPerPage())).map(
-                () => {
-                  return (
-                    <div className="tr">
-                      <div className="item">
-                        <div className="line"></div>
-                      </div>
+              Array(this.state.searching ? 1 : this.getResultsPerPage()).map((_, i: number) => {
+                return (
+                  <div key={i} className="tr">
+                    <div className="item">
+                      <div className="line"></div>
                     </div>
-                  );
-                },
-              )}
-            {(page_data || []).map((data: any) => {
+                  </div>
+                );
+              })}
+            {(page_data || []).map((data: any, i: number) => {
               return (
-                <div className="tr">
-                  {this.props.column.map((col: any) => {
+                <div key={i} className="tr">
+                  {this.props.column.map((col: any, j: number) => {
                     return (
                       <div
+                        key={j}
                         className="item"
                         style={{ width: col.width || 'inherit', flex: col.width ? 'inherit' : '1' }}
                       >

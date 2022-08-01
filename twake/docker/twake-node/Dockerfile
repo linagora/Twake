@@ -10,10 +10,18 @@ RUN apt-get update && apt-get install -y graphicsmagick
 #Unoconv
 RUN apt-get update && apt-get install -y --force-yes unoconv libxml2-dev
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get update && apt-get install wget
+# upgrade unoconv
+RUN wget -N https://raw.githubusercontent.com/dagwieers/unoconv/master/unoconv -O /usr/bin/unoconv
+RUN chmod ugo+x /usr/bin/unoconv
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 #Docker mac issue
 RUN apt-get update && apt-get install -y libc6
 RUN ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
+
+# FFmpeg
+RUN apt-get install -y ffmpeg
 
 ### Install Twake
 
@@ -26,18 +34,8 @@ FROM node-base as test
 RUN npm install
 COPY backend/node/ .
 
-# Development Stage
-FROM node-base as development
-
-RUN npm install -g pino-pretty
-RUN npm install -g tsc-watch
-RUN npm install
-COPY backend/node/ .
-
-CMD ["npm", "run", "dev"]
-
-# Production Stage
-FROM node-base as production
+# Add frontend Stage
+FROM node-base as with-frontend
 
 ARG NODE_ENV=production
 
@@ -61,8 +59,22 @@ RUN cd ../public_build && yarn build
 RUN cd ../public_build && rm -R node_modules
 RUN mv ../public_build/build/* public/; rm -R ../public_build
 
+# Development Stage
+FROM with-frontend as development
+
+ENV NODE_ENV=development
+RUN npm install -g pino-pretty
+RUN npm install -g tsc-watch
+RUN yarn install
+RUN ls
+RUN ls public
+
+CMD ["npm", "run", "dev:debug"]
+
+
+
+# Production Stage
+FROM with-frontend as production
+
 EXPOSE 3000
-
 CMD ["npm", "run", "serve"]
-
-

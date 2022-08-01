@@ -14,23 +14,18 @@ const useWebSocket = () => {
     wsRef.current = WebSocketFactory.get();
 
     if (wsRef.current.isConnected()) {
-      logger.debug('WS is connected');
       setConnected(() => true);
     }
 
     wsRef.current.on(WebsocketEvents.Connected, (data: { url: string }) => {
-      logger.debug('WS is connected to', data.url);
       setConnected(() => true);
     });
 
     wsRef.current.on(WebsocketEvents.Disconnected, (data: { url: string }) => {
-      console.log('WS is disconnected from', data.url);
       setConnected(() => false);
     });
 
-    return () => {
-      logger.debug('WS Cleanup');
-    };
+    return () => {};
   }, []);
 
   return {

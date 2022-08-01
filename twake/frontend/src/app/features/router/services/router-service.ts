@@ -11,6 +11,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 import PublicMainView from 'app/views/client/main-view/PublicMainView';
 import Observable from '../../../deprecated/Observable/Observable';
+import { getWorkspacesByCompany } from 'app/features/workspaces/state/workspace-list';
 
 export type RouteType = {
   path: string;
@@ -214,7 +215,21 @@ class RouterServices extends Observable {
     params: ClientStateType = {},
     options: { replace?: boolean; keepSearch?: boolean } = {},
   ): string {
-    const currentState = this.getStateFromRoute();
+    const currentState = { ...this.getStateFromRoute() };
+
+    if (params.workspaceId === 'direct') {
+      //Find a workspace to open as direct isn't a real workspace
+      const workspace = getWorkspacesByCompany(params.companyId || currentState.companyId || '');
+      if (workspace.length > 0) {
+        params.workspaceId = workspace[0].id;
+      }
+    }
+
+    if (params.channelId && params.channelId !== currentState.channelId) {
+      currentState.threadId = undefined;
+      currentState.messageId = undefined;
+    }
+
     const expandedState: any = options?.replace ? params : Object.assign(currentState, params);
     const state: any = {};
     Object.keys(expandedState).forEach(key => {
@@ -251,9 +266,6 @@ class RouterServices extends Observable {
     }
 
     const searchParameters = new URLSearchParams(search ? search.substring(1) : '');
-    if (state.messageId) {
-      searchParameters.append('m', state.messageId);
-    }
     search = searchParameters.toString() ? `?${searchParameters.toString()}` : '';
 
     return (
@@ -262,6 +274,7 @@ class RouterServices extends Observable {
       (state.workspaceId ? `/w/${state.workspaceId}` : '') +
       (state.channelId ? `/c/${state.channelId}` : '') +
       (state.threadId ? `/t/${state.threadId}` : '') +
+      (state.messageId ? `/m/${state.messageId}` : '') +
       search
     );
   }

@@ -92,7 +92,7 @@ export const DynamicComponent = ({
     }
     return (
       // eslint-disable-next-line react/jsx-no-target-blank
-      <a target="_blank" href={url}>
+      <a target="_blank" rel="noreferrer" href={url}>
         {child}
       </a>
     );
@@ -102,14 +102,14 @@ export const DynamicComponent = ({
     const url = linkData[1] || '';
 
     return (
-      <a href={setUrlProtocol(url)} target="_BLANK">
+      <a href={setUrlProtocol(url)} target="_BLANK" rel="noreferrer">
         {linkData[0]}
       </a>
     );
   }
   if (type === 'email') {
     return (
-      <a target="_blank" href={'mailto:' + (data.content || '')}>
+      <a target="_blank" rel="noreferrer" href={'mailto:' + (data.content || '')}>
         {child}
       </a>
     );
@@ -260,7 +260,7 @@ export const DynamicComponent = ({
         </option>
         {data.values.map((item: any) => {
           return (
-            <option value={item.value} selected={item.selected}>
+            <option key={item.value} value={item.value} selected={item.selected}>
               {item.name}
             </option>
           );

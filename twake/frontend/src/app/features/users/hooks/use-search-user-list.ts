@@ -5,7 +5,7 @@ import { UserType } from 'app/features/users/types/user';
 import { getCurrentUserList, setUserList, useSetUserList, useUserList } from './use-user-list';
 import UserAPIClient, { SearchContextType } from '../api/user-api-client';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-import Strings from 'app/features/global/utils/strings';
+import Strings, { distanceFromQuery, matchQuery } from 'app/features/global/utils/strings';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import _ from 'lodash';
 
@@ -23,7 +23,7 @@ export const searchBackend = async (
     callback?: () => void;
   },
 ) => {
-  delayRequest('useSearchUserList', async () => {
+  delayRequest('useSearchUsers', async () => {
     await UserAPIClient.search<any>(
       query,
       {
@@ -36,7 +36,7 @@ export const searchBackend = async (
         if (result && scope === 'workspace') {
           final = result.map(wsUser => ({
             ...wsUser.user,
-            workspaces: [{ id: workspaceId, company_id: companyId }],
+            workspaces: [{ id: workspaceId, company_id: companyId, role: wsUser.role }],
           }));
         }
 
@@ -71,20 +71,19 @@ export const searchFrontend = (
   let result = userList || getCurrentUserList() || [];
 
   if (query) {
-    result = result
-      .filter(
-        ({ email, first_name, last_name, username }) =>
-          Strings.removeAccents(`${email} ${first_name} ${last_name} ${username}`)
-            .toLocaleLowerCase()
-            .indexOf(Strings.removeAccents(query).toLocaleLowerCase()) > -1,
-      )
-      .sort((a, b) => a.username.length - b.username.length);
+    result = _.sortBy(
+      result.filter(({ email, first_name, last_name, username }) =>
+        matchQuery(query, `${email} ${first_name} ${last_name} ${username}`),
+      ),
+      a =>
+        distanceFromQuery([a.last_name, a.first_name, a.email, a.username].join(' '), query, {
+          booster: [10, 10, 2, 1],
+        }),
+    );
   }
 
   if (!query) {
     // TODO return list with users sorted by favorite
-    // eslint-disable-next-line no-self-assign
-    result = result;
   }
 
   if (scope === 'company') {
@@ -98,12 +97,13 @@ export const searchFrontend = (
   return result;
 };
 
-export const useSearchUserList = ({
+export const useSearchUsers = ({
   scope,
 }: {
   scope: SearchContextType['scope'];
 }): {
   search: (str?: string) => UserType[];
+  query: string | undefined;
   result: UserType[];
 } => {
   const { set: setUserList } = useSetUserList('use-search-user-list');
@@ -124,5 +124,5 @@ export const useSearchUserList = ({
 
   const result = searchFrontend(query, { workspaceId, scope, companyId, userList: userList || [] });
 
-  return { search, result };
+  return { search, query, result };
 };

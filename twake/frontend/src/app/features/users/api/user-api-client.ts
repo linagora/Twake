@@ -5,10 +5,8 @@ import { TwakeService } from '../../global/framework/registry-decorator-service'
 import { WebsocketRoom } from '../../global/types/websocket-types';
 import WorkspaceAPIClient from '../../workspaces/api/workspace-api-client';
 import CurrentUser from '../../../deprecated/user/CurrentUser';
-import RouterService from 'app/features/router/services/router-service';
-import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-import _ from 'lodash';
 import { setUserList } from '../hooks/use-user-list';
+import Logger from 'features/global/framework/logger-service';
 
 export type SearchContextType = {
   scope: 'company' | 'workspace' | 'all';
@@ -25,6 +23,7 @@ type SearchUserApiResponse<T> = {
 class UserAPIClientService {
   private readonly prefixUrl: string = '/internal/services/users/v1';
   private realtime: Map<string, WebsocketRoom> = new Map();
+  private logger = Logger.getLogger('UserAPIClientService');
 
   websocket(userId: string): WebsocketRoom {
     return this.realtime.get(userId) || { room: '', token: '' };
@@ -61,7 +60,7 @@ class UserAPIClientService {
           (c, acc) => (Array.isArray(c.companies) ? acc.concat(c.companies) : []),
           [],
         );
-        let callbacks = this.listBuffer.reduce(
+        const callbacks = this.listBuffer.reduce(
           (c, acc) => (Array.isArray(acc) ? acc.push(c.callback) : []),
           [],
         );
@@ -181,10 +180,18 @@ class UserAPIClientService {
 
     if (callback) callback(result);
 
+    this.logger.debug(
+      `Search by value "${query}" with options`,
+      context,
+      'Found',
+      result.length,
+      'users',
+    );
+
     return result;
   }
 
-  getSearchUsersRoute(query: string = '', context: SearchContextType) {
+  getSearchUsersRoute(query = '', context: SearchContextType) {
     let route = '';
 
     if (context.scope === 'company' || context.scope === 'all') {

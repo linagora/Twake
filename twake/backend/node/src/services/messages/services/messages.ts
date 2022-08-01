@@ -18,6 +18,8 @@ import {
 import { MessageFile, TYPE as MsgFileTableName } from "../entities/message-files";
 import {
   BookmarkOperation,
+  CompanyExecutionContext,
+  DeleteLinkOperation,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -26,22 +28,31 @@ import {
   ReactionOperation,
   ThreadExecutionContext,
 } from "../types";
+import _, { first, pick } from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
-import _ from "lodash";
 import { ThreadMessagesOperationsService } from "./messages-operations";
-// import { getDefaultMessageInstance } from "./utils";
-import { Thread } from "../entities/threads";
+import { Thread, ThreadPrimaryKey } from "../entities/threads";
 import { UserObject } from "../../user/web/types";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { getDefaultMessageInstance } from "../../../utils/messages";
-import { buildMessageListPagination, getMentions } from "./utils";
+import { buildMessageListPagination, getLinks, getMentions } from "./utils";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
+import {
+  KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
+} from "../../../core/platform/services/knowledge-graph/types";
+import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
+import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs-reversed";
+import { LinkPreviewPubsubRequest } from "../../../services/previews/types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
   repository: Repository<Message>;
   msgFilesRepository: Repository<MessageFile>;
   operations: ThreadMessagesOperationsService;
+  private messageUserInboxRefsRepository: Repository<MessageUserInboxRefReversed>;
+  private threadRepository: Repository<Thread>;
 
   constructor() {
     this.operations = new ThreadMessagesOperationsService(this);
@@ -53,6 +64,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       MsgFileTableName,
       MessageFile,
     );
+    this.messageUserInboxRefsRepository = await gr.database.getRepository<MessageUserInboxRef>(
+      "message_user_inbox_refs",
+      MessageUserInboxRef,
+    );
+
+    this.threadRepository = await gr.database.getRepository<Thread>("threads", Thread);
     await this.operations.init(context);
     return this;
   }
@@ -85,12 +102,16 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let messageCreated = !pk.id;
 
-    if (
-      !pk.thread_id ||
-      (!serverRequest && !gr.services.messages.threads.checkAccessToThread(context))
-    ) {
-      logger.error(`Unable to write in thread ${context.thread.id}`);
-      throw Error("Can't write this message.");
+    if (!item.ephemeral) {
+      if (
+        !pk.thread_id ||
+        (!serverRequest && !gr.services.messages.threads.checkAccessToThread(context))
+      ) {
+        logger.error(`Unable to write in thread ${context.thread.id}`);
+        throw Error("Can't write this message.");
+      }
+    } else {
+      pk.id = undefined;
     }
 
     let message = getDefaultMessageInstance(item, context);
@@ -157,6 +178,17 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     await this.onSaved(message, { created: messageCreated }, context);
+
+    if (messageCreated && context.channel) {
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<Message>>(
+        KnowledgeGraphEvents.MESSAGE_CREATED,
+        {
+          id: message.id,
+          resource: message,
+          links: [{ relation: "parent", type: "channel", id: context.channel.id }],
+        },
+      );
+    }
 
     return new SaveResult<Message>(
       "message",
@@ -343,24 +375,33 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return new DeleteResult<Message>("message", message, true);
   }
 
-  async getSingleMessage(pk: Pick<Message, "thread_id" | "id">) {
-    let message = await this.repository.findOne(pk);
-    if (message) {
-      message = await this.completeMessage(message, { files: message.files || [] });
+  async get(
+    pk: Pick<Message, "thread_id" | "id">,
+    context?: ThreadExecutionContext,
+    options?: { includeQuoteInMessage?: boolean },
+  ): Promise<MessageWithUsers> {
+    const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
+    let message;
+    if (thread) {
+      message = await this.getThread(thread, options);
+    } else {
+      message = await this.getSingleMessage(pk, options);
     }
     return message;
   }
 
-  async get(
+  private async getSingleMessage(
     pk: Pick<Message, "thread_id" | "id">,
-    context?: ThreadExecutionContext,
-  ): Promise<Message> {
-    const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
-    if (thread) {
-      return await this.getThread(thread);
-    } else {
-      return await this.getSingleMessage(pk);
+    options?: { includeQuoteInMessage?: boolean },
+  ) {
+    let message = await this.repository.findOne(pk);
+    if (message) {
+      message = await this.completeMessage(message, {
+        files: message.files || [],
+        includeQuoteInMessage: options?.includeQuoteInMessage,
+      });
     }
+    return message;
   }
 
   async getThread(
@@ -403,7 +444,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     pagination: Pagination,
     options?: ListOption,
     context?: ThreadExecutionContext,
-  ): Promise<ListResult<Message>> {
+  ): Promise<ListResult<MessageWithUsers>> {
     const list = await this.repository.find(
       { thread_id: context.thread.id },
       buildMessageListPagination(pagination, "id"),
@@ -428,7 +469,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       });
     }
 
-    return list;
+    const extendedList = [];
+    for (const m of list.getEntities()) {
+      extendedList.push(await this.completeMessage(m));
+    }
+
+    return new ListResult("messages", extendedList, list.nextPage);
   }
 
   async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
@@ -456,7 +502,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       });
     }
 
-    const messageWithUsers = { ...message, users, application };
+    const messageWithUsers: MessageWithUsers = { ...message, users, application };
+
+    if (message.quote_message && (message.quote_message as any).id) {
+      messageWithUsers.quote_message = await this.includeUsersInMessage(
+        message.quote_message as any,
+      );
+    }
+
     return messageWithUsers;
   }
 
@@ -497,8 +550,25 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
     },
   ])
-  async onSaved(message: Message, options: { created?: boolean }, context: ThreadExecutionContext) {
+  async onSaved(
+    message: Message,
+    options: { created?: boolean },
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
     if (options.created && !message.ephemeral) {
+      const messageLinks = getLinks(message);
+
+      gr.platformServices.pubsub.publish<LinkPreviewPubsubRequest>("services:preview:links", {
+        data: {
+          links: messageLinks,
+          message: {
+            context,
+            resource: message,
+            created: options?.created,
+          },
+        },
+      });
+
       await gr.services.messages.threads.addReply(message.thread_id);
     }
 
@@ -540,13 +610,25 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return this.operations.bookmark(operation, options, context);
   }
 
+  async download(
+    operation: { id: string; thread_id: string; message_file_id: string },
+    options: Record<string, any>,
+    context: ThreadExecutionContext,
+  ): Promise<void> {
+    return this.operations.download(operation, options, context);
+  }
+
   //Complete message with all missing information and cache
-  async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
+  async completeMessage(
+    message: Message,
+    options: { files?: Message["files"]; includeQuoteInMessage?: boolean } = {},
+  ) {
     this.fixReactionsFormat(message);
     try {
       if (options.files) message = await this.completeMessageFiles(message, options.files || []);
     } catch (err) {
-      logger.warn("Error while completing message files", err);
+      console.log(err);
+      logger.warn("Error while completing message files");
     }
 
     //Mobile retro compatibility
@@ -558,6 +640,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       });
     }
 
+    //Add quote message
+    if (options?.includeQuoteInMessage !== false)
+      message = await this.includeQuoteInMessage(message);
+
+    return message;
+  }
+
+  async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
+    if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
+      message.quote_message = await this.get(
+        {
+          thread_id: (message.quote_message as Message["quote_message"]).thread_id,
+          id: (message.quote_message as Message["quote_message"]).id,
+        },
+        undefined,
+        { includeQuoteInMessage: false },
+      );
+    }
     return message;
   }
 
@@ -607,11 +707,32 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const previousMessageFiles = message.files;
     message.files = [];
     for (const file of files) {
-      const existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
+      let existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
       const entity = existing || new MessageFile();
       entity.message_id = message.id;
+      entity.thread_id = message.thread_id;
       entity.id = file.id || undefined;
       entity.company_id = file.company_id;
+      entity.cache = {
+        company_id: message.cache?.company_id,
+        workspace_id: message.cache?.workspace_id,
+        channel_id: message.cache?.channel_id,
+        user_id: message.user_id,
+      };
+      entity.created_at = file.created_at || new Date().getTime();
+
+      //If it is defined it should exists
+      let messageFileExistOnDb = false;
+      try {
+        messageFileExistOnDb = !!(await this.msgFilesRepository.findOne({
+          message_id: message.id,
+          id: entity.id,
+        }));
+      } catch (e) {}
+      if (entity.id && !messageFileExistOnDb) {
+        existing = null;
+        entity.id = undefined;
+      }
 
       //For internal files, we have a special additional sync
       if (file.metadata?.source == "internal") {
@@ -631,11 +752,19 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           company: { id: file.metadata.external_id?.company_id as string },
         });
         if (original) {
-          file.metadata = { ...file.metadata, ...original.metadata };
-          file.metadata.thumbnails = (file.metadata.thumbnails || []).map((t, index) => {
-            t.url = gr.services.files.getThumbnailRoute(original, (t.index || index).toString());
-            return t;
-          });
+          file.metadata = {
+            ...file.metadata,
+            ..._.pick(original.metadata, "mime", "name"),
+            ..._.pick(original.upload_data, "size"),
+            source: "internal",
+            external_id: file.metadata.external_id,
+          };
+          file.metadata.thumbnails = (file.metadata.thumbnails || original.thumbnails || []).map(
+            (t, index) => {
+              t.url = gr.services.files.getThumbnailRoute(original, (t.index || index).toString());
+              return t;
+            },
+          );
         }
       }
 
@@ -643,19 +772,90 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       if (!existing || !_.isEqual(existing.metadata, entity.metadata)) {
         didChange = true;
-
         await this.msgFilesRepository.save(entity);
       }
 
       message.files.push(entity);
     }
 
-    if (!_.isEqual(previousMessageFiles.sort(), message.files.sort())) didChange = true;
+    if (!_.isEqual(previousMessageFiles.map(a => a.id).sort(), message.files.map(a => a.id).sort()))
+      didChange = true;
 
     if (didChange) {
       await this.repository.save(message);
     }
 
     return message;
+  }
+
+  async inbox(
+    userId: string,
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<Message>> {
+    let nextPage = null;
+
+    async function* getNextThreads(
+      refRepo: Repository<MessageUserInboxRefReversed>,
+    ): AsyncIterableIterator<string> {
+      let lastPageToken = pagination.page_token;
+      let hasMore = true;
+      do {
+        const threadsIds = await refRepo
+          .find(
+            {
+              company_id: context.company.id,
+              user_id: userId,
+            },
+            { pagination: new Pagination(lastPageToken, pagination.limitStr) },
+          )
+          .then((a: ListResult<MessageUserInboxRef>) => {
+            lastPageToken = a.nextPage.page_token;
+            nextPage = a.nextPage;
+            if (!lastPageToken) {
+              hasMore = false;
+            }
+            return a.getEntities().map(a => a.thread_id);
+          });
+
+        if (threadsIds.length) {
+          for (const threadId of threadsIds) {
+            yield threadId;
+          }
+        } else {
+          hasMore = false;
+        }
+      } while (hasMore);
+    }
+
+    const threadsIds = [];
+    const threadsIdsMap: { [key: string]: boolean } = {};
+
+    for await (const id of getNextThreads(this.messageUserInboxRefsRepository)) {
+      if (!threadsIdsMap[id]) {
+        threadsIdsMap[id] = true;
+        threadsIds.push(id);
+      }
+      if (threadsIds.length == +pagination.limitStr) {
+        break;
+      }
+    }
+
+    const msgPromises = threadsIds.map(id => this.repository.findOne({ thread_id: id, id }));
+    return new ListResult<Message>("message", await Promise.all(msgPromises), nextPage);
+  }
+
+  /**
+   * Deletes a link preview from message operation
+   *
+   * @param {DeleteLinkOperation} operation - The delete link operation
+   * @param {ThreadExecutionContext} context - The thread execution context
+   * @returns
+   */
+  async deleteLinkPreview(
+    operation: DeleteLinkOperation,
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.deleteLinkPreview(operation, context);
   }
 }

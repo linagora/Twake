@@ -5,6 +5,7 @@ import InitService from 'app/features/global/services/init-service';
 import { AlertTriangle } from 'react-feather';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import { CompanyLimitsEnum, CompanyType } from 'app/features/companies/types/company';
+import consoleService from 'app/features/console/services/console-service';
 
 type PropsType = { company: Partial<CompanyType>; magicLink?: boolean };
 
@@ -13,7 +14,7 @@ const LockedInviteAlert = (props: PropsType): JSX.Element => {
   const limit = props?.company?.plan?.limits?.[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT] || 0;
   const onClickBtn = () =>
     window.open(
-      InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url || '',
+      consoleService.getCompanySubscriptionUrl(props.company.id || ""),
       'blank',
     );
 

@@ -50,10 +50,12 @@ export const getUser = (userId: string) => {
   return currentUserList.filter(u => u.id === userId)[0];
 };
 
-const completeUserWithCompanies = (user: UserType, companies?: UserCompanyType[]): UserType => ({
-  ...user,
-  companies: companies !== undefined ? companies : user.companies || [],
-});
+const completeUserWithCompanies = (user: UserType, companies?: UserCompanyType[]): UserType => {
+  return {
+    ...user,
+    companies: companies !== undefined ? companies : user.companies || [],
+  };
+};
 
 const completeUserWithWorkspaces = (
   user: UserType,
@@ -72,15 +74,10 @@ export function useSetUserList(key: string) {
     const currentList = currentUserList;
 
     if (nextList && nextList.length) {
-      const newList = concat(
-        currentList.filter(u => !nextList.map(u => u.id).includes(u.id)),
-        nextList,
-      )
+      const newList = _.uniqBy([...currentList, ...nextList], 'id')
         .map(u => cloneDeep(u))
-        .map(u => completeUserWithCompanies(u, currentList.find(obj => obj.id === u.id)?.companies))
-        .map(u =>
-          completeUserWithWorkspaces(u, currentList.find(obj => obj.id === u.id)?.workspaces),
-        );
+        .map(u => completeUserWithCompanies(u, nextList.find(obj => obj.id === u.id)?.companies))
+        .map(u => completeUserWithWorkspaces(u, nextList.find(obj => obj.id === u.id)?.workspaces));
 
       newList.sort();
 

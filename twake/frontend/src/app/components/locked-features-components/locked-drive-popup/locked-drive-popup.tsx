@@ -3,10 +3,13 @@ import ObjectModal from 'app/components/object-modal/object-modal';
 import { Button, Row, Typography } from 'antd';
 import ModalManager from 'app/components/modal/modal-manager';
 import Languages from 'app/features/global/services/languages-service';
-import InitService from 'app/features/global/services/init-service';
+import consoleService from 'app/features/console/services/console-service';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 const { Title, Text } = Typography;
-export default () => (
+export default () => {
+  const companyId = useRouterCompany();
+  return (
   <ObjectModal
     titleCenter
     titleLevel={2}
@@ -24,8 +27,7 @@ export default () => (
           style={{ marginTop: 8 }}
           onClick={() =>
             window.open(
-              InitService.server_infos?.configuration?.accounts?.console
-                ?.company_subscription_url || '',
+              consoleService.getCompanySubscriptionUrl(companyId),
               'blank',
             )
           }
@@ -69,4 +71,4 @@ export default () => (
       />
     </Row>
   </ObjectModal>
-);
+)};

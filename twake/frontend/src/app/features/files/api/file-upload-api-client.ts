@@ -2,6 +2,7 @@ import Api from 'app/features/global/framework/api-service';
 import { FileType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
 import extensionToMime from '../utils/extension-to-mime';
+import { fileTypeMimes } from '../utils/type-mimes';
 
 type ResponseFileType = { resource: FileType };
 type ResponseDeleteFileType = { status: 'success' | 'error' };
@@ -11,7 +12,7 @@ type GetContextType = BaseContentType & { fileId: string };
 type DeleteContextType = BaseContentType & { fileId: string };
 type DownloadContextType = BaseContentType & { fileId: string };
 
-type FileTypes =
+export type FileTypes =
   | 'link'
   | 'code'
   | 'document'
@@ -103,16 +104,27 @@ class FileUploadAPIClient {
   }
 
   public mimeToType(mime: string): FileTypes {
-    if (mime.split('/')[0] === 'image') return 'image';
-    if (mime.split('/')[0] === 'video') return 'video';
-    if (mime.split('/')[0] === 'audio') return 'sound';
-    if (mime === 'application/zip' || mime === 'application/vnd.rar') return 'archive';
-    //TODO add other types
+    const { archives, images, pdf, slides, sound, spreadsheets, videos, documents } = fileTypeMimes;
+
+    if (images.includes(mime)) return 'image';
+    if (videos.includes(mime)) return 'video';
+    if (sound.includes(mime)) return 'sound';
+    if (pdf.includes(mime)) return 'pdf';
+    if (slides.includes(mime)) return 'slides';
+    if (archives.includes(mime)) return 'archive';
+    if (spreadsheets.includes(mime)) return 'spreadsheet';
+    if (documents.includes(mime)) return 'document';
+
     return 'other';
   }
 
   public extensionToMime(extension: string): string {
     return extensionToMime[extension] || '';
+  }
+
+  async recent(companyId: string, filter: 'file' | 'media', limit: number): Promise<FileType[]> {
+    const fileRoute = `/internal/services/messages/v1/companies/${companyId}/files?type=user_upload&media=${filter}_only&limit=${limit}`;
+    return Api.get<{ resources: FileType[] }>(fileRoute).then(a => a.resources);
   }
 }
 

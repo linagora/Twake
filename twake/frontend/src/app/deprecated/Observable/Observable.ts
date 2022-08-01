@@ -105,7 +105,7 @@ export default class Observable extends EventListener {
       observed = watcher.options?.observedChanges(changes);
     }
 
-    let cache: any[] = [];
+    const cache: any[] = [];
     const snapshot = JSON.stringify(observed, (key, value) => {
       if (typeof value === 'object' && value !== null) {
         // Duplicate reference found, discard key

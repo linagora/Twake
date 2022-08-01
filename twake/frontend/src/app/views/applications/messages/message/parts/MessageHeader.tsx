@@ -24,6 +24,7 @@ import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
 import { CompanyApplicationsStateFamily } from 'app/features/applications/state/company-applications';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 
 type Props = {
   linkToThread?: boolean;
@@ -38,14 +39,17 @@ export default (props: Props) => {
   const { openDiscussion } = useDirectChannels();
 
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
-  let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
+  const { message } = useMessage(context);
+  const parentMessage: NodeMessage | null = useMessage({
+    ...context,
+    id: message.thread_id,
+  }).message;
 
   const user = useUser(message.user_id);
 
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
-  let application = companyApplications.find(a => a.id === message.application_id);
+  const application = companyApplications.find(a => a.id === message.application_id);
 
   const scrollToMessage = () => {
     if (message.thread_id !== message.id) {
@@ -65,7 +69,7 @@ export default (props: Props) => {
   let userNameRef: ReactNode = null;
   const displayUserCard = () => {
     if (user) {
-      let box = (window as any).getBoundingClientRect(userNameRef);
+      const box = (window as any).getBoundingClientRect(userNameRef);
       MenusManager.openMenu(
         [
           {
@@ -119,12 +123,11 @@ export default (props: Props) => {
             className="date"
             // eslint-disable-next-line react/jsx-no-target-blank
             target="_BLANK"
-            href={messageLink || '#'}
+            href={messageLink ? addUrlTryDesktop(messageLink) : '#'}
             onMouseEnter={() => updateMessageLink()}
             rel="noreferrer"
           >
             <Moment
-              tz={moment.tz.guess()}
               format={
                 new Date().getTime() - message.created_at > 12 * 60 * 60 * 1000 ? 'lll' : 'LT'
               }

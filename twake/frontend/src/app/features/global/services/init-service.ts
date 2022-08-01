@@ -34,6 +34,7 @@ export type ServerInfoType = null | {
     branding: any;
     help_url: string | null;
     pricing_plan_url: string | null;
+    app_download_url: string | null;
     mobile: {
       mobile_redirect: string;
       mobile_appstore: string;
@@ -49,8 +50,8 @@ export type ServerInfoType = null | {
 
 class InitService extends Observable {
   public server_infos: ServerInfoType = null;
-  public server_infos_loaded: boolean = false;
-  public app_ready: boolean = false;
+  public server_infos_loaded = false;
+  public app_ready = false;
   private logger = Logger.getLogger('InitService');
 
   async getServer() {

@@ -12,6 +12,8 @@ export async function formatUser(
   user: User,
   options?: { includeCompanies?: boolean },
 ): Promise<UserObject> {
+  if (!user) return null;
+
   let resUser = {
     id: user.id,
     provider: user.identity_provider,
@@ -28,6 +30,17 @@ export async function formatUser(
     status: user.status_icon,
     last_activity: user.last_activity,
   } as UserObject;
+
+  const userOnline = await gr.services.online.get({ user_id: user.id });
+  if (userOnline) {
+    const { last_seen, is_connected } = userOnline;
+
+    resUser = {
+      ...resUser,
+      last_seen,
+      is_connected,
+    };
+  }
 
   if (options?.includeCompanies) {
     const userCompanies = await gr.services.users.getUserCompanies({ id: user.id });
@@ -61,6 +74,19 @@ export async function formatUser(
 
     // Fixme: this is for retro compatibility, should be deleted after march 2022 if mobile did implement it https://github.com/linagora/Twake-Mobile/issues/1265
     resUser.preference = resUser.preferences;
+
+    let name: string = resUser?.username;
+    if (!name) {
+      resUser.full_name = "Anonymous";
+    } else {
+      if (resUser.deleted) {
+        name = "Deleted user";
+      } else {
+        name = [resUser.first_name, resUser.last_name].filter(a => a).join(" ");
+        name = name || resUser.username;
+      }
+      resUser.full_name = name.charAt(0).toUpperCase() + name.slice(1);
+    }
   }
 
   return resUser;

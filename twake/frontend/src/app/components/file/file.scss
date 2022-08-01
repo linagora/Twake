@@ -7,6 +7,7 @@
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  min-height: 50px;
 
   &:hover {
     cursor: pointer;
@@ -37,9 +38,6 @@
     }
 
     .file-info-container {
-      opacity: 0;
-      transition: opacity 0.2s;
-
       background-color: #fffffff0;
       position: absolute;
       border-top: 1px solid var(--grey-light);
@@ -49,6 +47,21 @@
       .file-thumbnail-container {
         display: none;
       }
+    }
+
+    .media-file-info-container {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .file-large-preview-play-container {
+      width: 64px;
+      height: 64px;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 15px;
     }
   }
 

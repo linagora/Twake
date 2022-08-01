@@ -1,6 +1,10 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   Channel,
@@ -9,6 +13,7 @@ import {
   ChannelPendingEmailsPrimaryKey,
   getChannelPendingEmailsInstance,
   UserChannel,
+  UsersIncludedChannel,
 } from "../../entities";
 import { ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
@@ -18,6 +23,7 @@ import {
   ChannelParameters,
   ChannelPendingEmailsDeleteQueryParameters,
   ChannelSaveOptions,
+  ChannelSearchQueryParameters,
   CreateChannelBody,
   ReadChannelBody,
   UpdateChannelBody,
@@ -36,6 +42,11 @@ import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
 import { ChannelUserCounterType } from "../../entities/channel-counters";
 import gr from "../../../global-resolver";
+import { checkCompanyAndWorkspaceForUser } from "../middleware";
+import { checkUserBelongsToCompany } from "../../../../utils/company";
+import { Message } from "../../../messages/entities/messages";
+import { orderBy } from "lodash";
+import { DirectChannel } from "../../entities/direct-channel";
 
 const logger = getLogger("channel.controller");
 
@@ -72,7 +83,7 @@ export class ChannelCrudController
     }
 
     if (Channel.isDirectChannel(channel) || Channel.isPrivateChannel(channel)) {
-      const isMember = await gr.services.channels.members.isChannelMember(
+      const isMember = await gr.services.channels.members.getChannelMember(
         request.currentUser,
         channel,
       );
@@ -85,7 +96,7 @@ export class ChannelCrudController
     if (request.query.include_users)
       channel = await gr.services.channels.channels.includeUsersInDirectChannel(
         channel,
-        getExecutionContext(request),
+        getExecutionContext(request).user.id,
       );
 
     const member = await gr.services.channels.members.get(
@@ -111,6 +122,86 @@ export class ChannelCrudController
       )[0],
       resource: channelObject,
     };
+  }
+
+  async search(
+    request: FastifyRequest<{
+      Querystring: ChannelSearchQueryParameters;
+      Params: { company_id: string };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<Channel>> {
+    if (request.query?.q?.length === 0) {
+      return this.recent(request);
+    }
+
+    const userId = request.currentUser.id;
+
+    await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
+
+    const limit = request.query.limit || 100;
+
+    async function* getNextChannels(): AsyncIterableIterator<Channel> {
+      let lastPageToken = null;
+      let channels: Channel[] = [];
+      let hasMore = true;
+      do {
+        channels = await gr.services.channels.channels
+          .search(new Pagination(lastPageToken, limit.toString()), {
+            search: request.query.q,
+            companyId: request.params.company_id,
+          })
+          .then((a: ListResult<Channel>) => {
+            lastPageToken = a.nextPage.page_token;
+            if (!lastPageToken) {
+              hasMore = false;
+            }
+            return a.getEntities();
+          });
+
+        if (channels.length) {
+          for (const channel of channels) {
+            yield channel;
+          }
+        } else {
+          hasMore = false;
+        }
+      } while (hasMore);
+    }
+
+    const channels = [] as (Channel & { user_member: ChannelMemberObject })[];
+
+    for await (const ch of getNextChannels()) {
+      const channelMember = await gr.services.channels.members.getChannelMember(
+        { id: request.currentUser.id },
+        ch,
+        50,
+      );
+
+      //If not public channel and not member then ignore
+      if (!channelMember && ch.visibility !== "public") continue;
+
+      //If public channel but not in the workspace then ignore
+      if (
+        !channelMember &&
+        !(await gr.services.workspaces.getUser({ workspaceId: ch.workspace_id, userId }))
+      )
+        continue;
+
+      const chWithUser = await gr.services.channels.channels.includeUsersInDirectChannel(
+        ch,
+        userId,
+      );
+
+      channels.push({ ...chWithUser, user_member: channelMember });
+      if (channels.length == limit) {
+        break;
+      }
+    }
+
+    await this.completeWithStatistics(channels as ChannelObject[]);
+
+    return { resources: channels };
   }
 
   async getForPHP(
@@ -168,7 +259,7 @@ export class ChannelCrudController
       if (request.query.include_users)
         entityWithUsers = await gr.services.channels.channels.includeUsersInDirectChannel(
           entityWithUsers,
-          context,
+          context.user.id,
         );
 
       const resultEntity = {
@@ -254,7 +345,9 @@ export class ChannelCrudController
     if (request.query.include_users) {
       entities = [];
       for (const e of list.getEntities()) {
-        entities.push(await gr.services.channels.channels.includeUsersInDirectChannel(e, context));
+        entities.push(
+          await gr.services.channels.channels.includeUsersInDirectChannel(e, context.user.id),
+        );
       }
     } else {
       entities = list.getEntities();
@@ -317,12 +410,10 @@ export class ChannelCrudController
         ? await gr.services.channels.channels.markAsRead(
             this.getPrimaryKey(request),
             request.currentUser,
-            getExecutionContext(request),
           )
         : await gr.services.channels.channels.markAsUnread(
             this.getPrimaryKey(request),
             request.currentUser,
-            getExecutionContext(request),
           );
       return result;
     } catch (err) {
@@ -410,6 +501,71 @@ export class ChannelCrudController
         a.stats = { members, messages };
       }),
     );
+  }
+
+  async recent(
+    request: FastifyRequest<{
+      Querystring: { limit?: string };
+      Params: Pick<BaseChannelsParameters, "company_id">;
+    }>,
+  ): Promise<ResourceListResponse<UsersIncludedChannel>> {
+    const companyId = request.params.company_id;
+    const userId = request.currentUser.id;
+
+    const limit = parseInt(request.query.limit) || 100;
+
+    const workspaces = (
+      await gr.services.workspaces.getAllForUser({ userId }, { id: companyId })
+    ).map(a => a.workspaceId);
+
+    let channels: UserChannel[] = await gr.services.channels.channels
+      .getChannelsForUsersInWorkspace(companyId, "direct", userId)
+      .then(list => list.getEntities());
+
+    for (const workspaceId of workspaces) {
+      const workspaceChannels = await gr.services.channels.channels
+        .getChannelsForUsersInWorkspace(companyId, workspaceId, userId)
+        .then(list => list.getEntities());
+      channels = [...channels, ...workspaceChannels];
+    }
+
+    channels = channels.sort(
+      (a, b) =>
+        (b.last_activity || 0) / 100 +
+        (b.user_member.last_access || 0) -
+        ((a.user_member.last_access || 0) + (a.last_activity || 0) / 100),
+    );
+    channels = channels.slice(0, 100);
+
+    if (channels.length < limit) {
+      let otherChannels: UserChannel[] = [];
+      for (const workspaceId of workspaces) {
+        //Include channels we could join in this result
+        otherChannels = [
+          ...otherChannels,
+          ...(
+            await gr.services.channels.channels.getAllChannelsInWorkspace(companyId, workspaceId)
+          ).map(ch => {
+            return {
+              ...ch,
+              user_member: null,
+            } as UserChannel;
+          }),
+        ];
+      }
+
+      channels = _.unionBy(channels, otherChannels, "id");
+    }
+
+    const userIncludedChannels: UsersIncludedChannel[] = await Promise.all(
+      channels.map(channel => {
+        return gr.services.channels.channels.includeUsersInDirectChannel(channel, userId);
+      }),
+    );
+
+    return {
+      resources: userIncludedChannels.slice(0, limit),
+    };
   }
 }
 

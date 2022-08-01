@@ -11,8 +11,11 @@ import {
   MessageWithReplies,
   PaginationQueryParameters,
 } from "../../types";
-import { keyBy } from "lodash";
 import gr from "../../../global-resolver";
+import { CompanyExecutionContext } from "../../../applications/web/types";
+import { PublicFile } from "../../../files/entities/file";
+import searchFiles from "./views/search-files";
+import recentFiles from "./views/recent-files";
 
 export class ViewsController {
   async feed(
@@ -113,28 +116,49 @@ export class ViewsController {
   }
 
   // Uploaded and downloaded files of user from all over workspace
-  async files(): Promise<ResourceListResponse<MessageWithReplies>> {
-    return { resources: [] };
-  }
+  files = recentFiles;
 
   // Latest messages of user from all over workspace
-  async inbox(): Promise<ResourceListResponse<MessageWithReplies>> {
-    return { resources: [] };
+  async inbox(
+    request: FastifyRequest<{
+      Querystring: MessageViewListQueryParameters;
+      Params: {
+        company_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<Message>> {
+    const context = getCompanyExecutionContext(request);
+    const messages = await gr.services.messages.messages.inbox(
+      request.currentUser.id,
+      context,
+      new Pagination(null, String(request.query.limit)),
+    );
+
+    return {
+      resources: messages.getEntities(),
+    };
   }
 
   async search(
     request: FastifyRequest<{
-      Querystring: MessageViewSearchQueryParameters;
+      Querystring: MessageViewSearchQueryParameters & { page_token: string };
       Params: {
         company_id: string;
       };
     }>,
     context: ChannelViewExecutionContext,
-  ): Promise<ResourceListResponse<MessageWithReplies>> {
+  ): Promise<ResourceListResponse<Message>> {
+    if (request.query.q.length < 1) {
+      return { resources: [] };
+    }
+
     const limit = +request.query.limit || 100;
 
-    async function* getNextMessages(): AsyncIterableIterator<Message> {
-      let lastPageToken = null;
+    async function* getNextMessages(
+      initialPageToken?: string,
+    ): AsyncIterableIterator<{ msg: Message; pageToken: string }> {
+      let lastPageToken = initialPageToken;
       let messages: Message[] = [];
       let hasMoreMessages = true;
       do {
@@ -147,6 +171,7 @@ export class ViewsController {
               channelId: request.query.channel_id,
               companyId: request.params.company_id,
               ...(request.query.has_files ? { hasFiles: true } : {}),
+              ...(request.query.has_medias ? { hasMedias: true } : {}),
               ...(request.query.sender ? { sender: request.query.sender } : {}),
             },
             context,
@@ -161,7 +186,7 @@ export class ViewsController {
 
         if (messages.length) {
           for (const message of messages) {
-            yield message;
+            yield { msg: message, pageToken: lastPageToken };
           }
         } else {
           hasMoreMessages = false;
@@ -170,9 +195,11 @@ export class ViewsController {
     }
 
     const messages = [] as Message[];
+    let lastPageToken = null;
 
-    for await (const msg of getNextMessages()) {
-      const isChannelMember = await gr.services.channels.members.isChannelMember(
+    for await (const { msg, pageToken } of getNextMessages(request.query.page_token)) {
+      lastPageToken = pageToken;
+      const getChannelMember = await gr.services.channels.members.getChannelMember(
         { id: request.currentUser.id },
         {
           company_id: msg.cache.company_id,
@@ -181,7 +208,7 @@ export class ViewsController {
         },
         50,
       );
-      if (!isChannelMember) continue;
+      if (!getChannelMember) continue;
 
       messages.push(msg);
       if (messages.length == limit) {
@@ -189,21 +216,28 @@ export class ViewsController {
       }
     }
 
-    const firstMessagesMap = keyBy(
-      await gr.services.messages.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
-      item => item.id,
-    );
+    const extendedMessages = [];
+    for (const message of messages) {
+      const extended = {
+        ...(await gr.services.messages.messages.includeUsersInMessage(message)),
+        channel: await gr.services.channels.channels.get({
+          company_id: message.cache?.company_id,
+          workspace_id: message.cache?.workspace_id,
+          id: message.cache?.channel_id,
+        }),
+      };
+      extendedMessages.push(extended);
+    }
 
-    const resources = messages.map((resource: Message) => {
-      const firstMessage = firstMessagesMap[resource.thread_id];
-      return {
-        ...firstMessage,
-        last_replies: resource.id != firstMessage.id ? [resource] : [],
-      } as MessageWithReplies;
-    });
-
-    return { resources };
+    return {
+      resources: extendedMessages,
+      ...(lastPageToken && {
+        next_page_token: lastPageToken,
+      }),
+    };
   }
+
+  searchFiles = searchFiles;
 }
 
 export interface MessageViewListQueryParameters
@@ -219,6 +253,7 @@ export interface MessageViewSearchQueryParameters extends PaginationQueryParamet
   channel_id: string;
   sender: string;
   has_files: boolean;
+  has_medias: boolean;
 }
 
 function getChannelViewExecutionContext(
@@ -241,5 +276,20 @@ function getChannelViewExecutionContext(
       company_id: request.params.company_id,
       workspace_id: request.params.workspace_id,
     },
+  };
+}
+
+export function getCompanyExecutionContext(
+  request: FastifyRequest<{
+    Params: { company_id: string };
+  }>,
+): CompanyExecutionContext {
+  return {
+    user: request.currentUser,
+    company: { id: request.params.company_id },
+    url: request.url,
+    method: request.routerMethod,
+    reqId: request.id,
+    transport: "http",
   };
 }

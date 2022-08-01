@@ -21,7 +21,7 @@ import {
   ChannelService,
   DefaultChannelService,
 } from "../../provider";
-import { ChannelObject } from "./types";
+import { ChannelObject, SearchChannelOptions } from "./types";
 import {
   Channel,
   ChannelMember,
@@ -49,6 +49,11 @@ import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import { formatUser } from "../../../../utils/users";
 import gr from "../../../global-resolver";
+import { SearchMessageOptions } from "../../../messages/types";
+import {
+  KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
+} from "../../../../core/platform/services/knowledge-graph/types";
 
 const logger = getLogger("channel.service");
 
@@ -158,8 +163,10 @@ export class ChannelServiceImpl implements ChannelService {
       channelToSave = cloneDeep(channelToUpdate);
 
       updatableFields.forEach(field => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (channelToSave as any)[field] = channel[field];
+        if (channel[field] !== undefined) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (channelToSave as any)[field] = channel[field];
+        }
       });
 
       localEventBus.publish<ResourceEventsPayload>("channel:updated", {
@@ -263,8 +270,16 @@ export class ChannelServiceImpl implements ChannelService {
 
   async get(pk: ChannelPrimaryKey): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
-    const channel = await this.channelRepository.findOne(primaryKey);
+    let channel = await this.channelRepository.findOne(primaryKey);
+    if (!channel) {
+      channel = await this.channelRepository.findOne({ ...primaryKey, workspace_id: "direct" });
+    }
+    if (!channel) return null;
+
     const last_activity = await this.getChannelActivity(channel);
+
+    if (channel.visibility === ChannelVisibility.DIRECT)
+      channel = await this.includeUsersInDirectChannel(channel);
 
     return ChannelObject.mapTo(channel, { last_activity });
   }
@@ -387,7 +402,7 @@ export class ChannelServiceImpl implements ChannelService {
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }
 
-  private async getChannelActivity(channel: Channel): Promise<number> {
+  public async getChannelActivity(channel: Channel): Promise<number> {
     let result = 0;
 
     if (!channel) {
@@ -408,13 +423,23 @@ export class ChannelServiceImpl implements ChannelService {
     return result;
   }
 
+  public async fillChannelActivities(channels: Channel[]): Promise<ChannelObject[]> {
+    const filledChannels: ChannelObject[] = [];
+    for (const channel of channels) {
+      const activity = await this.getChannelActivity(channel);
+      const chObj = ChannelObject.mapTo(channel);
+      chObj.last_activity = activity;
+      filledChannels.push(chObj);
+    }
+    return filledChannels;
+  }
+
   async list(
     pagination: Pagination,
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel | UserChannel>> {
     let channels: ListResult<Channel | UserChannel>;
-    let activityPerChannel: Map<string, ChannelActivity>;
     const isDirectWorkspace = isDirectChannel(context.workspace);
     const isWorkspaceAdmin =
       !isDirectWorkspace && userIsWorkspaceAdmin(context.user, context.workspace);
@@ -425,56 +450,10 @@ export class ChannelServiceImpl implements ChannelService {
 
     let user_id = context.user.id;
     if (context.user.application_id) {
-      user_id ||= options.user_id;
+      user_id = user_id || options.user_id;
     }
 
     if ((options?.mine || isDirectWorkspace) && user_id) {
-      const userChannels = await gr.services.channels.members.listUserChannels(
-        { id: user_id },
-        pagination,
-        context,
-      );
-
-      channels = await this.channelRepository.find(findFilters, {
-        $in: [["id", userChannels.getEntities().map(channelMember => channelMember.channel_id)]],
-      });
-
-      if (!channels.isEmpty()) {
-        const activities = await this.activityRepository.find(findFilters, {
-          $in: [["channel_id", channels.getEntities().map(channel => channel.id)]],
-        });
-
-        activityPerChannel = new Map<string, ChannelActivity>(
-          activities.getEntities().map(activity => [activity.channel_id, activity]),
-        );
-      } else {
-        activityPerChannel = new Map<string, ChannelActivity>();
-      }
-
-      channels.mapEntities(<UserChannel>(channel: Channel) => {
-        const userChannel = find(userChannels.getEntities(), { channel_id: channel.id });
-
-        const channelActivity = activityPerChannel.get(channel.id);
-
-        return {
-          ...channel,
-          ...{ user_member: userChannel },
-          last_activity: channelActivity?.last_activity || 0,
-          last_message: channelActivity?.last_message || {},
-        } as unknown as UserChannel;
-      });
-
-      if (isDirectWorkspace) {
-        channels.mapEntities(<UserDirectChannel>(channel: UserChannel) => {
-          return {
-            ...channel,
-            ...{
-              members: channel.members || [],
-            },
-          } as unknown as UserDirectChannel;
-        });
-      }
-
       if (!context.user.application_id && !context.user.server_request) {
         localEventBus.publish<ResourceEventsPayload>("channel:list", {
           user: context.user,
@@ -484,7 +463,12 @@ export class ChannelServiceImpl implements ChannelService {
         });
       }
 
-      return new ListResult(channels.type, channels.getEntities(), userChannels.nextPage);
+      return this.getChannelsForUsersInWorkspace(
+        context.workspace.company_id,
+        context.workspace.workspace_id,
+        context.user.id,
+        pagination,
+      );
     }
 
     channels = await this.channelRepository.find(findFilters, { pagination });
@@ -495,6 +479,80 @@ export class ChannelServiceImpl implements ChannelService {
     }
 
     return channels;
+  }
+
+  async getChannelsForUsersInWorkspace(
+    companyId: string,
+    workspaceId: string | "direct",
+    userId: string,
+    pagination?: Pagination,
+  ): Promise<ListResult<UserChannel>> {
+    const isDirectWorkspace = isDirectChannel({ workspace_id: workspaceId });
+    const findFilters: FindFilter = {
+      company_id: companyId,
+      workspace_id: workspaceId,
+    };
+
+    const userChannels = await gr.services.channels.members.listUserChannels(
+      { id: userId },
+      pagination,
+      {
+        user: {
+          id: userId,
+        },
+        workspace: {
+          workspace_id: workspaceId,
+          company_id: companyId,
+        },
+      },
+    );
+
+    let activityPerChannel: Map<string, ChannelActivity>;
+    let channels = await this.channelRepository.find(findFilters, {
+      $in: [["id", userChannels.getEntities().map(channelMember => channelMember.channel_id)]],
+    });
+
+    if (!channels.isEmpty()) {
+      const activities = await this.activityRepository.find(findFilters, {
+        $in: [["channel_id", channels.getEntities().map(channel => channel.id)]],
+      });
+
+      activityPerChannel = new Map<string, ChannelActivity>(
+        activities.getEntities().map(activity => [activity.channel_id, activity]),
+      );
+    } else {
+      activityPerChannel = new Map<string, ChannelActivity>();
+    }
+
+    channels.mapEntities(<UserChannel>(channel: Channel) => {
+      const userChannel = find(userChannels.getEntities(), { channel_id: channel.id });
+
+      const channelActivity = activityPerChannel.get(channel.id);
+
+      return {
+        ...channel,
+        ...{ user_member: userChannel },
+        last_activity: channelActivity?.last_activity || 0,
+        last_message: channelActivity?.last_message || {},
+      } as unknown as UserChannel;
+    });
+
+    if (isDirectWorkspace) {
+      channels.mapEntities(<UserDirectChannel>(channel: UserChannel) => {
+        return {
+          ...channel,
+          ...{
+            members: channel.members || [],
+          },
+        } as unknown as UserDirectChannel;
+      });
+    }
+
+    return new ListResult(
+      channels.type,
+      channels.getEntities() as UserChannel[],
+      userChannels.nextPage,
+    );
   }
 
   async createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
@@ -543,7 +601,7 @@ export class ChannelServiceImpl implements ChannelService {
     return list.getEntities();
   }
 
-  async markAsRead(pk: ChannelPrimaryKey, user: User): Promise<boolean> {
+  async markAsRead(pk: ChannelPrimaryKey, user: Pick<User, "id">): Promise<boolean> {
     const now = Date.now();
     const channel = await this.get(pk);
 
@@ -551,7 +609,7 @@ export class ChannelServiceImpl implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await gr.services.channels.members.isChannelMember(user, channel);
+    const member = await gr.services.channels.members.getChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");
@@ -580,7 +638,7 @@ export class ChannelServiceImpl implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await gr.services.channels.members.isChannelMember(user, channel);
+    const member = await gr.services.channels.members.getChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");
@@ -635,7 +693,7 @@ export class ChannelServiceImpl implements ChannelService {
 
   public async includeUsersInDirectChannel(
     channel: Channel,
-    context?: WorkspaceExecutionContext,
+    excludeUserId?: string,
   ): Promise<UsersIncludedChannel> {
     const channelWithUsers: UsersIncludedChannel = { users: [], ...channel };
     if (isDirectChannel(channel)) {
@@ -643,13 +701,14 @@ export class ChannelServiceImpl implements ChannelService {
       for (const user of channel.members) {
         if (user) {
           const e = await formatUser(await gr.services.users.getCached({ id: user }));
-          users.push(e);
+          if (e) users.push(e);
         }
       }
       channelWithUsers.users = users;
       channelWithUsers.name = users
-        .filter(u => u.id != context?.user?.id)
-        .map(u => u.full_name)
+        .filter(u => u.id != excludeUserId)
+        .map(u => u.full_name?.trim())
+        .filter(a => a)
         .join(", ");
     }
     return channelWithUsers;
@@ -704,6 +763,15 @@ export class ChannelServiceImpl implements ChannelService {
         channel,
         user: context.user,
       });
+
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
+        KnowledgeGraphEvents.CHANNEL_CREATED,
+        {
+          id: channel.id,
+          resource: channel,
+          links: [],
+        },
+      );
     }
   }
 
@@ -753,5 +821,43 @@ export class ChannelServiceImpl implements ChannelService {
         member,
       },
     });
+  }
+
+  async search(
+    pagination: Pagination,
+    options: SearchChannelOptions,
+  ): Promise<ListResult<Channel>> {
+    const rep = gr.platformServices.search.getRepository<Channel>("channel", Channel);
+    return rep.search(
+      {},
+      {
+        pagination,
+        ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
+        $text: {
+          $search: options.search,
+        },
+      },
+    );
+  }
+
+  async getAllChannelsInWorkspace(company_id: string, workspace_id: string): Promise<Channel[]> {
+    let pagination = new Pagination(null, "100");
+
+    const channels: Channel[] = [];
+    do {
+      const res = await this.channelRepository.find(
+        {
+          company_id: company_id,
+          workspace_id: workspace_id,
+        },
+        {
+          pagination,
+        },
+      );
+      pagination = new Pagination(res.nextPage.page_token, res.nextPage.limitStr);
+      channels.push(...res.getEntities());
+    } while (pagination.page_token);
+
+    return channels;
   }
 }

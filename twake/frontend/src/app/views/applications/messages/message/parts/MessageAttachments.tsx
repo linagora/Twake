@@ -9,7 +9,7 @@ import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 
 export default () => {
   const context = useContext(MessageContext);
-  let { message, save } = useMessage(context);
+  const { message, save } = useMessage(context);
 
   const { files, setFiles } = useUploadZones(`message-${message.id}`);
 
@@ -44,8 +44,7 @@ export default () => {
               files.filter(
                 file =>
                   file.metadata?.source === 'internal' &&
-                  (file.metadata?.thumbnails?.length || 0) > 0 &&
-                  FileUploadAPIClient.mimeToType(file.metadata?.mime || '') === 'image',
+                  (file.metadata?.thumbnails?.length || 0) > 0
               ).length === files.length
             }
             onRemove={() => setFiles(files.filter(f => f.id !== file.id))}

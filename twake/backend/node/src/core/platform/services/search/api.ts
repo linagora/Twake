@@ -26,12 +26,17 @@ type TextType = {
   $diacriticSensitive?: boolean; //Default false
 };
 
+type SortType = {
+  [key: string]: "asc" | "desc";
+};
+
 //Field, regex, options
 type RegexType = [string, string, string];
 
 export type FindOptions = OrmFindOptions & {
   $regex?: RegexType[];
   $text?: TextType;
+  $sort?: SortType;
 };
 
 export type IndexedEntity = {

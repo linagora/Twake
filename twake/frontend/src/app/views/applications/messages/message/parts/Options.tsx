@@ -26,6 +26,8 @@ import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
+import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
+import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 
 type Props = {
   onOpen?: () => void;
@@ -37,9 +39,9 @@ export default (props: Props) => {
   const channelId = useRouterChannel();
   const workspaceId = useRouterWorkspace();
   const context = useContext(MessageContext);
-  let { message, react, remove, pin } = useMessage(context);
-  let { channel } = useChannel(channelId);
-  let { message: thread } = useMessage({
+  const { message, react, remove, pin } = useMessage(context);
+  const { channel } = useChannel(channelId);
+  const { message: thread } = useMessage({
     companyId: channel.company_id || '',
     threadId: message.thread_id,
     id: message.thread_id,
@@ -58,7 +60,7 @@ export default (props: Props) => {
   const menu: any[] = [];
 
   const triggerApp = (app: any) => {
-    var data = {
+    const data = {
       channel: channel,
       thread: thread.id && thread.id !== message.id ? thread : null,
       message: message,
@@ -97,28 +99,23 @@ export default (props: Props) => {
       },
     });
 
-    if (message.thread_id === message.id) {
-      if (!message.context?.disable_pin && false) {
-        menu.push({
-          type: 'menu',
-          icon: 'link',
-          text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
-          onClick: () => {
-            const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-              workspaceId: workspaceId,
-              channelId: channelId,
-              messageId: message.thread_id || message.id,
-            })}`;
-            const el = document.createElement('textarea');
-            el.value = url;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-          },
-        });
-      }
-    }
+    menu.push({
+      type: 'menu',
+      icon: 'link',
+      text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
+      onClick: () => {
+        const url = addUrlTryDesktop(
+          `${document.location.origin}${RouterServices.generateRouteFromState({
+            workspaceId: workspaceId,
+            channelId: channelId,
+            threadId: message.thread_id,
+            messageId: message.id,
+          })}`,
+        );
+
+        copyToClipboard(url);
+      },
+    });
 
     if (!message.context?.disable_pin)
       menu.push({
@@ -150,6 +147,7 @@ export default (props: Props) => {
           return apps.map((app: any) => {
             return (
               <div
+                key={app.id}
                 className="menu"
                 onClick={() => {
                   triggerApp(app);

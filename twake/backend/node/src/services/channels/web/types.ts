@@ -2,6 +2,10 @@ import { Channel, ChannelMember, ChannelPendingEmails, ChannelTab } from "../ent
 
 export declare type DirectChannel = "direct";
 
+export interface RecentChannelsParameters {
+  company_id: string;
+}
+
 export interface BaseChannelsParameters {
   company_id: string;
   workspace_id: string | DirectChannel;
@@ -26,6 +30,10 @@ export interface ChannelListQueryParameters extends PaginationQueryParameters {
   include_users?: string;
   search_query?: string;
   mine?: boolean;
+}
+
+export interface ChannelSearchQueryParameters extends PaginationQueryParameters {
+  q: string;
 }
 
 export class CreateChannelBody {

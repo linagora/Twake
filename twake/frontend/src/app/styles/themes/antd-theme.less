@@ -40,7 +40,7 @@
   text-align: center;
 }
 
-.ant-btn-sm:not(.ant-btn-text)  {
+.ant-btn-sm:not(.ant-btn-text) {
   width: 163px;
 }
 
@@ -50,9 +50,13 @@
   font-size: 17px;
 }
 
+button.ant-btn-primary {
+  background-color: @primary;
+}
+
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
-  background: @primary-hover;
+  background-color: @primary-hover;
 }
 
 .ant-btn-ghost,
@@ -153,11 +157,11 @@ textarea.ant-input,
 }
 
 // --- antd-layout-header --- //
-@layout-header-background: @white;
+@layout-header-background-color: @white;
 
 // --- ant-layout-sider ---//
-@layout-body-background: @white;
-@layout-sider-background: @secondary;
+@layout-body-background-color: @white;
+@layout-sider-background-color: @secondary;
 @layout-sider-background-light: @grey-background;
 
 .ant-layout-sider-zero-width-trigger {
@@ -196,7 +200,7 @@ textarea.ant-input,
 }
 
 // --- ant-select --- //
-@select-background: @grey-background;
+@select-background-color: @grey-background;
 @select-border-color: @grey-background;
 @select-dropdown-bg: @white;
 @select-item-active-bg: @primary-background;

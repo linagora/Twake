@@ -10,7 +10,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import NewVersionModal from './new-version-modal';
 import { ServerInfoType } from 'app/features/global/services/init-service';
 
-let lastScrape: number = 0;
+let lastScrape = 0;
 
 const NewVersionComponent = (): JSX.Element => {
   const [displayBanner, setDisplayBanner] = useState<boolean>(false);

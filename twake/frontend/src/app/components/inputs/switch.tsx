@@ -15,7 +15,7 @@ export default (props: {
   onChange: Function;
 }) => {
   const renderSwitch = () => {
-    var className = props.className || '';
+    let className = props.className || '';
 
     if (props.big) {
       className += ' big ';
@@ -47,7 +47,7 @@ export default (props: {
     );
   };
 
-  var parentClassName = '';
+  let parentClassName = '';
 
   if (props.big) {
     parentClassName += ' big ';

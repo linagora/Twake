@@ -4,10 +4,10 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-
+import Version from 'app/environment/version';
 class LanguagesService extends Observable {
   private i18nt: Function | null = null;
-  private language: string = '';
+  private language = '';
   private default = 'en';
   private available = [
     'de',
@@ -43,7 +43,7 @@ class LanguagesService extends Observable {
       .init({
         fallbackLng: this.default,
         supportedLngs: this.available,
-        backend: { loadPath: '/locales/{{lng}}.json' },
+        backend: { loadPath: '/locales/{{lng}}.json' + '?v=' + Version.version_detail },
         interpolation: {
           escapeValue: false, // react already safes from xss
         },

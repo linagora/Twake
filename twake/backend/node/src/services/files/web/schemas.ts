@@ -1,3 +1,5 @@
+import { userObjectSchema } from "../../user/web/schemas";
+
 export const filesSchema = {
   type: "object",
   properties: {

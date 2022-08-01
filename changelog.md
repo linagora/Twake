@@ -1,3 +1,51 @@
+# Twake 2022.Q3.1065
+
+- New channel members invitation and management modal ⚙️
+- New file preview and medias gallery with navigation, caption, and message context 🕶
+- Fixed connection status of users 🟢
+- Notification when someone react to your message 👍
+- Backend simplification for faster development 👩‍💻
+
+# Twake 2022.Q3.1050
+
+- Open desktop app if present in the system
+- Preview public channels before to join them
+- Updated [Search anything on Twake](https://github.com/linagora/Twake/issues/1710)
+- Started using Tailwindcss for future new design
+- Started using Storybooks
+
+# Twake 2022.Q2.975
+
+### Backend
+
+- [Implemented the list of uploaded in our backend](https://github.com/linagora/Twake/issues/2127)
+- [Jump to a message](https://github.com/linagora/Twake/issues/1926)
+- [Search for messages](https://github.com/linagora/Twake/issues/1710)
+- Generate links previews
+- Multiple bug fixes
+
+### Bug fixed
+
+- [Fixed thumbnail rotatation when uploaded from mobile](https://github.com/linagora/Twake/issues/2111)
+- [Scrolling message feed isn't smooth](https://github.com/linagora/Twake/issues/2039)
+- [Position of Close (x) buttons are not consistent](https://github.com/linagora/Twake/issues/2031)
+- [Mention user by any namu or identifier](https://github.com/linagora/Twake/issues/2042)
+- [Update workspace name reset the logo](https://github.com/linagora/Twake/issues/1950)
+- [Empty channel isn't working](https://github.com/linagora/Twake/issues/2146)
+- [On Twake desktop I have notifications only inside Twake window and when it's collapsed I don't see them](https://github.com/linagora/Twake/issues/2043)
+- [Windows notification has no redirection](https://github.com/linagora/Twake/issues/125)
+- [Clicking on push notification does not open the right message](https://github.com/linagora/Twake/issues/396)
+
+# Twake 2022.Q2.930
+
+### Backend
+
+- Refactoring of how we get services in our backend
+
+### Bug fixed
+
+- https://github.com/linagora/Twake/pull/2092
+
 # Twake 2022.Q2.910
 
 ### Messages
@@ -5,10 +53,28 @@
 - Copy paste images to message editor fixed
 - Large files preview is now available
 - Mentions are back in messages
+- Giphy, n8n and Jitsi are back
 
 ### General
 
 - New workspaces parameters page view
+- Ability to create and manage plugins from Twake
+
+### Backend
+
+- New backend routes to get files and pinned messages of a channel
+- New search messages routes
+
+### Bug fixed
+
+- Fixed thumbnail generation
+- https://github.com/linagora/Twake/issues/2083
+- https://github.com/linagora/Twake/issues/2091
+- https://github.com/linagora/Twake/issues/2095
+- https://github.com/linagora/Twake/issues/2037
+- https://github.com/linagora/Twake/issues/2036
+- https://github.com/linagora/Twake/issues/1918
+- https://github.com/linagora/Twake/issues/2102
 
 # Twake 2022.Q1.890
 

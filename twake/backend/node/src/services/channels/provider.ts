@@ -17,6 +17,7 @@ import {
   ChannelTabPrimaryKey,
   DefaultChannel,
   DefaultChannelPrimaryKey,
+  UserChannel,
   UsersIncludedChannel,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
@@ -25,7 +26,11 @@ import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
-import { NewUserInWorkspaceNotification } from "./services/channel/types";
+import {
+  ChannelObject,
+  NewUserInWorkspaceNotification,
+  SearchChannelOptions,
+} from "./services/channel/types";
 import { ChannelCounterPrimaryKey } from "./entities/channel-counters";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspacePrimaryKey } from "../workspaces/entities/workspace";
@@ -84,16 +89,24 @@ export interface ChannelService
   getDirectChannelsForUsersInCompany(companyId: string, userId: string): Promise<DirectChannel[]>;
 
   /**
+   * Get all the direct channels in a company for the given user
+   *
+   * @param companyId
+   * @param userId
+   */
+  getChannelsForUsersInWorkspace(
+    companyId: string,
+    workspaceId: string,
+    userId: string,
+  ): Promise<ListResult<UserChannel>>;
+
+  /**
    * Mark the channel as read for the given user
    *
    * @param channel
    * @param user
    */
-  markAsRead(
-    channel: ChannelPrimaryKey,
-    user: User,
-    context: WorkspaceExecutionContext,
-  ): Promise<boolean>;
+  markAsRead(channel: ChannelPrimaryKey, user: User): Promise<boolean>;
 
   /**
    * Mark the channel as unread
@@ -102,11 +115,7 @@ export interface ChannelService
    * @param user
    * @param context
    */
-  markAsUnread(
-    channel: ChannelPrimaryKey,
-    user: User,
-    context: WorkspaceExecutionContext,
-  ): Promise<boolean>;
+  markAsUnread(channel: ChannelPrimaryKey, user: User): Promise<boolean>;
 
   /**
    * Update the last activity for the given channel
@@ -121,6 +130,9 @@ export interface ChannelService
     },
     context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>>;
+
+  getChannelActivity(channel: Channel): Promise<number>;
+  fillChannelActivities(channel: Channel[]): Promise<ChannelObject[]>;
 
   /**
    * Get the list of all default channels for the given workspace.
@@ -148,12 +160,16 @@ export interface ChannelService
   /**
    * Include users to channel itself, also generate the channel name
    * @param channel
-   * @param context
+   * @param excludeUserId
    */
   includeUsersInDirectChannel(
     channel: Channel,
-    context?: WorkspaceExecutionContext,
+    excludeUserId: string,
   ): Promise<UsersIncludedChannel>;
+
+  search(pagination: Pagination, options: SearchChannelOptions): Promise<ListResult<Channel>>;
+
+  getAllChannelsInWorkspace(company_id: string, id: string): Promise<Channel[]>;
 }
 export interface MemberService
   extends TwakeServiceProvider,
@@ -170,7 +186,7 @@ export interface MemberService
   /**
    * Check if user is channel member
    */
-  isChannelMember(
+  getChannelMember(
     user: User,
     channel: Partial<Pick<Channel, "company_id" | "workspace_id" | "id">>,
     cacheTtlSec?: number,

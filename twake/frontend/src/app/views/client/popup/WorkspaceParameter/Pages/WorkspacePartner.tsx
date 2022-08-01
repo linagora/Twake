@@ -22,8 +22,7 @@ import ConsoleService from 'app/features/console/services/console-service';
 import './Pages.scss';
 
 export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: any }) => {
-  // @ts-ignore
-  workspacesUsers.useListener(useState);
+  workspacesUsers.useListener(useState as any);
   const loading = workspacesUsers.updateLevelUserLoading[props.col.user.id];
   const checked = props.col.level === props.adminLevelId;
   return (
@@ -50,7 +49,7 @@ export default () => {
   Object.keys(workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
     // eslint-disable-next-line array-callback-return
     key => {
-      var user = workspacesUsers.users_by_group[groupService.currentGroupId][key].user;
+      const user = workspacesUsers.users_by_group[groupService.currentGroupId][key].user;
       if (
         !workspacesUsers.getUsersByWorkspace(WorkspaceService.currentWorkspaceId)[key] ||
         !workspacesUsers.getUsersByWorkspace(WorkspaceService.currentWorkspaceId)[key].user ||
@@ -112,7 +111,6 @@ export default () => {
           <Input
             placeholder={Languages.t('components.listmanager.filter')}
             prefix={<Search size={16} color="var(--grey-dark)" />}
-            value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
         </Col>

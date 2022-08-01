@@ -16,7 +16,7 @@ import ConfigBodyLayer from 'components/configurators/config-body-layer.js';
 import Viewer from 'app/views/applications/drive/viewer/viewer';
 import ModalComponent from 'app/components/modal/modal-component';
 import ConnectionIndicator from 'components/connection-indicator/connection-indicator';
-import SearchPopup from 'components/search-popup/search-popup.js';
+import SearchPopup from 'components/search-popup/search-popup';
 import NewVersionComponent from 'components/new-version/new-version-component';
 import SideBars, { LoadingSidebar } from './side-bars';
 import CompanyStatusComponent from 'app/components/on-boarding/company-status-component';
@@ -24,8 +24,11 @@ import UserContext from 'app/features/users/state/integration/user-context';
 import { useCurrentUser, useCurrentUserRealtime } from 'app/features/users/hooks/use-current-user';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 import useUsetiful from 'app/features/global/hooks/use-usetiful';
+import UsersSearchModal from 'app/components/channel-members-list/users-search-modal';
 
 import './styles.scss';
+import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
+import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -43,6 +46,7 @@ export default React.memo((): JSX.Element => {
   if (user?.id) {
     page = (
       <Layout className="appPage fade_in">
+        <DownloadAppBanner />
         <NewVersionComponent />
         <CompanyStatusComponent />
         <FeatureToggles features={activeFeatureNames}>
@@ -83,8 +87,10 @@ export default React.memo((): JSX.Element => {
       <Viewer />
       <ModalComponent />
       <SearchPopup />
+      <ChannelAttachementList />
       <ConnectionIndicator />
       <ChatUploadsViewer />
+      <UsersSearchModal />
     </>
   );
 });

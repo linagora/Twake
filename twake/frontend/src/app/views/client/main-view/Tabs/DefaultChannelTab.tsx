@@ -8,8 +8,6 @@ import Languages from 'app/features/global/services/languages-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import WorkspaceParameter from '../../popup/WorkspaceParameter/WorkspaceParameter';
 import { Application } from 'app/features/applications/types/application';
-import { ChannelType } from 'app/features/channels/types/channel';
-import Collections from 'app/deprecated/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
 import MainViewService from 'app/features/router/services/main-view-service';
 import { isArray } from 'lodash';

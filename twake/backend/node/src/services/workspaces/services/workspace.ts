@@ -58,6 +58,10 @@ import { expandUUID4, reduceUUID4 } from "../../../utils/uuid-reducer";
 import gr from "../../global-resolver";
 import { logger } from "@sentry/utils";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
+import {
+  KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
+} from "../../../core/platform/services/knowledge-graph/types";
 
 export class WorkspaceServiceImpl implements WorkspaceService {
   version: "1";
@@ -194,7 +198,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
     }/workspaces/${workspace.id}/thumbnail?t=${new Date().getTime()}`;
     let logoPublicUrl = undefined;
     if (workspace.logo) {
-      if (!item.logo || options.logo_b64) {
+      if (!options.logo_b64) {
         await gr.platformServices.storage.remove(logoInternalPath);
         workspace.logo = null;
       }
@@ -224,6 +228,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       );
     }
 
+    // On created
     if (!item.id) {
       gr.platformServices.pubsub.publish("workspace:added", {
         data: {
@@ -231,6 +236,15 @@ export class WorkspaceServiceImpl implements WorkspaceService {
           workspace_id: workspace.id,
         },
       });
+
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<Workspace>>(
+        KnowledgeGraphEvents.WORKSPACE_CREATED,
+        {
+          id: workspace.id,
+          resource: workspace,
+          links: [{ relation: "parent", type: "company", id: workspace.company_id }],
+        },
+      );
     }
 
     return new SaveResult<Workspace>(
@@ -394,8 +408,15 @@ export class WorkspaceServiceImpl implements WorkspaceService {
     );
   }
 
-  async processPendingUser(user: User): Promise<void> {
-    const userCompanies = await gr.services.companies.getAllForUser(user.id);
+  async processPendingUser(user: User, companyId?: string): Promise<void> {
+    let userCompanies = [];
+    if (!companyId) {
+      userCompanies = await gr.services.companies.getAllForUser(user.id);
+    } else {
+      userCompanies = [
+        await gr.services.companies.getCompanyUser({ id: companyId }, { id: user.id }),
+      ];
+    }
     for (const userCompany of userCompanies) {
       const workspaces = await this.getAllForCompany(userCompany.group_id);
       for (const workspace of workspaces) {
@@ -423,7 +444,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
   ): Promise<WorkspaceUser[]> {
     //Process pending invitation to workspace for this user
     const user = await gr.services.users.get({ id: userId.userId });
-    await this.processPendingUser(user);
+    await this.processPendingUser(user, companyId?.id);
 
     //Get all workspaces for this user
     const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);

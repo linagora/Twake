@@ -1,4 +1,3 @@
-import { Resource } from 'app/deprecated/CollectionsReact/Collections';
 import {
   CompanyRoleType,
   CompanyStatusType,
@@ -32,6 +31,9 @@ export type UserType = {
   groups_id?: string[];
   id?: string;
   identity_provider?: string;
+  provider_id?: string;
+  provider?: string;
+  last_activity?: number;
   isNew?: boolean;
   isRobot?: boolean;
   language?: string;
@@ -50,7 +52,8 @@ export type UserType = {
   username: string;
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
-
+  preference?: UserPreferencesType;
+  full_name?: string;
   /**
    * this field is filled when available and so we cannot rely on it except on search service for filtering
    **/
@@ -69,7 +72,3 @@ export type UserType = {
   _persisted?: boolean;
   _updating?: boolean;
 };
-
-export class UserResource extends Resource<UserType> {
-  _type = 'user';
-}

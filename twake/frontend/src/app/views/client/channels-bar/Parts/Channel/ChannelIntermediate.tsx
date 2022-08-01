@@ -3,12 +3,11 @@ import React, { useState, useEffect } from 'react';
 import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
 import { ChannelType } from 'app/features/channels/types/channel';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import { getUserParts } from 'app/components/member/user-parts';
-import { NotificationResource } from 'app/features/users/types/notification-types';
 import _ from 'lodash';
 import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
 import useRouterChannelSelected from 'app/features/router/hooks/use-router-channel-selected';
+import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 
 type Props = {
   channel: ChannelType;
@@ -23,11 +22,7 @@ export default (props: Props): JSX.Element => {
   const [isActive, setActive] = useState<boolean>(false);
   const selected = useRouterChannelSelected(props.channel.id || '');
   const writingActivity = useChannelWritingActivityState(props.channel.id || '');
-
-  const notifications = Collection.get(
-    '/notifications/v1/badges/',
-    NotificationResource,
-  ).useWatcher({ channel_id: props.channel.id });
+  const { badges: notifications } = useChannelNotifications(props.channel.id || '');
   const { avatar, name } = isDirectChannel
     ? getUserParts({
         usersIds: props.channel.members || [],

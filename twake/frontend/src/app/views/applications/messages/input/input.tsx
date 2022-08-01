@@ -151,7 +151,7 @@ export default (props: Props) => {
     //Sending commands
     if (content.indexOf('/') === 0 && !props.messageId) {
       let app: any = null;
-      let app_name = content.split(' ')[0].slice(1);
+      const app_name = content.split(' ')[0].slice(1);
       // eslint-disable-next-line array-callback-return
       getCompanyApplications(companyId).map((_app: any) => {
         if (_app?.identity?.code === app_name) {
@@ -166,7 +166,7 @@ export default (props: Props) => {
         });
         return;
       }
-      let data = {
+      const data = {
         command: content.split(' ').slice(1).join(' '),
         channel: channel,
         thread: parentMessage?.id ? parentMessage : null,
@@ -193,8 +193,8 @@ export default (props: Props) => {
     const threadId = parentMessage.id;
 
     if (app?.identity?.code === 'twake_drive') {
-      let menu = [];
-      let has_drive_app = getCompanyApplication(app.id);
+      const menu = [];
+      const has_drive_app = getCompanyApplication(app.id);
 
       if (has_drive_app) {
         menu.push({
@@ -249,7 +249,7 @@ export default (props: Props) => {
       WorkspacesApps.openAppPopup(app.id);
     }
 
-    let data = {
+    const data = {
       channel,
       parent_message: parentMessage?.id ? parentMessage : null,
       from_icon: from_icon,
@@ -290,7 +290,7 @@ export default (props: Props) => {
       onKeydownRealtimeListener(state => iAmWriting(state));
 
     //Delay request make the input faster (getContentOutput is a heavy call)
-    delayRequest(`editor-${editorId}`, () => {
+    delayRequest(`editor-${editorId}`, async () => {
       setValue(getContentOutput(newEditorState));
     });
 

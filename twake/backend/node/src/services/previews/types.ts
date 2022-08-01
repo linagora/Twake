@@ -1,4 +1,5 @@
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
+import { MessageLocalEvent } from "../messages/types";
 
 export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
   generateThumbnails(
@@ -6,6 +7,10 @@ export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
     options: PreviewPubsubRequest["output"],
     deleteTmpFile: boolean,
   ): Promise<ThumbnailResult[]>;
+}
+
+export interface LinkPreviewServiceAPI extends TwakeServiceProvider, Initializable {
+  generatePreviews(links: LinkPreviewPubsubRequest["links"]): Promise<LinkPreview[]>;
 }
 
 export type PreviewPubsubRequest = {
@@ -62,4 +67,31 @@ export type ThumbnailResult = {
   height: number;
   size: number;
   type: string;
+};
+
+export type temporaryThumbnailFile = {
+  filePath: string;
+  fileName: string;
+  folder: string;
+};
+
+export type LinkPreview = {
+  title: string;
+  description: string | null;
+  domain: string;
+  favicon: string | null;
+  img: string | null;
+  img_height: number | null;
+  img_width: number | null;
+  url: string;
+};
+
+export type LinkPreviewPubsubRequest = {
+  links: string[];
+  message: MessageLocalEvent;
+};
+
+export type LinkPreviewPubsubCallback = {
+  message: MessageLocalEvent;
+  previews: LinkPreview[];
 };

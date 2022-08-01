@@ -1,42 +1,52 @@
+import _, { uniqBy } from "lodash";
+import { TwakeContext } from "../../../core/platform/framework";
 import {
   ExecutionContext,
   ListResult,
+  Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import { TwakeContext } from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import SearchRepository from "../../../core/platform/services/search/repository";
+import { fileIsMedia } from "../../../services/files/utils";
+import { formatUser } from "../../../utils/users";
+import gr from "../../global-resolver";
 import { MessageViewsServiceAPI } from "../api";
+import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
+import { MessageChannelRef } from "../entities/message-channel-refs";
+import { MessageFileRef } from "../entities/message-file-refs";
+import { MessageFile } from "../entities/message-files";
 import { Message } from "../entities/messages";
 import { Thread } from "../entities/threads";
 import {
   ChannelViewExecutionContext,
+  CompanyExecutionContext,
   FlatFileFromMessage,
   FlatPinnedFromMessage,
   MessageViewListOptions,
   MessageWithReplies,
+  SearchMessageFilesOptions,
   SearchMessageOptions,
 } from "../types";
-import { MessageChannelRef } from "../entities/message-channel-refs";
+import { FileSearchResult } from "../web/controllers/views/search-files";
 import { buildMessageListPagination } from "./utils";
-import { isEqual, uniqBy, uniqWith } from "lodash";
-import SearchRepository from "../../../core/platform/services/search/repository";
-import { uuid } from "../../../utils/types";
-import { MessageFileRef } from "../entities/message-file-refs";
-import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
-import gr from "../../global-resolver";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
   repositoryChannelRefs: Repository<MessageChannelRef>;
-  repository: Repository<Message>;
   repositoryThreads: Repository<Thread>;
   repositoryFilesRef: Repository<MessageFileRef>;
+  repositoryMessageFile: Repository<MessageFile>;
   repositoryMarkedRef: Repository<MessageChannelMarkedRef>;
   searchRepository: SearchRepository<Message>;
+  searchFilesRepository: SearchRepository<MessageFile>;
 
   async init(context: TwakeContext): Promise<this> {
     this.searchRepository = gr.platformServices.search.getRepository<Message>("messages", Message);
-    this.repository = await gr.database.getRepository<Message>("messages", Message);
+    this.searchFilesRepository = gr.platformServices.search.getRepository<MessageFile>(
+      "message_files",
+      MessageFile,
+    );
     this.repositoryThreads = await gr.database.getRepository<Thread>("threads", Thread);
     this.repositoryChannelRefs = await gr.database.getRepository<MessageChannelRef>(
       "message_channel_refs",
@@ -50,6 +60,10 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       "message_channel_marked_refs",
       MessageChannelMarkedRef,
     );
+    this.repositoryMessageFile = await gr.database.getRepository<MessageFile>(
+      "message_files",
+      MessageFile,
+    );
 
     return this;
   }
@@ -60,39 +74,52 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>> {
     const refs = await this.repositoryFilesRef.find(
-      { target_type: "channel", target_id: context.channel.id },
+      {
+        target_type: options?.media_only
+          ? "channel_media"
+          : options?.file_only
+          ? "channel_file"
+          : "channel",
+        target_id: context.channel.id,
+        company_id: context.channel.company_id,
+      },
       buildMessageListPagination(pagination, "id"),
     );
 
-    const threads: MessageWithReplies[] = [];
+    const threads: (MessageWithReplies & { context: MessageFileRef })[] = [];
     for (const ref of refs.getEntities()) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
       const extendedThread = await gr.services.messages.messages.getThread(thread, {
         replies_per_thread: options.replies_per_thread || 1,
       });
 
-      const message = await this.repository.findOne({
+      const message = await gr.services.messages.messages.get({
         thread_id: ref.thread_id,
         id: ref.message_id,
       });
       if (message && extendedThread) {
         extendedThread.highlighted_replies = [message];
-        threads.push(extendedThread);
+        threads.push({ ...extendedThread, context: ref });
       }
     }
 
     if (options.flat) {
-      const files: FlatFileFromMessage[] = [];
+      let files: FlatFileFromMessage[] = [];
       for (const thread of threads) {
         for (const reply of thread.highlighted_replies) {
           for (const file of reply.files || []) {
-            files.push({
-              file,
-              thread,
-            });
+            if (file.id === thread.context.message_file_id) {
+              files.push({
+                file: file as MessageFile,
+                thread,
+                context: thread.context,
+              });
+            }
           }
         }
       }
+      files = _.uniqBy(files, f => f.file.id);
+      refs.nextPage.page_token = files.length > 0 ? files[files.length - 1].context?.id : null;
       return new ListResult("file", files, refs.nextPage);
     }
 
@@ -128,8 +155,8 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     for (const ref of refs.getEntities()) {
       const extendedThread = threads.find(th => th.id === ref.thread_id);
       if (extendedThread) {
-        extendedThread.highlighted_replies = [];
-        const message = await this.repository.findOne({
+        extendedThread.highlighted_replies = extendedThread.highlighted_replies || [];
+        const message = await gr.services.messages.messages.get({
           thread_id: ref.thread_id,
           id: ref.message_id,
         });
@@ -138,16 +165,16 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     }
 
     if (options.flat) {
-      const files: FlatPinnedFromMessage[] = [];
+      const messages: FlatPinnedFromMessage[] = [];
       for (const thread of threads) {
         for (const message of thread.highlighted_replies) {
-          files.push({
+          messages.push({
             message,
             thread,
           });
         }
       }
-      return new ListResult("message", files, refs.nextPage);
+      return new ListResult("message", messages, refs.nextPage);
     }
 
     return new ListResult("thread", threads, null);
@@ -243,30 +270,154 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>> {
-    return await this.searchRepository.search(
-      {
-        ...(options.hasFiles ? { has_files: true } : {}),
-      },
-      {
-        pagination,
-        ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
-        ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
-        ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
-        ...(options.sender ? { $in: [["user_id", [options.sender]]] } : {}),
-        $text: {
-          $search: options.search,
+    return await this.searchRepository
+      .search(
+        {
+          ...(options.hasFiles ? { has_files: true } : {}),
+          ...(options.hasMedias ? { has_medias: true } : {}),
         },
-      },
-    );
+        {
+          pagination,
+          ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
+          ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
+          ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
+          ...(options.sender ? { $in: [["user_id", [options.sender]]] } : {}),
+          $text: {
+            $search: options.search,
+          },
+          $sort: {
+            created_at: "desc",
+          },
+        },
+      )
+      .then(a => {
+        return a;
+      });
   }
 
-  async getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]> {
-    threadsIds = uniqWith(threadsIds, isEqual);
-    const items = threadsIds.map(threadId =>
-      this.repository
-        .find({ thread_id: threadId }, { pagination: new Pagination("", "1", true) })
-        .then(a => a.getEntities()[0]),
+  async searchFiles(
+    pagination: Pagination,
+    options: SearchMessageFilesOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<MessageFile>> {
+    return await this.searchFilesRepository
+      .search(
+        {
+          ...(options.isFile ? { is_file: true } : {}),
+          ...(options.isMedia ? { is_media: true } : {}),
+        },
+        {
+          pagination,
+          ...(options.companyId ? { $in: [["cache_company_id", [options.companyId]]] } : {}),
+          ...(options.workspaceId ? { $in: [["cache_workspace_id", [options.workspaceId]]] } : {}),
+          ...(options.channelId ? { $in: [["cache_channel_id", [options.channelId]]] } : {}),
+          ...(options.sender ? { $in: [["cache_user_id", [options.sender]]] } : {}),
+          ...(options.extension ? { $in: [["extension", [options.extension]]] } : {}),
+          $text: {
+            $search: options.search,
+          },
+          $sort: {
+            created_at: "desc",
+          },
+        },
+      )
+      .then(a => {
+        return a;
+      });
+  }
+
+  async listUserMarkedFiles(
+    userId: string,
+    type: "user_upload" | "user_download" | "both",
+    media: "file_only" | "media_only" | "both",
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<FileSearchResult>> {
+    let files: (MessageFile & { context: MessageFileRef })[] = [];
+    let nextPageUploads: Paginable;
+    let nextPageDownloads: Paginable;
+    do {
+      const uploads =
+        type === "user_upload" || type === "both"
+          ? await this.repositoryFilesRef
+              .find(
+                { target_type: "user_upload", target_id: userId, company_id: context.company.id },
+                {
+                  pagination: { ...pagination, page_token: nextPageUploads?.page_token },
+                },
+              )
+              .then(a => {
+                nextPageUploads = a.nextPage;
+                return a.getEntities();
+              })
+          : [];
+
+      const downloads =
+        type === "user_download" || type === "both"
+          ? await this.repositoryFilesRef
+              .find(
+                { target_type: "user_download", target_id: userId, company_id: context.company.id },
+                {
+                  pagination: { ...pagination, page_token: nextPageDownloads?.page_token },
+                },
+              )
+              .then(a => {
+                nextPageDownloads = a.nextPage;
+                return a.getEntities();
+              })
+          : [];
+
+      let refs = [...uploads, ...downloads];
+
+      const messageFilePromises: Promise<MessageFile & { context: MessageFileRef }>[] = refs.map(
+        async ref => {
+          try {
+            return {
+              ...(await this.repositoryMessageFile.findOne({
+                message_id: ref.message_id,
+                id: ref.message_file_id,
+              })),
+              context: ref,
+            };
+          } catch (e) {
+            return null;
+          }
+        },
+      );
+
+      const messageFiles = _.uniqBy(
+        (await Promise.all(messageFilePromises)).filter(a => a),
+        a => a.metadata?.source + JSON.stringify(a.metadata?.external_id),
+      );
+
+      files = [...files, ...messageFiles.filter(a => a)].filter(ref => {
+        //Apply media filer
+        const isMedia = fileIsMedia(ref);
+        return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
+      });
+      files = files.sort((a, b) => b.created_at - a.created_at);
+    } while (
+      files.length < (parseInt(pagination.limitStr) || 100) &&
+      (nextPageDownloads?.page_token || nextPageUploads?.page_token)
     );
-    return Promise.all(items);
+
+    const fileWithUserAndMessagePromise: Promise<FileSearchResult>[] = files.map(
+      async file =>
+        ({
+          user: await formatUser(await gr.services.users.getCached({ id: file.cache?.user_id })),
+          message: await gr.services.messages.messages.get({
+            id: file.message_id,
+            thread_id: file.thread_id,
+          }),
+          ...file,
+        } as FileSearchResult),
+    );
+    const fileWithUserAndMessage = await Promise.all(fileWithUserAndMessagePromise);
+
+    return new ListResult<FileSearchResult>(
+      "file",
+      fileWithUserAndMessage,
+      nextPageUploads || nextPageDownloads,
+    );
   }
 }

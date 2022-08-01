@@ -2,28 +2,26 @@ import React, { useEffect, useState } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import { ChannelType } from 'app/features/channels/types/channel';
 
 import MediumPopupComponent from 'app/components/modal/modal-manager';
-import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/NewDirectMessagesPopup';
+import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/new-direct-channel-popup';
 import ChannelCategory from 'app/views/client/channels-bar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { Modal } from 'app/atoms/modal';
+import { PencilAltIcon } from '@heroicons/react/outline';
 
 export default () => {
   const { companyId } = RouterServices.getStateFromRoute();
-  let { directChannels } = useDirectChannels();
-  let [max, setMax] = useState(20);
+  const { directChannels } = useDirectChannels();
+  const [max, setMax] = useState(20);
+  const [openDirect, setOpenDirect] = useState(false);
 
   const openConv = () => {
-    return MediumPopupComponent.open(<NewDirectMessagesPopup />, {
-      position: 'center',
-      size: { width: '400px' },
-    });
+    setOpenDirect(true);
   };
 
   const [delayed, setDelayed] = useState(true);
@@ -43,6 +41,10 @@ export default () => {
 
   return (
     <div className="users_channels">
+      <Modal open={openDirect} onClose={() => setOpenDirect(false)}>
+        <NewDirectMessagesPopup onClose={() => setOpenDirect(false)} />
+      </Modal>
+
       <ChannelCategory
         refAdd={(node: any) => {
           // eslint-disable-next-line no-self-assign
@@ -53,6 +55,7 @@ export default () => {
           [],
           'Direct messages',
         )}
+        addIcon={<PencilAltIcon className="h-5 w-5" />}
         onAdd={AccessRightsService.hasCompanyLevel(companyId, 'member') ? () => openConv() : null}
       />
       {nonfavoriteDirectChannels

@@ -23,6 +23,7 @@ import {
   MessageViewListOptions,
   MessageWithReplies,
   MessageWithRepliesWithUsers,
+  SearchMessageFilesOptions,
   SearchMessageOptions,
   ThreadExecutionContext,
 } from "./types";
@@ -30,6 +31,9 @@ import {
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
 import { uuid } from "../../utils/types";
+import { PublicFile } from "../files/entities/file";
+import { MessageFile } from "./entities/message-files";
+import { FileSearchResult } from "./web/controllers/views/search-files";
 
 export interface MessageUserBookmarksServiceAPI
   extends TwakeServiceProvider,
@@ -87,6 +91,12 @@ export interface MessageThreadMessagesServiceAPI
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
+  download(
+    item: { id: string; message_file_id: string; thread_id: string },
+    options: Record<string, any>,
+    context: ThreadExecutionContext,
+  ): Promise<void>;
+
   forceDelete(
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
@@ -104,6 +114,21 @@ export interface MessageThreadMessagesServiceAPI
   includeUsersInMessageWithReplies(
     message: MessageWithReplies,
   ): Promise<MessageWithRepliesWithUsers>;
+
+  inbox(
+    userId: string,
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<Message>>;
+
+  deleteLinkPreview(
+    item: {
+      message_id: string;
+      thread_id: string;
+      link: string;
+    },
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
 }
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
@@ -137,5 +162,17 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     context?: ExecutionContext,
   ): Promise<ListResult<Message>>;
 
-  getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]>;
+  searchFiles(
+    pagination: Pagination,
+    options: SearchMessageFilesOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<MessageFile>>;
+
+  listUserMarkedFiles(
+    userId: string,
+    type: "user_upload" | "user_download" | "both",
+    media: "file_only" | "media_only" | "both",
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<FileSearchResult>>;
 }

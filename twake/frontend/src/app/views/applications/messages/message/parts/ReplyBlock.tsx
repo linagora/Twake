@@ -8,13 +8,14 @@ import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/us
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import Input from '../../input/input';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
+import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 
 type Props = {};
 
 export default (props: Props) => {
   const context = useContext(MessageContext);
   const channelId = useRouterChannel();
-  let { message } = useMessage(context);
+  const { message } = useMessage(context);
 
   const location = `thread-${message.thread_id}`;
   const subLocation = useContext(ViewContext).type;
@@ -22,6 +23,12 @@ export default (props: Props) => {
     location,
     subLocation,
   );
+
+  const isChannelMember = useIsChannelMember(channelId);
+
+  if (!isChannelMember) {
+    return <></>;
+  }
 
   if (message.subtype === 'deleted' || message.thread_id != message.id) {
     return <></>;
@@ -49,7 +56,8 @@ export default (props: Props) => {
             })
           }
         >
-          <CornerDownRight size={14} /> {Languages.t('scenes.apps.messages.message.reply_button')}
+          <CornerDownRight size={14} className="inline" />{' '}
+          {Languages.t('scenes.apps.messages.message.reply_button')}
         </span>
       </div>
     </ThreadSection>

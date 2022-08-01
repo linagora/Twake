@@ -1,6 +1,6 @@
-import { Resource } from 'app/deprecated/CollectionsReact/Collections';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 import { UserType } from 'app/features/users/types/user';
+import _ from 'lodash';
 
 export type ChannelType = {
   company_id?: string;
@@ -11,7 +11,7 @@ export type ChannelType = {
   name?: string;
   description?: string;
   channel_group?: string;
-  visibility?: string;
+  visibility?: 'public' | 'direct' | 'private';
   is_default?: boolean;
   members?: string[];
   owner?: string;
@@ -29,11 +29,32 @@ export type ChannelType = {
     title: string;
     text: string;
   };
+  stats?: {
+    members: number;
+    messages: number;
+  };
   users?: UserType[];
 };
 
-export class ChannelMemberResource extends Resource<ChannelMemberType> {
-  _type = 'channel_member';
-  _resourcePrimaryKey = ['channel_id', 'user_id'];
-  _resourceIdKey = 'user_id';
-}
+export const createDirectChannelFromUsers = (companyId: string, users: UserType[]): ChannelType => {
+  users = _.uniqBy(users, 'id');
+  const id = users.map(u => u.id).join('_') + '_frontend';
+  return {
+    company_id: companyId,
+    workspace_id: 'direct',
+    visibility: 'direct',
+    id: id,
+    members: users.map(u => u.id).filter(a => a) as string[],
+    owner: users[0].id,
+    members_count: users.length,
+    guests_count: 0,
+    messages_count: 0,
+    archived: false,
+    user_member: {
+      user_id: users[0].id,
+      channel_id: id,
+    },
+    connectors: [],
+    users: users,
+  };
+};

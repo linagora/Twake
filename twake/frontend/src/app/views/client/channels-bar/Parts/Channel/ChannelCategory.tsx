@@ -10,6 +10,7 @@ type PropsType = {
   onClick?: any;
   onAdd?: any;
   suffix?: any;
+  addIcon?: any;
 };
 
 const ChannelCategory: FC<PropsType> = (props): JSX.Element => {
@@ -26,7 +27,7 @@ const ChannelCategory: FC<PropsType> = (props): JSX.Element => {
       )}
       {props.onAdd && (
         <div ref={props.refAdd} className="add" onClick={props.onAdd}>
-          <Icon type="plus" />
+          {props.addIcon || <Icon type="plus" />}
         </div>
       )}
       {props.suffix && props.suffix}

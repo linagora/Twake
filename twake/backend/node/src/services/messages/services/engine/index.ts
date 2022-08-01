@@ -1,6 +1,6 @@
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { Initializable } from "../../../../core/platform/framework";
-import { MessageLocalEvent } from "../../types";
+import { MessageFileDownloadEvent, MessageLocalEvent } from "../../types";
 import { ChannelViewProcessor } from "./processors/channel-view";
 import { ChannelMarkedViewProcessor } from "./processors/channel-marked";
 import { UserMarkedViewProcessor } from "./processors/user-marked";
@@ -15,6 +15,8 @@ import _ from "lodash";
 import { StatisticsMessageProcessor } from "../../../statistics/pubsub/messages";
 import { MessageToHooksProcessor } from "./processors/message-to-hooks";
 import gr from "../../../global-resolver";
+import { MessageLinksPreviewFinishedProcessor } from "./processors/links";
+import { Message } from "../../entities/messages";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -26,6 +28,7 @@ export class MessagesEngine implements Initializable {
   private messageToHooks: MessageToHooksProcessor;
 
   private threadRepository: Repository<Thread>;
+  private messageRepository: Repository<Message>;
 
   constructor() {
     this.channelViewProcessor = new ChannelViewProcessor();
@@ -41,6 +44,11 @@ export class MessagesEngine implements Initializable {
     const thread = await this.threadRepository.findOne({
       id: e.resource.thread_id,
     });
+
+    if (e.resource.ephemeral) {
+      await this.channelViewProcessor.process(thread || null, e);
+      return;
+    }
 
     await this.channelViewProcessor.process(thread, e);
     await this.channelMarkedViewProcessor.process(thread, e);
@@ -68,6 +76,7 @@ export class MessagesEngine implements Initializable {
 
   async init(): Promise<this> {
     this.threadRepository = await gr.database.getRepository<Thread>("threads", Thread);
+    this.messageRepository = await gr.database.getRepository<Message>("messages", Message);
 
     await this.channelViewProcessor.init();
     await this.channelMarkedViewProcessor.init();
@@ -77,9 +86,18 @@ export class MessagesEngine implements Initializable {
 
     gr.platformServices.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor());
     gr.platformServices.pubsub.processor.addHandler(new StatisticsMessageProcessor());
+    gr.platformServices.pubsub.processor.addHandler(
+      new MessageLinksPreviewFinishedProcessor(this.messageRepository, this.threadRepository),
+    );
 
     localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {
       this.dispatchMessage(e);
+    });
+
+    localEventBus.subscribe("message:download", async (e: MessageFileDownloadEvent) => {
+      if (e.user?.id) {
+        await this.filesViewProcessor.processDownloaded(e.user?.id, e.operation);
+      }
     });
 
     return this;

@@ -34,6 +34,10 @@ import { logger, RealtimeSaved } from "../../../core/platform/framework";
 import { getCompanyRoom, getUserRoom } from "../realtime";
 import gr from "../../global-resolver";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
+import {
+  KnowledgeGraphGenericEventPayload,
+  KnowledgeGraphEvents,
+} from "../../../core/platform/services/knowledge-graph/types";
 
 export class CompanyServiceImpl implements CompaniesServiceAPI {
   version: "1";
@@ -108,6 +112,15 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     });
 
     const result = await this.updateCompany(companyToCreate);
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Company>>(
+      KnowledgeGraphEvents.COMPANY_CREATED,
+      {
+        id: result.entity.id,
+        resource: result.entity,
+        links: [{ relation: "owner", type: "user", id: result.context?.user.id }],
+      },
+    );
     return result.entity;
   }
 
@@ -126,8 +139,13 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     }
   }
 
-  getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser> {
-    return this.companyUserRepository.findOne({ group_id: company.id, user_id: user.id });
+  async getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser> {
+    const companyUser = await this.companyUserRepository.findOne({
+      group_id: company.id,
+      user_id: user.id,
+    });
+    if (companyUser) companyUser.applications = [];
+    return companyUser;
   }
 
   async getAllForUser(userId: uuid): Promise<CompanyUser[]> {
@@ -225,6 +243,7 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     companyId: uuid,
     userId: uuid,
     role: CompanyUserRole = "member",
+    applications: string[] = [],
   ): Promise<SaveResult<CompanyUser>> {
     const key = {
       group_id: companyId,
@@ -237,6 +256,7 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     }
 
     entity.role = role;
+    entity.applications = applications;
     await this.companyUserRepository.save(entity);
 
     const user = await gr.services.users.get({ id: userId });

@@ -205,7 +205,7 @@ export default props => {
           <div className="smalltext" style={{ opacity: 1 }}>
             <Emojione type={':exploding_head:'} /> If you do not know how to fill these, go to{' '}
             {/* eslint-disable-next-line react/jsx-no-target-blank */}
-            <a href="https://doc.twake.app" target="_blank">
+            <a href="https://doc.twake.app" target="_blank" rel="noreferrer">
               the Twake API documentation
             </a>{' '}
             !

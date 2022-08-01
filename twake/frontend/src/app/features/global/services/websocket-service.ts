@@ -14,7 +14,7 @@ const CONNECT_TIMEOUT = 30000;
 
 class WebSocketService extends EventEmitter {
   private logger: Logger.Logger;
-  private lastConnection: number = 0;
+  private lastConnection = 0;
   private wsListeners: {
     [path: string]: { [tag: string]: WebSocketListener };
   } = {};
@@ -149,7 +149,7 @@ class WebSocketService extends EventEmitter {
     return promise;
   }
 
-  private rejoinAll(newlyConnected: boolean = false) {
+  private rejoinAll(newlyConnected = false) {
     Object.keys(this.wsListeners).forEach(key => {
       Object.keys(this.wsListeners[key]).forEach(tag => {
         if (this.wsListeners[key][tag]) {

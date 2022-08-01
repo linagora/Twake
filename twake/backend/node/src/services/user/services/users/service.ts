@@ -28,11 +28,15 @@ import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
-import { isNumber } from "lodash";
+import { isNumber, isString } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
 import gr from "../../../global-resolver";
+import {
+  KnowledgeGraphGenericEventPayload,
+  KnowledgeGraphEvents,
+} from "../../../../core/platform/services/knowledge-graph/types";
 
 export class UserServiceImpl implements UsersService {
   version: "1";
@@ -88,9 +92,29 @@ export class UserServiceImpl implements UsersService {
 
   async create(user: User): Promise<CreateResult<User>> {
     this.assignDefaults(user);
+
     await this.repository.save(user);
     await this.updateExtRepository(user);
-    return new CreateResult("user", user);
+    const result = new CreateResult("user", user);
+
+    if (result) {
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<User>>(
+        KnowledgeGraphEvents.USER_CREATED,
+        {
+          id: result.entity.id,
+          resource: result.entity,
+          links: [
+            {
+              // FIXME: We should provide the company id here
+              id: "",
+              relation: "parent",
+              type: "company",
+            },
+          ],
+        },
+      );
+    }
+    return result;
   }
 
   update(pk: Partial<User>, item: User, context?: ExecutionContext): Promise<UpdateResult<User>> {
@@ -212,6 +236,7 @@ export class UserServiceImpl implements UsersService {
   }
 
   async getCached(pk: UserPrimaryKey): Promise<User> {
+    if (!(pk.id && isString(pk.id))) return null;
     if (this.cache.has(pk.id)) return this.cache.get<User>(pk.id);
     const entity = await this.get(pk);
     this.cache.set<User>(pk.id, entity);

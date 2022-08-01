@@ -16,8 +16,9 @@ import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import MainViewService from 'app/features/router/services/main-view-service';
 import WindowState from 'app/features/global/utils/window';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
-import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 import app from '../app';
+import ContentRestricted from './ContentRestricted';
 
 type PropsType = {
   className?: string;
@@ -28,7 +29,8 @@ const MainView: FC<PropsType> = ({ className }) => {
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
   const { applications } = useCompanyApplications();
-  const { channel } = useChannel(channelId);
+  const { channel, loading: channelLoading } = useChannel(channelId);
+  const isChannelMember = useIsChannelMember(channelId);
 
   const loaded = useWatcher(ChannelsBarService, async () => {
     return (
@@ -36,7 +38,7 @@ const MainView: FC<PropsType> = ({ className }) => {
       ChannelsBarService.isReady(companyId, 'direct')
     );
   });
-  const ready = loaded && !!companyId && !!workspaceId;
+  const ready = !(channelLoading && !channel) && loaded && !!companyId && !!workspaceId;
 
   const updateView = () => {
     if (channelId) {
@@ -61,6 +63,21 @@ const MainView: FC<PropsType> = ({ className }) => {
   };
 
   if (channelId && MainViewService.getId() !== channelId) updateView();
+
+  if (
+    ready &&
+    !isChannelMember &&
+    MainViewService.getViewType() === 'channel' &&
+    channel?.visibility === 'private'
+  ) {
+    return (
+      <>
+        <Layout className={'global-view-layout ' + (className ? className : '')}>
+          <ContentRestricted />
+        </Layout>
+      </>
+    );
+  }
 
   return (
     <Layout className={'global-view-layout ' + (className ? className : '')}>

@@ -1,4 +1,5 @@
 import { UserType } from 'app/features/users/types/user';
+import { FileTypes } from 'features/files/api/file-upload-api-client';
 
 export type ReactionType = { name: string; count: number; users: string[] };
 
@@ -19,6 +20,7 @@ export type MessageFileType = {
   id?: string;
   company_id?: string; // optional
   message_id?: string; // optional
+  thread_id?: string; // optional
 
   metadata?: {
     //File information when attached (it can change if edited)
@@ -31,8 +33,22 @@ export type MessageFileType = {
   };
 };
 
+export type FileSearchResult = {
+  company_id: string;
+  file_id: string;
+  thumbnail_url: string;
+  filename: string;
+  filetype: FileTypes;
+  size: number;
+  created_at: number;
+  message: Message;
+  user: UserType;
+};
+
 export type Message = {
+  created_at?: number;
   id?: string;
+  thread_id?: string;
   application_id?: string | null;
   channel_id?: string;
   content?: any;
@@ -47,8 +63,13 @@ export type Message = {
   pinned?: boolean;
   reactions?: ReactionType[];
   responses_count?: number | null;
-  sender?: string | null;
+  user_id?: string | null;
   user_specific_content?: any;
+  cache?: {
+    company_id?: string;
+    workspace_id?: string;
+    channel_id?: string;
+  };
   _user_ephemeral?: any;
   _last_modified?: string;
   _user_reaction?: any;
@@ -60,6 +81,15 @@ export type Message = {
   files?: MessageFileType[];
   text?: string;
 };
+
+export interface MessageExtended extends Message {
+  id: string;
+  text: string;
+  cache: { company_id: string; workspace_id: string; channel_id: string };
+  created_at: number;
+  user_id: string;
+  thread_id: string;
+}
 
 export type DeprecatedMessageKeys = {
   parent_message_id?: string | null;
@@ -154,7 +184,7 @@ export type NodeMessage = {
    * @type JSON
    * Hidden custom data for message
    */
-  context: any; //Hidden custom data for message
+  context: any & { _front_id: string }; //Hidden custom data for message
 
   /**
    * @type JSON
@@ -193,6 +223,8 @@ export type NodeMessage = {
 
   //Used to display time separator
   _previous_message?: NodeMessage;
+
+  links?: MessageLinkType[];
 };
 
 export type MessageWithReplies = NodeMessage & {
@@ -201,4 +233,15 @@ export type MessageWithReplies = NodeMessage & {
     last_activity: number;
     replies: number;
   };
+};
+
+export type MessageLinkType = {
+  title: string;
+  description: string | undefined;
+  domain: string;
+  img: string | undefined;
+  favicon: string | undefined;
+  img_width: number | undefined;
+  img_height: number | undefined;
+  url: string;
 };

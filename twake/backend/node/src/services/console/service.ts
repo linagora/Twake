@@ -33,6 +33,7 @@ export class ConsoleServiceImpl implements ConsoleServiceAPI {
 
     this.consoleOptions = {
       type: type,
+      new_console: s.new_console,
       username: s.username,
       password: s.password,
       url: s.url,
@@ -44,6 +45,7 @@ export class ConsoleServiceImpl implements ConsoleServiceAPI {
     };
 
     this.consoleOptions.type = type;
+    this.consoleType = type;
 
     return this;
   }

@@ -22,7 +22,7 @@ import { useEffect } from 'react';
 
 const logger = Logger.getLogger('useWorkspaces');
 
-export const useWorkspacesCommons = (companyId: string = '') => {
+export const useWorkspacesCommons = (companyId = '') => {
   const [workspaces, setWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
   const [loading, setLoading] = useRecoilState(LoadingState(`workspaces-${companyId}`));
 
@@ -30,12 +30,12 @@ export const useWorkspacesCommons = (companyId: string = '') => {
   const bestCandidate = useBestCandidateWorkspace(companyId, workspaces);
 
   const refresh = async () => {
-    if (workspaces.length === 0) {
+    if (workspaces?.length === 0) {
       setLoading(true);
     }
     const updated = await WorkspaceAPIClient.list(companyId);
     setWorkspaces(updated);
-    if (updated.length === 0) WorkspacesService.openNoWorkspacesPage();
+    if (updated?.length === 0) WorkspacesService.openNoWorkspacesPage();
     setLoading(false);
   };
 
@@ -48,7 +48,7 @@ export const useWorkspacesCommons = (companyId: string = '') => {
   }
 
   //Retro compatibility
-  workspaces.forEach(w => {
+  workspaces?.forEach(w => {
     Collections.get('workspaces').updateObject(_.cloneDeep(w));
     AccessRightsService.updateLevel(w.id, w.role as RightsOrNone);
   });
@@ -57,7 +57,7 @@ export const useWorkspacesCommons = (companyId: string = '') => {
   return { workspaces, loading, refresh };
 };
 
-export function useWorkspaces(companyId: string = '') {
+export function useWorkspaces(companyId = '') {
   const { workspaces, loading, refresh } = useWorkspacesCommons(companyId);
 
   useRealtimeRoom<WorkspaceType>(
@@ -97,7 +97,7 @@ export function useCurrentWorkspace() {
 export function useWorkspace(workspaceId: string) {
   const companyId = useRouterCompany();
   const { workspaces, refresh } = useWorkspacesCommons(companyId);
-  const workspace = workspaces.find(w => w.id === workspaceId);
+  const workspace = (workspaces || []).find(w => w.id === workspaceId);
   return { workspace, refresh };
 }
 

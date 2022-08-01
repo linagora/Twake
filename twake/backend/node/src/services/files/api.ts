@@ -2,9 +2,13 @@ import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
 import { CompanyExecutionContext } from "./web/types";
-import { File } from "./entities/file";
+import { File, PublicFile } from "./entities/file";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
-import { DeleteResult } from "../../core/platform/framework/api/crud-service";
+import {
+  DeleteResult,
+  ListResult,
+  Pagination,
+} from "../../core/platform/framework/api/crud-service";
 
 export type UploadOptions = {
   filename: string;
@@ -76,6 +80,7 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
 
   getThumbnailRoute(file: File, index: string): string;
   getDownloadRoute(file: File): string;
+  getFile(file: Pick<File, "company_id" | "id">): Promise<File>;
 }
 
 export interface FilePubsubHandler<InputMessage, OutputMessage>

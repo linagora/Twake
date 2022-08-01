@@ -1,12 +1,12 @@
 class ServiceRegistry {
-  services: {[key: string]: any};
-  
+  services: { [key: string]: any };
+
   constructor() {
     this.services = {};
   }
 
   register(name: string, service: any) {
-    if (!service || !name) {
+    if (!service || !name) {
       return;
     }
 

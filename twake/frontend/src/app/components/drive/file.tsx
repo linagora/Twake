@@ -53,7 +53,7 @@ export default class File extends DriveElement {
       return '';
     }
 
-    var mini = (!this.state.element.has_preview && this.props.notInDrive) || this.props.mini;
+    const mini = (!this.state.element.has_preview && this.props.notInDrive) || this.props.mini;
     return (
       <Draggable
         style={this.props.style}

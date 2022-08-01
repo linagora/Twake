@@ -47,4 +47,42 @@
     white-space: nowrap;
     text-transform: capitalize;
   }
+
+  .notification_dot {
+    position: absolute;
+    top: -8px;
+    left: calc(50% + 8px);
+    background: var(--red);
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--secondary);
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+}
+
+.company-in-menu {
+  margin: -8px !important;
+
+  .text {
+    line-height: 32px;
+    flex: 1;
+  }
+
+  .notification_dot {
+    min-width: 16px;
+    height: 16px;
+    color: var(--white);
+    background: var(--red);
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 16px;
+    border-radius: var(--border-radius-small);
+    margin: 8px 0px;
+    padding: 0 2px;
+    vertical-align: top;
+    box-sizing: border-box;
+    display: inline-block;
+  }
 }

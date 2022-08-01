@@ -1,4 +1,4 @@
-import { describe, expect, it, afterAll, beforeAll } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
@@ -85,17 +85,13 @@ describe("The /messages API", () => {
 
       const secondThreadId = await createThread("Another thread", [participant]);
       await createReply(secondThreadId, "First reply of second thread");
-      await createReply(secondThreadId, "Second reply of second thread");
+      await createReply(secondThreadId, "Second reply of second thread is also a message");
 
       //Wait for indexation to happen
       await new Promise(r => setTimeout(r, 3000));
 
       let resources = await search("Reply");
       expect(resources.length).toEqual(4);
-
-      resources.forEach(resource => {
-        expect(resource.last_replies.length).toEqual(1);
-      });
 
       resources = await search("fdfsd");
       expect(resources.length).toEqual(0);
@@ -109,80 +105,92 @@ describe("The /messages API", () => {
       resources = await search("another");
       expect(resources.length).toEqual(1);
 
-      resources.forEach(resource => {
-        expect(resource.last_replies.length).toEqual(0);
-      });
+      resources = await search("also");
+      expect(resources.length).toEqual(1);
+
+      resources = await search("of");
+      expect(resources.length).toEqual(4);
+
+      resources = await search("a");
+
+      //sleep 1s
+      await new Promise(r => setTimeout(r, 2000));
+
+      expect(resources.length).toEqual(1);
 
       done();
     });
-  });
+    it("Filter out messages from channels we are not member of", async done => {
+      const channel = await createChannel();
+      const anotherChannel = await createChannel(uuidv1());
+      const anotherUserId = uuidv1();
 
-  it("Filter out messages from channels we are not member of", async done => {
-    const channel = await createChannel();
-    const anotherChannel = await createChannel(uuidv1());
-    const anotherUserId = uuidv1();
+      const participant = {
+        type: "channel",
+        id: channel.id,
+        company_id: platform.workspace.company_id,
+        workspace_id: platform.workspace.workspace_id,
+      } as ParticipantObject;
 
-    const participant = {
-      type: "channel",
-      id: channel.id,
-      company_id: platform.workspace.company_id,
-      workspace_id: platform.workspace.workspace_id,
-    } as ParticipantObject;
+      const participant2 = {
+        type: "channel",
+        id: anotherChannel.id,
+        company_id: platform.workspace.company_id,
+        workspace_id: platform.workspace.workspace_id,
+      } as ParticipantObject;
 
-    const participant2 = {
-      type: "channel",
-      id: anotherChannel.id,
-      company_id: platform.workspace.company_id,
-      workspace_id: platform.workspace.workspace_id,
-    } as ParticipantObject;
+      const file = new MessageFile();
+      file.metadata = { external_id: undefined, source: undefined, name: "test" };
 
-    const file = new MessageFile();
-    file.metadata = { external_id: undefined, source: undefined, name: "test" };
+      const firstThreadId = await createThread("Filtered thread", [participant]);
+      await createReply(firstThreadId, "Filtered message 1-1");
+      await createReply(firstThreadId, "Filtered message 1-2");
+      await createReply(firstThreadId, "Filtered message 1-3");
+      await createReply(firstThreadId, "Filtered message 1-4", { files: [file] });
 
-    const firstThreadId = await createThread("Filtered thread", [participant]);
-    await createReply(firstThreadId, "Filtered message 1");
-    await createReply(firstThreadId, "Filtered message 2");
-    await createReply(firstThreadId, "Filtered message 3");
-    await createReply(firstThreadId, "Filtered message 4", { files: [file] });
+      const secondThreadId = await createThread("Filtered thread 2", [participant2]);
+      await createReply(secondThreadId, "Filtered message 2-1");
+      await createReply(secondThreadId, "Filtered message 2-2");
+      await createReply(secondThreadId, "Filtered message 2-3");
+      await createReply(secondThreadId, "Filtered message 2-4");
 
-    const secondThreadId = await createThread("Filtered thread 2", [participant2]);
-    await createReply(secondThreadId, "Filtered message 5");
-    await createReply(secondThreadId, "Filtered message 6");
-    await createReply(secondThreadId, "Filtered message 7");
-    await createReply(secondThreadId, "Filtered message 8");
+      const thirdThreadId = await createThread("Filtered thread 3", [participant]);
+      await createReply(thirdThreadId, "Filtered message 3-1");
+      await createReply(thirdThreadId, "Filtered message 3-2", { userId: anotherUserId });
+      await createReply(thirdThreadId, "Filtered message 3-3", { userId: anotherUserId });
+      await createReply(thirdThreadId, "Filtered message 3-4", {
+        userId: anotherUserId,
+        files: [file],
+      });
 
-    const thirdThreadId = await createThread("Filtered thread 3", [participant]);
-    await createReply(thirdThreadId, "Filtered message 9");
-    await createReply(thirdThreadId, "Filtered message 10", { userId: anotherUserId });
-    await createReply(thirdThreadId, "Filtered message 11", { userId: anotherUserId });
-    await createReply(thirdThreadId, "Filtered message 12", {
-      userId: anotherUserId,
-      files: [file],
+      //Wait for indexation to happen
+      await new Promise(r => setTimeout(r, 3000));
+
+      // no limit
+      const resources0 = await search("Filtered", { limit: 10000 });
+      expect(resources0.length).toEqual(10);
+
+      const resources = await search("Filtered", { limit: 9 });
+      expect(resources.length).toEqual(9);
+
+      // check for the empty result set
+      const resources2 = await search("Nothing", { limit: 10 });
+      expect(resources2.length).toEqual(0);
+
+      // check for the user
+      const resources3 = await search("Filtered", { sender: anotherUserId });
+      expect(resources3.length).toEqual(3);
+
+      // check for the files
+      const resources4 = await search("Filtered", { has_files: true });
+      expect(resources4.length).toEqual(2);
+
+      // check for the user and files
+      const resources5 = await search("Filtered", { sender: anotherUserId, has_files: true });
+      expect(resources5.length).toEqual(1);
+
+      done();
     });
-
-    //Wait for indexation to happen
-    await new Promise(r => setTimeout(r, 3000));
-
-    const resources = await search("Filtered", { limit: 9 });
-    expect(resources.length).toEqual(9);
-
-    // check for the empty result set
-    const resources2 = await search("Nothing", { limit: 10 });
-    expect(resources2.length).toEqual(0);
-
-    // check for the user
-    const resources3 = await search("Filtered", { sender: anotherUserId });
-    expect(resources3.length).toEqual(3);
-
-    // check for the files
-    const resources4 = await search("Filtered", { has_files: true });
-    expect(resources4.length).toEqual(2);
-
-    // check for the user and files
-    const resources5 = await search("Filtered", { sender: anotherUserId, has_files: true });
-    expect(resources5.length).toEqual(1);
-
-    done();
   });
 
   async function createChannel(userId = platform.currentUser.id): Promise<Channel> {

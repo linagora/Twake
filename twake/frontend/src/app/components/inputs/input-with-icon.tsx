@@ -43,7 +43,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
   ];
   emoji_dom: any;
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.randomizeEmojies();
   }
 
@@ -106,17 +106,17 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
       return;
     }
 
-    var preferedEmojis = [this.props.value[0]];
+    let preferedEmojis = [this.props.value[0]];
     if (this.props.preferedEmoji) {
       preferedEmojis = this.props.preferedEmoji;
     } else {
       this.randomizeEmojies();
-      for (var i = 0; i < 5; i++) {
+      for (let i = 0; i < 5; i++) {
         preferedEmojis[i + 1] = this.allChanEmojies[i];
       }
     }
 
-    var menu = [
+    const menu = [
       {
         type: 'react-element',
         className: 'menu-cancel-margin',
@@ -130,7 +130,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
         },
       },
     ];
-    var elementRect = (window as any).getBoundingClientRect(this.emoji_dom);
+    const elementRect = (window as any).getBoundingClientRect(this.emoji_dom);
     elementRect.x = elementRect.x || elementRect.left;
     elementRect.y = elementRect.y || elementRect.top;
     if (this.props.menu_level !== undefined) {
@@ -145,7 +145,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
   }
   selectEmoji(emoji: any) {
     this.closeEmojiPicker();
-    var value = [emoji.native, this.props.value[1]];
+    const value = [emoji.native, this.props.value[1]];
     this.onChange(value);
   }
   onChange(value: any) {
@@ -154,7 +154,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
     }
   }
   render() {
-    var icon = this.props.value[0];
+    let icon = this.props.value[0];
     if (!this.props.value[0]) {
       this.onChange([this.allChanEmojies[0], this.props.value[1]]);
       icon = this.allChanEmojies[0];

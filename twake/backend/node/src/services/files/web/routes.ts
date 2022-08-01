@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { FileController } from "./controllers/files";
+import { FileController } from "./controllers";
 import { File } from "../entities/file";
 
 const filesUrl = "/companies/:company_id/files";
@@ -55,7 +55,7 @@ export const getDownloadRoute = (file: File) => {
 };
 
 export const getThumbnailRoute = (file: File, index: string) => {
-  return filesUrl.replace(":company_id", file.company_id) + `/${file.id}/thumbnails/${index}`;
+  return `/internal/services/files/v1/companies/${file.company_id}/files/${file.id}/thumbnails/${index}`;
 };
 
 export default routes;

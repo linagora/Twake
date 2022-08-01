@@ -1,5 +1,5 @@
 import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
-import { Thread } from "../../../../entities/threads";
+import { ParticipantObject, Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { getInstance, MessageChannelRef } from "../../../../entities/message-channel-refs";
 import {
@@ -19,6 +19,7 @@ import {
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { getThreadMessagePath } from "../../../../web/realtime";
 import gr from "../../../../../global-resolver";
+import { publishMessageInRealtime } from "../../../utils";
 
 export class ChannelViewProcessor {
   repository: Repository<MessageChannelRef>;
@@ -36,7 +37,22 @@ export class ChannelViewProcessor {
   }
 
   async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
-    for (const participant of (thread.participants || []).filter(p => p.type === "channel")) {
+    let participants: ParticipantObject[] = thread?.participants || [];
+
+    if (participants.length === 0) {
+      participants = message.context.channel
+        ? [
+            {
+              type: "channel",
+              id: message.context.channel.id,
+              workspace_id: message.context.workspace.id,
+              company_id: message.context.company.id,
+            } as ParticipantObject,
+          ]
+        : [];
+    }
+
+    for (const participant of (participants || []).filter(p => p.type === "channel")) {
       if (!message.resource.ephemeral) {
         //Publish message in corresponding channel
         if (message.created) {
@@ -111,24 +127,7 @@ export class ChannelViewProcessor {
       }
 
       //Publish message in realtime
-      const room = `/companies/${participant.company_id}/workspaces/${participant.workspace_id}/channels/${participant.id}/feed`;
-      const type = "message";
-      const entity = message.resource;
-      const context = message.context;
-      localEventBus.publish("realtime:publish", {
-        topic: message.created
-          ? RealtimeEntityActionType.Created
-          : RealtimeEntityActionType.Updated,
-        event: {
-          type: type,
-          room: ResourcePath.get(room),
-          resourcePath: getThreadMessagePath(context as ThreadExecutionContext) + "/" + entity.id,
-          entity: entity,
-          result: message.created
-            ? new CreateResult<Message>(type, entity)
-            : new UpdateResult<Message>(type, entity),
-        },
-      } as RealtimeLocalBusEvent<Message>);
+      publishMessageInRealtime(message, participant);
     }
   }
 }

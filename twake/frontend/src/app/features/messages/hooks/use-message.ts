@@ -12,7 +12,8 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     ..._.pick(partialKey, 'threadId', 'companyId'),
     id: partialKey.id || partialKey.threadId,
   };
-  const [message, setValue] = useRecoilState(MessageState(key));
+  const setValue = useSetMessage(key.companyId);
+  const [message, _setValue] = useRecoilState(MessageState(key));
 
   const get = async () => {
     const message = await MessageAPIClient.get(
@@ -58,7 +59,7 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
-  const bookmark = async (bookmarkId: string, status: boolean = true) => {
+  const bookmark = async (bookmarkId: string, status = true) => {
     const updated = await MessageAPIClient.bookmark(
       partialKey.companyId,
       partialKey.threadId,
@@ -69,7 +70,7 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
-  const pin = async (status: boolean = true) => {
+  const pin = async (status = true) => {
     //Three lines to make it instant on frontend
     const quickUpdated = _.cloneDeep(message);
     quickUpdated.pinned_info = {
@@ -130,7 +131,24 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
-  return { message, get, react, pin, remove, bookmark, save, move };
+  /**
+   * Delete a preview for given url
+   * 
+   * @param {String} url - the url corresponding to the preview to delete
+   * @returns {Promise<void>}
+   */
+  const deleteLinkPreview = async (url: string): Promise<void> => {
+    const updated = await MessageAPIClient.deleteLinkPreview(
+      partialKey.companyId,
+      partialKey.threadId,
+      partialKey.id || '',
+      url,
+    );
+
+    if (updated) setValue(messageToMessageWithReplies(updated));
+  };
+
+  return { message, get, react, pin, remove, bookmark, save, move, deleteLinkPreview };
 };
 
 //Function to recompute reactions after a frontend operation
@@ -173,12 +191,20 @@ const recomputeReactions = (reactions: ReactionType[], selected: string[]) => {
   return reactions;
 };
 
+const messagesStore: { [key: string]: NodeMessage } = {};
+
+export const getMessage = (id: string) => {
+  return messagesStore[id];
+};
+
 export const useSetMessage = (companyId: string) => {
   const { set: setUserList } = useSetUserList('useSetMessage');
 
   return useRecoilCallback(
     ({ set }) =>
       async (message: NodeMessage) => {
+        messagesStore[message.id] = message;
+
         set(
           MessageState({ threadId: message.thread_id, id: message.id, companyId: companyId }),
           messageToMessageWithReplies(message),

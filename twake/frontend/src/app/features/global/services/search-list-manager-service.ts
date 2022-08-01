@@ -3,7 +3,6 @@ import { UserType } from 'app/features/users/types/user';
 import Strings from 'app/features/global/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
 import { getUserParts } from 'app/components/member/user-parts';
 import Observable from 'app/deprecated/Observable/Observable';
@@ -51,7 +50,7 @@ class SearchListManager extends Observable {
     // Mine
     let mineWorkspaceChannels: ChannelType[] = [];
 
-    let usersSearched: UserType[] = opts?.userListState ? opts.userListState : [];
+    const usersSearched: UserType[] = opts?.userListState ? opts.userListState : [];
     if (companyId && workspaceId) {
       channels = await ChannelsReachableAPIClient.get(companyId, workspaceId);
       directChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId: 'direct' });
@@ -159,7 +158,7 @@ class SearchListManager extends Observable {
    * Remove duplicates between direct channels and users
    */
   private removeDuplicate() {
-    let existingUsersIdAsDirectChannels = this.list
+    const existingUsersIdAsDirectChannels = this.list
       .filter(
         userOrChannel =>
           userOrChannel.type === 'direct' &&

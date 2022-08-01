@@ -2,6 +2,7 @@
   "general": {
     "help_url": false,
     "pricing_plan_url": "",
+    "app_download_url": "https://twake.app/fr/download/",
     "mobile": {
       "mobile_redirect": "mobile.twake.app",
       "mobile_appstore": "https://apps.apple.com/fr/app/twake/id1588764852?l=en",
@@ -26,6 +27,7 @@
     "_type": "remote",
     "type": "internal",
     "remote": {
+      "new_console": false,
       "username": "",
       "password": "12345678",
       "url": "https://some-remote-console-url/",
@@ -95,9 +97,7 @@
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": [
-        "scylladb:9042"
-      ],
+      "contactPoints": ["scylladb:9042"],
       "localDataCenter": "datacenter1",
       "keyspace": "twake",
       "wait": false,
@@ -109,9 +109,7 @@
     "// possible 'type' values are": "'amqp' or 'local'",
     "type": "amqp",
     "amqp": {
-      "urls": [
-        "amqp://guest:guest@rabbitmq:5672"
-      ]
+      "urls": ["amqp://guest:guest@rabbitmq:5672"]
     }
   },
   "search": {
@@ -145,6 +143,12 @@
   "plugins": {
     "server": "plugins:3100"
   },
+  "knowledge-graph": {
+    "endpoint": "http://host-gateway:8888",
+    "use": false,
+    "sensitive_data": false,
+    "forwarded_companies": []
+  },
   "services": [
     "auth",
     "push",
@@ -171,6 +175,8 @@
     "previews",
     "counter",
     "statistics",
-    "online"
+    "cron",
+    "online",
+    "knowledge-graph"
   ]
 }

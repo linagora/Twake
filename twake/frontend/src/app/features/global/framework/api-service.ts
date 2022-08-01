@@ -18,7 +18,7 @@ class GroupedQueryApi {
       clearTimeout(this.groupedQueryTimeout);
     }
     this.groupedQueryTimeout = setTimeout(() => {
-      var queries = this.groupedQueryBuffer;
+      const queries = this.groupedQueryBuffer;
       this.groupedQueryBuffer = [];
       const request: any[] = [];
       queries.forEach((query: any) => {
@@ -43,13 +43,31 @@ class GroupedQueryApi {
 const GroupedQueryApiInstance = new GroupedQueryApi();
 
 export default class Api {
+  static getWithParams<Response>(
+    route: string,
+    params: any,
+    options: { disableJWTAuthentication?: boolean; withBlob?: boolean } = {},
+  ) {
+    let query = '';
+
+    if (params) {
+      for (const k of Object.keys(params)) {
+        query += `&${k}=${params[k]}`;
+      }
+      if (!~route.indexOf('?')) {
+        query = '?' + query.slice(1);
+      }
+    }
+    return Api.get<Response>(route + query, () => {}, false, options);
+  }
+
   static get<Response>(
     route: string,
     callback?: (result: Response) => void,
-    raw: boolean = false,
+    raw = false,
     options: { disableJWTAuthentication?: boolean; withBlob?: boolean } = {},
   ): Promise<Response> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       route = Globals.api_root_url + route;
 
       Requests.request(
@@ -57,10 +75,14 @@ export default class Api {
         route,
         '',
         (resp: any) => {
-          const result: Response = raw ? resp : JSON.parse(resp);
+          const result = raw ? resp : JSON.parse(resp);
+          if (resp.statusCode === 500) {
+            callback && callback(result);
+            return reject(result);
+          }
 
-          resolve(result);
-          callback && callback(result);
+          resolve({ ...result, _statusCode: resp.statusCode });
+          callback && callback({ ...result, _statusCode: resp.statusCode });
         },
         options,
       );
@@ -71,7 +93,7 @@ export default class Api {
     route: string,
     data: Request,
     callback?: (result: Response) => void,
-    raw: boolean = false,
+    raw = false,
     options: {
       disableJWTAuthentication?: boolean;
     } = {},
@@ -86,7 +108,7 @@ export default class Api {
     route: string,
     data: Request,
     callback?: (result: Response) => void,
-    raw: boolean = false,
+    raw = false,
     options: {
       disableJWTAuthentication?: boolean;
     } = {},
@@ -100,7 +122,7 @@ export default class Api {
   static delete<Response>(
     route: string,
     callback?: (result: Response) => void,
-    raw: boolean = false,
+    raw = false,
     options: {
       disableJWTAuthentication?: boolean;
     } = {},
@@ -112,7 +134,7 @@ export default class Api {
     route: string,
     data: Request,
     callback: any = false,
-    raw: boolean = false,
+    raw = false,
     options: {
       disableJWTAuthentication?: boolean;
       requestType?: 'post' | 'get' | 'put' | 'delete';
@@ -168,10 +190,10 @@ export default class Api {
       Api.searching_last_query = {};
     }
 
-    var query = _query;
+    const query = _query;
 
-    var http = source.http;
-    var http_data = source.http_data || { query: query };
+    const http = source.http;
+    const http_data = source.http_data || { query: query };
 
     let collection: any = null,
       collection_filter: any = null,
@@ -186,13 +208,13 @@ export default class Api {
         });
     }
 
-    var search_key = source.http + '_' + source.collection;
+    const search_key = source.http + '_' + source.collection;
     this.searching_last_query[search_key] = query;
 
     //JavaScript search
     if (collection && !this.searching_javascript[search_key]) {
       this.searching_javascript[search_key] = true;
-      var results = collection
+      const results = collection
         .findBy(collection_find_by)
         .filter((item: any) => collection_filter(item, query));
       callback(results);

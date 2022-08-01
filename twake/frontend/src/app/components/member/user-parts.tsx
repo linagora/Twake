@@ -11,7 +11,7 @@ import UsersService from 'app/features/users/services/current-user-service';
 import UserIcon from 'components/user/user';
 import { getUser, useUserList } from 'app/features/users/hooks/use-user-list';
 
-type UserPartsType = {
+export type UserPartsType = {
   avatar: JSX.Element;
   name: string;
   users: UserType[];
@@ -43,7 +43,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
   );
   let channelName: string[] = [];
 
-  let users: UserType[] = [];
+  const users: UserType[] = [];
 
   channelMembers?.forEach(userId => users.push(getUser(userId)));
 

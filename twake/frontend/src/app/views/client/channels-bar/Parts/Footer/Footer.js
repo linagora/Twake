@@ -7,12 +7,14 @@ import InitService from 'app/features/global/services/init-service';
 import Languages from 'app/features/global/services/languages-service';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import Menu from 'components/menus/menu.js';
+import Version from 'app/environment/version';
 
 export default class Footer extends React.Component {
   constructor(props) {
     super();
     this.onpremise = !!((InitService.server_infos || {}).branding || {}).name;
     this.menu = [
+      { type:"text", text: `Twake v${Version.version_detail}` },
       {
         type: 'menu',
         text: Languages.t('general.help.support', [], 'Support'),

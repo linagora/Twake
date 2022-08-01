@@ -15,6 +15,8 @@ import Repository from "../../src/core/platform/services/database/services/orm/r
 import Device from "../../src/services/user/entities/device";
 
 import gr from "../../src/services/global-resolver";
+import { Channel } from "../../src/services/channels/entities";
+import { get as getChannelUtils } from "./channels/utils";
 
 export type uuid = string;
 
@@ -48,6 +50,10 @@ export class TestDbService {
     this.database = this.testPlatform.platform.getProvider<DatabaseServiceAPI>("database");
     this.users = [];
     this.workspacesMap = new Map<string, { workspace: Workspace; users: User[] }>();
+    this.workspacesMap.set("direct", {
+      workspace: { id: "direct" } as Workspace,
+      users: [],
+    });
   }
 
   private async init() {
@@ -58,10 +64,11 @@ export class TestDbService {
     );
     this.deviceRepository = await this.database.getRepository<Device>("device", Device);
   }
+
   public get workspaces() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return [...this.workspacesMap.values()];
+    return [...this.workspacesMap.values()].filter(w => w.workspace.id !== "direct");
   }
 
   async createCompany(id?: uuid, name?: string): Promise<Company> {
@@ -251,5 +258,16 @@ export class TestDbService {
 
   defaultWorkspace() {
     return this.workspaces[0].workspace;
+  }
+
+  async createChannel(userId): Promise<Channel> {
+    const channelUtils = getChannelUtils(this.testPlatform);
+    const channel = channelUtils.getChannel(userId);
+    const creationResult = await gr.services.channels.channels.save(
+      channel,
+      {},
+      channelUtils.getContext({ id: userId }),
+    );
+    return creationResult.entity;
   }
 }

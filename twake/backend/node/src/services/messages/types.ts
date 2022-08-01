@@ -3,6 +3,8 @@ import { uuid } from "../../utils/types";
 import { HookType } from "../applicationsapi/types";
 import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
+import { MessageFileRef } from "./entities/message-file-refs";
+import { MessageFile } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 
@@ -88,6 +90,8 @@ export interface MessageViewListOptions {
   replies_per_thread?: number;
   flat?: boolean;
   emojis?: boolean;
+  media_only?: boolean;
+  file_only?: boolean;
 }
 
 export interface MessageListQueryParameters extends PaginationQueryParameters {
@@ -110,6 +114,11 @@ export interface BookmarkOperation {
   active: boolean;
 }
 
+export type MessageFileDownloadEvent = {
+  user: { id: string };
+  operation: { message_id: string; thread_id: string; message_file_id: string };
+};
+
 export interface MessagesSaveOptions {
   threadInitialMessage?: boolean;
   enforceViewPropagation?: boolean;
@@ -118,6 +127,7 @@ export interface MessagesSaveOptions {
 }
 export interface MessagesGetThreadOptions {
   replies_per_thread?: number;
+  includeQuoteInMessage?: boolean;
 }
 
 export type SearchMessageOptions = {
@@ -126,15 +136,38 @@ export type SearchMessageOptions = {
   workspaceId?: string;
   channelId?: string;
   hasFiles?: boolean;
+  hasMedias?: boolean;
   sender?: string;
 };
 
+export type SearchMessageFilesOptions = {
+  search?: string;
+  companyId?: string;
+  workspaceId?: string;
+  channelId?: string;
+  sender?: string;
+  isFile?: boolean;
+  isMedia?: boolean;
+  extension?: string;
+};
+
+export type InboxOptions = {
+  companyId: string;
+};
+
 export type FlatFileFromMessage = {
-  file: any;
-  thread: any;
+  file: MessageFile;
+  thread: MessageWithReplies;
+  context: MessageFileRef;
 };
 
 export type FlatPinnedFromMessage = {
   message: any;
   thread: any;
 };
+
+export interface DeleteLinkOperation {
+  message_id: string;
+  thread_id: string;
+  link: string;
+}

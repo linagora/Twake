@@ -15,8 +15,6 @@ import Shortcuts, {
 } from 'app/features/global/services/shortcut-service';
 import AddUserButton from 'components/add-user-button/add-user-button';
 import Workspaces from 'app/deprecated/workspaces/workspaces';
-import ModalManager from 'app/components/modal/modal-manager';
-import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/scroll-hidden-components/scroll-with-hidden-components';
 import HiddenNotificationsButton from 'app/components/scroll-hidden-components/hidden-notifications-button';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
@@ -31,6 +29,9 @@ import { useSetLastWorkspacePreference } from 'app/features/users/hooks/use-set-
 import { useAutoSelectChannel } from 'app/features/channels/hooks/use-autoselect-channel';
 
 import './ChannelsBar.scss';
+import { useSearchModal } from 'app/features/search/hooks/use-search';
+import { useSetRecoilState } from 'recoil';
+import { SearchInputState } from 'app/features/search/state/search-input';
 
 export default () => {
   const companyId = useRouterCompany();
@@ -47,21 +48,16 @@ export default () => {
   usePublicOrPrivateChannelsSetup();
   useDirectChannelsSetup();
 
+  const { setOpen: setSearchopen } = useSearchModal();
+  const setSearchInput = useSetRecoilState(SearchInputState);
+
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
       shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
       handler: (event: any) => {
         event.preventDefault();
-        if (ModalManager.isOpen()) {
-          ModalManager.close();
-
-          return;
-        }
-
-        ModalManager.open(<WorkspaceChannelList />, {
-          position: 'center',
-          size: { width: '600px' },
-        });
+        setSearchopen(true);
+        setSearchInput({ query: '' });
       },
     };
 
@@ -121,9 +117,21 @@ export const ChannelLoading = () => {
   return (
     <div className="channels_view_loader ">
       <div className="small-x-margin">
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 3, width: '100%' }} />
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 3, width: '100%' }}
+        />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
       </div>
     </div>
   );

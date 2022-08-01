@@ -11,6 +11,11 @@ import PopupService from 'app/deprecated/popupManager/popupManager.js';
 
 import './styles.scss';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
+import {
+  useCompanyNotifications,
+  useOtherCompanyNotifications,
+} from 'app/features/users/hooks/use-notifications';
+import menusManager from 'app/components/menus/menus-manager';
 
 type MenuObjectType = { [key: string]: any };
 
@@ -34,48 +39,33 @@ export default ({
           .map(c => c.company)
           .sort((a, b) => a.name.localeCompare(b.name))
           .map<MenuObjectType>(c => ({
-            type: 'menu',
-            key: c.id,
-            text: capitalize(c.name),
-            icon: (
+            type: 'react-element',
+            reactElement: (
               <div
-                className={classNames('company-selector-container')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                className="company-in-menu menu"
+                onClick={() => {
+                  PopupService.closeAll();
+                  menusManager.closeMenu();
+                  RouterService.push(
+                    RouterService.generateRouteFromState(
+                      {
+                        companyId: c.id,
+                      },
+                      { replace: true },
+                    ),
+                  );
                 }}
+                style={{ display: 'flex' }}
               >
-                <div
-                  className={classNames('image', {
-                    has_image: !!c.logo,
-                  })}
-                  style={{
-                    backgroundImage: addApiUrlIfNeeded(c.logo, true),
-                    color: 'var(--white)',
-                    margin: 0,
-                  }}
-                >
-                  {`${c.name}-`[0].toUpperCase()}
-                </div>
+                <CompanyInMenu company={c} />
               </div>
             ),
-            onClick: () => {
-              PopupService.closeAll();
-              RouterService.push(
-                RouterService.generateRouteFromState(
-                  {
-                    companyId: c.id,
-                  },
-                  { replace: true },
-                ),
-              );
-            },
+            key: c.id,
           })),
       ]}
       position="top"
     >
-      {!children && <CurrentCompanyLogo withCompanyName={withCompanyName} />}
+      {!children && <CurrentCompanyLogo showBadge withCompanyName={withCompanyName} />}
       {!!children && children}
     </Menu>
   );
@@ -84,11 +74,14 @@ export default ({
 export const CurrentCompanyLogo = ({
   size,
   withCompanyName = true,
+  showBadge = false,
 }: {
   size?: number;
   withCompanyName?: boolean;
+  showBadge?: boolean;
 }) => {
   const { company } = useCurrentCompany();
+  const { badges } = useOtherCompanyNotifications(company?.id || '');
 
   if (!company) {
     return <></>;
@@ -96,6 +89,8 @@ export const CurrentCompanyLogo = ({
 
   return (
     <div className={classNames('company-selector-container')}>
+      {showBadge && badges.length > 0 && <div className="notification_dot" />}
+
       <div
         className={classNames('image', {
           has_image: !!company.logo,
@@ -110,5 +105,41 @@ export const CurrentCompanyLogo = ({
       </div>
       {withCompanyName ? <div className="name">{company.name}</div> : <></>}
     </div>
+  );
+};
+
+const CompanyInMenu = (props: { company: any }) => {
+  const c = props.company;
+  const { badges } = useCompanyNotifications(c.id || '');
+
+  return (
+    <>
+      <div
+        className={classNames('company-selector-container')}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'start',
+          width: '30px',
+        }}
+      >
+        <div
+          className={classNames('image', {
+            has_image: !!c.logo,
+          })}
+          style={{
+            backgroundImage: addApiUrlIfNeeded(c.logo, true),
+            color: 'var(--white)',
+            margin: 0,
+          }}
+        >
+          {`${c.name}-`[0].toUpperCase()}
+        </div>
+      </div>
+
+      <span className="text">{c.name}</span>
+
+      {badges.length > 0 && <div className="notification_dot">{Math.max(1, badges.length)}</div>}
+    </>
   );
 };

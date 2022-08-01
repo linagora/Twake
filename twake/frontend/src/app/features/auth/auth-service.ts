@@ -15,7 +15,6 @@ import JWT, { JWTDataType } from 'app/features/auth/jwt-storage-service';
 import UserAPIClient from '../../features/users/api/user-api-client';
 import Application from 'app/features/applications/services/application-service';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
-import Collections from 'app/deprecated/CollectionsV2/Collections';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 
 type AccountType = 'console' | 'internal';
@@ -35,7 +34,7 @@ class AuthService {
   private provider: AuthProvider<any, any, any> | null = null;
   private logger: Logger.Logger;
   private initState: InitState = '';
-  currentUserId: string = '';
+  currentUserId = '';
 
   constructor() {
     this.logger = Logger.getLogger('AuthService');
@@ -178,7 +177,7 @@ class AuthService {
     });
   }
 
-  logout(reload: boolean = true): Promise<void> {
+  logout(reload = true): Promise<void> {
     this.clear();
 
     const shouldReload = reload && window.location.pathname !== '/logout';
@@ -223,7 +222,6 @@ class AuthService {
   clear() {
     this.resetCurrentUser();
     LocalStorage.clear();
-    Collections.clear();
     JWT.clear();
   }
 

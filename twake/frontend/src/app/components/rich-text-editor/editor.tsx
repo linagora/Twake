@@ -52,6 +52,9 @@ type CurrentSuggestion<T> = {
    */
   items: Array<T>;
 
+  /** Is the list loading content from backend */
+  loading: boolean;
+
   /**
    * unique id for the current suggestion results
    */
@@ -273,10 +276,10 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
           );
         }
       } else {
-        let content = editorState.getCurrentContent();
+        const content = editorState.getCurrentContent();
         let newContent = Modifier.removeRange(content, selection, 'forward');
-        let newSelection = newContent.getSelectionAfter();
-        let block = newContent.getBlockForKey(newSelection.getStartKey());
+        const newSelection = newContent.getSelectionAfter();
+        const block = newContent.getBlockForKey(newSelection.getStartKey());
         newContent = Modifier.insertText(
           newContent,
           newSelection,
@@ -335,12 +338,13 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       const trigger = isMatching(plugin.trigger, searchMatch.text);
 
       if (trigger && trigger.text) {
-        plugin.resolver(trigger.text, items => {
+        plugin.resolver(trigger.text, ({ items, loading }) => {
           const position = getCaretCoordinates();
           const activeSuggestion = {
             position,
             searchText: trigger.text,
             items,
+            loading: loading || false,
             // unicity is for a given position and a given start index in the search terms
             id: `y=${position?.y},index=${searchMatch.start}`,
           };
@@ -532,6 +536,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     const currentBlockType = block.getType();
     const blockLength = block.getLength();
     const blockText = block.getText();
+    // @ts-ignore
     const regex = new RegExp('\r|\n', 'gm');
 
     if (currentBlockType.indexOf('atomic') === 0) {
@@ -682,6 +687,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
             id={this.state.activeSuggestion?.id || ''}
             search={this.state.activeSuggestion?.searchText || ''}
             list={this.state.activeSuggestion?.items}
+            loading={this.state.activeSuggestion?.loading || false}
             position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
             editorPosition={(this.editor as any)?.editorContainer?.getBoundingClientRect()}
             renderItem={(props: any) => this.renderSuggestion(props, this.state.suggestionType)}

@@ -31,6 +31,7 @@ import {
   MessageViewsServiceAPI,
 } from "./messages/api";
 import { ThreadMessagesService } from "./messages/services/messages";
+import { MessagesFilesService } from "./messages/services/messages-files";
 import { ThreadsService } from "./messages/services/threads";
 import { UserBookmarksService } from "./messages/services/user-bookmarks";
 import { SearchServiceAPI } from "../core/platform/services/search/api";
@@ -64,15 +65,19 @@ import { MobilePushService } from "./notifications/services/mobile-push";
 import { ChannelMemberPreferencesServiceImpl } from "./notifications/services/channel-preferences";
 import { ChannelThreadUsersServiceImpl } from "./notifications/services/channel-thread-users";
 import { PushServiceAPI } from "../core/platform/services/push/api";
-import { PreviewProcessService } from "./previews/services/processing/service";
-import { PreviewServiceAPI } from "./previews/types";
+import { PreviewProcessService } from "./previews/services/files/processing/service";
+import { LinkPreviewServiceAPI, PreviewServiceAPI } from "./previews/types";
 import { CronAPI } from "../core/platform/services/cron/api";
 import WebSocketAPI from "../core/platform/services/websocket/provider";
 import TrackerAPI from "../core/platform/services/tracker/provider";
 import { ApplicationHooksService } from "./applications/services/hooks";
 import { OnlineServiceAPI } from "./online/api";
 import OnlineServiceImpl from "./online/service";
-import { PreviewEngine } from "./previews/services/engine";
+import { PreviewEngine } from "./previews/services/files/engine";
+import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
+import { ChannelsPubsubListener } from "./channels/services/pubsub";
+import { LinkPreviewProcessService } from "./previews/services/links/processing/service";
+import { LinkPreviewEngine } from "./previews/services/links/engine";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -103,9 +108,13 @@ type TwakeServices = {
     preferences: UserNotificationPreferencesAPI;
     mobilePush: MobilePushService;
   };
-  preview: PreviewServiceAPI;
+  preview: {
+    files: PreviewServiceAPI;
+    links: LinkPreviewServiceAPI;
+  };
   messages: {
     messages: MessageThreadMessagesServiceAPI;
+    messagesFiles: MessagesFilesService;
     threads: MessageThreadsServiceAPI;
     userBookmarks: MessageUserBookmarksServiceAPI;
     views: MessageViewsServiceAPI;
@@ -120,10 +129,12 @@ type TwakeServices = {
   channels: {
     channels: ChannelService;
     members: MemberService;
+    pubsub: ChannelsPubsubListener;
   };
   channelPendingEmail: ChannelPendingEmailService;
   tab: TabService;
   online: OnlineServiceAPI;
+  knowledgeGraph: KnowledgeGraphService;
 };
 
 class GlobalResolver {
@@ -163,6 +174,7 @@ class GlobalResolver {
     });
 
     await new PreviewEngine().init();
+    await new LinkPreviewEngine().init();
 
     this.services = {
       workspaces: await new WorkspaceServiceImpl().init(),
@@ -179,9 +191,13 @@ class GlobalResolver {
         preferences: await new NotificationPreferencesService().init(),
         mobilePush: await new MobilePushService().init(),
       },
-      preview: await new PreviewProcessService().init(),
+      preview: {
+        files: await new PreviewProcessService().init(),
+        links: await new LinkPreviewProcessService().init(),
+      },
       messages: {
         messages: await new ThreadMessagesService().init(platform),
+        messagesFiles: await new MessagesFilesService().init(),
         threads: await new ThreadsService().init(platform),
         userBookmarks: await new UserBookmarksService().init(platform),
         views: await new ViewsServiceImpl().init(platform),
@@ -196,10 +212,12 @@ class GlobalResolver {
       channels: {
         channels: await new ChannelServiceImpl().init(),
         members: await new MemberServiceImpl().init(),
+        pubsub: await new ChannelsPubsubListener().init(),
       },
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
       online: await new OnlineServiceImpl().init(),
+      knowledgeGraph: await new KnowledgeGraphService().init(),
     };
 
     Object.keys(this.services).forEach((key: keyof TwakeServices) => {

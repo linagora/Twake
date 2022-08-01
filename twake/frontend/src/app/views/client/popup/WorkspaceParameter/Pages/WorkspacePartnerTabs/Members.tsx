@@ -22,34 +22,26 @@ import Icon from 'app/components/icon/icon';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';
+import {
+  searchBackend,
+  searchFrontend,
+  useSearchUsers,
+} from 'app/features/users/hooks/use-search-user-list';
+import MemberGrade from './MemberGrade';
 
 type ColumnObjectType = { [key: string]: any };
 
 const { Link, Text, Title } = Typography;
-
-const RoleComponent = ({ text, icon }: { text: string; icon?: JSX.Element }): JSX.Element => (
-  <Row align="middle">
-    {!!icon && (
-      <Col pull={1} style={{ height: 16 }}>
-        {icon}
-      </Col>
-    )}
-    <Col>
-      <Text type="secondary" style={{ fontSize: 12 }}>
-        {text}
-      </Text>
-    </Col>
-  </Row>
-);
 
 export default ({ filter }: { filter: string }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<ColumnObjectType[]>([]);
   const [pageToken, setPageToken] = useState<string | null>(null);
   const [serverSearchedData, setServerSearchedData] = useState<ColumnObjectType[]>([]);
-  const [filteredData, setFilteredData] = useState<ColumnObjectType[] | null>(null);
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
+
+  const { search, result } = useSearchUsers({ scope: 'workspace' });
 
   const prefixRoute = '/internal/services/workspaces/v1';
   const workspaceUsersRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/users`;
@@ -64,58 +56,22 @@ export default ({ filter }: { filter: string }) => {
   }, []);
 
   useEffect(() => {
-    onSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, data]);
+    delayRequest('workspace_partners_search', async () => {
+      await search(filter);
+    });
+  }, [filter]);
 
-  const onSearch = async () => {
-    if (filter.length) {
-      delayRequest('workspace_members_search', async () => {
-        try {
-          setLoading(true);
-          await UserAPIClient.search<WorkspaceUserType>(
-            filter,
-            { scope: 'workspace', companyId, workspaceId },
-            wsUsers => {
-              const resources: ColumnObjectType[] = wsUsers;
-
-              // Make sure we have unicity in this combined list
-              setServerSearchedData(
-                _.uniqBy([...serverSearchedData, ...(resources || [])], col => col.user.id),
-              );
-              updateFilteredData();
-              wsUsers &&
-                setUserList(
-                  wsUsers.map(wsUser => ({
-                    ...wsUser.user,
-                    workspaces: [{ id: workspaceId, company_id: companyId }],
-                  })),
-                );
-            },
-          );
-
-          setLoading(false);
-        } catch (e) {
-          console.error(e);
-        }
-      });
-    }
-    updateFilteredData();
-  };
-
-  const updateFilteredData = () => {
-    if (filter.length) {
-      // Make sure we have unicity in this combined list
-      const filtered = _.uniqBy([...data, ...serverSearchedData], col => col.user.id).filter(col =>
-        `${col.user.email} ${UserService.getFullName(col.user)}`
-          .toLocaleLowerCase()
-          .includes(filter.toLocaleLowerCase()),
-      );
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(null);
-    }
-  };
+  const filteredData: WorkspaceUserType[] | null = filter
+    ? (result
+        .map(u => ({
+          user: u,
+          ...u,
+          role: u.workspaces?.find(w => w.id === workspaceId)?.role,
+          user_id: u.id || '',
+          workspace_id: workspaceId || '',
+        }))
+        .slice(0, 50) as WorkspaceUserType[])
+    : null;
 
   const requestWorkspaceUsers = async (pageToken?: string) => {
     try {
@@ -142,7 +98,6 @@ export default ({ filter }: { filter: string }) => {
 
   const updateData = (updater: (data: ColumnObjectType[]) => ColumnObjectType[]) => {
     setData(updater(data));
-    setFilteredData(filteredData !== null ? updater(filteredData || []) : null);
     setServerSearchedData(updater(serverSearchedData));
   };
 
@@ -181,7 +136,7 @@ export default ({ filter }: { filter: string }) => {
   };
 
   const buildMenu = (col: any) => {
-    let menu: any[] = [];
+    const menu: any[] = [];
 
     if (
       workspaceUserRightsService.hasGroupPrivilege() &&
@@ -234,44 +189,6 @@ export default ({ filter }: { filter: string }) => {
     );
   };
 
-  const getRoleTitle = ({
-    companyRole,
-    workspaceRole,
-  }: {
-    companyRole: string;
-    workspaceRole: string;
-  }) => {
-    // Company
-    switch (companyRole) {
-      case 'owner':
-        return (
-          <RoleComponent
-            text={Languages.t('scenes.app.popup.appsparameters.pages.company_label')}
-            icon={<ChevronsUp size={16} style={{ padding: 0 }} />}
-          />
-        );
-      case 'admin':
-        return (
-          <RoleComponent
-            text={Languages.t('general.user.role.company.admin')}
-            icon={<ChevronsUp size={16} style={{ padding: 0 }} />}
-          />
-        );
-      case 'guest':
-        return <RoleComponent text={Languages.t('general.user.role.company.guest')} />;
-    }
-
-    // Workspace
-    if (workspaceRole === 'moderator') {
-      return (
-        <RoleComponent
-          text={Languages.t('scenes.app.popup.workspaceparameter.pages.moderator_status')}
-          icon={<ChevronUp size={16} style={{ padding: 0 }} />}
-        />
-      );
-    }
-  };
-
   const columns: ColumnsType<ColumnObjectType> = [
     {
       title: Languages.t('scenes.app.popup.workspaceparameter.pages.table_title'),
@@ -301,10 +218,10 @@ export default ({ filter }: { filter: string }) => {
       dataIndex: 'tags',
       render: (text, col, index) => (
         <Text type="secondary">
-          {getRoleTitle({
-            companyRole: UserService.getUserRole(col.user, companyId),
-            workspaceRole: col.role,
-          })}
+          <MemberGrade
+            companyRole={UserService.getUserRole(col.user, companyId)}
+            workspaceRole={col.role}
+          />
         </Text>
       ),
     },
@@ -313,7 +230,7 @@ export default ({ filter }: { filter: string }) => {
       dataIndex: 'menu',
       width: 50,
       render: (text, col, index) =>
-        workspaceUserRightsService.hasWorkspacePrivilege() && buildMenu(col),
+        false && workspaceUserRightsService.hasWorkspacePrivilege() && buildMenu(col),
     },
   ];
 

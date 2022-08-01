@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import 'moment-timezone';
 import classNames from 'classnames';
 import Reactions from './Reactions';
@@ -19,28 +19,30 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import MessageAttachments from './MessageAttachments';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
+import LinkPreview from './LinkPreview';
+import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 
 type Props = {
   linkToThread?: boolean;
   threadHeader?: string;
 };
 
+let loadingInteractionTimeout: any = 0;
+
 export default (props: Props) => {
   const [active, setActive] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
   const [didMouseOver, setDidMouseOver] = useState(false);
-  let loading_interaction_timeout: any = 0;
 
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
-
-  const companyId = context.companyId;
+  const channelId = context.channelId;
+  const { message } = useMessage(context);
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
-    var app_id = message.application_id;
-    var type = 'interactive_message_action';
-    var event = action_id;
-    var data = {
+    const app_id = message.application_id;
+    const type = 'interactive_message_action';
+    const event = action_id;
+    const data = {
       interactive_context: context,
       form: passives,
       message: message,
@@ -51,13 +53,17 @@ export default (props: Props) => {
   const onAction = (type: string, id: string, context: any, passives: any, evt: any) => {
     if (type === 'interactive_action') {
       setLoadingAction(true);
-      clearTimeout(loading_interaction_timeout);
-      loading_interaction_timeout = setTimeout(() => {
+      clearTimeout(loadingInteractionTimeout);
+      loadingInteractionTimeout = setTimeout(() => {
         setLoadingAction(false);
       }, 5000);
       onInteractiveMessageAction(id, context, passives, evt);
     }
   };
+
+  useEffect(() => {
+    setLoadingAction(false);
+  }, [JSON.stringify(message.blocks)]);
 
   const deleted = message.subtype === 'deleted';
 
@@ -70,6 +76,8 @@ export default (props: Props) => {
   const showEdition = !props.linkToThread && editorIsActive;
   const messageIsLoading = (message as any)._status === 'sending';
   const messageSaveFailed = (message as any)._status === 'failed';
+
+  const isChannelMember = useIsChannelMember(channelId);
 
   return (
     <div
@@ -116,7 +124,7 @@ export default (props: Props) => {
                         passives: any,
                         evt: any,
                       ) => {
-                        onAction(type, id, context, passives, evt);
+                        if (isChannelMember) onAction(type, id, context, passives, evt);
                       }}
                       allowAdvancedBlocks={message.subtype === 'application'}
                     />
@@ -124,21 +132,30 @@ export default (props: Props) => {
                 )}
               </div>
 
-              {message?.files && message?.files?.length > 0 && <MessageAttachments />}
-
+              {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
+              {message?.links &&
+                (message?.links?.length || 0) > 0 &&
+                message.links
+                  .filter(link => link && (link.title || link.description || link.img))
+                  .map((preview, i) => <LinkPreview key={i} preview={preview} />)}
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
             </>
           )}
         </div>
       )}
-      {!showEdition && !deleted && !messageSaveFailed && didMouseOver && !messageIsLoading && (
-        <Options
-          onOpen={() => setActive(true)}
-          onClose={() => setActive(false)}
-          threadHeader={props.threadHeader}
-        />
-      )}
+      {isChannelMember &&
+        !showEdition &&
+        !deleted &&
+        !messageSaveFailed &&
+        didMouseOver &&
+        !messageIsLoading && (
+          <Options
+            onOpen={() => setActive(true)}
+            onClose={() => setActive(false)}
+            threadHeader={props.threadHeader}
+          />
+        )}
     </div>
   );
 };

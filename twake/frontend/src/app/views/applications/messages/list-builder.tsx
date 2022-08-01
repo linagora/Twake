@@ -1,93 +1,151 @@
-import React, { ReactNode, Suspense, useEffect, useRef, useState } from 'react';
-import { ItemContent, LogLevel, Virtuoso } from 'react-virtuoso';
-import Logger from 'app/features/global/framework/logger-service';
+import React, {
+  forwardRef,
+  ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { ItemContent, LogLevel, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
-import { MessagesPlaceHolder } from './placeholder';
+import _ from 'lodash';
+import { getMessage } from 'app/features/messages/hooks/use-message';
 
-const logger = Logger.getLogger(`ListBuilder`);
-const START_INDEX = 1000000;
-const IDENTIFIER = 'threadId';
+export type ListBuilderHandle = VirtuosoHandle & {};
 
 type Props = {
   items: any[];
-  loadMore: (direction: 'history' | 'future') => Promise<void>;
-  itemContent: ItemContent<any>;
+  followOutput: false | 'smooth' | 'auto';
+  loadMore: (direction: 'history' | 'future', limit: number, offset?: any) => Promise<any[]>;
+  itemContent: ItemContent<any, any>;
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
+  onScroll: Function;
+  style?: any;
   atBottomStateChange?: (atBottom: boolean) => void;
-  window: WindowType;
+  //Will be called just before to finish append messages for a final filtering
+  filterOnAppend?: (item: any[]) => any[];
 };
 
+let prependMoreLock = false;
+let appendMoreLock = false;
+
 export default React.memo(
-  ({
-    emptyListComponent,
-    itemId,
-    loadMore,
-    items,
-    itemContent,
-    atBottomStateChange,
-    window,
-  }: Props) => {
-    const virtuosoRef = useRef(null);
-    const [initiated, setInitiated] = useState(false);
+  forwardRef(
+    (
+      {
+        emptyListComponent,
+        filterOnAppend,
+        followOutput,
+        itemId,
+        loadMore,
+        onScroll,
+        items: _items,
+        itemContent,
+        atBottomStateChange,
+        style,
+      }: Props,
+      ref,
+    ) => {
+      const START_INDEX = 10000000;
+      const INITIAL_ITEM_COUNT = (_items || []).length;
 
-    const more = async (direction: 'future' | 'history') => {
-      const result = await loadMore(direction);
-      setInitiated(true);
-      return result;
-    };
+      const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
+      const [items, setItems] = useState(_items || []);
+      const refVirtuoso = useRef<VirtuosoHandle>(null);
 
-    useEffect(() => {
-      if (!window.loaded) {
-        more('history').then(() => {
-          if (atBottomStateChange) atBottomStateChange(true);
-        });
-      } else {
-        more('future');
+      useImperativeHandle(ref, () => ({
+        ...refVirtuoso.current,
+      }));
+
+      useEffect(() => {
+        // Detect append or prepend or full replace items
+        const ids = items.map(i => itemId(i));
+        //Find the first index in props _items that is already in displayed items
+        const first = _items.findIndex(i => ids.includes(itemId(i)));
+        //Find the last index in props _items that is already in displayed items
+        const lastIndex = _items
+          .slice()
+          .reverse()
+          .findIndex(i => ids.includes(itemId(i)));
+        const last = lastIndex >= 0 ? _items.length - 1 - lastIndex : lastIndex;
+        if (first == -1) {
+          //Replacement
+          setFirstItemIndex(START_INDEX);
+          setItems(_items);
+        } else if (first === 0 && last !== _items.length - 1) {
+          //Append
+          let newList = [...items, ..._items.slice(last + 1)];
+          if (filterOnAppend) newList = filterOnAppend(newList);
+          setItems(newList);
+        } else if (last === _items.length - 1 && first !== 0) {
+          //Prepend
+          const newItems = _items.slice(0, first);
+          const nextFirstItemIndex = firstItemIndex - newItems.length;
+          setFirstItemIndex(() => nextFirstItemIndex);
+          setItems([...newItems, ...items]);
+        } else {
+          if (filterOnAppend) {
+            const newList = filterOnAppend([...items, ..._items]);
+            if (
+              _.difference(
+                items.map(i => itemId(i)),
+                newList.map(i => itemId(i)),
+              ).length > 0
+            ) {
+              setItems(newList);
+            }
+          }
+        }
+      }, [_items]);
+
+      const appendItems = useCallback(() => {
+        if (appendMoreLock) return;
+        appendMoreLock = true;
+
+        setTimeout(async () => {
+          await loadMore('future', 20, items[items.length - 1]);
+          appendMoreLock = false;
+        }, 10);
+
+        return false;
+      }, [items]);
+
+      const prependItems = useCallback(() => {
+        if (prependMoreLock) return;
+        prependMoreLock = true;
+
+        setTimeout(async () => {
+          await loadMore('history', 20, items[0]);
+          prependMoreLock = false;
+        }, 10);
+
+        return false;
+      }, [items]);
+
+      if (items.length === 0) {
+        return <div style={{ flex: 1 }}>{emptyListComponent}</div>;
       }
-    }, []);
 
-    const firstItemIndex = useRef(START_INDEX);
-    const firstItemId = useRef('');
-    if (items.length > 0) {
-      if (firstItemId.current) {
-        firstItemIndex.current =
-          firstItemIndex.current - items.map(i => itemId(i)).indexOf(firstItemId.current);
-      }
-      firstItemId.current = itemId(items[0]);
-    }
-
-    if (items.length === 0) {
       return (
-        <div style={{ flex: 1 }}>
-          {initiated ? emptyListComponent || <></> : <MessagesPlaceHolder />}
-        </div>
+        <Virtuoso
+          ref={refVirtuoso}
+          style={style}
+          followOutput={followOutput}
+          alignToBottom={true}
+          firstItemIndex={firstItemIndex}
+          initialTopMostItemIndex={INITIAL_ITEM_COUNT - 1}
+          data={items}
+          startReached={prependItems}
+          endReached={appendItems}
+          itemContent={itemContent}
+          onScroll={e => onScroll(e)}
+          atBottomStateChange={atBottomStateChange}
+          computeItemKey={(_index, item) => itemId(item)}
+        />
       );
-    }
-
-    return (
-      <>
-        <Suspense fallback={<div style={{ flex: 1 }}></div>}>
-          <Virtuoso
-            ref={virtuosoRef}
-            initialTopMostItemIndex={items.length - 1}
-            firstItemIndex={firstItemIndex.current}
-            itemContent={itemContent}
-            data={items}
-            followOutput={'smooth'}
-            alignToBottom
-            startReached={async () => {
-              await more('history');
-            }}
-            endReached={async () => {
-              if (!window.reachedEnd) await more('future');
-            }}
-            atBottomStateChange={atBottomStateChange}
-            atTopStateChange={atTop => {}}
-            computeItemKey={(_index, item) => itemId(item)}
-          />
-        </Suspense>
-      </>
-    );
-  },
+    },
+  ),
 );

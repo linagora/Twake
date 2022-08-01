@@ -1,34 +1,31 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
-import { ChannelType } from 'app/features/channels/types/channel';
-import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
 import Icon from 'app/components/icon/icon';
-import Menu from 'components/menus/menu';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import Languages from 'app/features/global/services/languages-service';
-import AlertManager from 'app/features/global/services/alert-manager-service';
-import UserService from 'app/features/users/services/current-user-service';
-import ModalManager from 'app/components/modal/modal-manager';
-import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-import Notifications from 'app/features/users/services/user-notifications-service';
-import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import { NotificationResource } from 'app/features/users/types/notification-types';
-import RouterServices from 'app/features/router/services/router-service';
-import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagement';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
-import LockedGuestsPopup from 'app/components/locked-features-components/locked-guests-popup/locked-guests-popup';
-import InitService from 'app/features/global/services/init-service';
-import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
+import ModalManager from 'app/components/modal/modal-manager';
+import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
-import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/utils';
-import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
-import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
-import { useRefreshFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
-import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
+import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useRefreshDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { useRefreshFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
+import { ChannelType } from 'app/features/channels/types/channel';
+import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/utils';
+import AlertManager from 'app/features/global/services/alert-manager-service';
+import Languages from 'app/features/global/services/languages-service';
+import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
+import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import RouterServices from 'app/features/router/services/router-service';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
+import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
+import UserService from 'app/features/users/services/current-user-service';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
+import { addUrlTryDesktop } from 'app/views/desktop-redirect';
+import Menu from 'components/menus/menu';
 
 type PropsType = {
   channel: ChannelType;
@@ -53,14 +50,16 @@ export default (props: PropsType): JSX.Element => {
 };
 
 const FullMenu = (props: PropsType): JSX.Element => {
-  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
   const companyId = props.channel.company_id;
   const workspaceId = useRouterWorkspace();
+  const { badges } = useChannelNotifications(props.channel.id || '');
   const { user: currentUser } = useCurrentUser();
   const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
   const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
+  const { refresh: refreshChannel } = useChannel(props.channel.id || '');
   const { Feature, FeatureNames } = useFeatureToggles();
   const channelMember = props.channel.user_member || {};
+  const { setOpen: setParticipantsOpen } = useUsersSearchModal();
 
   Languages.useListener();
 
@@ -104,32 +103,6 @@ const FullMenu = (props: PropsType): JSX.Element => {
     }
   };
 
-  const displayMembers = () => {
-    return ModalManager.open(<ChannelMembersList channel={props.channel} closable />, {
-      position: 'center',
-      size: { width: '600px', minHeight: '329px' },
-    });
-  };
-
-  const displayGuestManagement = () => {
-    return ModalManager.open(
-      FeatureTogglesService.isActiveFeatureName(FeatureNames.GUESTS) ? (
-        <GuestManagement channel={props.channel} />
-      ) : (
-        <LockedGuestsPopup
-          companySubscriptionUrl={
-            InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url ||
-            ''
-          }
-        />
-      ),
-      {
-        position: 'center',
-        size: { width: '600px', minHeight: '329px' },
-      },
-    );
-  };
-
   const leaveChannel = async (isDirectChannel = false) => {
     if (props.channel?.id && props.channel?.company_id && workspaceId) {
       const res = await ChannelsMineAPIClient.removeUser(UserService.getCurrentUserId(), {
@@ -145,6 +118,8 @@ const FullMenu = (props: PropsType): JSX.Element => {
         refreshFavoriteChannels();
         refreshDirectChannels();
       }
+
+      refreshChannel();
     }
   };
 
@@ -179,28 +154,21 @@ const FullMenu = (props: PropsType): JSX.Element => {
     }
   };
 
-  let menu: object[] = [
+  const menu: object[] = [
     {
       type: 'menu',
       text: Languages.t(
-        notificationsCollection.find({ channel_id: props.channel.id }).length > 0
+        badges.length > 0
           ? 'scenes.app.channelsbar.read_sign'
           : 'scenes.app.channelsbar.unread_sign',
       ),
       onClick: () => {
-        notificationsCollection.find({ channel_id: props.channel.id }).length > 0
-          ? ChannelAPIClient.read(
-              props.channel.company_id || '',
-              props.channel.workspace_id || '',
-              props.channel.id || '',
-              { status: true, now: true },
-            )
-          : ChannelAPIClient.read(
-              props.channel.company_id || '',
-              props.channel.workspace_id || '',
-              props.channel.id || '',
-              { status: false, now: true },
-            );
+        ChannelAPIClient.read(
+          props.channel.company_id || '',
+          props.channel.workspace_id || '',
+          props.channel.id || '',
+          { status: badges.length > 0, now: true },
+        );
       },
     },
     {
@@ -212,6 +180,21 @@ const FullMenu = (props: PropsType): JSX.Element => {
       ),
       onClick: () => {
         addOrCancelFavorite(!props.channel.user_member?.favorite);
+      },
+    },
+    {
+      type: 'menu',
+      text: Languages.t('scenes.app.channelsbar.channel_copy_link'),
+      onClick: () => {
+        const url = addUrlTryDesktop(
+          `${document.location.origin}${RouterServices.generateRouteFromState({
+            workspaceId: props.channel.workspace_id || '',
+            companyId: props.channel.company_id,
+            channelId: props.channel.id,
+          })}`,
+        );
+
+        copyToClipboard(url);
       },
     },
     {
@@ -291,7 +274,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
       ],
     });
     menu.splice(
-      4,
+      5,
       0,
       {
         type: 'menu',
@@ -305,13 +288,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
       {
         type: 'menu',
         text: Languages.t('scenes.apps.parameters.workspace_sections.members'),
-        onClick: () => displayMembers(),
-      },
-      {
-        type: 'menu',
-        text: Languages.t('scenes.app.channelsbar.guest_management'),
-        hide: AccessRightsService.getCompanyLevel(companyId) === 'guest',
-        onClick: () => displayGuestManagement(),
+        onClick: () => setParticipantsOpen(true),
       },
     );
   }

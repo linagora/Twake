@@ -8,6 +8,8 @@ import { TabType } from 'app/features/tabs/types/tab';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
+import { v1 } from 'uuid';
+import { MessageWithReplies } from 'app/features/messages/types/message';
 
 enum ChannelActivityEnum {
   CHANNEL_MEMBER_CREATED = 'channel:activity:member:created',
@@ -47,6 +49,7 @@ export type ActivityType = {
 type PropsType = {
   refDom?: ((node: any) => any) | undefined;
   activity: ActivityType;
+  message: MessageWithReplies;
 };
 
 // i18n but with react nodes as replacements
@@ -57,9 +60,9 @@ const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
       key,
       replacements.map((_, i) => `{${i}}`),
     ) || '';
-  let list: any[] = [];
+  const list: any[] = [];
   replacements.forEach((replacement, i) => {
-    let split = temp.split(`{${i}}`);
+    const split = temp.split(`{${i}}`);
     list.push(
       <Typography.Text key={i} type="secondary">
         {split[0]}
@@ -68,12 +71,17 @@ const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
     list.push(replacement);
     temp = split[1];
   });
-  list.push(<Typography.Text type="secondary">{temp}</Typography.Text>);
+  list.push(
+    <Typography.Text key={key + 'b'} type="secondary">
+      {temp}
+    </Typography.Text>,
+  );
   return list;
 };
 
 export default (props: PropsType): JSX.Element => {
   const generateTypographyName = (id: string) => <User id={id} username="Unknown" hideUserImage />;
+  const message = props.message;
 
   const memberJoinedOrInvited = (activity: ActivityType) => {
     if (activity.context.array) {
@@ -87,10 +95,10 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_added_b_to_the_channel',
           [
-            <span style={{ marginRight: 5, lineHeight: 0 }}>
+            <span key={message.id + '-1'} style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <span style={{ margin: '0 5px', lineHeight: 0 }}>
+            <span key={message.id + '-2'} style={{ margin: '0 5px', lineHeight: 0 }}>
               {generateTypographyName(resource.user_id || '')}
             </span>,
           ],
@@ -103,17 +111,17 @@ export default (props: PropsType): JSX.Element => {
     if (activity.context.array) {
       const resource = activity.context.array[0]?.resource as ChannelMemberType;
       if (activity.actor.id === resource.user_id) {
-        return [<></>]; //Do not show this information to not polute the chat
+        return []; //Do not show this information to not polute the chat
       }
 
       if (activity.actor.id !== resource.user_id) {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_removed_b_from_the_channel',
           [
-            <span style={{ marginRight: 5, lineHeight: 0 }}>
+            <span key={message.id + '-3'} style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <span style={{ margin: '0 5px', lineHeight: 0 }}>
+            <span key={message.id + '-4'} style={{ margin: '0 5px', lineHeight: 0 }}>
               {generateTypographyName(resource.user_id || '')}
             </span>,
           ],
@@ -135,10 +143,10 @@ export default (props: PropsType): JSX.Element => {
       return translateUsingReactNode(
         'scenes.apps.messages.message.activity_message.a_updated_channel_name',
         [
-          <span style={{ marginRight: 5, lineHeight: 0 }}>
+          <span key={message.id + '-5'} style={{ marginRight: 5, lineHeight: 0 }}>
             {generateTypographyName(activity.actor.id)}
           </span>,
-          <Typography.Text strong style={{ margin: '0 5px' }}>
+          <Typography.Text key={message.id + '-6'} strong style={{ margin: '0 5px' }}>
             {icon} {next?.resource?.name}
           </Typography.Text>,
         ],
@@ -149,7 +157,7 @@ export default (props: PropsType): JSX.Element => {
       return translateUsingReactNode(
         'scenes.apps.messages.message.activity_message.a_updated_channel_description',
         [
-          <span style={{ marginRight: 5, lineHeight: 0 }}>
+          <span key={message.id + '-7'} style={{ marginRight: 5, lineHeight: 0 }}>
             {generateTypographyName(activity.actor.id)}
           </span>,
         ],
@@ -168,13 +176,13 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_created_channel_tab',
           [
-            <span style={{ marginRight: 5, lineHeight: 0 }}>
+            <span key={message.id + '-8'} style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <Typography.Text strong style={{ margin: '0 5px' }}>
+            <Typography.Text key={message.id + '-9'} strong style={{ margin: '0 5px' }}>
               {connector[0]?.identity?.name}
             </Typography.Text>,
-            <Typography.Text strong style={{ marginLeft: 5 }}>
+            <Typography.Text key={message.id + '-10'} strong style={{ marginLeft: 5 }}>
               {resource?.name}
             </Typography.Text>,
           ],
@@ -185,13 +193,13 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_deleted_channel_tab',
           [
-            <span style={{ marginRight: 5, lineHeight: 0 }}>
+            <span key={message.id + '-11'} style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <Typography.Text strong style={{ margin: '0 5px' }}>
+            <Typography.Text key={message.id + '-12'} strong style={{ margin: '0 5px' }}>
               {connector[0]?.identity?.name}
             </Typography.Text>,
-            <Typography.Text strong style={{ marginLeft: 5 }}>
+            <Typography.Text key={message.id + '-13'} strong style={{ marginLeft: 5 }}>
               {resource?.name}
             </Typography.Text>,
           ],
@@ -212,10 +220,10 @@ export default (props: PropsType): JSX.Element => {
           return translateUsingReactNode(
             'scenes.apps.messages.message.activity_message.a_created_channel_connector',
             [
-              <span style={{ marginRight: 5, lineHeight: 0 }}>
+              <span key={message.id + '-14'} style={{ marginRight: 5, lineHeight: 0 }}>
                 {generateTypographyName(activity.actor.id)}
               </span>,
-              <Typography.Text strong style={{ marginLeft: 5 }}>
+              <Typography.Text key={message.id + '-15'} strong style={{ marginLeft: 5 }}>
                 {connector[0]?.identity?.name}
               </Typography.Text>,
             ],
@@ -226,10 +234,10 @@ export default (props: PropsType): JSX.Element => {
           return translateUsingReactNode(
             'scenes.apps.messages.message.activity_message.a_deleted_channel_connector',
             [
-              <span style={{ marginRight: 5, lineHeight: 0 }}>
+              <span key={message.id + '-16'} style={{ marginRight: 5, lineHeight: 0 }}>
                 {generateTypographyName(activity.actor.id)}
               </span>,
-              <Typography.Text strong style={{ marginLeft: 5 }}>
+              <Typography.Text key={message.id + '-17'} strong style={{ marginLeft: 5 }}>
                 {connector[0]?.identity?.name}
               </Typography.Text>,
             ],
@@ -255,14 +263,10 @@ export default (props: PropsType): JSX.Element => {
   };
 
   return (
-    <Row
-      className="markdown"
-      style={{ paddingBottom: 16 }}
-      align="middle"
-      justify="center"
-      ref={props.refDom}
-    >
-      {compute()}
-    </Row>
+    <div style={{ height: 40, paddingTop: 8 }}>
+      <Row className="markdown" align="middle" justify="center" ref={props.refDom}>
+        {compute()}
+      </Row>
+    </div>
   );
 };

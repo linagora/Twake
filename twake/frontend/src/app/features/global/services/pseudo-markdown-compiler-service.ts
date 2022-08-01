@@ -7,7 +7,7 @@ import Globals from 'app/features/global/services/globals-twake-app-service';
 
 class PseudoMarkdownCompiler {
   saved_messages: { [key: string]: any } = {};
-  alphabet: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   bullets: { [key: string]: any } = {
     '• ': () => '• ',
     '- ': () => '- ',
@@ -413,7 +413,7 @@ class PseudoMarkdownCompiler {
         const allowed_char_before = this.pseudo_markdown[starting_value].allowed_char_before;
         let tmp = str;
         let offset = 0;
-        let indexes = [];
+        const indexes = [];
         let did_match = -1;
         do {
           did_match = tmp.indexOf(starting_value);
@@ -634,7 +634,7 @@ class PseudoMarkdownCompiler {
       json = [json];
     }
 
-    let result: any = [];
+    const result: any = [];
     try {
       json.forEach((item: any) => {
         if (typeof item === 'string') {
@@ -766,7 +766,7 @@ class PseudoMarkdownCompiler {
     //IE support
     if ((document as any).selection) {
       myField.focus();
-      let sel = (document as any).selection.createRange();
+      const sel = (document as any).selection.createRange();
       sel.text = myValue;
     }
     //MOZILLA and others
