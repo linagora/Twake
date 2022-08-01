@@ -14,7 +14,7 @@ docker network create \
   --subnet=172.64.0.0/16 \
   --ip-range=172.64.0.0/24 \
   --gateway=172.64.0.1 \
-  test-net
+  dind-net
 
 
 node /usr/src/app/helpers/add.js $1 ${FOLDERNAME} ${ID} ${SECRET} "${VENV}"

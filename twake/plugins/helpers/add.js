@@ -73,5 +73,3 @@ fs.readFile("/usr/src/app/plugins.json", function (err, data) {
     }
   );
 });
-
-//docker run -it --add-host host.docker.internal:host-gateway --name jitsi --restart unless-stopped -p 8001:8001 -e SERVER_PORT=8001 -e SERVER_PREFIX='/plugins/jitsi' -e CREDENTIALS_ENDPOINT='http://172.17.0.1:8080' -e CREDENTIALS_SECRET='XDdOHEln3Lr3/aJucXtstTyopXjFtBPVXMmGZJHSt/E=' -e CREDENTIALS_ID='b8a486b0-ac3f-11ec-9ebe-6d03b350718c' jitsi bash

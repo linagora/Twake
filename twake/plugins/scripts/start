@@ -8,5 +8,4 @@ docker network create \
   dind-net
 
 
-node /usr/src/app/helpers/start_nginx.js
-
+node /usr/src/app/helpers/start.js
