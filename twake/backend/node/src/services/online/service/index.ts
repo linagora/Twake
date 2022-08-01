@@ -148,7 +148,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
   }
 
   private broadcastOnline(event: WebsocketUserEvent, companies: Array<string>): void {
-    companies.forEach(company => {
+    (companies || []).forEach(company => {
       this.pubsubService.broadcastOnline([
         {
           company_id: company,

@@ -222,7 +222,6 @@ export class MessagesController
     }
   }
 
-  //TODO
   async reaction(
     request: FastifyRequest<{
       Params: {
