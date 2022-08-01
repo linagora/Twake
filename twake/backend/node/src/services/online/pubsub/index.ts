@@ -21,7 +21,7 @@ export class OnlinePubsubService implements Initializable {
       return;
     }
 
-    this.logger.debug(`Publishing online users ${online.map(u => u[0]).join(",")}`);
+    this.logger.debug(`Publishing online users ${online.map(u => u.user_id).join(",")}`);
 
     return gr.platformServices.pubsub.publish<UsersOnlineMessage>(ONLINE_TOPIC, {
       data: online,
