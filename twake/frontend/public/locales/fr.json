@@ -891,5 +891,20 @@
     "components.open_desktop_popup.subtitle": "Ouvert dans l'application Twake",
     "components.open_desktop_popup.open_here_link": "Ouvrir dans la version web",
     "molecules.download_banner.title": "Tirez le meilleur parti de Twake, téléchargez l'application de bureau maintenant",
-    "molecules.download_banner.download_button": "Télécharger l'application de bureau"
+    "molecules.download_banner.download_button": "Télécharger l'application de bureau",
+    "components.searchpopup.no_results_for": "Il n'y a pas eu de résultats pour",
+    "components.searchpopup.try_new_search": "Essayez une nouvelle recherche",
+    "components.searchpopup.all": "Tout",
+    "components.searchpopup.chats": "Chats",
+    "components.searchpopup.media": "Médias",
+    "components.searchpopup.files": "Des dossiers",
+    "components.searchpopup.recent_chats": "Chats récents",
+    "components.searchpopup.recent_media": "Médias récents",
+    "components.searchpopup.recent_files": "Fichiers récents",
+    "components.searchpopup.recent_channels_and_contacts": "Canaux et contacts récents",
+    "components.searchpopup.header_title": "Chercher",
+    "components.searchpopup.scope.company": "dans toute compagnie",
+    "components.searchpopup.scope.channel": "dans ce canal",
+    "components.searchpopup.channels": "Canaux",
+    "components.searchpopup.messages": "messages"
 }

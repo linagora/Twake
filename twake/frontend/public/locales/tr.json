@@ -889,5 +889,22 @@
     "components.open_desktop_popup.subtitle": "Twake uygulamasında açıldı",
     "components.open_desktop_popup.open_here_link": "Bunun yerine burada aç",
     "molecules.download_banner.title": "Twake'den en iyi şekilde yararlanın, şimdi masaüstü uygulamasını indirin",
-    "molecules.download_banner.download_button": "Masaüstü uygulamasını indirin"
+    "molecules.download_banner.download_button": "Masaüstü uygulamasını indirin",
+    "scenes.app.channelsbar.channel_copy_link": "Kanal bağlantısını kopyala",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Başarıyla güncellendi",
+    "components.searchpopup.no_results_for": "için sonuç bulunamadı",
+    "components.searchpopup.try_new_search": "Yeni bir arama deneyin",
+    "components.searchpopup.all": "Herşey",
+    "components.searchpopup.chats": "sohbetler",
+    "components.searchpopup.media": "medya",
+    "components.searchpopup.files": "Dosyalar",
+    "components.searchpopup.recent_chats": "son sohbetler",
+    "components.searchpopup.recent_media": "son medya",
+    "components.searchpopup.recent_files": "Son Dosyalar",
+    "components.searchpopup.recent_channels_and_contacts": "Son kanallar ve kişiler",
+    "components.searchpopup.header_title": "Arama",
+    "components.searchpopup.scope.company": "tüm şirkette",
+    "components.searchpopup.scope.channel": "bu kanalda",
+    "components.searchpopup.channels": "Kanallar",
+    "components.searchpopup.messages": "Mesajlar"
 }
