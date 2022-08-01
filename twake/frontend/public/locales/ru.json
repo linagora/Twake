@@ -889,5 +889,22 @@
     "components.open_desktop_popup.subtitle": "открыто в приложении Twake",
     "components.open_desktop_popup.open_here_link": "Вместо этого откройте здесь",
     "molecules.download_banner.title": "Получите максимум от Twake, загрузите настольное приложение прямо сейчас",
-    "molecules.download_banner.download_button": "Скачать настольное приложение"
+    "molecules.download_banner.download_button": "Скачать настольное приложение",
+    "scenes.app.channelsbar.channel_copy_link": "Скопировать ссылку на канал",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Успешно обновлено",
+    "components.searchpopup.all": "Все",
+    "components.searchpopup.no_results_for": "Не найдено результатов для",
+    "components.searchpopup.try_new_search": "Искать еще раз",
+    "components.searchpopup.chats": "Чаты",
+    "components.searchpopup.media": "Медиа",
+    "components.searchpopup.files": "Файлы",
+    "components.searchpopup.recent_chats": "Недавние чаты",
+    "components.searchpopup.recent_media": "Последние медиа",
+    "components.searchpopup.recent_files": "Последние файлы",
+    "components.searchpopup.recent_channels_and_contacts": "Последние каналы и контакты",
+    "components.searchpopup.header_title": "Поиск",
+    "components.searchpopup.scope.company": "во всей компании",
+    "components.searchpopup.scope.channel": "на этом канале",
+    "components.searchpopup.channels": "каналы",
+    "components.searchpopup.messages": "Сообщения"
 }

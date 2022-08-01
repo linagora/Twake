@@ -889,5 +889,22 @@
     "components.open_desktop_popup.subtitle": "åpnet i Twake-appen",
     "components.open_desktop_popup.open_here_link": "Åpne her i stedet",
     "molecules.download_banner.title": "Få mest mulig ut av Twake, last ned skrivebordsappen nå",
-    "molecules.download_banner.download_button": "Last ned desktop app"
+    "molecules.download_banner.download_button": "Last ned desktop app",
+    "scenes.app.channelsbar.channel_copy_link": "Kopier kanallinken",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Vellykket oppdatert",
+    "components.searchpopup.no_results_for": "Det var ingen resultater for",
+    "components.searchpopup.try_new_search": "Prøv et nytt søk",
+    "components.searchpopup.all": "Alle",
+    "components.searchpopup.chats": "Chatter",
+    "components.searchpopup.media": "Media",
+    "components.searchpopup.files": "Filer",
+    "components.searchpopup.recent_chats": "Nylige chatter",
+    "components.searchpopup.recent_media": "Nylige medier",
+    "components.searchpopup.recent_files": "Nylige filer",
+    "components.searchpopup.recent_channels_and_contacts": "Nylige kanaler og kontakter",
+    "components.searchpopup.header_title": "Søk",
+    "components.searchpopup.scope.company": "i alle selskap",
+    "components.searchpopup.scope.channel": "i denne kanalen",
+    "components.searchpopup.channels": "Kanaler",
+    "components.searchpopup.messages": "Meldinger"
 }
