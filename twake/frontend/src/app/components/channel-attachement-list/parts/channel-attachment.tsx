@@ -8,7 +8,6 @@ import {
 import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
 import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
 import { Message, MessageFileType } from 'app/features/messages/types/message';
-import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { UserType } from 'app/features/users/types/user';
 import Media from 'app/molecules/media';
 import React from 'react';
@@ -46,7 +45,6 @@ export default ({ file, is_media }: PropsType): React.ReactElement => {
 
 const ChannelFile = ({ file }: FilePreviewType): React.ReactElement => {
   const [, setOpen] = useRecoilState(channelAttachmentListState);
-  const workspaceId = useRouterWorkspace();
   const name = file?.metadata?.name;
   const extension = name?.split('.').pop();
   const previewUrl = fileUploadApiClient.getFileThumbnailUrlFromMessageFile(file);
