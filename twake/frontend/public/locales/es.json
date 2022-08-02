@@ -889,5 +889,22 @@
     "components.open_desktop_popup.subtitle": "abierto en la aplicación Twake",
     "components.open_desktop_popup.open_here_link": "Abrir aquí en su lugar",
     "molecules.download_banner.title": "Aproveche al máximo Twake, descargue la aplicación de escritorio ahora",
-    "molecules.download_banner.download_button": "Descargar aplicación de escritorio"
+    "molecules.download_banner.download_button": "Descargar aplicación de escritorio",
+    "scenes.app.channelsbar.channel_copy_link": "Copiar enlace del canal",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Actualizado exitosamente",
+    "components.searchpopup.media": "Medios de comunicación",
+    "components.searchpopup.files": "archivos",
+    "components.searchpopup.recent_chats": "Chats recientes",
+    "components.searchpopup.recent_media": "Medios recientes",
+    "components.searchpopup.recent_files": "Archivos recientes",
+    "components.searchpopup.recent_channels_and_contacts": "Canales y contactos recientes",
+    "components.searchpopup.no_results_for": "No hubo resultados para",
+    "components.searchpopup.try_new_search": "Prueba una nueva búsqueda",
+    "components.searchpopup.all": "Todos",
+    "components.searchpopup.chats": "charlas",
+    "components.searchpopup.header_title": "Búsqueda",
+    "components.searchpopup.scope.company": "en toda compañía",
+    "components.searchpopup.scope.channel": "en este canal",
+    "components.searchpopup.channels": "Canales",
+    "components.searchpopup.messages": "Mensajes"
 }

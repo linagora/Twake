@@ -889,5 +889,22 @@
     "components.open_desktop_popup.subtitle": "在 Twake 應用中打開",
     "components.open_desktop_popup.open_here_link": "改為在此處打開",
     "molecules.download_banner.title": "充分利用 twake，立即下载桌面应用程序",
-    "molecules.download_banner.download_button": "下载桌面应用程序"
+    "molecules.download_banner.download_button": "下载桌面应用程序",
+    "scenes.app.channelsbar.channel_copy_link": "复制频道链接",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "成功更新",
+    "components.searchpopup.recent_media": "近期媒体",
+    "components.searchpopup.recent_files": "最近的文件",
+    "components.searchpopup.no_results_for": "没有结果",
+    "components.searchpopup.try_new_search": "尝试新的搜索",
+    "components.searchpopup.all": "全部",
+    "components.searchpopup.chats": "聊天",
+    "components.searchpopup.media": "媒体",
+    "components.searchpopup.files": "文件",
+    "components.searchpopup.recent_chats": "最近的聊天",
+    "components.searchpopup.recent_channels_and_contacts": "最近的频道和联系人",
+    "components.searchpopup.header_title": "搜索",
+    "components.searchpopup.scope.company": "在所有公司",
+    "components.searchpopup.scope.channel": "在这个频道",
+    "components.searchpopup.channels": "频道",
+    "components.searchpopup.messages": "留言"
 }

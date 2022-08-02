@@ -11,14 +11,19 @@ import {
   RealtimeUpdateMessageType,
 } from '../../../features/users/api/online-user-realtime-api-client';
 import JWTStorage from '../../auth/jwt-storage-service';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 const logger = Logger.getLogger('useOnlineUsers');
 
-const INTERVAL = 10000;
+const GET_INTERVAL = 10000;
+const SET_INTERVAL = 600000;
+let getIntervalId: any;
+let setIntervalId: any;
 
 export const useOnlineUsers = (): void => {
   logger.trace('Running online hook');
   const { websocket } = useWebSocket();
+  const companyId = useRouterCompany();
   const [onlineUsers, setOnlineUsersState] = useRecoilState(OnlineUsersState);
 
   const updateOnline = useCallback((statuses: Array<[string, boolean]> = []): void => {
@@ -51,26 +56,28 @@ export const useOnlineUsers = (): void => {
   }, []);
 
   useEffect(() => {
-    let id: any;
     if (websocket) {
       // got some local users, ask if there are still online
-      const api = OnlineUserRealtimeAPI(websocket);
-      id = setInterval(async () => {
+      const api = OnlineUserRealtimeAPI(websocket, companyId);
+      getIntervalId = setInterval(async () => {
         const users = onlineUsers.map(u => u.id).filter(<T>(n?: T): n is T => Boolean(n));
         const status = await api.getUsersStatus(users);
         updateOnline(status);
-      }, INTERVAL);
+      }, GET_INTERVAL);
+
+      setIntervalId = setInterval(async () => await api.setMyStatus(), SET_INTERVAL);
     }
 
     return () => {
-      id && clearInterval(id);
+      getIntervalId && clearInterval(getIntervalId);
+      setIntervalId && clearInterval(setIntervalId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [websocket, onlineUsers]);
 
   // listen to room events in which online events are pushed
   useRealtimeRoom<RealtimeUpdateMessageType>(
-    { room: ONLINE_ROOM, token: JWTStorage.getJWT() },
+    { room: ONLINE_ROOM(companyId), token: JWTStorage.getJWT() },
     'useOnlineUsers',
     (action, resource) => {
       if (action === 'event' && resource?.length) {
