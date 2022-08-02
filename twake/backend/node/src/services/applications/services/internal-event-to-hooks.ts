@@ -1,5 +1,5 @@
 import { logger } from "../../../core/platform/framework";
-import { HookType } from "../../applicationsapi/types";
+import { HookType } from "../../applications-api/types";
 import { MessageQueueHandler } from "../../../core/platform/services/message-queue/api";
 import { MessageHook } from "../../messages/types";
 import gr from "../../global-resolver";
