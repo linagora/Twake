@@ -1,23 +1,20 @@
 import _, { uniqBy } from "lodash";
-import { TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import {
   ExecutionContext,
   ListResult,
   Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import {
-  Initializable,
-  TwakeContext,
-  TwakeServiceProvider,
-} from "../../../core/platform/framework";
-import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import { fileIsMedia } from "../../../services/files/utils";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
-import { MessageViewsServiceAPI } from "../api";
 import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
 import { MessageChannelRef } from "../entities/message-channel-refs";
 import { MessageFileRef } from "../entities/message-file-refs";
@@ -34,9 +31,8 @@ import {
   SearchMessageFilesOptions,
   SearchMessageOptions,
 } from "../types";
-import { buildMessageListPagination } from "./utils";
-import SearchRepository from "../../../core/platform/services/search/repository";
 import { FileSearchResult } from "../web/controllers/views/search-files";
+import { buildMessageListPagination } from "./utils";
 
 export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -91,12 +87,11 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
         company_id: context.channel.company_id,
       },
       buildMessageListPagination(pagination, "id"),
-      context,
     );
 
     const threads: (MessageWithReplies & { context: MessageFileRef })[] = [];
     for (const ref of refs.getEntities()) {
-      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id }, {}, context);
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id }, {});
       const extendedThread = await gr.services.messages.messages.getThread(
         thread,
         {
@@ -156,7 +151,7 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
 
     const threads: MessageWithReplies[] = [];
     for (const ref of uniqBy(refs.getEntities(), "thread_id")) {
-      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id }, {}, context);
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id }, {});
       const extendedThread = await gr.services.messages.messages.getThread(
         thread,
         {

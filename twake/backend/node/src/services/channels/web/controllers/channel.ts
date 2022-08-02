@@ -548,7 +548,11 @@ export class ChannelCrudController
         otherChannels = [
           ...otherChannels,
           ...(
-            await gr.services.channels.channels.getAllChannelsInWorkspace(companyId, workspaceId)
+            await gr.services.channels.channels.getAllChannelsInWorkspace(
+              companyId,
+              workspaceId,
+              context,
+            )
           ).map(ch => {
             return {
               ...ch,

@@ -71,7 +71,7 @@ export default class Repository<EntityType> {
   async find(
     filters: FindFilter,
     options: FindOptions = {},
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<ListResult<EntityType>> {
     if (!this.entityType) {
       throw Error(`Unable to find or findOne: EntityType ${this.table} not initialized`);
@@ -87,7 +87,7 @@ export default class Repository<EntityType> {
   async findOne(
     filters: FindFilter,
     options: FindOptions = {},
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<EntityType> {
     if (!options.pagination) {
       options.pagination = new Pagination("", "1");
@@ -96,11 +96,11 @@ export default class Repository<EntityType> {
     return (await this.find(filters, options, context)).getEntities()[0] || null;
   }
 
-  async save(entity: EntityType, context: ExecutionContext): Promise<void> {
+  async save(entity: EntityType, context?: ExecutionContext): Promise<void> {
     (await this.manager.persist(entity).flush()).reset();
   }
 
-  async saveAll(entities: EntityType[] = [], context: ExecutionContext): Promise<void> {
+  async saveAll(entities: EntityType[] = [], context?: ExecutionContext): Promise<void> {
     logger.debug("services.database.repository - Saving entities");
 
     entities.forEach(entity => this.manager.persist(entity));

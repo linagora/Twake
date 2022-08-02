@@ -4,7 +4,7 @@ import { localEventBus } from "../../framework/pubsub";
 import WebSocketAPI from "../../services/websocket/provider";
 import AuthService from "../auth/provider";
 import { RealtimeEventBus, RealtimeRoomManager, RealtimeServiceAPI } from "./api";
-import { eventBus } from "./bus";
+import { websocketEventBus } from "./bus";
 import RealtimeEntityManager from "./services/entity-manager";
 import RoomManagerImpl from "./services/room-manager";
 import { RealtimeBaseBusEvent, RealtimeLocalBusEvent } from "./types";
@@ -47,7 +47,7 @@ export default class RealtimeService
   }
 
   getBus(): RealtimeEventBus {
-    return eventBus;
+    return websocketEventBus;
   }
 
   getRoomManager(): RealtimeRoomManager {

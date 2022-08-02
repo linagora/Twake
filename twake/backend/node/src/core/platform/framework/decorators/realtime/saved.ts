@@ -1,7 +1,7 @@
 import { getRealtimeRecipients, getRoom, RealtimeRecipients } from "..";
 import { SaveResult } from "../../api/crud-service";
 import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
-import { eventBus } from "../../../services/realtime/bus";
+import { websocketEventBus } from "../../../services/realtime/bus";
 
 /**
  *
@@ -25,7 +25,7 @@ export function RealtimeSaved<T>(recipients: RealtimeRecipients<T>): MethodDecor
 
       getRealtimeRecipients(recipients, result.entity, context).forEach(
         ({ room, path, resource }) => {
-          eventBus.publish<T>(RealtimeEntityActionType.Saved, {
+          websocketEventBus.publish<T>(RealtimeEntityActionType.Saved, {
             type: result.type,
             room: getRoom(room, result, context),
             resourcePath: path,

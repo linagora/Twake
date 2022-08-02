@@ -73,6 +73,6 @@ export class ConsoleServiceImpl implements TwakeServiceProvider {
   }
 
   async processPendingUser(user: User, context?: ExecutionContext): Promise<void> {
-    await gr.services.workspaces.processPendingUser(user, context);
+    await gr.services.workspaces.processPendingUser(user, null, context);
   }
 }

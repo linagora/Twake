@@ -273,7 +273,7 @@ export class ChannelServiceImpl {
     return saveResult;
   }
 
-  async get(pk: ChannelPrimaryKey, context: ExecutionContext): Promise<ChannelObject> {
+  async get(pk: ChannelPrimaryKey, context?: ExecutionContext): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
     let channel = await this.channelRepository.findOne(primaryKey);
     if (!channel) {
@@ -417,7 +417,7 @@ export class ChannelServiceImpl {
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }
 
-  public async getChannelActivity(channel: Channel, context: ExecutionContext): Promise<number> {
+  public async getChannelActivity(channel: Channel, context?: ExecutionContext): Promise<number> {
     let result = 0;
 
     if (!channel) {
@@ -907,7 +907,7 @@ export class ChannelServiceImpl {
   async getAllChannelsInWorkspace(
     company_id: string,
     workspace_id: string,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<Channel[]> {
     let pagination = new Pagination(null, "100");
 

@@ -9,7 +9,7 @@ import {
 import { ChannelMemberNotificationPreference } from "../../../entities";
 import { UserNotificationBadge } from "../../../entities";
 import _ from "lodash";
-import { eventBus } from "../../../../../core/platform/services/realtime/bus";
+import { websocketEventBus } from "../../../../../core/platform/services/realtime/bus";
 import {
   RealtimeEntityActionType,
   ResourcePath,
@@ -99,7 +99,7 @@ export class PushNotificationToUsersMessageProcessor
         message_id: message.message_id,
       };
 
-      eventBus.publish(RealtimeEntityActionType.Event, {
+      websocketEventBus.publish(RealtimeEntityActionType.Event, {
         type: "notification:desktop",
         room: ResourcePath.get(getNotificationRoomName(badge.user_id)),
         entity: {

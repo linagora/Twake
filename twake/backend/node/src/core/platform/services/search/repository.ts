@@ -18,7 +18,7 @@ export default class SearchRepository<EntityType> {
   ) {}
 
   /** Execute a search over defined search database (mongo or elastic search) */
-  public async search(filters: FindFilter, options: FindOptions = {}, context: ExecutionContext) {
+  public async search(filters: FindFilter, options: FindOptions = {}, context?: ExecutionContext) {
     logger.debug(
       `${this.name} Run search for table ${this.table} with filter ${JSON.stringify(
         filters,
