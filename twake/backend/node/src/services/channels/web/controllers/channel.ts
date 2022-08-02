@@ -563,8 +563,12 @@ export class ChannelCrudController
       }),
     );
 
+    const resources = userIncludedChannels.slice(0, limit);
+
+    await this.completeWithStatistics(resources as ChannelObject[]);
+
     return {
-      resources: userIncludedChannels.slice(0, limit),
+      resources,
     };
   }
 }
