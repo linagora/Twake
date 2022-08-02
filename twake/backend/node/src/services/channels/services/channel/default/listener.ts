@@ -1,6 +1,6 @@
 import { Channel, getDefaultChannelInstance } from "../../../entities";
 import { getLogger, Initializable } from "../../../../../core/platform/framework";
-import { localEventBus } from "../../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../../core/platform/framework/event-bus";
 import { ResourceEventsPayload } from "../../../../../utils/types";
 import DefaultChannelServiceImpl from "./service";
 

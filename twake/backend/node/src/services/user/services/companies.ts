@@ -33,7 +33,7 @@ import ExternalGroup, {
 import { logger, RealtimeSaved } from "../../../core/platform/framework";
 import { getCompanyRoom, getUserRoom } from "../realtime";
 import gr from "../../global-resolver";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,

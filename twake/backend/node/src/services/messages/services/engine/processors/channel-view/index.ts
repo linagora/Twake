@@ -6,7 +6,7 @@ import {
   getInstance as getInstanceReversed,
   MessageChannelRefReversed,
 } from "../../../../entities/message-channel-refs-reversed";
-import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../../../core/platform/framework/event-bus";
 import {
   RealtimeEntityActionType,
   RealtimeLocalBusEvent,

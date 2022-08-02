@@ -1,13 +1,13 @@
 import { logger, TwakeContext } from "../../../../../core/platform/framework";
-import { PreviewClearPubsubRequest, PreviewPubsubCallback } from "../../../types";
+import { PreviewClearMessageQueueRequest, PreviewMessageQueueCallback } from "../../../types";
 import gr from "../../../../global-resolver";
-import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../../core/platform/services/message-queue/api";
 
 /**
  * Clear thumbnails when the delete task is called
  */
 export class ClearProcessor
-  implements PubsubHandler<PreviewClearPubsubRequest, PreviewPubsubCallback>
+  implements MessageQueueHandler<PreviewClearMessageQueueRequest, PreviewMessageQueueCallback>
 {
   readonly name = "ClearProcessor";
 
@@ -26,11 +26,11 @@ export class ClearProcessor
     throw new Error("Method not implemented.");
   }
 
-  validate(message: PreviewClearPubsubRequest): boolean {
+  validate(message: PreviewClearMessageQueueRequest): boolean {
     return !!(message && message.document);
   }
 
-  async process(message: PreviewClearPubsubRequest): Promise<PreviewPubsubCallback> {
+  async process(message: PreviewClearMessageQueueRequest): Promise<PreviewMessageQueueCallback> {
     logger.info(`${this.name} - Processing preview generation ${message.document.id}`);
 
     if (!this.validate(message)) {

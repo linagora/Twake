@@ -14,7 +14,7 @@ type CLIArgs = {
 const services = [
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "platform-services",
   "applications",
   "auth",

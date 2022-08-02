@@ -13,7 +13,7 @@ type CLIArgs = Record<string, unknown>;
 const services = [
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "platform-services",
   "applications",
   "auth",

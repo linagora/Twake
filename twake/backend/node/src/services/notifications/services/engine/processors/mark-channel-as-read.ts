@@ -1,12 +1,12 @@
 import _ from "lodash";
 import { UserNotificationBadge } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
-import { ChannelReadMessage, NotificationPubsubHandler } from "../../../types";
+import { ChannelReadMessage, NotificationMessageQueueHandler } from "../../../types";
 import gr from "../../../../global-resolver";
 import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 export class MarkChannelAsReadMessageProcessor
-  implements NotificationPubsubHandler<ChannelReadMessage, void>
+  implements NotificationMessageQueueHandler<ChannelReadMessage, void>
 {
   readonly topics = {
     in: "channel:read",

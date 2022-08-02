@@ -60,7 +60,7 @@ import { Readable } from "stream";
 import { expandUUID4, reduceUUID4 } from "../../../utils/uuid-reducer";
 import gr from "../../global-resolver";
 import { logger } from "@sentry/utils";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
@@ -227,7 +227,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
 
     // On created
     if (!item.id) {
-      gr.platformServices.pubsub.publish("workspace:added", {
+      gr.platformServices.messageQueue.publish("workspace:added", {
         data: {
           company_id: workspace.company_id,
           workspace_id: workspace.id,
@@ -330,7 +330,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
       context,
     );
 
-    await gr.platformServices.pubsub.publish(
+    await gr.platformServices.messageQueue.publish(
       "workspace:member:added",
       {
         data: {
@@ -421,7 +421,11 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     );
   }
 
-  async processPendingUser(user: User, companyId?: string, context?: ExecutionContext): Promise<void> {
+  async processPendingUser(
+    user: User,
+    companyId?: string,
+    context?: ExecutionContext,
+  ): Promise<void> {
     let userCompanies = [];
     if (!companyId) {
       userCompanies = await gr.services.companies.getAllForUser(user.id);

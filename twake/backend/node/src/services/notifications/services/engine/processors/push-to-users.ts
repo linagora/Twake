@@ -3,7 +3,7 @@ import { MobilePushNotifier } from "../../../notifiers";
 import {
   MentionNotification,
   MentionNotificationResult,
-  NotificationPubsubHandler,
+  NotificationMessageQueueHandler,
   PushNotificationMessage,
 } from "../../../types";
 import { ChannelMemberNotificationPreference } from "../../../entities";
@@ -22,7 +22,7 @@ import { ExecutionContext } from "../../../../../core/platform/framework/api/cru
  * Push new message notification to a set of users
  */
 export class PushNotificationToUsersMessageProcessor
-  implements NotificationPubsubHandler<MentionNotification, MentionNotificationResult>
+  implements NotificationMessageQueueHandler<MentionNotification, MentionNotificationResult>
 {
   readonly topics = {
     in: "notification:mentions",
@@ -186,7 +186,7 @@ export class PushNotificationToUsersMessageProcessor
   }
 
   sendPushNotification(user: string, pushNotification: PushNotificationMessage): void {
-    MobilePushNotifier.get(gr.platformServices.pubsub).notify(user, pushNotification);
+    MobilePushNotifier.get(gr.platformServices.messageQueue).notify(user, pushNotification);
   }
 }
 

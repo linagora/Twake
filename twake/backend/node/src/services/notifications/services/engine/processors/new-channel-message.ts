@@ -7,13 +7,13 @@ import {
   getChannelThreadUsersInstance,
 } from "../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../channels/types";
-import { MentionNotification, NotificationPubsubHandler } from "../../../types";
+import { MentionNotification, NotificationMessageQueueHandler } from "../../../types";
 import { ChannelType } from "../../../../../utils/types";
 import gr from "../../../../global-resolver";
 import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 export class NewChannelMessageProcessor
-  implements NotificationPubsubHandler<MessageNotification, MentionNotification>
+  implements NotificationMessageQueueHandler<MessageNotification, MentionNotification>
 {
   readonly topics = {
     in: "message:created",

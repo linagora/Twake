@@ -1,10 +1,14 @@
-import { LinkPreview, LinkPreviewPubsubCallback, LinkPreviewPubsubRequest } from "../../../types";
+import {
+  LinkPreview,
+  LinkPreviewMessageQueueCallback,
+  LinkPreviewMessageQueueRequest,
+} from "../../../types";
 import { logger, TwakeContext } from "../../../../../core/platform/framework";
 import gr from "../../../../global-resolver";
-import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../../core/platform/services/message-queue/api";
 
 export class LinkPreviewProcessor
-  implements PubsubHandler<LinkPreviewPubsubRequest, LinkPreviewPubsubCallback>
+  implements MessageQueueHandler<LinkPreviewMessageQueueRequest, LinkPreviewMessageQueueCallback>
 {
   readonly name = "LinkPreviewProcessor";
 
@@ -25,23 +29,23 @@ export class LinkPreviewProcessor
   /**
    * Checks if the message is valid
    *
-   * @param {LinkPreviewPubsubRequest} message - The message to check
+   * @param {LinkPreviewMessageQueueRequest} message - The message to check
    * @returns {Boolean} - true if the message is valid
    */
-  validate(message: LinkPreviewPubsubRequest): boolean {
+  validate(message: LinkPreviewMessageQueueRequest): boolean {
     return !!(message && message.links && message.links.length);
   }
 
   /**
    * process the links preview generation message
    *
-   * @param {LinkPreviewPubsubRequest} message - The message to process
-   * @returns {Promise<LinkPreviewPubsubCallback>} - links preview callback
+   * @param {LinkPreviewMessageQueueRequest} message - The message to process
+   * @returns {Promise<LinkPreviewMessageQueueCallback>} - links preview callback
    */
-  async process(message: LinkPreviewPubsubRequest): Promise<LinkPreviewPubsubCallback> {
+  async process(message: LinkPreviewMessageQueueRequest): Promise<LinkPreviewMessageQueueCallback> {
     logger.info(`${this.name} - Processing preview generation for ${message.links.length} links`);
 
-    let res: LinkPreviewPubsubCallback = { previews: [], message: message.message };
+    let res: LinkPreviewMessageQueueCallback = { previews: [], message: message.message };
 
     try {
       res = await this.generate(message);
@@ -57,10 +61,12 @@ export class LinkPreviewProcessor
   /**
    * Generate previews for links
    *
-   * @param {LinkPreviewPubsubRequest} message - The message to process
-   * @returns {Promise<LinkPreviewPubsubCallback>} - links preview callback
+   * @param {LinkPreviewMessageQueueRequest} message - The message to process
+   * @returns {Promise<LinkPreviewMessageQueueCallback>} - links preview callback
    */
-  async generate(message: LinkPreviewPubsubRequest): Promise<LinkPreviewPubsubCallback> {
+  async generate(
+    message: LinkPreviewMessageQueueRequest,
+  ): Promise<LinkPreviewMessageQueueCallback> {
     let previews: LinkPreview[] = [];
     try {
       previews = await gr.services.preview.links.generatePreviews(message.links);

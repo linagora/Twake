@@ -1,18 +1,20 @@
 import { getLogger } from "../../../../core/platform/framework";
-import { PubsubHandler } from "../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../core/platform/services/message-queue/api";
 import { NewUserInWorkspaceNotification } from "../channel/types";
 import gr from "../../../global-resolver";
 import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
 const NAME = "Channel::NewPendingEmailsInWorkspaceJoinChannelsProcessor";
-const logger = getLogger("channel.pubsub.new-pending-emails-in-workspace-join-channels-processor");
+const logger = getLogger(
+  "channel.message-queue.new-pending-emails-in-workspace-join-channels-processor",
+);
 
 /**
  * When a new pending email is added in a workspace, a `workspace:email:added` event is published.
  * In such case, the email must be added to all the channels that he is invited.
  */
 export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
-  implements PubsubHandler<NewUserInWorkspaceNotification, void>
+  implements MessageQueueHandler<NewUserInWorkspaceNotification, void>
 {
   readonly topics = {
     in: "workspace:member:added",

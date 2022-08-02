@@ -161,7 +161,7 @@ const services = [
   "auth",
   "counter",
   "cron",
-  "pubsub",
+  "message-queue",
   "push",
   "realtime",
   "storage",

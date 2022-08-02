@@ -1,6 +1,6 @@
 import { Consumes, ServiceName, TwakeService } from "../../framework";
 import { SkipCLI } from "../../framework/decorators/skip";
-import { localEventBus } from "../../framework/pubsub";
+import { localEventBus } from "../../framework/event-bus";
 import WebSocketAPI from "../../services/websocket/provider";
 import AuthService from "../auth/provider";
 import { RealtimeEventBus, RealtimeRoomManager, RealtimeServiceAPI } from "./api";

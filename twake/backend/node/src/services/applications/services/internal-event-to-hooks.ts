@@ -1,11 +1,11 @@
 import { logger } from "../../../core/platform/framework";
 import { HookType } from "../../applicationsapi/types";
-import { PubsubHandler } from "../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../core/platform/services/message-queue/api";
 import { MessageHook } from "../../messages/types";
 import gr from "../../global-resolver";
 import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 
-export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void> {
+export class InternalToHooksProcessor implements MessageQueueHandler<MessageHook, void> {
   readonly topics = {
     in: "application:hook:message",
   };

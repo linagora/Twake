@@ -4,12 +4,12 @@ import { AmqpClient, AmqpCallbackType, PublishOptions, SubscribeOptions } from "
 import { Options } from "amqplib";
 import _ from "lodash";
 
-const LOG_PREFIX = "service.pubsub.amqp.AmqpPubsubClient -";
+const LOG_PREFIX = "service.message-queue.amqp.AmqpMessageQueueClient -";
 
 /**
- * AMQP client abstracting low level channel methods to create a pubsub-like implementation
+ * AMQP client abstracting low level channel methods to create a message-queue-like implementation
  */
-export class AmqpPubsubClient extends AmqpClient {
+export class AmqpMessageQueueClient extends AmqpClient {
   publish(topic: string, data: unknown, options?: PublishOptions): Promise<boolean> {
     data = _.cloneDeep(data);
 

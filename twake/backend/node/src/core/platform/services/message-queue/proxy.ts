@@ -1,31 +1,31 @@
 import { isEqual } from "lodash";
 import { logger } from "../../framework";
 import {
-  PubsubClient,
-  PubsubListener,
-  PubsubMessage,
-  PubsubProxy,
-  PubsubSubscriptionOptions,
+  MessageQueueClient,
+  MessageQueueListener,
+  MessageQueueMessage,
+  MessageQueueProxy,
+  MessageQueueSubscriptionOptions,
 } from "./api";
 
-const LOG_PREFIX = "service.pubsub.PubsubProxyService -";
+const LOG_PREFIX = "service.message-queue.MessageQueueProxyService -";
 
 type ListenerCache = {
-  listener: PubsubListener<unknown>;
-  options?: PubsubSubscriptionOptions;
+  listener: MessageQueueListener<unknown>;
+  options?: MessageQueueSubscriptionOptions;
 };
 
 /**
- * The pubsub implementation managing underlaying pubsub layer mainly used to cache messages and subscriptions when layer is not ready.
+ * The message-queue implementation managing underlaying message-queue layer mainly used to cache messages and subscriptions when layer is not ready.
  */
-export default class PubsubProxyService implements PubsubProxy {
+export default class MessageQueueProxyService implements MessageQueueProxy {
   version: "1";
   /**
    * Cache messages to be published to topic when layer is not ready
    * TODO: We may explode if we can not publish it accumulating messages, add a FIFO with limited size, or cache eviction system...
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected publicationsBuffer: Array<{ topic: string; message: PubsubMessage<any> }> = [];
+  protected publicationsBuffer: Array<{ topic: string; message: MessageQueueMessage<any> }> = [];
   /**
    * Cache subscriptions to be created until a new client is set
    */
@@ -37,10 +37,10 @@ export default class PubsubProxyService implements PubsubProxy {
   /**
    * @param client optional initial client
    */
-  constructor(private client?: PubsubClient) {}
+  constructor(private client?: MessageQueueClient) {}
 
-  async setClient(client: PubsubClient): Promise<void> {
-    logger.info(`${LOG_PREFIX} Setting new pubsub client`);
+  async setClient(client: MessageQueueClient): Promise<void> {
+    logger.info(`${LOG_PREFIX} Setting new message-queue client`);
     // TODO: The client can be removed or replaced while we are looping here
     // We may wait until things are done, or discard some...
     if (!client) {
@@ -48,7 +48,7 @@ export default class PubsubProxyService implements PubsubProxy {
     }
 
     if (this.client) {
-      logger.info(`${LOG_PREFIX} Pubsub client already set. Overriding`);
+      logger.info(`${LOG_PREFIX} MessageQueue client already set. Overriding`);
     }
 
     this.client = client;
@@ -101,11 +101,11 @@ export default class PubsubProxyService implements PubsubProxy {
     try {
       await this.client?.close?.();
     } catch (err) {
-      logger.debug({ err }, `${LOG_PREFIX} Error on closing the pubsub layer`);
+      logger.debug({ err }, `${LOG_PREFIX} Error on closing the message-queue layer`);
     }
   }
 
-  publish<T>(topic: string, message: PubsubMessage<T>): Promise<void> {
+  publish<T>(topic: string, message: MessageQueueMessage<T>): Promise<void> {
     if (!this.client) {
       this.addPublishCache(topic, message);
 
@@ -117,8 +117,8 @@ export default class PubsubProxyService implements PubsubProxy {
 
   subscribe<T>(
     topic: string,
-    listener: PubsubListener<T>,
-    options?: PubsubSubscriptionOptions,
+    listener: MessageQueueListener<T>,
+    options?: MessageQueueSubscriptionOptions,
   ): Promise<void> {
     this.addSubscriptionToCache(topic, listener, options);
 
@@ -131,8 +131,8 @@ export default class PubsubProxyService implements PubsubProxy {
 
   private addSubscriptionToCache(
     topic: string,
-    listener: PubsubListener<unknown>,
-    options: PubsubSubscriptionOptions,
+    listener: MessageQueueListener<unknown>,
+    options: MessageQueueSubscriptionOptions,
   ): void {
     if (!this.subscriptionsCache.get(topic)) {
       this.subscriptionsCache.set(topic, new Set<ListenerCache>());
@@ -163,8 +163,8 @@ export default class PubsubProxyService implements PubsubProxy {
   private subscribeToClient(
     topic: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    listener: PubsubListener<any>,
-    options?: PubsubSubscriptionOptions,
+    listener: MessageQueueListener<any>,
+    options?: MessageQueueSubscriptionOptions,
   ): Promise<void> {
     logger.debug(`${LOG_PREFIX} Trying to subscribe to ${topic} topic with options %o`, options);
     return this.client?.subscribe(topic, listener, options);

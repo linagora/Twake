@@ -33,7 +33,7 @@ import { getMemberPath, getRoomName } from "./realtime";
 import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { plainToClass } from "class-transformer";
 import {
   ChannelCounterEntity,
@@ -562,7 +562,7 @@ export class MemberServiceImpl {
   ): void {
     logger.debug("Member updated %o", member);
 
-    gr.platformServices.pubsub.publish("channel:member:updated", {
+    gr.platformServices.messageQueue.publish("channel:member:updated", {
       data: {
         channel,
         member,
@@ -579,7 +579,7 @@ export class MemberServiceImpl {
   ): void {
     logger.debug("Member created %o", member);
 
-    gr.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:created", {
+    gr.platformServices.messageQueue.publish<ResourceEventsPayload>("channel:member:created", {
       data: {
         channel,
         user,
@@ -599,7 +599,7 @@ export class MemberServiceImpl {
   onDeleted(member: ChannelMember, user: User, channel: ChannelEntity): void {
     logger.debug("Member deleted %o", member);
 
-    gr.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:deleted", {
+    gr.platformServices.messageQueue.publish<ResourceEventsPayload>("channel:member:deleted", {
       data: {
         channel,
         user,

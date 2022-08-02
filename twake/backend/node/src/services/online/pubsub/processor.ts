@@ -1,4 +1,4 @@
-import { PubsubHandler } from "../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../core/platform/services/message-queue/api";
 import { getLogger, TwakeLogger } from "../../../core/platform/framework";
 import {
   RealtimeEntityActionType,
@@ -8,7 +8,7 @@ import { websocketEventBus } from "../../../core/platform/services/realtime/bus"
 import { UsersOnlineMessage } from "../types";
 import { ONLINE_TOPIC } from "../constants";
 
-export class UserOnlineProcessor implements PubsubHandler<UsersOnlineMessage, void> {
+export class UserOnlineProcessor implements MessageQueueHandler<UsersOnlineMessage, void> {
   private logger: TwakeLogger;
   readonly topics = {
     in: ONLINE_TOPIC,

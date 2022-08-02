@@ -1,12 +1,12 @@
 import _ from "lodash";
 import { UserNotificationBadge } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
-import { ChannelUnreadMessage, NotificationPubsubHandler } from "../../../types";
+import { ChannelUnreadMessage, NotificationMessageQueueHandler } from "../../../types";
 import gr from "../../../../global-resolver";
 import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 export class MarkChannelAsUnreadMessageProcessor
-  implements NotificationPubsubHandler<ChannelUnreadMessage, void>
+  implements NotificationMessageQueueHandler<ChannelUnreadMessage, void>
 {
   readonly topics = {
     in: "channel:unread",

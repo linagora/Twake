@@ -45,7 +45,6 @@ class MessageReferenceRepair {
           const channelsList = await gr.services.channels.channels.getAllChannelsInWorkspace(
             companyId,
             workspaceId,
-            
           );
 
           for (const channel of channelsList) {
@@ -98,7 +97,7 @@ const services = [
   "auth",
   "counter",
   "cron",
-  "pubsub",
+  "message-queue",
   "push",
   "realtime",
   "storage",

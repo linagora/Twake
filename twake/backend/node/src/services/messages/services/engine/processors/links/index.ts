@@ -1,14 +1,14 @@
 import { logger, TwakeContext } from "../../../../../../core/platform/framework";
-import { PubsubHandler } from "../../../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../../../core/platform/services/message-queue/api";
 import { Message } from "../../../../entities/messages";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
-import { LinkPreviewPubsubCallback } from "../../../../../previews/types";
+import { LinkPreviewMessageQueueCallback } from "../../../../../previews/types";
 import { Thread } from "../../../../entities/threads";
 import { publishMessageInRealtime } from "../../../utils";
 import { ExecutionContext } from "../../../../../../core/platform/framework/api/crud-service";
 
 export class MessageLinksPreviewFinishedProcessor
-  implements PubsubHandler<LinkPreviewPubsubCallback, string>
+  implements MessageQueueHandler<LinkPreviewMessageQueueCallback, string>
 {
   constructor(
     private MessageRepository: Repository<Message>,
@@ -28,12 +28,12 @@ export class MessageLinksPreviewFinishedProcessor
     throw new Error("Method not implemented.");
   }
 
-  validate(message: LinkPreviewPubsubCallback): boolean {
+  validate(message: LinkPreviewMessageQueueCallback): boolean {
     return !!(message && message.previews && message.previews.length);
   }
 
   async process(
-    localMessage: LinkPreviewPubsubCallback,
+    localMessage: LinkPreviewMessageQueueCallback,
     context?: ExecutionContext,
   ): Promise<string> {
     logger.info(

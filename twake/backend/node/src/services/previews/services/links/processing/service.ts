@@ -1,4 +1,4 @@
-import { LinkPreview, LinkPreviewPubsubRequest } from "../../../types";
+import { LinkPreview, LinkPreviewMessageQueueRequest } from "../../../types";
 import { generateLinkPreview } from "./link";
 import { checkUrlContents } from "../../../utils";
 import { generateImageUrlPreview } from "./image";
@@ -19,10 +19,10 @@ export class LinkPreviewProcessService implements TwakeServiceProvider, Initiali
   /**
    * Generate previews for links
    *
-   * @param {LinkPreviewPubsubRequest["links"]} links - input urls
+   * @param {LinkPreviewMessageQueueRequest["links"]} links - input urls
    * @returns {Promise<LinkPreview[]>} - The generated url previews
    */
-  async generatePreviews(links: LinkPreviewPubsubRequest["links"]): Promise<LinkPreview[]> {
+  async generatePreviews(links: LinkPreviewMessageQueueRequest["links"]): Promise<LinkPreview[]> {
     const result: LinkPreview[] = [];
 
     for (const link of links) {

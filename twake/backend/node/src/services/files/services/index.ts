@@ -6,7 +6,7 @@ import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
-import { PreviewClearPubsubRequest, PreviewPubsubRequest } from "../../previews/types";
+import { PreviewClearMessageQueueRequest, PreviewMessageQueueRequest } from "../../previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
@@ -27,7 +27,7 @@ export class FileServiceImpl {
     try {
       await Promise.all([
         (this.repository = await gr.database.getRepository<File>("files", File)),
-        gr.platformServices.pubsub.processor.addHandler(
+        gr.platformServices.messageQueue.processor.addHandler(
           new PreviewFinishedProcessor(this, this.repository),
         ),
       ]);
@@ -120,7 +120,7 @@ export class FileServiceImpl {
       if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         /** Send preview generation task */
         if (entity.upload_data.size < this.max_preview_file_size) {
-          const document: PreviewPubsubRequest["document"] = {
+          const document: PreviewMessageQueueRequest["document"] = {
             id: JSON.stringify(_.pick(entity, "id", "company_id")),
             provider: gr.platformServices.storage.getConnectorType(),
 
@@ -144,9 +144,12 @@ export class FileServiceImpl {
           await this.repository.save(entity, context);
 
           try {
-            await gr.platformServices.pubsub.publish<PreviewPubsubRequest>("services:preview", {
-              data: { document, output },
-            });
+            await gr.platformServices.messageQueue.publish<PreviewMessageQueueRequest>(
+              "services:preview",
+              {
+                data: { document, output },
+              },
+            );
 
             if (options.waitForThumbnail) {
               for (let i = 1; i < 100; i++) {
@@ -267,7 +270,7 @@ export class FileServiceImpl {
     });
 
     if (fileToDelete.thumbnails.length > 0) {
-      await gr.platformServices.pubsub.publish<PreviewClearPubsubRequest>(
+      await gr.platformServices.messageQueue.publish<PreviewClearMessageQueueRequest>(
         "services:preview:clear",
         {
           data: {

@@ -3,13 +3,13 @@ import { ChannelMemberNotificationPreference } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
 import { Channel, ChannelMember } from "../../../../channels/entities";
 import gr from "../../../../global-resolver";
-import { NotificationPubsubHandler } from "../../../types";
+import { NotificationMessageQueueHandler } from "../../../types";
 import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 type UpdateChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class UpdateChannelMemberMessageProcessor
-  implements NotificationPubsubHandler<UpdateChannelMessage, void>
+  implements NotificationMessageQueueHandler<UpdateChannelMessage, void>
 {
   readonly topics = {
     in: "channel:member:updated",

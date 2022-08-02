@@ -1,4 +1,4 @@
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { Initializable } from "../../../../core/platform/framework";
 import { MessageFileDownloadEvent, MessageLocalEvent } from "../../types";
 import { ChannelViewProcessor } from "./processors/channel-view";
@@ -89,9 +89,11 @@ export class MessagesEngine implements Initializable {
     await this.userMarkedViewProcessor.init();
     await this.filesViewProcessor.init();
 
-    gr.platformServices.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new StatisticsMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(
+    gr.platformServices.messageQueue.processor.addHandler(
+      new ChannelSystemActivityMessageProcessor(),
+    );
+    gr.platformServices.messageQueue.processor.addHandler(new StatisticsMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(
       new MessageLinksPreviewFinishedProcessor(this.messageRepository, this.threadRepository),
     );
 

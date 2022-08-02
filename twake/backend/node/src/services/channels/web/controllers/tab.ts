@@ -20,7 +20,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { getTabsRealtimeRoom } from "../../services/tab";
 import gr from "../../../global-resolver";
 

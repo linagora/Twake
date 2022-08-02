@@ -2,7 +2,7 @@ import { logger } from "../../../framework/logger";
 import { constants as CONSTANTS } from "./constants";
 import { ConfirmChannel, Replies, Message, Options, ConsumeMessage } from "amqplib";
 
-const LOG_PREFIX = "service.pubsub.amqp.AmqpClient -";
+const LOG_PREFIX = "service.message-queue.amqp.AmqpClient -";
 
 export type AmqpCallbackType = (
   err: Error,

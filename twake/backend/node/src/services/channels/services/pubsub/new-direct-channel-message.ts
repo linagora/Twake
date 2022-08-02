@@ -1,14 +1,16 @@
 import { without } from "lodash";
 import { Channel, ChannelMember } from "../../entities";
 import { getLogger } from "../../../../core/platform/framework";
-import { PubsubHandler } from "../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../core/platform/services/message-queue/api";
 import { MessageNotification } from "../../../messages/types";
 import gr from "../../../global-resolver";
 import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
-const logger = getLogger("channel.pubsub.new-direct-channel-message");
+const logger = getLogger("channel.message-queue.new-direct-channel-message");
 
-export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNotification, void> {
+export class NewDirectChannelMessageProcessor
+  implements MessageQueueHandler<MessageNotification, void>
+{
   readonly topics = {
     in: "message:created",
   };

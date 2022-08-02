@@ -2,19 +2,19 @@ import { ConfirmChannel } from "amqplib";
 import { AmqpConnectionManager, connect } from "amqp-connection-manager";
 import { ReplaySubject, Subject } from "rxjs";
 import { logger } from "../../../framework/logger";
-import { AmqpPubsubClient } from "./pubsubclient";
-import { PubsubClientManager, PubsubClient } from "../api";
+import { AmqpMessageQueueClient } from "./pubsubclient";
+import { MessageQueueClientManager, MessageQueueClient } from "../api";
 import { AMQPPubSub } from "./pubsub";
 
-const LOG_PREFIX = "service.pubsub.amqp.AMQPPubsubManager -";
+const LOG_PREFIX = "service.pubsub.amqp.AMQPMessageQueueManager -";
 
-export class AMQPPubsubManager implements PubsubClientManager {
+export class AMQPMessageQueueManager implements MessageQueueClientManager {
   // using ReplaySubjects will allow to get the data which has been published before the subscriptions
-  private clientAvailable: Subject<PubsubClient> = new ReplaySubject<PubsubClient>(1);
+  private clientAvailable: Subject<MessageQueueClient> = new ReplaySubject<MessageQueueClient>(1);
   private clientUnavailable: Subject<Error> = new ReplaySubject<Error>(1);
   private connected = false;
 
-  getClientAvailable(): Subject<PubsubClient> {
+  getClientAvailable(): Subject<MessageQueueClient> {
     return this.clientAvailable;
   }
 
@@ -22,7 +22,7 @@ export class AMQPPubsubManager implements PubsubClientManager {
     return this.clientUnavailable;
   }
 
-  async createClient(urls: string[]): Promise<Subject<PubsubClient>> {
+  async createClient(urls: string[]): Promise<Subject<MessageQueueClient>> {
     logger.info(`${LOG_PREFIX} Creating AMQP client %o`, urls);
     const connection = connect(urls);
 
@@ -54,7 +54,7 @@ export class AMQPPubsubManager implements PubsubClientManager {
     return this.clientAvailable;
   }
 
-  private create(connection: AmqpConnectionManager): Promise<AmqpPubsubClient> {
+  private create(connection: AmqpConnectionManager): Promise<AmqpMessageQueueClient> {
     logger.info(`${LOG_PREFIX} Creating AMQP Channel`);
     const channel = connection.createChannel({ name: "Twake" });
 
@@ -70,10 +70,10 @@ export class AMQPPubsubManager implements PubsubClientManager {
       logger.info(`${LOG_PREFIX} Channel creation error`);
     });
 
-    return new Promise<AmqpPubsubClient>(resolve => {
+    return new Promise<AmqpMessageQueueClient>(resolve => {
       channel.addSetup((channel: ConfirmChannel) => {
         logger.info(`${LOG_PREFIX} Channel setup is complete`);
-        const client = new AmqpPubsubClient(channel);
+        const client = new AmqpMessageQueueClient(channel);
 
         // First attempt
         if (!this.connected) {

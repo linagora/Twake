@@ -27,7 +27,7 @@ const services = [
   "notifications",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "console",
 ];
 

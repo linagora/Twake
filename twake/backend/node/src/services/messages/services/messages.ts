@@ -44,14 +44,14 @@ import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { getDefaultMessageInstance } from "../../../utils/messages";
 import { buildMessageListPagination, getLinks, getMentions } from "./utils";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
 import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
 import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs-reversed";
-import { LinkPreviewPubsubRequest } from "../../../services/previews/types";
+import { LinkPreviewMessageQueueRequest } from "../../../services/previews/types";
 import { Thumbnail } from "../../files/entities/file";
 
 export class ThreadMessagesService implements TwakeServiceProvider, Initializable {
@@ -603,16 +603,19 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     if (options.created && !message.ephemeral) {
       const messageLinks = getLinks(message);
 
-      gr.platformServices.pubsub.publish<LinkPreviewPubsubRequest>("services:preview:links", {
-        data: {
-          links: messageLinks,
-          message: {
-            context,
-            resource: message,
-            created: options?.created,
+      gr.platformServices.messageQueue.publish<LinkPreviewMessageQueueRequest>(
+        "services:preview:links",
+        {
+          data: {
+            links: messageLinks,
+            message: {
+              context,
+              resource: message,
+              created: options?.created,
+            },
           },
         },
-      });
+      );
 
       await gr.services.messages.threads.addReply(message.thread_id, 1, context);
     }

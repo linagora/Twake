@@ -37,7 +37,7 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
       logger.error("Error while initializing applications service");
     }
 
-    gr.platformServices.pubsub.processor.addHandler(new InternalToHooksProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new InternalToHooksProcessor());
 
     return this;
   }

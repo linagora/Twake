@@ -1,27 +1,31 @@
 import { TwakeService, ServiceName, logger as rootLogger } from "../../framework";
 import {
-  PubsubAdapter,
-  PubsubListener,
-  PubsubMessage,
-  PubsubServiceAPI,
-  PubsubSubscriptionOptions,
+  MessageQueueAdapter,
+  MessageQueueListener,
+  MessageQueueMessage,
+  MessageQueueServiceAPI,
+  MessageQueueSubscriptionOptions,
 } from "./api";
 import { eventBus } from "./bus";
 import { Processor } from "./processor";
 import adapterFactory from "./factory";
 import { SkipCLI } from "../../framework/decorators/skip";
+import config from "../../../../core/config";
 
 const logger = rootLogger.child({
-  component: "twake.core.platform.services.pubsub",
+  component: "twake.core.platform.services.message-queue",
 });
-@ServiceName("pubsub")
-export default class Pubsub extends TwakeService<PubsubServiceAPI> {
+@ServiceName("message-queue")
+export default class MessageQueue extends TwakeService<MessageQueueServiceAPI> {
   version = "1";
-  name = "pubsub";
-  service: PubsubService;
+  name = "message-queue";
+  service: MessageQueueService;
 
   async doInit(): Promise<this> {
-    this.service = new PubsubService(adapterFactory.create(this.configuration));
+    this.service = new MessageQueueService(
+      //Old config name was "pubsub"
+      adapterFactory.create(this.configuration || config.get("pubsub")),
+    );
     await this.service.init();
 
     eventBus.subscribe(message => {
@@ -44,22 +48,22 @@ export default class Pubsub extends TwakeService<PubsubServiceAPI> {
     return this;
   }
 
-  api(): PubsubServiceAPI {
+  api(): MessageQueueServiceAPI {
     return this.service;
   }
 }
 
-export class PubsubService implements PubsubServiceAPI {
+export class MessageQueueService implements MessageQueueServiceAPI {
   version: "1";
   processor: Processor;
 
-  constructor(private adapter: PubsubAdapter) {
+  constructor(private adapter: MessageQueueAdapter) {
     this.processor = new Processor(this);
   }
 
   @SkipCLI()
   async init(): Promise<this> {
-    logger.info("Initializing pubsub adapter %o", this.adapter.type);
+    logger.info("Initializing message-queue adapter %o", this.adapter.type);
     await this.adapter?.init?.();
 
     return this;
@@ -67,7 +71,7 @@ export class PubsubService implements PubsubServiceAPI {
 
   @SkipCLI()
   async start(): Promise<this> {
-    logger.info("Starting pubsub adapter %o", this.adapter.type);
+    logger.info("Starting message-queue adapter %o", this.adapter.type);
     await this.adapter?.start?.();
     await this.processor.start();
 
@@ -76,21 +80,21 @@ export class PubsubService implements PubsubServiceAPI {
 
   @SkipCLI()
   async stop(): Promise<this> {
-    logger.info("Stopping pubsub adapter %o", this.adapter.type);
+    logger.info("Stopping message-queue adapter %o", this.adapter.type);
     await this.adapter?.stop?.();
     await this.processor.stop();
 
     return this;
   }
 
-  publish<T>(topic: string, message: PubsubMessage<T>): Promise<void> {
+  publish<T>(topic: string, message: MessageQueueMessage<T>): Promise<void> {
     return this.adapter.publish(topic, message);
   }
 
   subscribe<T>(
     topic: string,
-    listener: PubsubListener<T>,
-    options?: PubsubSubscriptionOptions,
+    listener: MessageQueueListener<T>,
+    options?: MessageQueueSubscriptionOptions,
   ): Promise<void> {
     return this.adapter.subscribe(topic, listener, options);
   }

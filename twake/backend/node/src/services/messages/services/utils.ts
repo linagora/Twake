@@ -11,7 +11,7 @@ import { RealtimeEntityActionType } from "../../../core/platform/services/realti
 import { getThreadMessagePath } from "../web/realtime";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import { RealtimeLocalBusEvent } from "../../../core/platform/services/realtime/types";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 import { ParticipantObject } from "../entities/threads";
 
 export const buildMessageListPagination = (

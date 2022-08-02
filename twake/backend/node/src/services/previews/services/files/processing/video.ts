@@ -78,7 +78,7 @@ const takeVideoScreenshot = async (
  * Get the generated thumbnail information.
  *
  * @param {String} path - the path to the thumbnail
- * @param {PreviewPubsubRequest["output"]} options - the options for the thumbnails
+ * @param {PreviewMessageQueueRequest["output"]} options - the options for the thumbnails
  * @returns { { path: string, type: string, size: number } } - the thumbnail information
  */
 const getThumbnailInformation = (

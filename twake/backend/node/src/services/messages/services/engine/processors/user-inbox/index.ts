@@ -9,7 +9,7 @@ import {
   getInstance as getInboxThreadInstance,
   MessageUserInboxRefReversed,
 } from "../../../../entities/message-user-inbox-refs-reversed";
-import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../../../core/platform/framework/event-bus";
 import {
   RealtimeEntityActionType,
   RealtimeLocalBusEvent,

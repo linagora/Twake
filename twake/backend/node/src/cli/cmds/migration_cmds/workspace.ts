@@ -92,7 +92,7 @@ const services = [
   "channels",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "workspaces",
   "console",
   "auth",

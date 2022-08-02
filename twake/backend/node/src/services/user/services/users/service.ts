@@ -25,7 +25,7 @@ import Device, {
 } from "../../entities/device";
 import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { isNumber, isString } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";

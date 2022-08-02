@@ -4,9 +4,9 @@ import { Initializable, logger, TwakeServiceProvider } from "../../framework";
 import { Processor } from "./processor";
 import { ExecutionContext } from "../../framework/api/crud-service";
 
-export type PubsubType = "local" | "amqp";
+export type MessageQueueType = "local" | "amqp";
 
-export interface PubsubMessage<T> {
+export interface MessageQueueMessage<T> {
   /**
    * Optional message id, mainly used for logs
    */
@@ -23,15 +23,15 @@ export interface PubsubMessage<T> {
   data: T;
 }
 
-export interface PubsubEventMessage<T> extends PubsubMessage<T> {
+export interface MessageQueueEventMessage<T> extends MessageQueueMessage<T> {
   topic: string;
 }
 
-export interface IncomingPubsubMessage<T> extends PubsubMessage<T> {
+export interface IncomingMessageQueueMessage<T> extends MessageQueueMessage<T> {
   ack: () => void;
 }
 
-export type PubsubSubscriptionOptions = {
+export type MessageQueueSubscriptionOptions = {
   /**
    * A unique subscription guaranties that there will be only one listener consuming the message on the subscription topic even if many are subscribing to the same topic from several places (not only from the current instance/host).
    * Also, it will guaranties that messages which were published before any subscriber subscribes will be consumed.
@@ -58,16 +58,20 @@ export type PubsubSubscriptionOptions = {
   ttl?: number | null;
 };
 
-export type PubsubListener<T> = (message: IncomingPubsubMessage<T>) => void;
+export type MessageQueueListener<T> = (message: IncomingMessageQueueMessage<T>) => void;
 
-export interface PubsubServiceAPI extends TwakeServiceProvider {
+export interface MessageQueueServiceAPI extends TwakeServiceProvider {
   /**
    * Publish a message to a given topic
    * @param topic The topic to publish the message to
    * @param message The message to publish to the topic
    * @param context
    */
-  publish<T>(topic: string, message: PubsubMessage<T>, context?: ExecutionContext): Promise<void>;
+  publish<T>(
+    topic: string,
+    message: MessageQueueMessage<T>,
+    context?: ExecutionContext,
+  ): Promise<void>;
 
   /**
    * Subscribe the a topic. The listener will be called when a new message is published in the topic (this may not be true based on the options parameters).
@@ -77,8 +81,8 @@ export interface PubsubServiceAPI extends TwakeServiceProvider {
    */
   subscribe<T>(
     topic: string,
-    listener: PubsubListener<T>,
-    options?: PubsubSubscriptionOptions,
+    listener: MessageQueueListener<T>,
+    options?: MessageQueueSubscriptionOptions,
   ): Promise<void>;
 
   /**
@@ -90,14 +94,14 @@ export interface PubsubServiceAPI extends TwakeServiceProvider {
   start(): Promise<this>;
 }
 
-export type PubsubAdapter = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
+export type MessageQueueAdapter = Pick<MessageQueueServiceAPI, "publish" | "subscribe"> & {
   type: string;
-  init?(): Promise<PubsubAdapter>;
-  start?(): Promise<PubsubAdapter>;
-  stop?(): Promise<PubsubAdapter>;
+  init?(): Promise<MessageQueueAdapter>;
+  start?(): Promise<MessageQueueAdapter>;
+  stop?(): Promise<MessageQueueAdapter>;
 };
 
-export type PubsubClient = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
+export type MessageQueueClient = Pick<MessageQueueServiceAPI, "publish" | "subscribe"> & {
   /**
    * Close the client
    */
@@ -107,16 +111,16 @@ export type PubsubClient = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
 /**
  * The client manager allows to get notified when a client is available and then becomes unavailable.
  */
-export interface PubsubClientManager {
+export interface MessageQueueClientManager {
   /**
    * Ask for a new client to be created
    */
-  createClient(config: string[]): Promise<Subject<PubsubClient>>;
+  createClient(config: string[]): Promise<Subject<MessageQueueClient>>;
 
   /**
    * Subject when a client is available
    */
-  getClientAvailable(): Subject<PubsubClient>;
+  getClientAvailable(): Subject<MessageQueueClient>;
 
   /**
    * Subject when a client becomes unavailable
@@ -125,15 +129,15 @@ export interface PubsubClientManager {
 }
 
 /**
- * Manages the pubsub client adding mechanisms to cache subscriptions and messages to publish.
+ * Manages the message-queue client adding mechanisms to cache subscriptions and messages to publish.
  */
-export interface PubsubProxy extends PubsubClient {
+export interface MessageQueueProxy extends MessageQueueClient {
   /**
    * Set a new client to use replacing any existing one.
    * The new client will reuse all the subscriptions automatically.
    * @param client
    */
-  setClient(client: PubsubClient): Promise<void>;
+  setClient(client: MessageQueueClient): Promise<void>;
 
   /**
    * Remove the client. This will close any underlying connection but will not remove any subscription.
@@ -141,26 +145,26 @@ export interface PubsubProxy extends PubsubClient {
   unsetClient(): Promise<void>;
 }
 
-export interface PubsubEventBus {
+export interface MessageQueueEventBus {
   /**
    * Subscribes to events
    */
-  subscribe<T>(listener: (message: PubsubEventMessage<T>) => void): this;
+  subscribe<T>(listener: (message: MessageQueueEventMessage<T>) => void): this;
 
   /**
    * Publish message in event bus
    */
-  publish<T>(message: PubsubEventMessage<T>): boolean;
+  publish<T>(message: MessageQueueEventMessage<T>): boolean;
 }
 
-export abstract class PubsubServiceSubscription {
-  protected pubsub: PubsubServiceAPI;
+export abstract class MessageQueueServiceSubscription {
+  protected messageQueue: MessageQueueServiceAPI;
 
-  async subscribe(pubsub: PubsubServiceAPI): Promise<void> {
-    if (!pubsub) {
-      throw new Error("pubsub service it not defined");
+  async subscribe(messageQueue: MessageQueueServiceAPI): Promise<void> {
+    if (!messageQueue) {
+      throw new Error("message-queue service it not defined");
     }
-    this.pubsub = pubsub;
+    this.messageQueue = messageQueue;
 
     return this.doSubscribe();
   }
@@ -168,21 +172,24 @@ export abstract class PubsubServiceSubscription {
   abstract doSubscribe(): Promise<void>;
 }
 
-export class PubsubServiceProcessor<In, Out>
-  extends PubsubServiceSubscription
+export class MessageQueueServiceProcessor<In, Out>
+  extends MessageQueueServiceSubscription
   implements Initializable
 {
-  constructor(protected handler: PubsubHandler<In, Out>, protected pubsub: PubsubServiceAPI) {
+  constructor(
+    protected handler: MessageQueueHandler<In, Out>,
+    protected messageQueue: MessageQueueServiceAPI,
+  ) {
     super();
   }
 
   async init(): Promise<this> {
     try {
-      await this.subscribe(this.pubsub);
+      await this.subscribe(this.messageQueue);
     } catch (err) {
       logger.warn(
         { err },
-        `PubsubServiceProcessor.handler.${this.handler.name} -  Not able to start handler`,
+        `MessageQueueServiceProcessor.handler.${this.handler.name} -  Not able to start handler`,
       );
     }
 
@@ -194,9 +201,9 @@ export class PubsubServiceProcessor<In, Out>
     return this;
   }
 
-  async process(message: IncomingPubsubMessage<In>): Promise<Out> {
+  async process(message: IncomingMessageQueueMessage<In>): Promise<Out> {
     logger.info(
-      `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Processing message`,
+      `MessageQueueServiceProcessor.handler.${this.handler.name}:${message.id} - Processing message`,
     );
     return this.handler.process(message.data);
   }
@@ -206,10 +213,10 @@ export class PubsubServiceProcessor<In, Out>
 
     if (this.handler.topics && this.handler.topics.in) {
       logger.info(
-        `PubsubServiceProcessor.handler.${this.handler.name} - Subscribing to topic ${this.handler?.topics?.in} with options %o`,
+        `MessageQueueServiceProcessor.handler.${this.handler.name} - Subscribing to topic ${this.handler?.topics?.in} with options %o`,
         this.handler.options,
       );
-      await this.pubsub.subscribe(
+      await this.messageQueue.subscribe(
         this.handler.topics.in,
         this.processMessage.bind(this),
         this.handler.options,
@@ -217,7 +224,7 @@ export class PubsubServiceProcessor<In, Out>
     }
   }
 
-  private async processMessage(message: IncomingPubsubMessage<In>): Promise<void> {
+  private async processMessage(message: IncomingMessageQueueMessage<In>): Promise<void> {
     if (!message.id) {
       message.id = uuidv4();
     }
@@ -227,7 +234,7 @@ export class PubsubServiceProcessor<In, Out>
 
       if (!isValid) {
         logger.error(
-          `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Message is invalid`,
+          `MessageQueueServiceProcessor.handler.${this.handler.name}:${message.id} - Message is invalid`,
         );
 
         //Validate rabbitmq message, we will not process it again
@@ -240,7 +247,7 @@ export class PubsubServiceProcessor<In, Out>
       const result = await this.process(message);
       if (this.handler?.options?.ack && message?.ack) {
         logger.debug(
-          `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Acknowledging message %o`,
+          `MessageQueueServiceProcessor.handler.${this.handler.name}:${message.id} - Acknowledging message %o`,
           message,
         );
         message?.ack();
@@ -257,32 +264,32 @@ export class PubsubServiceProcessor<In, Out>
     }
   }
 
-  private async sendResult(message: IncomingPubsubMessage<In>, result: Out): Promise<void> {
+  private async sendResult(message: IncomingMessageQueueMessage<In>, result: Out): Promise<void> {
     if (!this.handler.topics.out) {
       logger.info(
-        `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Message processing result is skipped`,
+        `MessageQueueServiceProcessor.handler.${this.handler.name}:${message.id} - Message processing result is skipped`,
       );
       return;
     }
 
     logger.info(
-      `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Sending processing result to ${this.handler.topics.out}`,
+      `MessageQueueServiceProcessor.handler.${this.handler.name}:${message.id} - Sending processing result to ${this.handler.topics.out}`,
     );
 
-    return this.pubsub.publish(this.handler.topics.out, {
+    return this.messageQueue.publish(this.handler.topics.out, {
       id: uuidv4(),
       data: result,
     });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async handleError(message: IncomingPubsubMessage<In>, err: any) {
+  private async handleError(message: IncomingMessageQueueMessage<In>, err: any) {
     logger.error(
       { err },
-      `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Error while processing message`,
+      `MessageQueueServiceProcessor.handler.${this.handler.name}:${message.id} - Error while processing message`,
     );
     if (this.handler.topics.error) {
-      this.pubsub.publish(this.handler.topics.error, {
+      this.messageQueue.publish(this.handler.topics.error, {
         data: {
           type: "error",
           id: message.id,
@@ -294,9 +301,9 @@ export class PubsubServiceProcessor<In, Out>
 }
 
 /**
- * A pubsub handler is in charge of processing message from a topic and publishing the processing result to another topic
+ * A message-queue handler is in charge of processing message from a topic and publishing the processing result to another topic
  */
-export interface PubsubHandler<InputMessage, OutputMessage> extends Initializable {
+export interface MessageQueueHandler<InputMessage, OutputMessage> extends Initializable {
   readonly topics: {
     // The topic to subscribe to
     in: string;
@@ -309,7 +316,7 @@ export interface PubsubHandler<InputMessage, OutputMessage> extends Initializabl
   /**
    * Options subscriber options
    */
-  readonly options?: PubsubSubscriptionOptions;
+  readonly options?: MessageQueueSubscriptionOptions;
 
   /**
    * The handler name

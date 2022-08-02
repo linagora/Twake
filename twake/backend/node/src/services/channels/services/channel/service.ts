@@ -41,7 +41,7 @@ import Repository, {
   FindFilter,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { ChannelActivity } from "../../entities/channel-activity";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import DefaultChannelServiceImpl from "./default/service";
 import { formatUser } from "../../../../utils/users";
 import gr from "../../../global-resolver";
@@ -673,7 +673,7 @@ export class ChannelServiceImpl {
       throw CrudException.badRequest("User is not channel member");
     }
 
-    // Updating the member will also publish a message in the pubsub channel
+    // Updating the member will also publish a message in the message-queue channel
     // This message will be handled in the notification service and will update the notification preferences for the member
     // cf this.members.onUpdated
     member.last_access = now;
@@ -851,7 +851,7 @@ export class ChannelServiceImpl {
 
   /**
    * Called when a channel as been marked as read.
-   * Will publish `channel:read` notification in the pubsub service
+   * Will publish `channel:read` notification in the message-queue service
    *
    * @param channel
    * @param member
@@ -859,7 +859,7 @@ export class ChannelServiceImpl {
   onRead(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
 
-    gr.platformServices.pubsub.publish("channel:read", {
+    gr.platformServices.messageQueue.publish("channel:read", {
       data: {
         channel,
         member,
@@ -869,7 +869,7 @@ export class ChannelServiceImpl {
 
   /**
    * Called when a channel as been marked as unread.
-   * Will publish `channel:unread` notification in the pubsub service
+   * Will publish `channel:unread` notification in the message-queue service
    *
    * @param channel
    * @param member
@@ -877,7 +877,7 @@ export class ChannelServiceImpl {
   onUnread(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
 
-    gr.platformServices.pubsub.publish("channel:unread", {
+    gr.platformServices.messageQueue.publish("channel:unread", {
       data: {
         channel,
         member,

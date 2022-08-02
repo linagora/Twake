@@ -4,13 +4,13 @@ import { logger } from "../../../../../core/platform/framework";
 import { Channel, ChannelMember } from "../../../../channels/entities";
 import { isDirectChannel } from "../../../../channels/utils";
 import gr from "../../../../global-resolver";
-import { NotificationPubsubHandler } from "../../../types";
+import { NotificationMessageQueueHandler } from "../../../types";
 import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 type LeaveChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class LeaveChannelMessageProcessor
-  implements NotificationPubsubHandler<LeaveChannelMessage, void>
+  implements NotificationMessageQueueHandler<LeaveChannelMessage, void>
 {
   readonly topics = {
     in: "channel:member:deleted",

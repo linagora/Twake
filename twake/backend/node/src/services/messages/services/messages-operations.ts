@@ -14,7 +14,7 @@ import Repository from "../../../core/platform/services/database/services/orm/re
 import { ThreadMessagesService } from "./messages";
 import gr from "../../global-resolver";
 import { updateMessageReactions } from "../../../utils/messages";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 
 export class ThreadMessagesOperationsService {
   constructor(private threadMessagesService: ThreadMessagesService) {}

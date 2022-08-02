@@ -5,13 +5,13 @@ import {
 import { logger } from "../../../../../core/platform/framework";
 import { Channel, ChannelMember } from "../../../../channels/entities";
 import gr from "../../../../global-resolver";
-import { NotificationPubsubHandler } from "../../../types";
+import { NotificationMessageQueueHandler } from "../../../types";
 import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 type JoinChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class JoinChannelMessageProcessor
-  implements NotificationPubsubHandler<JoinChannelMessage, void>
+  implements NotificationMessageQueueHandler<JoinChannelMessage, void>
 {
   readonly topics = {
     in: "channel:member:created",

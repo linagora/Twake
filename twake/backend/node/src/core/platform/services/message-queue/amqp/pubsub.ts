@@ -1,22 +1,27 @@
 import { logger } from "../../../framework/logger";
-import { AmqpPubsubClient } from "./pubsubclient";
-import { PubsubMessage, PubsubListener, PubsubClient, PubsubSubscriptionOptions } from "../api";
+import { AmqpMessageQueueClient } from "./pubsubclient";
+import {
+  MessageQueueMessage,
+  MessageQueueListener,
+  MessageQueueClient,
+  MessageQueueSubscriptionOptions,
+} from "../api";
 import { AmqpCallbackType, SubscribeOptions } from "./client";
 
-const LOG_PREFIX = "service.pubsub.amqp.AMQPPubSub -";
+const LOG_PREFIX = "service.message-queue.amqp.AMQPPubSub -";
 
 /**
- * Implementation of PubsubClient based on AMQP
+ * Implementation of MessageQueueClient based on AMQP
  */
-export class AMQPPubSub implements PubsubClient {
-  constructor(private client: AmqpPubsubClient) {}
+export class AMQPPubSub implements MessageQueueClient {
+  constructor(private client: AmqpMessageQueueClient) {}
 
   close(): Promise<void> {
     return this.client.dispose();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async publish(topic: string, message: PubsubMessage<any>): Promise<void> {
+  async publish(topic: string, message: MessageQueueMessage<any>): Promise<void> {
     logger.debug(`${LOG_PREFIX} Publishing message to topic ${topic}`);
     await this.client.publish(topic, message.data, { ttl: message.ttl });
   }
@@ -24,8 +29,8 @@ export class AMQPPubSub implements PubsubClient {
   subscribe(
     topic: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    listener: PubsubListener<any>,
-    options: PubsubSubscriptionOptions = { unique: false, queue: null, ttl: -1 },
+    listener: MessageQueueListener<any>,
+    options: MessageQueueSubscriptionOptions = { unique: false, queue: null, ttl: -1 },
   ): Promise<void> {
     const subscribeOptions: SubscribeOptions = {};
     logger.debug(`${LOG_PREFIX} Subscribing to topic ${topic} with options %o`, options);

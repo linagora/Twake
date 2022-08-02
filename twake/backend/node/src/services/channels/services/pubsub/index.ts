@@ -6,18 +6,18 @@ import { NewPendingEmailsInWorkspaceJoinChannelsProcessor } from "./new-pending-
 import { NewWorkspaceProcessor } from "./new-workspace";
 import gr from "../../../global-resolver";
 
-export class ChannelsPubsubListener implements Initializable {
+export class ChannelsMessageQueueListener implements Initializable {
   async init(): Promise<this> {
     const channelActivityProcessor = await new NewChannelActivityProcessor().init();
-    gr.platformServices.pubsub.processor.addHandler(channelActivityProcessor);
-    gr.platformServices.pubsub.processor.addHandler(new NewDirectChannelMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(
+    gr.platformServices.messageQueue.processor.addHandler(channelActivityProcessor);
+    gr.platformServices.messageQueue.processor.addHandler(new NewDirectChannelMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(
       new NewUserInWorkspaceJoinDefaultChannelsProcessor(),
     );
-    gr.platformServices.pubsub.processor.addHandler(
+    gr.platformServices.messageQueue.processor.addHandler(
       new NewPendingEmailsInWorkspaceJoinChannelsProcessor(),
     );
-    gr.platformServices.pubsub.processor.addHandler(new NewWorkspaceProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new NewWorkspaceProcessor());
 
     return this;
   }

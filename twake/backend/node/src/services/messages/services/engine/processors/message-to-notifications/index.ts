@@ -122,7 +122,7 @@ export class MessageToNotificationsProcessor {
             message.created ||
             (await this.isLastActivityMessageDeleted(participant, messageResource, message))
           ) {
-            await gr.platformServices.pubsub.publish<ChannelActivityNotification>(
+            await gr.platformServices.messageQueue.publish<ChannelActivityNotification>(
               "channel:activity",
               {
                 data: channelEvent,
@@ -130,7 +130,7 @@ export class MessageToNotificationsProcessor {
             );
           }
 
-          await gr.platformServices.pubsub.publish<MessageNotification>(
+          await gr.platformServices.messageQueue.publish<MessageNotification>(
             message.created ? "message:created" : "message:updated",
             {
               data: messageEvent,

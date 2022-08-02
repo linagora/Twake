@@ -22,7 +22,7 @@ const services = [
   "auth",
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "user",
   "files",
   "messages",

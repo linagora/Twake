@@ -1,5 +1,5 @@
 import { Configuration, Consumes, getLogger, TwakeLogger, TwakeService } from "../../framework";
-import { localEventBus } from "../../framework/pubsub";
+import { localEventBus } from "../../framework/event-bus";
 import KnowledgeGraphAPI from "./provider";
 import Workspace from "../../../../services/workspaces/entities/workspace";
 import Company from "../../../../services/user/entities/company";

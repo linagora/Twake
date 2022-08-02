@@ -52,16 +52,19 @@ export class MessageToHooksProcessor {
         for (const appId of channel.connectors) {
           if (message.resource.application_id !== appId) {
             //Publish hook
-            await gr.platformServices.pubsub.publish<MessageHook>("application:hook:message", {
-              data: {
-                type: "message",
-                application_id: appId,
-                company_id: participant.company_id,
-                channel: channel,
-                thread: thread,
-                message: messageResource,
+            await gr.platformServices.messageQueue.publish<MessageHook>(
+              "application:hook:message",
+              {
+                data: {
+                  type: "message",
+                  application_id: appId,
+                  company_id: participant.company_id,
+                  channel: channel,
+                  thread: thread,
+                  message: messageResource,
+                },
               },
-            });
+            );
           }
         }
       }

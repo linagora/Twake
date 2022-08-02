@@ -8,7 +8,7 @@ import {
 } from "../types";
 import { ResourceGetResponse } from "../../../../utils/types";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import {
   RealtimeApplicationEvent,
   RealtimeBaseBusEvent,

@@ -6,7 +6,7 @@ import { RealtimeServiceAPI } from "../core/platform/services/realtime/api";
 import WebServerAPI from "../core/platform/services/webserver/provider";
 import { SearchServiceAPI } from "../core/platform/services/search/api";
 import StorageAPI from "../core/platform/services/storage/provider";
-import { PubsubServiceAPI } from "../core/platform/services/pubsub/api";
+import { MessageQueueServiceAPI } from "../core/platform/services/message-queue/api";
 import { CounterAPI } from "../core/platform/services/counter/types";
 import { DatabaseServiceAPI } from "../core/platform/services/database/api";
 import AuthServiceAPI from "../core/platform/services/auth/provider";
@@ -47,7 +47,7 @@ import { PreviewProcessService } from "./previews/services/files/processing/serv
 import { ApplicationHooksService } from "./applications/services/hooks";
 import OnlineServiceImpl from "./online/service";
 import { PreviewEngine } from "./previews/services/files/engine";
-import { ChannelsPubsubListener } from "./channels/services/pubsub";
+import { ChannelsMessageQueueListener } from "./channels/services/pubsub";
 import { LinkPreviewProcessService } from "./previews/services/links/processing/service";
 import { LinkPreviewEngine } from "./previews/services/links/engine";
 
@@ -55,7 +55,7 @@ type PlatformServices = {
   auth: AuthServiceAPI;
   counter: CounterAPI;
   cron: CronAPI;
-  pubsub: PubsubServiceAPI;
+  messageQueue: MessageQueueServiceAPI;
   push: PushServiceAPI;
   realtime: RealtimeServiceAPI;
   search: SearchServiceAPI;
@@ -102,7 +102,7 @@ type TwakeServices = {
   channels: {
     channels: ChannelServiceImpl;
     members: MemberServiceImpl;
-    pubsub: ChannelsPubsubListener;
+    pubsub: ChannelsMessageQueueListener;
   };
   channelPendingEmail: ChannelPendingEmailServiceImpl;
   tab: TabServiceImpl;
@@ -128,7 +128,7 @@ class GlobalResolver {
       auth: platform.getProvider<AuthServiceAPI>("auth"),
       counter: platform.getProvider<CounterAPI>("counter"),
       cron: platform.getProvider<CronAPI>("cron"),
-      pubsub: platform.getProvider<PubsubServiceAPI>("pubsub"),
+      messageQueue: platform.getProvider<MessageQueueServiceAPI>("message-queue"),
       push: platform.getProvider<PushServiceAPI>("push"),
       realtime: platform.getProvider<RealtimeServiceAPI>("realtime"),
       search: platform.getProvider<SearchServiceAPI>("search"),
@@ -185,7 +185,7 @@ class GlobalResolver {
       channels: {
         channels: await new ChannelServiceImpl().init(),
         members: await new MemberServiceImpl().init(),
-        pubsub: await new ChannelsPubsubListener().init(),
+        pubsub: await new ChannelsMessageQueueListener().init(),
       },
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
