@@ -564,7 +564,7 @@ export class ChannelCrudController
     );
 
     const resources = userIncludedChannels.slice(0, limit).map(r => ChannelObject.mapTo(r, {}));
-    await this.completeWithStatistics(resources);
+    //await this.completeWithStatistics(resources);
 
     return {
       resources,
