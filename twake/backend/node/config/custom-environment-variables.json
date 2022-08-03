@@ -62,7 +62,14 @@
       "flushInterval": "SEARCH_ES_FLUSHINTERVAL"
     }
   },
-  "pubsub": {
+  "message-queue": {
+    "type": "MQ_TYPE",
+    "amqp": {
+      "urls": "MQ_URLS"
+    }
+  },
+  "pusbub": {
+    "//": "//deprecated",
     "type": "PUBSUB_TYPE",
     "amqp": {
       "urls": "PUBSUB_URLS"
