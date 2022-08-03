@@ -487,6 +487,7 @@ export class ChannelCrudController
   }
 
   async completeWithStatistics(channels: ChannelObject[]) {
+    await new Promise(r => setTimeout(r, 2000));
     await Promise.all(
       channels.map(async a => {
         const members = await gr.services.channels.members.getUsersCount({
@@ -563,8 +564,13 @@ export class ChannelCrudController
       }),
     );
 
+    const resources = userIncludedChannels.slice(0, limit).map(r => ChannelObject.mapTo(r, {}));
+    await this.completeWithStatistics(resources);
+
+    await new Promise(r => setTimeout(r, 2000));
+
     return {
-      resources: userIncludedChannels.slice(0, limit),
+      resources,
     };
   }
 }
