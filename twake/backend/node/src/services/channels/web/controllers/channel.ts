@@ -487,21 +487,27 @@ export class ChannelCrudController
   }
 
   async completeWithStatistics(channels: ChannelObject[]) {
+    console.log(channels);
+    await new Promise(r => setTimeout(r, 2000));
     await Promise.all(
       channels.map(async a => {
-        /*
-        const members = await gr.services.channels.members.getUsersCount({
-          ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MEMBERS,
-        });
-        //Fixme: even if it works strange to use "getUsersCount" to get messages count
-        const messages = await gr.services.channels.members.getUsersCount({
-          ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MESSAGES,
-        });*/
-        a.stats = { members: 1, messages: 1 };
+        try {
+          const members = await gr.services.channels.members.getUsersCount({
+            ..._.pick(a, "id", "company_id", "workspace_id"),
+            counter_type: ChannelUserCounterType.MEMBERS,
+          });
+          //Fixme: even if it works strange to use "getUsersCount" to get messages count
+          const messages = await gr.services.channels.members.getUsersCount({
+            ..._.pick(a, "id", "company_id", "workspace_id"),
+            counter_type: ChannelUserCounterType.MESSAGES,
+          });
+          a.stats = { members, messages };
+        } catch (e) {
+          console.log("THEERROR", e);
+        }
       }),
     );
+    await new Promise(r => setTimeout(r, 2000));
   }
 
   async recent(
