@@ -489,6 +489,7 @@ export class ChannelCrudController
   async completeWithStatistics(channels: ChannelObject[]) {
     await Promise.all(
       channels.map(async a => {
+        /*
         const members = await gr.services.channels.members.getUsersCount({
           ..._.pick(a, "id", "company_id", "workspace_id"),
           counter_type: ChannelUserCounterType.MEMBERS,
@@ -497,8 +498,8 @@ export class ChannelCrudController
         const messages = await gr.services.channels.members.getUsersCount({
           ..._.pick(a, "id", "company_id", "workspace_id"),
           counter_type: ChannelUserCounterType.MESSAGES,
-        });
-        a.stats = { members, messages };
+        });*/
+        a.stats = { members: 1, messages: 1 };
       }),
     );
   }
@@ -564,7 +565,7 @@ export class ChannelCrudController
     );
 
     const resources = userIncludedChannels.slice(0, limit).map(r => ChannelObject.mapTo(r, {}));
-    //await this.completeWithStatistics(resources);
+    await this.completeWithStatistics(resources);
 
     return {
       resources,
