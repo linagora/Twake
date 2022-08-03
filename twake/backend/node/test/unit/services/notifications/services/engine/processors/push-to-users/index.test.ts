@@ -55,7 +55,7 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
     };
 
     gr.platformServices = {
-      pubsub: pubsubService,
+      messageQueue: pubsubService,
     } as any;
 
     gr.services = {
