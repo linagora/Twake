@@ -487,11 +487,11 @@ export class ChannelCrudController
   }
 
   async completeWithStatistics(channels: ChannelObject[]) {
-    return;
     console.log(channels);
     await new Promise(r => setTimeout(r, 2000));
     await Promise.all(
       channels.map(async a => {
+        return a;
         try {
           const members = await gr.services.channels.members.getUsersCount({
             ..._.pick(a, "id", "company_id", "workspace_id"),
