@@ -2,12 +2,12 @@ import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals
 import {
   IncomingPubsubMessage,
   PubsubHandler,
-  PubsubServiceAPI,
+  MessageQueueServiceAPI,
   PubsubServiceProcessor,
-} from "../../../../../../src/core/platform/services/pubsub/api";
+} from "../../../../../../src/core/platform/services/message-queue/api";
 
 describe("The PubsubServiceProcessor class", () => {
-  let pubsubService: PubsubServiceAPI;
+  let pubsubService: MessageQueueServiceAPI;
   let subscribe;
   let publish;
   let topic;
@@ -23,7 +23,7 @@ describe("The PubsubServiceProcessor class", () => {
     pubsubService = {
       publish,
       subscribe,
-    } as unknown as PubsubServiceAPI;
+    } as unknown as MessageQueueServiceAPI;
   });
 
   afterEach(() => {

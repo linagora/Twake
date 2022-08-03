@@ -27,7 +27,7 @@ describe("The Messages Files feature", () => {
         "applications",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "files",
@@ -153,7 +153,7 @@ describe("List user files", () => {
 
   beforeAll(async () => {
     platform = await init({
-      services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
+      services: ["webserver", "database", "storage", "message-queue", "files", "previews"],
     });
     await platform.database.getConnector().drop();
   });

@@ -39,7 +39,7 @@ describe("The Messages feature", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "applications",
         "user",
         "websocket",

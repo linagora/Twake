@@ -5,7 +5,7 @@ import {
   OperationType,
   SaveResult,
 } from "../../../../../../../../src/core/platform/framework/api/crud-service";
-import { PubsubServiceAPI } from "../../../../../../../../src/core/platform/services/pubsub/api";
+import { MessageQueueServiceAPI } from "../../../../../../../../src/core/platform/services/message-queue/api";
 import { ChannelMemberNotificationLevel } from "../../../../../../../../src/services/channels/types";
 import {
   ChannelMemberNotificationPreference,
@@ -22,7 +22,7 @@ import gr from "../../../../../../../../src/services/global-resolver";
 
 describe("The PushNotificationToUsersMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;
-  let pubsubService: PubsubServiceAPI;
+  let pubsubService: MessageQueueServiceAPI;
   let processor: PushNotificationToUsersMessageProcessor;
   let getUsersInThread;
   let getChannelPreferencesForUsers;
@@ -43,7 +43,7 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
     pubsubService = {
       publish: jest.fn(),
-    } as unknown as PubsubServiceAPI;
+    } as unknown as MessageQueueServiceAPI;
     //
     const service = {
       badges: {

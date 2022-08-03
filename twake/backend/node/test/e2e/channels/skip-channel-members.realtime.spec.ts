@@ -19,7 +19,7 @@ describe.skip("The Channels Members Realtime feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",

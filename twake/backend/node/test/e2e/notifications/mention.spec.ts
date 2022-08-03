@@ -13,8 +13,8 @@ import {
 import { MessageNotification } from "../../../src/services/messages/types";
 import {
   IncomingPubsubMessage,
-  PubsubServiceAPI,
-} from "../../../src/core/platform/services/pubsub/api";
+  MessageQueueServiceAPI,
+} from "../../../src/core/platform/services/message-queue/api";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { MentionNotification } from "../../../src/services/notifications/types";
 import gr from "../../../src/services/global-resolver";
@@ -23,7 +23,7 @@ describe("The notification for user mentions", () => {
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
   let channelMemberUtils: ChannelMemberUtils;
-  let pubsubService: PubsubServiceAPI;
+  let pubsubService: MessageQueueServiceAPI;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let pubsubHandler: (message: IncomingPubsubMessage<MentionNotification>) => void = _ => {};
 
@@ -34,7 +34,7 @@ describe("The notification for user mentions", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "websocket",
         "channels",
@@ -51,7 +51,7 @@ describe("The notification for user mentions", () => {
     });
     channelUtils = getChannelUtils(platform);
     channelMemberUtils = getMemberUtils(platform);
-    pubsubService = platform.platform.getProvider<PubsubServiceAPI>("pubsub");
+    pubsubService = platform.platform.getProvider<MessageQueueServiceAPI>("message-queue");
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
       pubsubHandler(message);
     });

@@ -20,7 +20,7 @@ describe("The Messages User Bookmarks feature", () => {
         "files",
         "storage",
         "applications",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",

@@ -38,7 +38,7 @@ describe("The console API hooks", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "search",
         "user",
