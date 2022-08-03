@@ -124,7 +124,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     url: "/companies/:company_id/channels/recent",
     preHandler: accessControlCompanyOnly,
     preValidation: [fastify.authenticate],
-    handler: channelsController.recent.bind(tabsController),
+    handler: channelsController.recent.bind(channelsController),
   });
 
   // members

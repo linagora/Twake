@@ -565,12 +565,7 @@ export class ChannelCrudController
     );
 
     const resources = userIncludedChannels.slice(0, limit).map(r => ChannelObject.mapTo(r, {}));
-
-    try {
-      await this.completeWithStatistics(resources);
-    } catch (err) {
-      console.log(err);
-    }
+    await this.completeWithStatistics(resources);
 
     await new Promise(r => setTimeout(r, 2000));
 
