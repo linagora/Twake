@@ -234,7 +234,7 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       await processor.process(message);
 
-      expect(getChannelPreferencesForUsers).toBeCalledWith(channel, users, { lessThan });
+      expect(getChannelPreferencesForUsers).toBeCalledWith(channel, users, { lessThan }, undefined);
       expect(gr.services.notifications.badges.save).toBeCalledTimes(2);
       expect(pubsubService.publish).toBeCalledTimes(2);
 
