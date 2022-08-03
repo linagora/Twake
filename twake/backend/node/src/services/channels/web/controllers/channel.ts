@@ -487,28 +487,21 @@ export class ChannelCrudController
   }
 
   async completeWithStatistics(channels: ChannelObject[]) {
-    console.log(channels);
     await new Promise(r => setTimeout(r, 2000));
     await Promise.all(
       channels.map(async a => {
-        return a;
-        try {
-          const members = await gr.services.channels.members.getUsersCount({
-            ..._.pick(a, "id", "company_id", "workspace_id"),
-            counter_type: ChannelUserCounterType.MEMBERS,
-          });
-          //Fixme: even if it works strange to use "getUsersCount" to get messages count
-          const messages = await gr.services.channels.members.getUsersCount({
-            ..._.pick(a, "id", "company_id", "workspace_id"),
-            counter_type: ChannelUserCounterType.MESSAGES,
-          });
-          a.stats = { members, messages };
-        } catch (e) {
-          console.log("THEERROR", e);
-        }
+        const members = await gr.services.channels.members.getUsersCount({
+          ..._.pick(a, "id", "company_id", "workspace_id"),
+          counter_type: ChannelUserCounterType.MEMBERS,
+        });
+        //Fixme: even if it works strange to use "getUsersCount" to get messages count
+        const messages = await gr.services.channels.members.getUsersCount({
+          ..._.pick(a, "id", "company_id", "workspace_id"),
+          counter_type: ChannelUserCounterType.MESSAGES,
+        });
+        a.stats = { members, messages };
       }),
     );
-    await new Promise(r => setTimeout(r, 2000));
   }
 
   async recent(
@@ -572,7 +565,14 @@ export class ChannelCrudController
     );
 
     const resources = userIncludedChannels.slice(0, limit).map(r => ChannelObject.mapTo(r, {}));
-    await this.completeWithStatistics(resources);
+
+    try {
+      await this.completeWithStatistics(resources);
+    } catch (err) {
+      console.log(err);
+    }
+
+    await new Promise(r => setTimeout(r, 2000));
 
     return {
       resources,
