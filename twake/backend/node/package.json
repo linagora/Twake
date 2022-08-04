@@ -121,6 +121,7 @@
     "cli-table": "^0.3.6",
     "config": "^3.3.2",
     "deep-object-diff": "^1.1.0",
+    "emoji-name-map": "^1.2.9",
     "fast-proxy": "^2.1.0",
     "fastify": "^3.27.1",
     "fastify-cors": "^4.1.0",
