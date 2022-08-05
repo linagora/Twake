@@ -13,7 +13,7 @@ import MenusBodyLayer from 'components/menus/menus-body-layer.js';
 import DriveUploadViewer from 'components/uploads/upload-viewer.js';
 import ChatUploadsViewer from 'app/components/file-uploads/uploads-viewer';
 import ConfigBodyLayer from 'components/configurators/config-body-layer.js';
-import Viewer from 'app/views/applications/drive/viewer/viewer';
+import Viewer from 'app/views/applications/drive/viewer/deprecated-viewer';
 import ModalComponent from 'app/components/modal/modal-component';
 import ConnectionIndicator from 'components/connection-indicator/connection-indicator';
 import SearchPopup from 'components/search-popup/search-popup';

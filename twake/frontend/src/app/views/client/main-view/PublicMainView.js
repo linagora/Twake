@@ -6,7 +6,7 @@ import Drive from 'app/views/applications/drive/drive-content';
 import Api from 'app/features/global/framework/api-service';
 import RouterService from 'app/features/router/services/router-service';
 import MenusBodyLayer from 'components/menus/menus-body-layer';
-import Viewer from 'app/views/applications/drive/viewer/viewer';
+import Viewer from 'app/views/applications/drive/viewer/deprecated-viewer';
 import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 
 import './MainView.scss';
