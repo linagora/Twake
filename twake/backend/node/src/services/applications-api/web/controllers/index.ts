@@ -164,7 +164,7 @@ export class ApplicationsApiController {
 
 function getExecutionContext(request: FastifyRequest): ApplicationApiExecutionContext {
   return {
-    application_id: request.currentUser.application_id,
+    application_id: request.currentUser?.application_id,
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,
