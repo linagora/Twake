@@ -121,6 +121,8 @@ describe("The Messages Files feature", () => {
       const message = result.resource.message;
       const firstFileId = message.files[0].id;
 
+      console.log(message.files, firstFileId);
+
       message.files.push(file2);
 
       const messageUpdatedRaw = await platform.app.inject({
@@ -139,6 +141,9 @@ describe("The Messages Files feature", () => {
       );
 
       expect(messageUpdated.resource.files.length).toBe(2);
+
+      console.log(messageUpdated.resource.files, firstFileId);
+
       expect(messageUpdated.resource.files.filter(f => f.id === firstFileId).length).toBe(1);
 
       done();
