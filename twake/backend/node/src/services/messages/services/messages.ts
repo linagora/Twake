@@ -769,7 +769,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       entity.message_id = message.id;
       entity.thread_id = message.thread_id;
       entity.id = file.id || undefined;
-      entity.company_id = file.company_id;
+      entity.company_id = file.company_id || message.cache?.company_id;
       entity.cache = {
         company_id: message.cache?.company_id,
         workspace_id: message.cache?.workspace_id,
