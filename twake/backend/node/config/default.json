@@ -15,11 +15,11 @@
         "disable_account_creation": false
       },
       "console": {
-        "account_management_url": "http://web.twake-console.local/profile",
+        "account_management_url": "http://web.twake-console.local/profile?company-code={company_id}",
         "authority": "http://auth.example.com/",
         "client_id": "twakeweb",
-        "collaborators_management_url": "http://web.twake-console.local/compaies/{company_id}/users",
-        "company_management_url": "http://web.twake-console.local/companies"
+        "collaborators_management_url": "http://web.twake-console.local/compaies/{company_id}/users?company-code={company_id}",
+        "company_management_url": "http://web.twake-console.local/companies?company-code={company_id}"
       }
     }
   },

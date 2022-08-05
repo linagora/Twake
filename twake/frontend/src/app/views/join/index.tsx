@@ -97,9 +97,7 @@ export default (props: PropsType): JSX.Element => {
 
   const onCreateCompanyBtnClick = () => {
     if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
-      return document.location.replace(
-        InitService.server_infos?.configuration?.accounts?.console?.account_management_url || '',
-      );
+      return document.location.replace(InitService.getConsoleLink('account_management_url'));
     } else {
       document.location.replace('/');
     }

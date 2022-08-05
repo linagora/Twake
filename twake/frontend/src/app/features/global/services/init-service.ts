@@ -1,6 +1,8 @@
 import Logger from 'app/features/global/framework/logger-service';
 import Observable from 'app/deprecated/Observable/Observable';
 import Api from 'app/features/global/framework/api-service';
+import { getCompany } from 'app/features/companies/state/companies';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 
 export type ConsoleConfiguration = {
   authority: string;
@@ -53,6 +55,23 @@ class InitService extends Observable {
   public server_infos_loaded = false;
   public app_ready = false;
   private logger = Logger.getLogger('InitService');
+
+  getConsoleLink(
+    link:
+      | 'account_management_url'
+      | 'company_management_url'
+      | 'collaborators_management_url'
+      | 'company_subscription_url',
+    companyId?: string,
+  ) {
+    companyId = companyId || WorkspaceService.currentGroupId;
+    const identity_provider_id =
+      getCompany(companyId || '')?.identity_provider_id || getCompany(companyId || '')?.id;
+    return (this.server_infos?.configuration?.accounts?.console?.[link] || '').replace(
+      /\{company_id\}/gm,
+      identity_provider_id,
+    );
+  }
 
   async getServer() {
     return await Api.get<ServerInfoType>('/internal/services/general/v1/server', undefined, false, {
