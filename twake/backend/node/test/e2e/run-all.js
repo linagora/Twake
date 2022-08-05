@@ -12,9 +12,6 @@ const cp = require("child_process");
 
 let localDevTests = process.argv.slice(2);
 
-//TODO remove me
-localDevTests = ["test/e2e/messages/messages.files.spec.ts"];
-
 //If we are in the CI tests we will run all the tests
 if (process.env.CI || localDevTests.length === 0) {
   localDevTests = false;
