@@ -13,7 +13,7 @@ const services = [
   "channels",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "messages",
   "statistics",
 ];

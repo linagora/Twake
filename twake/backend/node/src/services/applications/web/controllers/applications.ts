@@ -15,6 +15,7 @@ import Application, {
 import {
   CrudException,
   ExecutionContext,
+  Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import _ from "lodash";
 import { randomBytes } from "crypto";
@@ -37,9 +38,12 @@ export class ApplicationController
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await gr.services.applications.marketplaceApps.get({
-      id: request.params.application_id,
-    });
+    const entity = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.params.application_id,
+      },
+      context,
+    );
 
     const companyUser = await gr.services.companies.getCompanyUser(
       { id: entity.company_id },
@@ -58,12 +62,9 @@ export class ApplicationController
       Querystring: PaginationQueryParameters & { search: string };
     }>,
   ): Promise<ResourceListResponse<PublicApplicationObject>> {
-    const context = getExecutionContext(request);
-    const entities = await gr.services.applications.marketplaceApps.list(
-      request.query,
-      { search: request.query.search },
-      context,
-    );
+    const entities = await gr.services.applications.marketplaceApps.list(new Pagination(), {
+      search: request.query.search,
+    });
     return {
       resources: entities.getEntities(),
       next_page_token: entities.nextPage.page_token,
@@ -77,7 +78,7 @@ export class ApplicationController
     }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
-    // const context = getExecutionContext(request);
+    const context = getExecutionContext(request);
 
     try {
       const app = request.body.resource;
@@ -86,9 +87,12 @@ export class ApplicationController
       let entity: Application;
 
       if (request.params.application_id) {
-        entity = await gr.services.applications.marketplaceApps.get({
-          id: request.params.application_id,
-        });
+        entity = await gr.services.applications.marketplaceApps.get(
+          {
+            id: request.params.application_id,
+          },
+          context,
+        );
 
         if (!entity) {
           throw CrudException.notFound("Application not found");
@@ -155,9 +159,12 @@ export class ApplicationController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const application = await gr.services.applications.marketplaceApps.get({
-      id: request.params.application_id,
-    });
+    const application = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.params.application_id,
+      },
+      context,
+    );
 
     const compUser = await gr.services.companies.getCompanyUser(
       { id: application.company_id },
@@ -198,9 +205,12 @@ export class ApplicationController
 
     const content = request.body.data;
 
-    const applicationEntity = await gr.services.applications.marketplaceApps.get({
-      id: request.params.application_id,
-    });
+    const applicationEntity = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.params.application_id,
+      },
+      context,
+    );
 
     if (!applicationEntity) {
       throw CrudException.notFound("Application not found");
@@ -220,6 +230,7 @@ export class ApplicationController
     const applicationInCompany = await gr.services.applications.companyApps.get({
       company_id: request.body.company_id,
       application_id: request.params.application_id,
+      id: undefined,
     });
 
     if (!applicationInCompany) {
@@ -235,6 +246,7 @@ export class ApplicationController
       content,
       request.body.company_id,
       request.body.workspace_id,
+      context,
     );
 
     return {

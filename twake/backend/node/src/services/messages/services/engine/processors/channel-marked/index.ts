@@ -6,6 +6,7 @@ import {
   MessageChannelMarkedRef,
 } from "../../../../entities/message-channel-marked-refs";
 import gr from "../../../../../global-resolver";
+import { ExecutionContext } from "../../../../../../core/platform/framework/api/crud-service";
 
 export class ChannelMarkedViewProcessor {
   repository: Repository<MessageChannelMarkedRef>;
@@ -17,7 +18,11 @@ export class ChannelMarkedViewProcessor {
     );
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     for (const participant of thread.participants.filter(p => p.type === "channel")) {
       //Pinned messages
       const pinRef = getInstance({
@@ -31,9 +36,9 @@ export class ChannelMarkedViewProcessor {
         created_by: message.resource.pinned_info?.pinned_by || "",
       });
       if (message.resource.pinned_info) {
-        this.repository.save(pinRef);
+        this.repository.save(pinRef, context);
       } else if (!message.created) {
-        this.repository.remove(pinRef);
+        this.repository.remove(pinRef, context);
       }
 
       //TODO add realtime

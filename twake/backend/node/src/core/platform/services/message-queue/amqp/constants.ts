@@ -17,7 +17,7 @@ export const constants = {
   },
 
   SUBSCRIBER: {
-    queueName: "", // This is the pubsub pattern with amqp, the server allocates a free queue name for us
+    queueName: "", // This is the message-queue pattern with amqp, the server allocates a free queue name for us
     queueOptions: {
       exclusive: true,
       durable: false,

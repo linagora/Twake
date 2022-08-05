@@ -32,7 +32,7 @@ describe("The console API auth", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "search",
         "applications",
         "webserver",

@@ -8,11 +8,10 @@ import {
   User,
   Workspace,
 } from "../../../src/utils/types";
-import { Channel } from "../../../src/services/channels/entities/channel";
+import { Channel } from "../../../src/services/channels/entities";
 import { ChannelVisibility, WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { DirectChannel } from "../../../src/services/channels/entities/direct-channel";
-import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
 import gr from "../../../src/services/global-resolver";
 
 describe("The direct channels API", () => {
@@ -27,7 +26,7 @@ describe("The direct channels API", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "applications",
         "websocket",
@@ -86,14 +85,14 @@ describe("The direct channels API", () => {
 
       const creationResult = await Promise.all([
         gr.services.channels.channels.save(channel, {}, getContext()),
-        gr.services.channels.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelIn,
           {
             members,
           },
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
-        gr.services.channels.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1()],
@@ -168,7 +167,7 @@ describe("The direct channels API", () => {
         gr.services.channels.channels.save(channel, {}, getContext()),
 
         //It will contain the currentUser
-        gr.services.channels.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelIn,
           {
             members,
@@ -177,7 +176,7 @@ describe("The direct channels API", () => {
         ),
 
         //This channel will automatically contains the requester because it is added automatically in it
-        gr.services.channels.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelIn2,
           {
             members: [uuidv1(), uuidv1()],
@@ -186,7 +185,7 @@ describe("The direct channels API", () => {
         ),
 
         //This channel will not contain the currentUser
-        gr.services.channels.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1()],
@@ -238,7 +237,7 @@ describe("The direct channels API", () => {
         gr.services.channels.channels.save(channel2, {}, getContext({ id: uuidv1() })),
 
         //This channel will automatically contains the requester because it is added automatically in it
-        gr.services.channels.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelIn,
           {
             members,
@@ -246,7 +245,7 @@ describe("The direct channels API", () => {
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
 
-        gr.services.channels.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1(), uuidv1()],

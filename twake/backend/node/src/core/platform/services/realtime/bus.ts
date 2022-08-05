@@ -5,7 +5,7 @@ import { EventEmitter } from "events";
 import { RealtimeEventBus } from "./api";
 import { RealtimeEntityEvent } from "./types";
 
-class EventBus extends EventEmitter implements RealtimeEventBus {
+class WebsocketEventBus extends EventEmitter implements RealtimeEventBus {
   constructor() {
     super();
   }
@@ -19,4 +19,4 @@ class EventBus extends EventEmitter implements RealtimeEventBus {
   }
 }
 
-export const eventBus = new EventBus();
+export const websocketEventBus = new WebsocketEventBus();

@@ -114,7 +114,6 @@ describe("The /internal/services/channels/v1 API", () => {
             company_id: channel.company_id,
             user_id: newUser.id,
           } as ChannelMember,
-          {},
           channelUtils.getChannelContext(channel, platform.currentUser),
         );
       }

@@ -66,6 +66,7 @@ export class ViewsController {
                 ? {
                     message: await gr.services.messages.messages.includeUsersInMessageWithReplies(
                       (msg as any).message,
+                      context,
                     ),
                   }
                 : {}),
@@ -73,6 +74,7 @@ export class ViewsController {
                 ? {
                     thread: await gr.services.messages.messages.includeUsersInMessageWithReplies(
                       (msg as any).thread,
+                      context,
                     ),
                   }
                 : {}),
@@ -81,6 +83,7 @@ export class ViewsController {
             entities.push(
               await gr.services.messages.messages.includeUsersInMessageWithReplies(
                 msg as MessageWithReplies,
+                context,
               ),
             );
           }
@@ -207,6 +210,7 @@ export class ViewsController {
           id: msg.cache.channel_id,
         },
         50,
+        context,
       );
       if (!getChannelMember) continue;
 
@@ -219,12 +223,15 @@ export class ViewsController {
     const extendedMessages = [];
     for (const message of messages) {
       const extended = {
-        ...(await gr.services.messages.messages.includeUsersInMessage(message)),
-        channel: await gr.services.channels.channels.get({
-          company_id: message.cache?.company_id,
-          workspace_id: message.cache?.workspace_id,
-          id: message.cache?.channel_id,
-        }),
+        ...(await gr.services.messages.messages.includeUsersInMessage(message, context)),
+        channel: await gr.services.channels.channels.get(
+          {
+            company_id: message.cache?.company_id,
+            workspace_id: message.cache?.workspace_id,
+            id: message.cache?.channel_id,
+          },
+          context,
+        ),
       };
       extendedMessages.push(extended);
     }

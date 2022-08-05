@@ -105,7 +105,7 @@
       "delay": 200
     }
   },
-  "pubsub": {
+  "message-queue": {
     "// possible 'type' values are": "'amqp' or 'local'",
     "type": "amqp",
     "amqp": {
@@ -158,13 +158,13 @@
     "database",
     "cron",
     "search",
-    "pubsub",
+    "message-queue",
     "realtime",
     "phpnode",
     "tracker",
     "general",
     "user",
-    "applicationsapi",
+    "applications-api",
     "applications",
     "channels",
     "notifications",

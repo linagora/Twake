@@ -1,6 +1,6 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
-import { HookType } from "../applicationsapi/types";
+import { HookType } from "../applications-api/types";
 import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
 import { MessageFileRef } from "./entities/message-file-refs";

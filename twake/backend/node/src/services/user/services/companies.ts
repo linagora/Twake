@@ -6,6 +6,7 @@ import {
   ExecutionContext,
   ListResult,
   OperationType,
+  Paginable,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
@@ -13,7 +14,6 @@ import Repository, {
   FindOptions,
 } from "../../../core/platform/services/database/services/orm/repository/repository";
 import { UserPrimaryKey } from "../entities/user";
-import { CompaniesServiceAPI } from "../api";
 import Company, {
   CompanyPrimaryKey,
   CompanySearchKey,
@@ -33,13 +33,13 @@ import ExternalGroup, {
 import { logger, RealtimeSaved } from "../../../core/platform/framework";
 import { getCompanyRoom, getUserRoom } from "../realtime";
 import gr from "../../global-resolver";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 import {
-  KnowledgeGraphGenericEventPayload,
   KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
 
-export class CompanyServiceImpl implements CompaniesServiceAPI {
+export class CompanyServiceImpl {
   version: "1";
   companyRepository: Repository<Company>;
   externalCompanyRepository: Repository<ExternalGroup>;
@@ -59,8 +59,8 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     return this;
   }
 
-  private getExtCompany(pk: ExternalGroupPrimaryKey) {
-    return this.externalCompanyRepository.findOne(pk);
+  private getExtCompany(pk: ExternalGroupPrimaryKey, context?: ExecutionContext) {
+    return this.externalCompanyRepository.findOne(pk, {}, context);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,13 +77,13 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _options?: SaveOptions,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _context?: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<SaveResult<Company>> {
     if (company.identity_provider_id && !company.identity_provider) {
       company.identity_provider = "console";
     }
 
-    await this.companyRepository.save(company);
+    await this.companyRepository.save(company, context);
 
     if (company.identity_provider_id) {
       const key = {
@@ -91,19 +91,19 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
         external_id: company.identity_provider_id,
       };
 
-      const extCompany = (await this.getExtCompany(key)) || getExternalGroupInstance(key);
+      const extCompany = (await this.getExtCompany(key, context)) || getExternalGroupInstance(key);
 
       extCompany.company_id = company.id;
       extCompany.external_id = company.identity_provider_id;
       extCompany.service_id = company.identity_provider;
 
-      await this.externalCompanyRepository.save(extCompany);
+      await this.externalCompanyRepository.save(extCompany, context);
     }
 
     return new SaveResult<Company>("company", company, OperationType.UPDATE);
   }
 
-  async createCompany(company: Company): Promise<Company> {
+  async createCompany(company: Company, context?: ExecutionContext): Promise<Company> {
     const companyToCreate: Company = getCompanyInstance({
       ...company,
       ...{
@@ -124,33 +124,47 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     return result.entity;
   }
 
-  async getCompany(companySearchKey: CompanySearchKey): Promise<Company> {
+  async getCompany(
+    companySearchKey: CompanySearchKey,
+    context?: ExecutionContext,
+  ): Promise<Company> {
     if (companySearchKey.id) {
-      return this.companyRepository.findOne(companySearchKey);
+      return this.companyRepository.findOne(companySearchKey, {}, context);
     } else if (companySearchKey.identity_provider_id) {
-      const extCompany = await this.getExtCompany({
-        external_id: companySearchKey.identity_provider_id,
-        service_id: companySearchKey.identity_provider || "console",
-      });
+      const extCompany = await this.getExtCompany(
+        {
+          external_id: companySearchKey.identity_provider_id,
+          service_id: companySearchKey.identity_provider || "console",
+        },
+        context,
+      );
       if (!extCompany) {
         return null;
       }
-      return await this.companyRepository.findOne({ id: extCompany.company_id });
+      return await this.companyRepository.findOne({ id: extCompany.company_id }, {}, context);
     }
   }
 
-  async getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser> {
-    const companyUser = await this.companyUserRepository.findOne({
-      group_id: company.id,
-      user_id: user.id,
-    });
+  async getCompanyUser(
+    company: CompanyPrimaryKey,
+    user: UserPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<CompanyUser> {
+    const companyUser = await this.companyUserRepository.findOne(
+      {
+        group_id: company.id,
+        user_id: user.id,
+      },
+      {},
+      context,
+    );
     if (companyUser) companyUser.applications = [];
     return companyUser;
   }
 
-  async getAllForUser(userId: uuid): Promise<CompanyUser[]> {
+  async getAllForUser(userId: uuid, context?: ExecutionContext): Promise<CompanyUser[]> {
     const list = await this.companyUserRepository
-      .find({ user_id: userId })
+      .find({ user_id: userId }, {}, context)
       .then(a => a.getEntities());
 
     // Update user cache with companies
@@ -164,14 +178,24 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     ) {
       if (!user.cache) user.cache = { companies: [] };
       user.cache.companies = list.map(c => c.group_id);
-      await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
+      await gr.services.users.save(user, { user: { id: user.id, server_request: true } });
     }
 
     return list;
   }
 
-  getCompanies(pagination?: Pagination): Promise<ListResult<Company>> {
-    return this.companyRepository.find({}, { pagination });
+  getCompanies(paginable?: Paginable, context?: ExecutionContext): Promise<ListResult<Company>> {
+    return this.companyRepository.find(
+      {},
+      {
+        pagination: new Pagination(
+          paginable?.page_token,
+          paginable?.limitStr || "100",
+          paginable?.reversed,
+        ),
+      },
+      context,
+    );
   }
 
   @RealtimeSaved<CompanyUser>((companyUser, _) => {
@@ -185,19 +209,24 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
   async removeUserFromCompany(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
+    context?: ExecutionContext,
   ): Promise<DeleteResult<CompanyUser>> {
-    const entity = await this.companyUserRepository.findOne({
-      group_id: companyPk.id,
-      user_id: userPk.id,
-    });
+    const entity = await this.companyUserRepository.findOne(
+      {
+        group_id: companyPk.id,
+        user_id: userPk.id,
+      },
+      {},
+      context,
+    );
     if (entity) {
-      await Promise.all([this.companyUserRepository.remove(entity)]);
+      await Promise.all([this.companyUserRepository.remove(entity, context)]);
 
       const user = await gr.services.users.get(userPk);
       if ((user.cache?.companies || []).includes(companyPk.id)) {
         // Update user cache with companies
         user.cache.companies = user.cache.companies.filter(id => id != companyPk.id);
-        await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
+        await gr.services.users.save(user, { user: { id: user.id, server_request: true } });
       }
 
       localEventBus.publish<ResourceEventsPayload>("company:user:deleted", {
@@ -213,6 +242,7 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     companyId: CompanyUserPrimaryKey,
     pagination?: Pagination,
     options?: ListUserOptions,
+    context?: ExecutionContext,
   ): Promise<ListResult<CompanyUser>> {
     const findOptions: FindOptions = {
       pagination,
@@ -222,12 +252,12 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
       findOptions.$in = [["user_id", options.userIds]];
     }
 
-    return this.companyUserRepository.find({ group_id: companyId.group_id }, findOptions);
+    return this.companyUserRepository.find({ group_id: companyId.group_id }, findOptions, context);
   }
 
   async delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>> {
-    const instance = await this.companyRepository.findOne(pk);
-    if (instance) await this.companyRepository.remove(instance);
+    const instance = await this.companyRepository.findOne(pk, {}, context);
+    if (instance) await this.companyRepository.remove(instance, context);
     return new DeleteResult<Company>("company", instance, !!instance);
   }
 
@@ -244,12 +274,13 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     userId: uuid,
     role: CompanyUserRole = "member",
     applications: string[] = [],
+    context?: ExecutionContext,
   ): Promise<SaveResult<CompanyUser>> {
     const key = {
       group_id: companyId,
       user_id: userId,
     };
-    let entity = await this.companyUserRepository.findOne(key);
+    let entity = await this.companyUserRepository.findOne(key, {}, context);
 
     if (entity == null) {
       entity = getCompanyUserInstance(merge(key, { dateAdded: Date.now() }));
@@ -257,29 +288,32 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
 
     entity.role = role;
     entity.applications = applications;
-    await this.companyUserRepository.save(entity);
+    await this.companyUserRepository.save(entity, context);
 
     const user = await gr.services.users.get({ id: userId });
     if (!(user.cache?.companies || []).includes(companyId)) {
       // Update user cache with companies
       if (!user.cache) user.cache = { companies: [] };
       user.cache.companies.push(companyId);
-      await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
+      await gr.services.users.save(user, { user: { id: user.id, server_request: true } });
     }
 
     return new SaveResult("company_user", entity, OperationType.UPDATE);
   }
 
-  async removeCompany(searchKey: CompanySearchKey): Promise<void> {
+  async removeCompany(searchKey: CompanySearchKey, context?: ExecutionContext): Promise<void> {
     if (searchKey.identity_provider_id) {
-      const extCompany = await this.getExtCompany({
-        service_id: searchKey.identity_provider,
-        external_id: searchKey.identity_provider_id,
-      });
+      const extCompany = await this.getExtCompany(
+        {
+          service_id: searchKey.identity_provider,
+          external_id: searchKey.identity_provider_id,
+        },
+        context,
+      );
       if (!extCompany) {
         throw CrudException.notFound(`Company ${searchKey.identity_provider_id} not found`);
       }
-      await this.externalCompanyRepository.remove(extCompany);
+      await this.externalCompanyRepository.remove(extCompany, context);
       searchKey.id = extCompany.company_id;
     }
 
@@ -288,16 +322,20 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
       throw CrudException.notFound(`Company ${searchKey.id} not found`);
     }
 
-    await this.companyRepository.remove(company);
+    await this.companyRepository.remove(company, context);
 
     return Promise.resolve(null);
   }
 
-  getUsersCount(companyId: string): Promise<number> {
+  getUsersCount(companyId: string, context?: ExecutionContext): Promise<number> {
     return this.getCompany({ id: companyId }).then(a => a.memberCount);
   }
 
-  async getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole> {
+  async getUserRole(
+    companyId: uuid,
+    userId: uuid,
+    context?: ExecutionContext,
+  ): Promise<CompanyUserRole> {
     const companyUser = await this.getCompanyUser({ id: companyId }, { id: userId });
     if (!companyUser) {
       return "guest";
@@ -305,7 +343,7 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     return companyUser.role;
   }
 
-  async ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey) {
+  async ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey, context?: ExecutionContext) {
     const user = await gr.services.users.get(userPk);
     if (user.deleted) {
       const companies = await this.getAllForUser(user.id);

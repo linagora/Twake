@@ -1,12 +1,12 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { UpdateResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeUpdated } from "../../../../../../../src/core/platform/framework/decorators";
-import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
+import { websocketEventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
 import { ResourcePath } from "../../../../../../../src/core/platform/services/realtime/types";
 
 describe("The RealtimeUpdated decorator", () => {
   it("should call the original method send back original result but do not emit event if result type is wrong", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeUpdated({ room: "/foo/bar" })
@@ -31,7 +31,7 @@ describe("The RealtimeUpdated decorator", () => {
   });
 
   it("should call the original method send back original result and emit event", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeUpdated({ room: "/foo/bar", path: "/foo/bar/baz" })
@@ -73,7 +73,7 @@ describe("The RealtimeUpdated decorator", () => {
   });
 
   it("should emit event with path computed from function", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeUpdated(result => [

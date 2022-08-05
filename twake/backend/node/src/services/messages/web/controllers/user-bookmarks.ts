@@ -44,7 +44,6 @@ export class UserBookmarksController
           name: request.body.resource.name,
           id: request.params.id || undefined,
         },
-        {},
         context,
       );
       return {
@@ -93,10 +92,9 @@ export class UserBookmarksController
     const context = getCompanyExecutionContext(request);
     try {
       const list = await gr.services.messages.userBookmarks.list(
-        {},
         {
           user_id: context.user.id,
-          company_id: request.params.company_id,
+          company_id: context.company.id,
         },
         context,
       );

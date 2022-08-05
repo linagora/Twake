@@ -1,5 +1,5 @@
 import { getLogger } from "../../../../core/platform/framework";
-import { PubsubHandler } from "../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../core/platform/services/message-queue/api";
 import { ChannelActivityNotification } from "../../types";
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 import {
@@ -9,9 +9,9 @@ import {
 } from "../../entities/channel-counters";
 import gr from "../../../global-resolver";
 
-const logger = getLogger("channel.pubsub.new-channel-activity");
+const logger = getLogger("channel.message-queue.new-channel-activity");
 export class NewChannelActivityProcessor
-  implements PubsubHandler<ChannelActivityNotification, void>
+  implements MessageQueueHandler<ChannelActivityNotification, void>
 {
   private channelCounter: CounterProvider<ChannelCounterEntity>;
 

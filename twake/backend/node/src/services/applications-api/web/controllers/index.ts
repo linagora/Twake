@@ -8,7 +8,7 @@ import {
 } from "../types";
 import { ResourceGetResponse } from "../../../../utils/types";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import {
   RealtimeApplicationEvent,
   RealtimeBaseBusEvent,
@@ -21,9 +21,13 @@ export class ApplicationsApiController {
   async token(
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
   ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
-    const app = await gr.services.applications.marketplaceApps.get({
-      id: request.body.id,
-    });
+    const context = getExecutionContext(request);
+    const app = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.body.id,
+      },
+      context,
+    );
 
     if (!app) {
       throw CrudException.forbidden("Application not found");
@@ -50,9 +54,12 @@ export class ApplicationsApiController {
   ): Promise<ResourceGetResponse<ApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await gr.services.applications.marketplaceApps.get({
-      id: context.application_id,
-    });
+    const entity = await gr.services.applications.marketplaceApps.get(
+      {
+        id: context.application_id,
+      },
+      context,
+    );
     if (!entity) {
       throw CrudException.notFound("Application not found");
     }
@@ -62,8 +69,8 @@ export class ApplicationsApiController {
 
   async configure(request: FastifyRequest<{ Body: ConfigureRequest }>, reply: FastifyReply) {
     const app_id = request.currentUser.application_id;
-
-    const application = await gr.services.applications.marketplaceApps.get({ id: app_id });
+    const context = getExecutionContext(request);
+    const application = await gr.services.applications.marketplaceApps.get({ id: app_id }, context);
 
     if (!application) {
       throw CrudException.forbidden("Application not found");
@@ -102,14 +109,19 @@ export class ApplicationsApiController {
     const companyApplication = gr.services.applications.companyApps.get({
       company_id,
       application_id: request.currentUser.application_id,
+      id: undefined,
     });
     if (!companyApplication) {
       throw CrudException.forbidden("This application is not installed in the requested company");
     }
 
-    const app = await gr.services.applications.marketplaceApps.get({
-      id: request.currentUser.application_id,
-    });
+    const context = getExecutionContext(request);
+    const app = await gr.services.applications.marketplaceApps.get(
+      {
+        id: request.currentUser.application_id,
+      },
+      context,
+    );
 
     // Check call can be done from this IP
     if (
@@ -152,7 +164,7 @@ export class ApplicationsApiController {
 
 function getExecutionContext(request: FastifyRequest): ApplicationApiExecutionContext {
   return {
-    application_id: request.currentUser.application_id,
+    application_id: request.currentUser?.application_id,
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,

@@ -19,7 +19,7 @@ describe.skip("The Channels Members Realtime feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",
@@ -127,14 +127,10 @@ describe.skip("The Channels Members Realtime feature", () => {
         user_id: platform.currentUser.id,
       } as ChannelMember;
 
-      await gr.services.channels.members.save(
-        member,
-        {},
-        {
-          channel: creationResult.entity,
-          user: platform.currentUser,
-        },
-      );
+      await gr.services.channels.members.save(member, {
+        channel: creationResult.entity,
+        user: platform.currentUser,
+      });
 
       connect();
       socket.on("connect", () => {

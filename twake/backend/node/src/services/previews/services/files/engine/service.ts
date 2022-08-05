@@ -1,16 +1,20 @@
 import fs, { promises as fsPromise } from "fs";
-import { PreviewPubsubHandler } from "../../../api";
 import { logger, TwakeContext } from "../../../../../core/platform/framework";
-import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../../types";
+import {
+  PreviewMessageQueueCallback,
+  PreviewMessageQueueRequest,
+  ThumbnailResult,
+} from "../../../types";
 import { getTmpFile } from "../../../utils";
 import gr from "../../../../global-resolver";
+import { MessageQueueHandler } from "../../../../../core/platform/services/message-queue/api";
 
 const { unlink } = fsPromise;
 /**
  * Generate thumbnails when the upload is finished
  */
 export class PreviewProcessor
-  implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback>
+  implements MessageQueueHandler<PreviewMessageQueueRequest, PreviewMessageQueueCallback>
 {
   readonly name = "PreviewProcessor";
 
@@ -28,14 +32,14 @@ export class PreviewProcessor
     ack: true,
   };
 
-  validate(message: PreviewPubsubRequest): boolean {
+  validate(message: PreviewMessageQueueRequest): boolean {
     return !!(message && message.document && message.output);
   }
 
-  async process(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
+  async process(message: PreviewMessageQueueRequest): Promise<PreviewMessageQueueCallback> {
     logger.info(`${this.name} - Processing preview generation ${message.document.id}`);
 
-    let res: PreviewPubsubCallback = { document: message.document, thumbnails: [] };
+    let res: PreviewMessageQueueCallback = { document: message.document, thumbnails: [] };
     try {
       res = await this.generate(message);
     } catch (err) {
@@ -51,7 +55,7 @@ export class PreviewProcessor
     return res;
   }
 
-  async generate(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
+  async generate(message: PreviewMessageQueueRequest): Promise<PreviewMessageQueueCallback> {
     //Download original file
     const readable = await gr.platformServices.storage.read(message.document.path, {
       totalChunks: message.document.chunks,
@@ -88,7 +92,7 @@ export class PreviewProcessor
       throw Error("Can't generate thumbnails.");
     }
 
-    const thumbnails: PreviewPubsubCallback["thumbnails"] = [];
+    const thumbnails: PreviewMessageQueueCallback["thumbnails"] = [];
 
     for (let i = 0; i < localThumbnails.length; i++) {
       const uploadThumbnailPath = `${message.output.path.replace(/\/$/, "")}/${i}.png`;

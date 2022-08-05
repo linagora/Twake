@@ -1,7 +1,7 @@
 import { logger } from "../../../framework/logger";
 import { RealtimeEntityActionType, RealtimeEntityEvent } from "../types";
 import WebSocketAPI from "../../../services/websocket/provider";
-import { eventBus } from "../bus";
+import { websocketEventBus } from "../bus";
 
 const REALTIME_RESOURCE = "realtime:resource";
 
@@ -9,23 +9,23 @@ export default class RealtimeEntityManager {
   constructor(private ws: WebSocketAPI) {}
 
   init(): void {
-    eventBus.subscribe(RealtimeEntityActionType.Created, event => {
+    websocketEventBus.subscribe(RealtimeEntityActionType.Created, event => {
       this.pushResourceEvent(event, RealtimeEntityActionType.Created);
     });
 
-    eventBus.subscribe(RealtimeEntityActionType.Updated, event => {
+    websocketEventBus.subscribe(RealtimeEntityActionType.Updated, event => {
       this.pushResourceEvent(event, RealtimeEntityActionType.Updated);
     });
 
-    eventBus.subscribe(RealtimeEntityActionType.Deleted, event => {
+    websocketEventBus.subscribe(RealtimeEntityActionType.Deleted, event => {
       this.pushResourceEvent(event, RealtimeEntityActionType.Deleted);
     });
 
-    eventBus.subscribe(RealtimeEntityActionType.Saved, event => {
+    websocketEventBus.subscribe(RealtimeEntityActionType.Saved, event => {
       this.pushResourceEvent(event, RealtimeEntityActionType.Saved);
     });
 
-    eventBus.subscribe(RealtimeEntityActionType.Event, event => {
+    websocketEventBus.subscribe(RealtimeEntityActionType.Event, event => {
       this.pushResourceEvent(event, RealtimeEntityActionType.Event);
     });
   }

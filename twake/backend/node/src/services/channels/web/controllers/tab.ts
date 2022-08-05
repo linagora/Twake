@@ -20,7 +20,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { getTabsRealtimeRoom } from "../../services/tab";
 import gr from "../../../global-resolver";
 
@@ -126,7 +126,7 @@ export class ChannelTabCrudController
   ): Promise<ResourceDeleteResponse> {
     try {
       const context = getExecutionContext(request);
-      const deleteResult = await gr.services.tab.delete(this.getPrimaryKey(request), context);
+      const deleteResult = await gr.services.tab.delete(this.getPrimaryKey(request));
 
       if (deleteResult.deleted) {
         localEventBus.publish<ResourceEventsPayload>("channel:tab:deleted", {

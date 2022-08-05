@@ -12,7 +12,7 @@ describe("The /users API", () => {
       services: [
         "database",
         "search",
-        "pubsub",
+        "message-queue",
         "websocket",
         "webserver",
         "user",

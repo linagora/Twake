@@ -143,14 +143,17 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: message.sender,
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: message.sender,
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -169,14 +172,17 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: message.sender,
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: message.sender,
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -196,14 +202,17 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: message.sender,
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: message.sender,
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -223,14 +232,17 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: message.sender,
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: message.sender,
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -250,38 +262,41 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: message.sender,
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "1",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "2",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "3",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "4",
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: message.sender,
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "1",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "2",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "3",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "4",
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -302,38 +317,41 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: message.sender,
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "1",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "2",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "3",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.id,
-            user_id: "4",
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: message.sender,
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "1",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "2",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "3",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.id,
+              user_id: "4",
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -387,14 +405,17 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.thread_id,
-            user_id: message.sender,
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.thread_id,
+              user_id: message.sender,
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -410,14 +431,17 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.thread_id,
-            user_id: message.sender,
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.thread_id,
+              user_id: message.sender,
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
@@ -434,38 +458,41 @@ describe("The NewChannelMessageProcessor class", () => {
         const result = await processor.process(message);
 
         expect(service.channelThreads.bulkSave).toBeCalledTimes(1);
-        expect(service.channelThreads.bulkSave).toBeCalledWith([
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.thread_id,
-            user_id: message.sender,
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.thread_id,
-            user_id: "1",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.thread_id,
-            user_id: "2",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.thread_id,
-            user_id: "3",
-          },
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: message.thread_id,
-            user_id: "4",
-          },
-        ]);
+        expect(service.channelThreads.bulkSave).toBeCalledWith(
+          [
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.thread_id,
+              user_id: message.sender,
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.thread_id,
+              user_id: "1",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.thread_id,
+              user_id: "2",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.thread_id,
+              user_id: "3",
+            },
+            {
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: message.thread_id,
+              user_id: "4",
+            },
+          ],
+          undefined,
+        );
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);

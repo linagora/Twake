@@ -3,10 +3,11 @@ import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
 import { cleanFiles, isFileType } from "../../../utils";
 import { imageExtensions, officeExtensions, pdfExtensions, videoExtensions } from "./mime";
-import { PreviewPubsubRequest, PreviewServiceAPI, ThumbnailResult } from "../../../types";
+import { PreviewMessageQueueRequest, ThumbnailResult } from "../../../types";
 import { generateVideoPreview } from "./video";
+import { Initializable, TwakeServiceProvider } from "../../../../../core/platform/framework";
 
-export class PreviewProcessService implements PreviewServiceAPI {
+export class PreviewProcessService implements TwakeServiceProvider, Initializable {
   name: "PreviewProcessService";
   version: "1";
 
@@ -15,8 +16,8 @@ export class PreviewProcessService implements PreviewServiceAPI {
   }
 
   async generateThumbnails(
-    document: Pick<PreviewPubsubRequest["document"], "filename" | "mime" | "path">,
-    options: PreviewPubsubRequest["output"],
+    document: Pick<PreviewMessageQueueRequest["document"], "filename" | "mime" | "path">,
+    options: PreviewMessageQueueRequest["output"],
     deleteTmpFile: boolean,
   ): Promise<ThumbnailResult[]> {
     if (isFileType(document.mime, document.filename, officeExtensions)) {

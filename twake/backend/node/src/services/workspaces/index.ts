@@ -1,10 +1,10 @@
 import { Prefix, TwakeService } from "../../core/platform/framework";
-import { WorkspaceService } from "./api";
 import WebServerAPI from "../../core/platform/services/webserver/provider";
 import web from "./web";
+import { WorkspaceServiceImpl } from "./services/workspace";
 
 @Prefix("/internal/services/workspaces/v1")
-export default class Service extends TwakeService<WorkspaceService> {
+export default class Service extends TwakeService<WorkspaceServiceImpl> {
   version = "1";
   name = "workspaces";
 
@@ -17,7 +17,7 @@ export default class Service extends TwakeService<WorkspaceService> {
     return this;
   }
 
-  api(): WorkspaceService {
+  api(): WorkspaceServiceImpl {
     return null;
   }
 }

@@ -1,6 +1,7 @@
 import { fromPath } from "pdf2pic";
 import { mkdirSync } from "fs";
 import { cleanFiles, getTmpFile } from "../../../utils";
+import fsys from "fs";
 
 export async function convertFromPdf(
   inputPath: string,
@@ -27,6 +28,9 @@ export async function convertFromPdf(
         );
       }
     } catch (err) {
+      if (!pages.length) {
+        throw err;
+      }
       //Just no more page to convert
     }
   } catch (error) {

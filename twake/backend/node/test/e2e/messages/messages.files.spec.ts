@@ -27,7 +27,7 @@ describe("The Messages Files feature", () => {
         "applications",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "files",
@@ -50,11 +50,14 @@ describe("The Messages Files feature", () => {
   describe("On user send files", () => {
     it("did add the files when full information is given (external source)", async done => {
       const file: MessageFile = {
+        cache: { channel_id: "", company_id: "", user_id: "", workspace_id: "" },
+        company_id: "",
+        created_at: 0,
+        id: "",
         metadata: {
           source: "linshare",
           external_id: "1234",
           name: "My LinShare File",
-          type: "image/png",
           thumbnails: [],
         },
       };
@@ -80,21 +83,27 @@ describe("The Messages Files feature", () => {
 
     it("did not deduplicate files", async done => {
       const file: MessageFile = {
+        cache: { channel_id: "", company_id: "", user_id: "", workspace_id: "" },
+        company_id: "",
+        created_at: 0,
+        id: "",
         metadata: {
           source: "linshare",
           external_id: "1234",
           name: "My LinShare File",
-          type: "image/png",
           thumbnails: [],
         },
       };
 
       const file2: MessageFile = {
+        cache: { channel_id: "", company_id: "", user_id: "", workspace_id: "" },
+        company_id: "",
+        created_at: 0,
+        id: "",
         metadata: {
           source: "linshare2",
           external_id: "5678",
           name: "My LinShare 2 File",
-          type: "image/png",
           thumbnails: [],
         },
       };
@@ -144,7 +153,7 @@ describe("List user files", () => {
 
   beforeAll(async () => {
     platform = await init({
-      services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
+      services: ["webserver", "database", "storage", "message-queue", "files", "previews"],
     });
     await platform.database.getConnector().drop();
   });
@@ -180,9 +189,13 @@ describe("List user files", () => {
         ...form,
       });
 
+      expect(uploadedFile.statusCode).toBe(200);
+
       const resource = uploadedFile.json().resource;
 
       const messageFile: MessageFile = {
+        cache: { channel_id: "", company_id: "", user_id: "", workspace_id: "" },
+        created_at: 0,
         id: uuid.v1(),
         company_id: platform.workspace.company_id,
         metadata: {
@@ -279,6 +292,8 @@ describe("List user files", () => {
       const resource = uploadedFile.json().resource;
 
       const messageFile: MessageFile = {
+        cache: { channel_id: "", company_id: "", user_id: "", workspace_id: "" },
+        created_at: 0,
         id: uuid.v1(),
         company_id: platform.workspace.company_id,
         metadata: {

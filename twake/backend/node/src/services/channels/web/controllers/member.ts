@@ -51,11 +51,8 @@ export class ChannelMemberCrudController
     if (!isCurrentUser(request.params.member_id, request.currentUser)) {
       throw CrudException.badRequest("User does not have enough rights to get member");
     }
-
-    const resource = await gr.services.channels.members.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    const context = getExecutionContext(request);
+    const resource = await gr.services.channels.members.get(this.getPrimaryKey(request), context);
 
     if (!resource) {
       throw CrudException.notFound(`Channel member ${request.params.member_id} not found`);
@@ -80,11 +77,7 @@ export class ChannelMemberCrudController
     });
 
     try {
-      const result = await gr.services.channels.members.save(
-        entity,
-        {},
-        getExecutionContext(request),
-      );
+      const result = await gr.services.channels.members.save(entity, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(201);
@@ -112,11 +105,7 @@ export class ChannelMemberCrudController
     }
 
     try {
-      const result = await gr.services.channels.members.save(
-        entity,
-        {},
-        getExecutionContext(request),
-      );
+      const result = await gr.services.channels.members.save(entity, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(200);
@@ -185,11 +174,16 @@ export class ChannelMemberCrudController
       nextPageToken = users.nextPage?.page_token;
 
       for (const user of users.getEntities()) {
-        const channelMember = await gr.services.channels.members.getChannelMember(user, {
-          company_id: request.params.company_id,
-          workspace_id: request.params.workspace_id,
-          id: request.params.id,
-        });
+        const channelMember = await gr.services.channels.members.getChannelMember(
+          user,
+          {
+            company_id: request.params.company_id,
+            workspace_id: request.params.workspace_id,
+            id: request.params.id,
+          },
+          undefined,
+          context,
+        );
 
         if (channelMember) {
           list.push(channelMember);
@@ -238,10 +232,8 @@ export class ChannelMemberCrudController
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
     reply: FastifyReply,
   ): Promise<Response> {
-    const resource = await gr.services.channels.members.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    const context = getExecutionContext(request);
+    const resource = await gr.services.channels.members.get(this.getPrimaryKey(request), context);
 
     if (!resource) {
       return reply.status(200).send({ has_access: false });

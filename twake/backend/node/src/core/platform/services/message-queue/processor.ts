@@ -1,15 +1,15 @@
 import { logger } from "../../framework";
-import { PubsubHandler, PubsubServiceAPI, PubsubServiceProcessor } from "./api";
+import { MessageQueueHandler, MessageQueueServiceAPI, MessageQueueServiceProcessor } from "./api";
 
-const LOG_PREFIX = "service.pubsub.Processor";
+const LOG_PREFIX = "service.message-queue.Processor";
 
 export class Processor {
   // TODO: Add state
   private registry: ProcessorRegistry;
   private started = false;
 
-  constructor(private pubsub: PubsubServiceAPI) {
-    this.registry = new ProcessorRegistry(this.pubsub);
+  constructor(private messageQueue: MessageQueueServiceAPI) {
+    this.registry = new ProcessorRegistry(this.messageQueue);
   }
 
   async init(): Promise<this> {
@@ -36,12 +36,12 @@ export class Processor {
     );
   }
 
-  addHandler<In, Out>(handler: PubsubHandler<In, Out>): void {
+  addHandler<In, Out>(handler: MessageQueueHandler<In, Out>): void {
     if (!handler) {
       throw new Error(`${LOG_PREFIX} - Can not add null handler`);
     }
 
-    logger.info(`${LOG_PREFIX} - Adding pubsub handler ${handler.name}`);
+    logger.info(`${LOG_PREFIX} - Adding message-queue handler ${handler.name}`);
     this.registry.register(handler);
 
     if (this.started) {
@@ -50,17 +50,17 @@ export class Processor {
   }
 
   async startHandler(name: string): Promise<void> {
-    logger.info(`${LOG_PREFIX} - Starting pubsub handler ${name}`);
+    logger.info(`${LOG_PREFIX} - Starting message-queue handler ${name}`);
     await this.registry.processors.get(name)?.init();
   }
 
   stopHandler(name: string): void {
-    logger.info(`${LOG_PREFIX} - Stopping pubsub handler ${name}`);
+    logger.info(`${LOG_PREFIX} - Stopping message-queue handler ${name}`);
     this.registry.processors.get(name)?.stop();
   }
 
   removeHandler(name: string): void {
-    logger.info(`${LOG_PREFIX} - Removing pubsub handler ${name}`);
+    logger.info(`${LOG_PREFIX} - Removing message-queue handler ${name}`);
     this.stopHandler(name);
     this.registry.processors.delete(name);
   }
@@ -68,17 +68,20 @@ export class Processor {
 
 class ProcessorRegistry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  processors: Map<string, PubsubServiceProcessor<any, any>>;
+  processors: Map<string, MessageQueueServiceProcessor<any, any>>;
 
-  constructor(private pubsub: PubsubServiceAPI) {
+  constructor(private messageQueue: MessageQueueServiceAPI) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.processors = new Map<string, PubsubServiceProcessor<any, any>>();
+    this.processors = new Map<string, MessageQueueServiceProcessor<any, any>>();
   }
 
-  register<In, Out>(handler: PubsubHandler<In, Out>): void {
+  register<In, Out>(handler: MessageQueueHandler<In, Out>): void {
     if (!handler) {
       throw new Error("Can not add a null handler");
     }
-    this.processors.set(handler.name, new PubsubServiceProcessor<In, Out>(handler, this.pubsub));
+    this.processors.set(
+      handler.name,
+      new MessageQueueServiceProcessor<In, Out>(handler, this.messageQueue),
+    );
   }
 }

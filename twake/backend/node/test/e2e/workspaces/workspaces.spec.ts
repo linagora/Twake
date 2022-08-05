@@ -16,7 +16,7 @@ describe("The /workspaces API", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "user",
         "search",
