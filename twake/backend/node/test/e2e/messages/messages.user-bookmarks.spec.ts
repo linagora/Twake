@@ -79,13 +79,13 @@ describe("The Messages User Bookmarks feature", () => {
 
     it("should prevent duplicated bookmark", async done => {
       // const uuid = uuidv4();
-      const uuid = "123456";
+      
 
       const context = getContext(platform);
 
       const data = await gr.services.messages.userBookmarks.save(
         {
-          id: uuid,
+          
           company_id: platform.workspace.company_id,
           user_id: platform.currentUser.id,
           name: "mybookmark",
@@ -93,6 +93,7 @@ describe("The Messages User Bookmarks feature", () => {
         },
         context,
       );
+      const uuid = data.id;
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
