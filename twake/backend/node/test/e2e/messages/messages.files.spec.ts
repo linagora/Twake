@@ -140,9 +140,13 @@ describe("The Messages Files feature", () => {
         messageUpdatedRaw.body,
       );
 
+      console.log(messageUpdated.resource.files, firstFileId);
+
       expect(messageUpdated.resource.files.length).toBe(2);
 
       console.log(messageUpdated.resource.files, firstFileId);
+
+      await new Promise(r => setTimeout(r, 2000));
 
       expect(messageUpdated.resource.files.filter(f => f.id === firstFileId).length).toBe(1);
 
