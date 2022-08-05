@@ -63,9 +63,9 @@
     }
   },
   "message-queue": {
-    "type": "MQ_TYPE",
+    "type": "PUBSUB_TYPE",
     "amqp": {
-      "urls": "MQ_URLS"
+      "urls": "PUBSUB_URLS"
     }
   },
   "pusbub": {
