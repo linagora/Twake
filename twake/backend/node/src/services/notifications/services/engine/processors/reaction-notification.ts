@@ -9,7 +9,8 @@ import {
 import { MobilePushNotifier } from "../../../notifiers";
 import gr from "../../../../global-resolver";
 import { getNotificationRoomName } from "../../realtime";
-
+import { Channel } from "../../../../channels/entities/channel";
+import User from "../../../../user/entities/user";
 export class PushReactionNotification
   implements NotificationPubsubHandler<ReactionNotification, void>
 {
@@ -65,13 +66,15 @@ export class PushReactionNotification
       message_id: message.message_id,
     };
 
+    const { title, text } = await this.buildNotificationMessageContent(message);
+
     eventBus.publish(RealtimeEntityActionType.Event, {
       type: "notification:desktop",
       room: ResourcePath.get(getNotificationRoomName(message.user_id)),
       entity: {
         ...location,
-        title: "new reaction",
-        text: "user +1  message content",
+        title,
+        text,
       },
       resourcePath: null,
       result: null,
@@ -79,12 +82,61 @@ export class PushReactionNotification
 
     this.sendPushNotification(message.user_id, {
       ...location,
-      title: "new reaction",
-      text: "user +1  message content",
+      title,
+      text,
     });
   }
 
   sendPushNotification(user: string, reaction: PushNotificationMessage): void {
     MobilePushNotifier.get(gr.platformServices.pubsub).notify(user, reaction);
+  }
+
+  async buildNotificationMessageContent(
+    message: ReactionNotification,
+  ): Promise<{ title: string; text: string }> {
+    const { company_id, workspace_id, user_id, reaction, thread_id } = message;
+    let title = "";
+
+    const channel: Channel = await gr.services.channels.channels.get({
+      id: message.channel_id,
+      company_id: company_id,
+      workspace_id: workspace_id,
+    });
+
+    const [company, workspace, user] = await Promise.all([
+      gr.services.companies.getCompany({ id: company_id }),
+      gr.services.workspaces.get({
+        company_id: company_id,
+        id: workspace_id,
+      }),
+      gr.services.users.get({ id: user_id }),
+    ]);
+
+    //get message
+    const msg = await gr.services.messages.messages.get({
+      thread_id: thread_id,
+      id: message.message_id,
+    });
+
+    const companyName = company?.name || "";
+    const workspaceName = workspace?.name || "";
+    const userName = this.getUserName(user) || "Twake";
+
+    if (Channel.isDirectChannel(channel)) {
+      title = `${userName} in ${companyName}`;
+    } else {
+      title = `${channel.name} in ${companyName} • ${workspaceName}`;
+    }
+
+    return {
+      title,
+      text: `${userName}: ${reaction} to ${msg?.text}`,
+    };
+  }
+
+  getUserName(user: User): string {
+    return (
+      `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || `@${user?.username_canonical}`
+    );
   }
 }

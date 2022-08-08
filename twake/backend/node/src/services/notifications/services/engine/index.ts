@@ -7,6 +7,7 @@ import { PushNotificationToUsersMessageProcessor } from "./processors/push-to-us
 import { LeaveChannelMessageProcessor } from "./processors/channel-member-deleted";
 import { JoinChannelMessageProcessor } from "./processors/channel-member-created";
 import { UpdateChannelMemberMessageProcessor } from "./processors/channel-member-updated";
+import { PushReactionNotification } from "./processors/reaction-notification";
 import gr from "../../../global-resolver";
 
 /**
@@ -28,6 +29,7 @@ export class NotificationEngine implements Initializable {
     gr.platformServices.messageQueue.processor.addHandler(
       new PushNotificationToUsersMessageProcessor(),
     );
+    gr.platformServices.messageQueue.processor.addHandler(new PushReactionNotification());
 
     return this;
   }
