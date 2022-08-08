@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import 'moment-timezone';
-import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
+import { MoreHorizontal, Smile, ArrowUpRight, Trash2, CornerDownLeft } from 'react-feather';
 
 import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
 import Menu from 'components/menus/menu.js';
@@ -28,6 +28,7 @@ import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { addUrlTryDesktop } from 'app/views/desktop-redirect';
+import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
 
 type Props = {
   onOpen?: () => void;
@@ -56,6 +57,8 @@ export default (props: Props) => {
     location,
     subLocation,
   );
+
+  const { set: setQuoteReply } = useMessageQuoteReply(message.thread_id, channelId);
 
   const menu: any[] = [];
 
@@ -116,6 +119,18 @@ export default (props: Props) => {
         copyToClipboard(url);
       },
     });
+
+    if(channel && channel.visibility === 'direct') {
+      menu.push({
+        type: 'menu',
+        icon: 'corner-down-left',
+        text: Languages.t('scenes.apps.messages.message.reply_button', [], 'Reply'),
+        onClick: () => {
+          setQuoteReply({ message: message.thread_id, channel: channelId });
+          setVisibleEditor({ location, subLocation });
+        }
+      });
+    }
 
     if (!message.context?.disable_pin)
       menu.push({
@@ -287,6 +302,20 @@ export default (props: Props) => {
               }}
             >
               <ArrowUpRight size={16} />
+            </div>
+            <div className="separator"></div>
+          </>
+        )}
+
+        {channel && channel.visibility === 'direct' && (
+          <>
+            <div
+              className="option"
+              onClick={() => {
+                setQuoteReply({ message: message.thread_id, channel: channelId });
+              }}
+            >
+              <CornerDownLeft size={16} />
             </div>
             <div className="separator"></div>
           </>

@@ -9,6 +9,7 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import Input from '../../input/input';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
 
 type Props = {};
 
@@ -23,6 +24,7 @@ export default (props: Props) => {
     location,
     subLocation,
   );
+  const { isActive: isBeingQuoted } = useMessageQuoteReply(message.thread_id, channelId);
 
   const isChannelMember = useIsChannelMember(channelId);
 
@@ -37,6 +39,7 @@ export default (props: Props) => {
   if (editorIsActive) {
     return (
       <ThreadSection small alinea>
+        { isBeingQuoted && "isBeingQuoted" }
         <div className="message-content">
           <Input threadId={message?.id || ''} channelId={channelId} />
         </div>
