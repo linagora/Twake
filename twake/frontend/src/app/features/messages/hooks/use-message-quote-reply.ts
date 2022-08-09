@@ -1,24 +1,27 @@
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { MessageQuoteReplyEditorActiveSelector, MessageQuoteReplyEditorState } from '../state/atoms/message-quote-reply'
-import { useVisibleMessagesEditorLocation } from './use-message-editor';
+
+type MessageQuoteReplyType = {
+  message: string;
+  isActive: boolean;
+  set: (payload: MessageQuoteReplyEditorState) => void;
+  close: () => void;
+}
 
 /**
  * Manage the state of the message quote reply editor
  * 
- * @param {String} message - The message id to quote
  * @param {String} channel - The channel id to quote from
  */
-export const useMessageQuoteReply = (message: string, channel: string) => {
-  const setReplyState = useSetRecoilState(MessageQuoteReplyEditorState);
-  const isActive = useRecoilValue(MessageQuoteReplyEditorActiveSelector({ message, channel }));
-  const { set: setEditorState } = useVisibleMessagesEditorLocation(`thread-${message}`, 'main');
+export const useMessageQuoteReply = (channel = ''): MessageQuoteReplyType => {
+  const set = useSetRecoilState(MessageQuoteReplyEditorState);
+  const isActive = useRecoilValue(MessageQuoteReplyEditorActiveSelector({ channel }));
+  const { message: messageId } = useRecoilValue(MessageQuoteReplyEditorState);
 
   return {
     isActive,
-    set: ({ message, channel }: MessageQuoteReplyEditorState) => {
-      setEditorState({ location: `thread-${message}`, subLocation: 'main' });
-      setReplyState({ message, channel });
-    },
-    close: () => setReplyState({ message: '', channel: '' }),
+    set,
+    close: () => set({ message: '', channel: '' }),
+    message: messageId
   }
 }

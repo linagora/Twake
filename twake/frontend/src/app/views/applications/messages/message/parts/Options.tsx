@@ -58,7 +58,7 @@ export default (props: Props) => {
     subLocation,
   );
 
-  const { set: setQuoteReply } = useMessageQuoteReply(message.thread_id, channelId);
+  const { set: setQuoteReply } = useMessageQuoteReply(channelId);
 
   const menu: any[] = [];
 
@@ -87,21 +87,23 @@ export default (props: Props) => {
       },
     });
   } else {
-    menu.push({
-      type: 'menu',
-      icon: 'arrow-up-right',
-      text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
-      onClick: () => {
-        SideViewService.select(channel?.id || '', {
-          app: { identity: { code: 'messages' } } as Application,
-          context: {
-            viewType: 'channel_thread',
-            threadId: message.thread_id,
-          },
-        });
-      },
-    });
-
+    if (channel && channel.visibility !== 'direct') {
+      menu.push({
+        type: 'menu',
+        icon: 'arrow-up-right',
+        text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
+        onClick: () => {
+          SideViewService.select(channel?.id || '', {
+            app: { identity: { code: 'messages' } } as Application,
+            context: {
+              viewType: 'channel_thread',
+              threadId: message.thread_id,
+            },
+          });
+        },
+      });
+    }
+      
     menu.push({
       type: 'menu',
       icon: 'link',
@@ -126,8 +128,7 @@ export default (props: Props) => {
         icon: 'corner-down-left',
         text: Languages.t('scenes.apps.messages.message.reply_button', [], 'Reply'),
         onClick: () => {
-          setQuoteReply({ message: message.thread_id, channel: channelId });
-          setVisibleEditor({ location, subLocation });
+          setQuoteReply({ message: message.id, channel: channelId });
         }
       });
     }
@@ -287,7 +288,7 @@ export default (props: Props) => {
         </Menu>
         <div className="separator"></div>
 
-        {!props.threadHeader && (
+        {!props.threadHeader && channel && channel.visibility !== 'direct' && (
           <>
             <div
               className="option"
@@ -312,7 +313,7 @@ export default (props: Props) => {
             <div
               className="option"
               onClick={() => {
-                setQuoteReply({ message: message.thread_id, channel: channelId });
+                setQuoteReply({ message: message.id, channel: channelId });
               }}
             >
               <CornerDownLeft size={16} />

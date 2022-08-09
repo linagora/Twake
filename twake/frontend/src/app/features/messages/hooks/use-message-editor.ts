@@ -18,6 +18,7 @@ import { useAddMessageToThread, useRemoveMessageFromThread } from './use-thread-
 import { useRef } from 'react';
 import { AtomMessageKey } from '../state/atoms/messages';
 import { MessagesAndComponentsType } from 'app/features/messages/hooks/with-non-messages-components';
+import { useMessageQuoteReply } from './use-message-quote-reply';
 
 export type EditorKey = {
   companyId: string;
@@ -35,7 +36,8 @@ export const useMessageEditor = (key: EditorKey) => {
     : `new-${key.channelId}`;
   const [editor, setEditor] = useRecoilState(MessagesEditorState(location));
   const editorRef = useRef(editor);
-
+  const { isActive: isQuoted, message: quotedMessageId } = useMessageQuoteReply(key.channelId || '');
+  let quotedMessage: MessageWithReplies | null = null;
   let message: NodeMessage | null = null;
   if (key.messageId) {
     message = useMessage({
@@ -44,6 +46,12 @@ export const useMessageEditor = (key: EditorKey) => {
       id: key.messageId,
     }).message;
   }
+
+  quotedMessage = useMessage({
+    companyId: key.companyId,
+    threadId: quotedMessageId,
+    id: quotedMessageId
+  }).message;
 
   const propagateMessage = useAddMessageFromEditor(key);
 
@@ -66,6 +74,10 @@ export const useMessageEditor = (key: EditorKey) => {
       },
       ...message,
     } as NodeMessage;
+
+    if (isQuoted && quotedMessage) {
+      editedMessage.quote_message = quotedMessage;
+    }
 
     const tempMessage = {
       ...editedMessage,

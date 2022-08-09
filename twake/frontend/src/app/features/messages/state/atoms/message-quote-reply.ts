@@ -1,8 +1,12 @@
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 import { atom, selectorFamily } from 'recoil';
 
-type MessageQuoteReplyEditorState = {
+export type MessageQuoteReplyEditorState = {
   message: string;
+  channel: string;
+};
+
+type MessageQuoteReplyEditorActiveSelectorType = {
   channel: string;
 };
 
@@ -24,14 +28,14 @@ export const MessageQuoteReplyEditorState = atom<MessageQuoteReplyEditorState>({
 
 export const MessageQuoteReplyEditorActiveSelector = selectorFamily<
   boolean,
-  MessageQuoteReplyEditorState
+  MessageQuoteReplyEditorActiveSelectorType
 >({
   key: 'MessageQuoteReplyEditorActiveSelector',
   get:
     params =>
     ({ get }) => {
-      const { message, channel } = get(MessageQuoteReplyEditorState);
+      const { channel, message } = get(MessageQuoteReplyEditorState);
 
-      return params.message === message && params.channel === channel;
+      return message !== '' && channel !== '' && params.channel === channel;
     },
 });

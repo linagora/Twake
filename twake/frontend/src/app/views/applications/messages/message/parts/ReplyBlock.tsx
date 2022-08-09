@@ -8,8 +8,7 @@ import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/us
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import Input from '../../input/input';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
-import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
-import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
+import { getChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 
 type Props = {};
 
@@ -17,6 +16,7 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   const channelId = useRouterChannel();
   const { message } = useMessage(context);
+  const channel = getChannel(channelId);
 
   const location = `thread-${message.thread_id}`;
   const subLocation = useContext(ViewContext).type;
@@ -24,7 +24,6 @@ export default (props: Props) => {
     location,
     subLocation,
   );
-  const { isActive: isBeingQuoted } = useMessageQuoteReply(message.thread_id, channelId);
 
   const isChannelMember = useIsChannelMember(channelId);
 
@@ -36,10 +35,13 @@ export default (props: Props) => {
     return <></>;
   }
 
+  if (channel?.visibility === 'direct') {
+    return <></>;
+  }
+
   if (editorIsActive) {
     return (
       <ThreadSection small alinea>
-        { isBeingQuoted && "isBeingQuoted" }
         <div className="message-content">
           <Input threadId={message?.id || ''} channelId={channelId} />
         </div>

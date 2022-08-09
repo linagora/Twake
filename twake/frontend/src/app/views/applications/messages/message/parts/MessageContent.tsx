@@ -20,7 +20,12 @@ import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import MessageAttachments from './MessageAttachments';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import LinkPreview from './LinkPreview';
-import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import MessageQuote from 'app/molecules/message-quote';
+import { useUser } from 'app/features/users/hooks/use-user';
+import User from 'app/features/users/services/current-user-service';
+import { useChannelMessages } from 'app/features/messages/hooks/use-channel-messages';
+import { gotoMessage } from 'src/utils/messages';
 
 type Props = {
   linkToThread?: boolean;
@@ -37,6 +42,16 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   const channelId = context.channelId;
   const { message } = useMessage(context);
+  const quotedMessage = message.quote_message;
+  const { channel } = useChannel(channelId);
+  const showQuotedMessage = quotedMessage && channel.visibility === 'direct';
+  let authorName = '';
+  const deletedQuotedMessage = quotedMessage?.subtype === 'deleted';
+
+  if (showQuotedMessage) {
+    const author = useUser(quotedMessage.user_id);
+    authorName = author ? User.getFullName(author || {}) : 'Anonymous';
+  }
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
     const app_id = message.application_id;
@@ -92,6 +107,17 @@ export default (props: Props) => {
       onClick={() => setActive(false)}
     >
       <MessageHeader linkToThread={props.linkToThread} />
+      {showQuotedMessage && (
+        <MessageQuote
+          author={authorName}
+          message={quotedMessage.text}
+          closable={false}
+          deleted={deletedQuotedMessage}
+          goToMessage={() =>
+            gotoMessage(quotedMessage, context.companyId, context.channelId, context.workspaceId)
+          }
+        />
+      )}
       {!!showEdition && !deleted && (
         <div className="content-parent">
           <MessageEdition />

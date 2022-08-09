@@ -225,6 +225,10 @@ export type NodeMessage = {
   _previous_message?: NodeMessage;
 
   links?: MessageLinkType[];
+
+  quote_message?: NodeMessage & {
+    users?: UserType[];
+  };
 };
 
 export type MessageWithReplies = NodeMessage & {

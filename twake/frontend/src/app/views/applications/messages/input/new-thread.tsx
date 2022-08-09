@@ -9,7 +9,6 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 
 import './input.scss';
-import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
 
 type Props = {
   useButton?: boolean;
@@ -25,7 +24,6 @@ export default (props: Props) => {
     location,
     subLocation,
   );
-  const { isActive: isBeingQuoted } = useMessageQuoteReply(props.threadId, props.channelId);
 
   if (!editorIsActive && props.useButton) {
     return (
@@ -44,9 +42,6 @@ export default (props: Props) => {
   } else {
     return (
       <Thread withBlock className="new-thread">
-        {isBeingQuoted && (
-          JSON.stringify(isBeingQuoted)
-        )}
         <ThreadSection noSenderSpace>
           <Input channelId={props.channelId} threadId={props.threadId} />
         </ThreadSection>
