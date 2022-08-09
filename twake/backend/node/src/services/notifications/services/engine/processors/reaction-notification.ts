@@ -1,7 +1,10 @@
-import { PushNotificationMessage, ReactionNotification } from "../../../types";
-import { NotificationPubsubHandler } from "../../../api";
+import {
+  NotificationMessageQueueHandler,
+  PushNotificationMessage,
+  ReactionNotification,
+} from "../../../types";
 import { logger } from "../../../../../core/platform/framework";
-import { eventBus } from "../../../../../core/platform/services/realtime/bus";
+import { websocketEventBus } from "../../../../../core/platform/services/realtime/bus";
 import {
   RealtimeEntityActionType,
   ResourcePath,
@@ -12,7 +15,7 @@ import { getNotificationRoomName } from "../../realtime";
 import { Channel } from "../../../../channels/entities/channel";
 import User from "../../../../user/entities/user";
 export class PushReactionNotification
-  implements NotificationPubsubHandler<ReactionNotification, void>
+  implements NotificationMessageQueueHandler<ReactionNotification, void>
 {
   readonly topics = {
     in: "notification:reaction",
@@ -35,42 +38,28 @@ export class PushReactionNotification
       message.thread_id &&
       message.user_id &&
       message.reaction &&
-      message.creation_date
+      message.creation_date &&
+      message.reaction_user_id
     );
   }
 
-  async process(message: ReactionNotification): Promise<void> {
-    logger.info(
-      `${this.name} - Processing reaction notification for message ${message.message_id}`,
-    );
-
-    if (
-      !message.company_id ||
-      !message.workspace_id ||
-      !message.channel_id ||
-      !message.message_id ||
-      !message.thread_id ||
-      !message.reaction ||
-      !message.user_id ||
-      !message.creation_date
-    ) {
-      throw new Error("Missing required fields");
-    }
+  async process(task: ReactionNotification): Promise<void> {
+    logger.info(`${this.name} - Processing reaction notification for message ${task.message_id}`);
 
     const location = {
-      company_id: message.company_id,
-      workspace_id: message.workspace_id,
-      channel_id: message.channel_id,
-      user: message.user_id.toString(),
-      thread_id: message.thread_id || message.message_id,
-      message_id: message.message_id,
+      company_id: task.company_id,
+      workspace_id: task.workspace_id,
+      channel_id: task.channel_id,
+      user: task.user_id.toString(),
+      thread_id: task.thread_id || task.message_id,
+      message_id: task.message_id,
     };
 
-    const { title, text } = await this.buildNotificationMessageContent(message);
+    const { title, text } = await this.buildNotificationMessageContent(task);
 
-    eventBus.publish(RealtimeEntityActionType.Event, {
+    websocketEventBus.publish(RealtimeEntityActionType.Event, {
       type: "notification:desktop",
-      room: ResourcePath.get(getNotificationRoomName(message.user_id)),
+      room: ResourcePath.get(getNotificationRoomName(task.user_id)),
       entity: {
         ...location,
         title,
@@ -80,7 +69,7 @@ export class PushReactionNotification
       result: null,
     });
 
-    this.sendPushNotification(message.user_id, {
+    this.sendPushNotification(task.user_id, {
       ...location,
       title,
       text,
@@ -88,13 +77,13 @@ export class PushReactionNotification
   }
 
   sendPushNotification(user: string, reaction: PushNotificationMessage): void {
-    MobilePushNotifier.get(gr.platformServices.pubsub).notify(user, reaction);
+    MobilePushNotifier.get(gr.platformServices.messageQueue).notify(user, reaction);
   }
 
   async buildNotificationMessageContent(
     message: ReactionNotification,
   ): Promise<{ title: string; text: string }> {
-    const { company_id, workspace_id, user_id, reaction, thread_id } = message;
+    const { company_id, workspace_id, reaction_user_id, reaction, thread_id } = message;
     let title = "";
 
     const channel: Channel = await gr.services.channels.channels.get({
@@ -109,10 +98,9 @@ export class PushReactionNotification
         company_id: company_id,
         id: workspace_id,
       }),
-      gr.services.users.get({ id: user_id }),
+      gr.services.users.get({ id: reaction_user_id }),
     ]);
 
-    //get message
     const msg = await gr.services.messages.messages.get({
       thread_id: thread_id,
       id: message.message_id,

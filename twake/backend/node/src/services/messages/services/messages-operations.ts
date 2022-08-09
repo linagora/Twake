@@ -15,12 +15,9 @@ import { ThreadMessagesService } from "./messages";
 import gr from "../../global-resolver";
 import { updateMessageReactions } from "../../../utils/messages";
 import { localEventBus } from "../../../core/platform/framework/event-bus";
-import { PushReactionNotification } from "../../../services/notifications/services/engine/processors/reaction-notification";
+import { ReactionNotification } from "../../../services/notifications/types";
 export class ThreadMessagesOperationsService {
-  private reactionNotifications: PushReactionNotification;
-  constructor(private threadMessagesService: ThreadMessagesService) {
-    this.reactionNotifications = new PushReactionNotification();
-  }
+  constructor(private threadMessagesService: ThreadMessagesService) {}
   repository: Repository<Message>;
 
   async init(context: TwakeContext): Promise<this> {
@@ -110,16 +107,22 @@ export class ThreadMessagesOperationsService {
     await this.repository.save(message, context);
 
     if ((operation.reactions || []).length === 1) {
-      await this.reactionNotifications.process({
-        thread_id: context.thread.id,
-        company_id: message.cache?.company_id || context.company.id,
-        user_id: context.user.id,
-        message_id: message.id,
-        workspace_id: message.cache?.workspace_id,
-        channel_id: message.cache?.channel_id,
-        creation_date: new Date().getTime(),
-        reaction: emoji.get(operation.reactions[0]),
-      });
+      await gr.platformServices.messageQueue.publish<ReactionNotification>(
+        "notification:reaction",
+        {
+          data: {
+            thread_id: context.thread.id,
+            company_id: message.cache?.company_id || context.company.id,
+            user_id: message.user_id,
+            message_id: message.id,
+            workspace_id: message.cache?.workspace_id,
+            channel_id: message.cache?.channel_id,
+            creation_date: new Date().getTime(),
+            reaction: emoji.get(operation.reactions[0]),
+            reaction_user_id: context.user.id,
+          },
+        },
+      );
     }
 
     this.threadMessagesService.onSaved(message, { created: false }, context);

@@ -91,6 +91,7 @@ export type ReactionNotification = {
   creation_date: number;
   user_id: string;
   reaction: string;
+  reaction_user_id: string;
 };
 
 export type ReactionNotificationResult = ReactionNotification;

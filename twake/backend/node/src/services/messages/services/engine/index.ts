@@ -62,7 +62,6 @@ export class MessagesEngine implements Initializable {
     await this.filesViewProcessor.process(thread, e);
     await this.messageToNotifications.process(thread, e);
     await this.messageToHooks.process(thread, e);
-    //TODO
 
     if (e.created) {
       for (const workspaceId of _.uniq(
