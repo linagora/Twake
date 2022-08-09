@@ -22,3 +22,10 @@ input.ant-input {
 a {
     color: var(--primary) !important;
 }
+
+@layer base {
+    ul,ol {
+        list-style: revert;
+        padding: revert;
+    }
+}
