@@ -1,6 +1,8 @@
 import { Shortcuts } from 'shortcuts';
 
-const shortcuts = new Shortcuts();
+const shortcuts = new Shortcuts({
+  target: document,
+});
 
 export type ShortcutType = {
   shortcut: string;

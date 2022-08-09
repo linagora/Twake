@@ -18,6 +18,7 @@ import Api from 'app/features/global/framework/api-service';
 import FileUploadAPIClient from '../../features/files/api/file-upload-api-client';
 import LargePreview from './parts/large-preview';
 import { MessageFileType } from 'app/features/messages/types/message';
+import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 
 type PropsType = {
   source: 'internal' | 'drive' | string;
@@ -57,6 +58,8 @@ export default ({
     },
   ];
 
+  const { open: openViewer } = useFileViewerModal();
+
   useEffect(() => {
     if (source === 'drive') {
       (async () => {
@@ -90,19 +93,7 @@ export default ({
   const onClickFile = async () => {
     if (source === 'internal') {
       //Only if upload has ended
-      if ((!status || isPendingFileStatusSuccess(status)) && file.id)
-        DriveService.viewDocument(
-          {
-            id: file.id,
-            name: file.name,
-            url: FileUploadService.getDownloadRoute({
-              companyId: companyId || '',
-              fileId: file.id,
-            }),
-            extension: file.name.split('.').pop(),
-          },
-          true,
-        );
+      if ((!status || isPendingFileStatusSuccess(status)) && file.id) openViewer(messageFile);
     }
     if (source === 'drive') {
       if (typeof externalId === 'string') {
