@@ -7,6 +7,7 @@ import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-qu
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import User from 'app/features/users/services/current-user-service';
 import { gotoMessage } from 'src/utils/messages';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 type PropsType = {
   closable?: boolean;
@@ -16,6 +17,7 @@ type PropsType = {
 export default ({ closable = true, onClose }: PropsType): React.ReactElement => {
   const companyId = useRouterCompany();
   const channelId = useRouterChannel();
+  const workspaceId = useRouterWorkspace();
   const { message: quotedMessageId } = useMessageQuoteReply(channelId);
   const quotedMessage = useMessage({
     companyId,
@@ -39,7 +41,7 @@ export default ({ closable = true, onClose }: PropsType): React.ReactElement => 
       closable={closable}
       onClose={onClose}
       deleted={deleted}
-      goToMessage={() => gotoMessage(message)}
+      goToMessage={() => gotoMessage(message, companyId, channelId, workspaceId)}
     />
   );
 };

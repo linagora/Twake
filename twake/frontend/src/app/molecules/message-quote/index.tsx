@@ -22,7 +22,7 @@ export default ({
 }: PropsType) => {
   return (
     <div
-      className="flex flex-row rounded-none mt-4 pl-4 pr-2 py-2 mb-2 border-solid border-l-4 bg-indigo-100"
+      className="flex flex-row rounded-none mt-4 pl-4 pr-2 py-2 mb-2 border-solid border-l-4 bg-indigo-100 cursor-pointer"
       style={{
         borderColor: 'var(--primary)',
       }}
@@ -44,7 +44,7 @@ export default ({
             size={16}
             className="cursor-pointer float-right"
             onClick={e => {
-              e.preventDefault();
+              e.stopPropagation();
               onClose();
             }}
           />

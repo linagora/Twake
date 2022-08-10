@@ -24,8 +24,8 @@ import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-
 import MessageQuote from 'app/molecules/message-quote';
 import { useUser } from 'app/features/users/hooks/use-user';
 import User from 'app/features/users/services/current-user-service';
-import { useChannelMessages } from 'app/features/messages/hooks/use-channel-messages';
 import { gotoMessage } from 'src/utils/messages';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 type Props = {
   linkToThread?: boolean;
@@ -47,6 +47,9 @@ export default (props: Props) => {
   const showQuotedMessage = quotedMessage && channel.visibility === 'direct';
   let authorName = '';
   const deletedQuotedMessage = quotedMessage?.subtype === 'deleted';
+  const currentRouterWorkspace = useRouterWorkspace();
+  const workspaceId =
+    context.workspaceId === 'direct' ? currentRouterWorkspace : context.workspaceId;
 
   if (showQuotedMessage) {
     const author = useUser(quotedMessage.user_id);
@@ -114,7 +117,7 @@ export default (props: Props) => {
           closable={false}
           deleted={deletedQuotedMessage}
           goToMessage={() =>
-            gotoMessage(quotedMessage, context.companyId, context.channelId, context.workspaceId)
+            gotoMessage(quotedMessage, context.companyId, context.channelId, workspaceId)
           }
         />
       )}

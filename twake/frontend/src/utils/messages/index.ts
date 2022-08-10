@@ -12,7 +12,7 @@ export const gotoMessage = (message: NodeMessage, companyId: string, channelId: 
       companyId,
       channelId,
       workspaceId,
-      ...(message.id !== message?.thread_id ? { messageId: message.id } : {}),
+      threadId: message.thread_id,
     }),
   );
 };

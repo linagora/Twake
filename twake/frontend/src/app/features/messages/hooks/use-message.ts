@@ -3,7 +3,7 @@ import _ from 'lodash';
 import User from 'app/features/users/services/current-user-service';
 import { useRecoilCallback, useRecoilState } from 'recoil';
 import { AtomMessageKey, MessageState } from '../state/atoms/messages';
-import { MessageWithReplies, NodeMessage, NodeMessageSubType, ReactionType } from 'app/features/messages/types/message';
+import { NodeMessage, NodeMessageSubType, ReactionType } from 'app/features/messages/types/message';
 import { messageToMessageWithReplies } from '../utils/message-with-replies';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 
@@ -148,14 +148,7 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
-  const setQuotedMessage = async (message: MessageWithReplies) => {
-    const updated = _.cloneDeep(message);
-    updated.quote_message = message;
-
-    setValue(updated);
-  }
-
-  return { message, get, react, pin, remove, bookmark, save, move, deleteLinkPreview, setQuotedMessage };
+  return { message, get, react, pin, remove, bookmark, save, move, deleteLinkPreview };
 };
 
 //Function to recompute reactions after a frontend operation
