@@ -42,18 +42,25 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   const channelId = context.channelId;
   const { message } = useMessage(context);
-  const quotedMessage = message.quote_message;
+  const quotedMessage = useMessage({
+    ...context,
+    threadId: message.quote_message?.thread_id as string,
+    id: message.quote_message?.id as string,
+  }).message;
+
+  console.debug('message quoted anon', quotedMessage);
+
   const { channel } = useChannel(channelId);
-  const showQuotedMessage = quotedMessage && channel.visibility === 'direct';
+  const showQuotedMessage = quotedMessage && quotedMessage.thread_id && channel.visibility === 'direct';
   let authorName = '';
-  const deletedQuotedMessage = quotedMessage?.subtype === 'deleted';
   const currentRouterWorkspace = useRouterWorkspace();
   const workspaceId =
     context.workspaceId === 'direct' ? currentRouterWorkspace : context.workspaceId;
+  const deletedQuotedMessage = quotedMessage && quotedMessage.subtype === 'deleted';
 
   if (showQuotedMessage) {
     const author = useUser(quotedMessage.user_id);
-    authorName = author ? User.getFullName(author || {}) : 'Anonymous';
+    authorName = author ? User.getFullName(author) : 'Anonymous';
   }
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
@@ -130,7 +137,7 @@ export default (props: Props) => {
         <div className="content-parent dont-break-out">
           {deleted === true ? (
             <div className="deleted-message">
-              <DeletedContent userId={message.user_id || ''} />
+              <DeletedContent userId={message.user_id || ''} key={message.thread_id} />
             </div>
           ) : (
             <>
