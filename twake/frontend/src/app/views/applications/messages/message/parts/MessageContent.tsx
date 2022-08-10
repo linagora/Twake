@@ -27,6 +27,7 @@ import User from 'app/features/users/services/current-user-service';
 import { gotoMessage } from 'src/utils/messages';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import QuotedContent from 'app/molecules/quoted-content';
+import MessageStatus from 'app/molecules/message-status';
 
 type Props = {
   linkToThread?: boolean;
@@ -103,6 +104,7 @@ export default (props: Props) => {
 
   const isChannelMember = useIsChannelMember(channelId);
   const quotedContent = <QuotedContent message={quotedMessage} />;
+  const showMessageStatus = message.user_id === User.getCurrentUserId();
 
   return (
     <div
@@ -192,6 +194,7 @@ export default (props: Props) => {
             threadHeader={props.threadHeader}
           />
         )}
+      {showMessageStatus && <MessageStatus status={message.status ?? 'sent'} />}
     </div>
   );
 };
