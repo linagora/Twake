@@ -1,7 +1,7 @@
 import { getRealtimeRecipients, getRoom, RealtimeRecipients } from "..";
 import { DeleteResult } from "../../api/crud-service";
 import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
-import { eventBus } from "../../../services/realtime/bus";
+import { websocketEventBus } from "../../../services/realtime/bus";
 
 /**
  *
@@ -25,7 +25,7 @@ export function RealtimeDeleted<T>(recipients: RealtimeRecipients<T>): MethodDec
       if (result.deleted)
         getRealtimeRecipients(recipients, result.entity, context).forEach(
           ({ room, path, resource }) => {
-            eventBus.publish<T>(RealtimeEntityActionType.Deleted, {
+            websocketEventBus.publish<T>(RealtimeEntityActionType.Deleted, {
               type: result.type,
               room: getRoom(room, result, context),
               resourcePath: path,

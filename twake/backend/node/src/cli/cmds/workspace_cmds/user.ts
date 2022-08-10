@@ -18,7 +18,7 @@ const services = [
   "notifications",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
 ];
 
 const command: yargs.CommandModule<ListParams, ListParams> = {

@@ -23,3 +23,9 @@ export type WorkspaceUserType = UserType & {
   user: UserType;
   companies?: UserCompanyType[];
 };
+
+export type WorkspacePendingUserType = {
+  company_role: 'member' | 'guest' | 'admin';
+  role: 'member' | 'moderator';
+  email: string;
+};

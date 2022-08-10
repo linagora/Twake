@@ -1,10 +1,10 @@
 import yargs from "yargs";
 import ora from "ora";
 import twake from "../../../twake";
-import { ConsoleServiceAPI } from "../../../services/console/api";
 import { CompanyReport, UserReport } from "../../../services/console/types";
 import Company from "../../../services/user/entities/company";
 import gr from "../../../services/global-resolver";
+import { ConsoleServiceImpl } from "../../../services/console/service";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
@@ -27,7 +27,7 @@ const services = [
   "notifications",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "console",
 ];
 
@@ -82,7 +82,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     const spinner = ora({ text: `Importing Twake data on ${argv.url}` }).start();
     const platform = await twake.run(services);
     await gr.doInit(platform);
-    const consoleService = platform.getProvider<ConsoleServiceAPI>("console");
+    const consoleService = platform.getProvider<ConsoleServiceImpl>("console");
     const merge = consoleService.merge(
       argv.url,
       argv.concurrent,

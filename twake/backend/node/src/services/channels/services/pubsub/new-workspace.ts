@@ -1,11 +1,13 @@
 import { getLogger } from "../../../../core/platform/framework";
-import { PubsubHandler } from "../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../core/platform/services/message-queue/api";
 import { ChannelActivityNotification, ChannelVisibility } from "../../types";
 import { getInstance } from "../../../channels/entities/channel";
 import gr from "../../../global-resolver";
 
-const logger = getLogger("channel.pubsub.new-channel-activity");
-export class NewWorkspaceProcessor implements PubsubHandler<ChannelActivityNotification, void> {
+const logger = getLogger("channel.message-queue.new-channel-activity");
+export class NewWorkspaceProcessor
+  implements MessageQueueHandler<ChannelActivityNotification, void>
+{
   readonly topics = {
     in: "workspace:added",
     queue: "workspace:added:consumer1",

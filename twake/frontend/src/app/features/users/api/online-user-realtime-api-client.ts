@@ -1,7 +1,7 @@
 import WebSocketService from '../../global/services/websocket-service';
 import Logger from '../../global/framework/logger-service';
 import { RealtimeEventAction } from '../../global/types/realtime-types';
-
+import UsersService from 'app/features/users/services/current-user-service';
 const logger = Logger.getLogger('OnlineUsersRealtimeAPI');
 
 export type GetUserRequestType = string;
@@ -17,12 +17,13 @@ export type SubscribeReturn = {
 export type OnlineUserRealtimeAPIType = {
   getUserStatus: (id: GetUserRequestType) => Promise<GetUserResponseType>;
   getUsersStatus: (ids: GetUsersRequestType) => Promise<GetUsersResponseType>;
+  setMyStatus: () => void;
   subscribe: (onUpdate: (users: RealtimeUpdateMessageType) => void) => SubscribeReturn;
 };
 
-export const ONLINE_ROOM = '/users/online';
+export const ONLINE_ROOM = (companyId: string) => `/users/online/${companyId}`;
 
-export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRealtimeAPIType => {
+export const OnlineUserRealtimeAPI = (websocket: WebSocketService, companyId: string): OnlineUserRealtimeAPIType => {
   const getUserStatus = (id: GetUserRequestType): Promise<GetUserResponseType> => {
     logger.debug(`Get user online status ${id}`);
     return getUsersStatus([id]).then(response => response?.[0] || [id, false]);
@@ -35,11 +36,20 @@ export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRe
       .then(result => result || []);
   };
 
+  const setMyStatus = (): void => {
+    const id = UsersService.getCurrentUserId();
+    logger.debug(`Set user online status ${id}`);
+
+    websocket
+      .get<GetUsersRequestType, GetUsersResponseType>('online:set', [id])
+      .then(result => result || []);
+  };
+
   const subscribe = (onUpdate: (users: RealtimeUpdateMessageType) => void): SubscribeReturn => {
-    const name = `${ONLINE_ROOM}@OnlineUsersRealtimeAPI`;
+    const name = `${ONLINE_ROOM(companyId)}/@OnlineUsersRealtimeAPI`;
 
     websocket.join(
-      ONLINE_ROOM,
+      ONLINE_ROOM(companyId),
       '',
       name,
       (
@@ -51,7 +61,7 @@ export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRe
             onUpdate(event.resource || []);
           }
         } else if (type === 'realtime:join:success') {
-          logger.debug(`Room ${ONLINE_ROOM} has been joined`);
+          logger.debug(`Room ${ONLINE_ROOM(companyId)} has been joined`);
         } else {
           logger.debug('Event type is not supported', type);
         }
@@ -60,7 +70,7 @@ export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRe
 
     return {
       name,
-      unsubscribe: () => websocket.leave(ONLINE_ROOM, name),
+      unsubscribe: () => websocket.leave(ONLINE_ROOM(companyId), name),
     };
   };
 
@@ -68,5 +78,6 @@ export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRe
     getUserStatus,
     getUsersStatus,
     subscribe,
+    setMyStatus,
   };
 };

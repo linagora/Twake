@@ -19,7 +19,7 @@ describe("The /workspaces API (invite tokens)", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "user",
         "search",

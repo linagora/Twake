@@ -1,30 +1,23 @@
 import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
-import { FileServiceAPI, UploadOptions } from "../api";
-import { File, PublicFile } from "../entities/file";
+import { UploadOptions } from "../types";
+import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
-import { PreviewClearPubsubRequest, PreviewPubsubRequest } from "../../previews/types";
+import { PreviewClearMessageQueueRequest, PreviewMessageQueueRequest } from "../../previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
 import {
   CrudException,
   DeleteResult,
-  ListResult,
-  Paginable,
-  Pagination,
+  ExecutionContext,
 } from "../../../core/platform/framework/api/crud-service";
 import gr from "../../global-resolver";
-import { MessageFileRef } from "../../messages/entities/message-file-refs";
-import { MessageFile } from "../../messages/entities/message-files";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
-import { formatUser } from "../../../utils/users";
-import { UserObject } from "../../user/web/types";
 
-export class FileServiceImpl implements FileServiceAPI {
+export class FileServiceImpl {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
@@ -34,7 +27,7 @@ export class FileServiceImpl implements FileServiceAPI {
     try {
       await Promise.all([
         (this.repository = await gr.database.getRepository<File>("files", File)),
-        gr.platformServices.pubsub.processor.addHandler(
+        gr.platformServices.messageQueue.processor.addHandler(
           new PreviewFinishedProcessor(this, this.repository),
         ),
       ]);
@@ -55,10 +48,14 @@ export class FileServiceImpl implements FileServiceAPI {
 
     let entity: File = null;
     if (id) {
-      entity = await this.repository.findOne({
-        company_id: context.company.id,
-        id: id,
-      });
+      entity = await this.repository.findOne(
+        {
+          company_id: context.company.id,
+          id: id,
+        },
+        {},
+        context,
+      );
       if (!entity) {
         throw new Error(`This file ${id} does not exist`);
       }
@@ -78,7 +75,7 @@ export class FileServiceImpl implements FileServiceAPI {
       entity.application_id = applicationId;
       entity.upload_data = null;
 
-      this.repository.save(entity);
+      this.repository.save(entity, context);
     }
 
     if (file) {
@@ -100,7 +97,7 @@ export class FileServiceImpl implements FileServiceAPI {
             size: options.totalSize,
             chunks: options.totalChunks || 1,
           };
-          this.repository.save(entity);
+          this.repository.save(entity, context);
         }
       }
 
@@ -116,14 +113,14 @@ export class FileServiceImpl implements FileServiceAPI {
 
       if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         entity.upload_data.size = totalUploadedSize;
-        await this.repository.save(entity);
+        await this.repository.save(entity, context);
       }
 
       //Fixme: detect in multichunk when all chunks are uploaded to trigger this. For now we do only single chunks for preview
       if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         /** Send preview generation task */
         if (entity.upload_data.size < this.max_preview_file_size) {
-          const document: PreviewPubsubRequest["document"] = {
+          const document: PreviewMessageQueueRequest["document"] = {
             id: JSON.stringify(_.pick(entity, "id", "company_id")),
             provider: gr.platformServices.storage.getConnectorType(),
 
@@ -144,19 +141,26 @@ export class FileServiceImpl implements FileServiceAPI {
           };
 
           entity.metadata.thumbnails_status = "waiting";
-          await this.repository.save(entity);
+          await this.repository.save(entity, context);
 
           try {
-            await gr.platformServices.pubsub.publish<PreviewPubsubRequest>("services:preview", {
-              data: { document, output },
-            });
+            await gr.platformServices.messageQueue.publish<PreviewMessageQueueRequest>(
+              "services:preview",
+              {
+                data: { document, output },
+              },
+            );
 
             if (options.waitForThumbnail) {
-              for (let i = 1; i < 10; i++) {
-                entity = await this.repository.findOne({
-                  company_id: context.company.id,
-                  id: entity.id,
-                });
+              for (let i = 1; i < 100; i++) {
+                entity = await this.repository.findOne(
+                  {
+                    company_id: context.company.id,
+                    id: entity.id,
+                  },
+                  {},
+                  context,
+                );
                 if (entity.metadata.thumbnails_status === "done") {
                   break;
                 }
@@ -165,7 +169,7 @@ export class FileServiceImpl implements FileServiceAPI {
             }
           } catch (err) {
             entity.metadata.thumbnails_status = "error";
-            await this.repository.save(entity);
+            await this.repository.save(entity, context);
 
             logger.warn({ err }, "Previewing - Error while sending ");
           }
@@ -235,11 +239,11 @@ export class FileServiceImpl implements FileServiceAPI {
     if (!id || !context.company.id) {
       return null;
     }
-    return this.getFile({ id, company_id: context.company.id });
+    return this.getFile({ id, company_id: context.company.id }, context);
   }
 
-  async getFile(pk: Pick<File, "company_id" | "id">): Promise<File> {
-    return this.repository.findOne(pk);
+  async getFile(pk: Pick<File, "company_id" | "id">, context: ExecutionContext): Promise<File> {
+    return this.repository.findOne(pk, {}, context);
   }
 
   getThumbnailRoute(file: File, index: string) {
@@ -257,7 +261,7 @@ export class FileServiceImpl implements FileServiceAPI {
       throw new CrudException("File not found", 404);
     }
 
-    await this.repository.remove(fileToDelete);
+    await this.repository.remove(fileToDelete, context);
 
     const path = getFilePath(fileToDelete);
 
@@ -266,7 +270,7 @@ export class FileServiceImpl implements FileServiceAPI {
     });
 
     if (fileToDelete.thumbnails.length > 0) {
-      await gr.platformServices.pubsub.publish<PreviewClearPubsubRequest>(
+      await gr.platformServices.messageQueue.publish<PreviewClearMessageQueueRequest>(
         "services:preview:clear",
         {
           data: {

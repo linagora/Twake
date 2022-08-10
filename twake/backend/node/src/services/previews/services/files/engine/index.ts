@@ -8,8 +8,8 @@ import gr from "../../../../global-resolver";
  */
 export class PreviewEngine implements Initializable {
   async init(): Promise<this> {
-    gr.platformServices.pubsub.processor.addHandler(new PreviewProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new ClearProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new PreviewProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new ClearProcessor());
     return this;
   }
 }

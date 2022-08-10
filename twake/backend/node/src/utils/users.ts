@@ -31,6 +31,17 @@ export async function formatUser(
     last_activity: user.last_activity,
   } as UserObject;
 
+  const userOnline = await gr.services.online.get({ user_id: user.id });
+  if (userOnline) {
+    const { last_seen, is_connected } = userOnline;
+
+    resUser = {
+      ...resUser,
+      last_seen,
+      is_connected,
+    };
+  }
+
   if (options?.includeCompanies) {
     const userCompanies = await gr.services.users.getUserCompanies({ id: user.id });
 

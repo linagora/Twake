@@ -6,7 +6,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { Message } from "../../entities/messages";
+import { getInstance as getMessageInstance, Message } from "../../entities/messages";
 import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
@@ -56,9 +56,12 @@ export class MessagesController
         );
       }
 
-      const thread = await gr.services.messages.threads.get({
-        id: context.thread.id,
-      } as ThreadPrimaryKey);
+      const thread = await gr.services.messages.threads.get(
+        {
+          id: context.thread.id,
+        } as ThreadPrimaryKey,
+        context,
+      );
 
       if (!thread) {
         throw "Message must be in a thread";
@@ -76,7 +79,7 @@ export class MessagesController
       let entity = result.entity;
 
       if (request.query.include_users) {
-        entity = await gr.services.messages.messages.includeUsersInMessage(entity);
+        entity = await gr.services.messages.messages.includeUsersInMessage(entity, context);
       }
 
       return {
@@ -100,10 +103,10 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       await gr.services.messages.messages.forceDelete(
-        {
+        getMessageInstance({
           thread_id: request.params.thread_id,
           id: request.params.message_id,
-        },
+        }),
         context,
       );
       return {
@@ -127,10 +130,10 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       await gr.services.messages.messages.delete(
-        {
+        getMessageInstance({
           thread_id: request.params.thread_id,
           id: request.params.message_id,
-        },
+        }),
         context,
       );
       return {
@@ -163,7 +166,7 @@ export class MessagesController
       );
 
       if (request.query.include_users) {
-        resource = await gr.services.messages.messages.includeUsersInMessage(resource);
+        resource = await gr.services.messages.messages.includeUsersInMessage(resource, context);
       }
 
       return {
@@ -199,7 +202,7 @@ export class MessagesController
       let entities = [];
       if (request.query.include_users) {
         for (const msg of resources.getEntities()) {
-          entities.push(await gr.services.messages.messages.includeUsersInMessage(msg));
+          entities.push(await gr.services.messages.messages.includeUsersInMessage(msg, context));
         }
       } else {
         entities = resources.getEntities();

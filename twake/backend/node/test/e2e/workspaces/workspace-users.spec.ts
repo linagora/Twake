@@ -41,7 +41,7 @@ describe("The /workspace users API", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "search",
         "webserver",
         "user",

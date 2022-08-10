@@ -27,25 +27,11 @@ import {
   searchFrontend,
   useSearchUsers,
 } from 'app/features/users/hooks/use-search-user-list';
+import MemberGrade from './MemberGrade';
 
 type ColumnObjectType = { [key: string]: any };
 
 const { Link, Text, Title } = Typography;
-
-const RoleComponent = ({ text, icon }: { text: string; icon?: JSX.Element }): JSX.Element => (
-  <Row align="middle">
-    {!!icon && (
-      <Col pull={1} style={{ height: 16 }}>
-        {icon}
-      </Col>
-    )}
-    <Col>
-      <Text type="secondary" style={{ fontSize: 12 }}>
-        {text}
-      </Text>
-    </Col>
-  </Row>
-);
 
 export default ({ filter }: { filter: string }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -203,44 +189,6 @@ export default ({ filter }: { filter: string }) => {
     );
   };
 
-  const getRoleTitle = ({
-    companyRole,
-    workspaceRole,
-  }: {
-    companyRole: string;
-    workspaceRole: string;
-  }) => {
-    // Company
-    switch (companyRole) {
-      case 'owner':
-        return (
-          <RoleComponent
-            text={Languages.t('scenes.app.popup.appsparameters.pages.company_label')}
-            icon={<ChevronsUp size={16} style={{ padding: 0 }} />}
-          />
-        );
-      case 'admin':
-        return (
-          <RoleComponent
-            text={Languages.t('general.user.role.company.admin')}
-            icon={<ChevronsUp size={16} style={{ padding: 0 }} />}
-          />
-        );
-      case 'guest':
-        return <RoleComponent text={Languages.t('general.user.role.company.guest')} />;
-    }
-
-    // Workspace
-    if (workspaceRole === 'moderator') {
-      return (
-        <RoleComponent
-          text={Languages.t('scenes.app.popup.workspaceparameter.pages.moderator_status')}
-          icon={<ChevronUp size={16} style={{ padding: 0 }} />}
-        />
-      );
-    }
-  };
-
   const columns: ColumnsType<ColumnObjectType> = [
     {
       title: Languages.t('scenes.app.popup.workspaceparameter.pages.table_title'),
@@ -270,10 +218,10 @@ export default ({ filter }: { filter: string }) => {
       dataIndex: 'tags',
       render: (text, col, index) => (
         <Text type="secondary">
-          {getRoleTitle({
-            companyRole: UserService.getUserRole(col.user, companyId),
-            workspaceRole: col.role,
-          })}
+          <MemberGrade
+            companyRole={UserService.getUserRole(col.user, companyId)}
+            workspaceRole={col.role}
+          />
         </Text>
       ),
     },

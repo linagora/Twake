@@ -9,7 +9,7 @@ import {
 } from "./api";
 import ElasticsearchService from "./adapters/elasticsearch";
 import MongosearchService from "./adapters/mongosearch";
-import { localEventBus } from "../../framework/pubsub";
+import { localEventBus } from "../../framework/event-bus";
 import { DatabaseServiceAPI } from "../database/api";
 import SearchRepository from "./repository";
 

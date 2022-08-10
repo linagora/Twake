@@ -42,7 +42,7 @@ describe("The /workspace/pending users API", () => {
       services: [
         "user",
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "search",
         "workspaces",

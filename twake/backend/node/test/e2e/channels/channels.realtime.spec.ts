@@ -27,7 +27,7 @@ describe("The Channels Realtime feature", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",

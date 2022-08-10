@@ -15,17 +15,17 @@ import {
 } from "../types";
 
 import { v1 as uuidv1 } from "uuid";
-import { ConsoleServiceAPI } from "../api";
 import User, { getInstance as getUserInstance } from "../../user/entities/user";
 import Company, { CompanySearchKey } from "../../user/entities/company";
 import { logger } from "../../../core/platform/framework/logger";
 import gr from "../../global-resolver";
+import { ConsoleServiceImpl } from "../service";
 
 export class ConsoleInternalClient implements ConsoleServiceClient {
   version: "1";
   client: AxiosInstance;
 
-  constructor(private consoleInstance: ConsoleServiceAPI) {}
+  constructor(private consoleInstance: ConsoleServiceImpl) {}
 
   async addUserToCompany(
     company: ConsoleCompany,

@@ -11,6 +11,7 @@ import {
   CreateResult,
   CrudException,
   DeleteResult,
+  ExecutionContext,
   ListResult,
   Paginable,
   SaveResult,
@@ -22,12 +23,11 @@ import { getLogger } from "../../../../../core/platform/framework";
 
 import { User } from "../../../../../utils/types";
 import WorkspaceUser from "../../../../workspaces/entities/workspace_user";
-import { DefaultChannelService } from "../../../provider";
 import gr from "../../../../global-resolver";
 
 const logger = getLogger("channel.default");
 
-export default class DefaultChannelServiceImpl implements DefaultChannelService {
+export default class DefaultChannelServiceImpl {
   version: "1";
   repository: Repository<DefaultChannel>;
   listener: DefaultChannelListener;
@@ -39,8 +39,11 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     return this;
   }
 
-  async create(channel: DefaultChannel): Promise<CreateResult<DefaultChannel>> {
-    await this.repository.save(channel);
+  async create(
+    channel: DefaultChannel,
+    context: ExecutionContext,
+  ): Promise<CreateResult<DefaultChannel>> {
+    await this.repository.save(channel, context);
 
     // Once a default channel has been successfully created, we have to add all the workspace users as member of the channel
     // There are several ways to do it: Directly or using pubsub
@@ -50,8 +53,8 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     return new CreateResult<DefaultChannel>("default_channel", channel);
   }
 
-  get(pk: DefaultChannelPrimaryKey): Promise<DefaultChannel> {
-    return this.repository.findOne(pk);
+  get(pk: DefaultChannelPrimaryKey, context: ExecutionContext): Promise<DefaultChannel> {
+    return this.repository.findOne(pk, {}, context);
   }
 
   update(
@@ -76,14 +79,17 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     throw new Error("Method not implemented.");
   }
 
-  async delete(pk: DefaultChannelPrimaryKey): Promise<DeleteResult<DefaultChannel>> {
-    const defaultChannel = await this.get(pk);
+  async delete(
+    pk: DefaultChannelPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<DeleteResult<DefaultChannel>> {
+    const defaultChannel = await this.get(pk, context);
 
     if (!defaultChannel) {
       throw CrudException.notFound("Default channel has not been found");
     }
 
-    await this.repository.remove(defaultChannel);
+    await this.repository.remove(defaultChannel, context);
 
     return new DeleteResult("default_channel", defaultChannel, true);
   }
@@ -147,7 +153,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
                 company_id: channel.company_id,
                 workspace_id: channel.workspace_id,
                 id: channel.channel_id,
-              },
+              } as Channel,
             ])
             .then(result => ({
               user: wsUser,
@@ -203,7 +209,11 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
 
       logger.info("Adding user %s to channels %s", user, JSON.stringify(channels));
 
-      return (await gr.services.channels.members.addUserToChannels(user, channels)).getEntities();
+      const regChannels = channels.map(c => ({ id: c.channel_id, ...c } as any as Channel));
+
+      return (
+        await gr.services.channels.members.addUserToChannels(user, regChannels)
+      ).getEntities();
     } catch (err) {
       logger.error({ err }, "Error while adding user for default channels");
       throw new Error("Error while adding user for default channels");
@@ -213,21 +223,27 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
   getDefaultChannels(
     workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
     pagination?: Paginable,
+    context?: ExecutionContext,
   ): Promise<DefaultChannel[]> {
-    return this.getDefaultChannels$(workspace, pagination).pipe(toArray()).toPromise();
+    return this.getDefaultChannels$(workspace, pagination, context).pipe(toArray()).toPromise();
   }
 
   getDefaultChannels$(
     workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
     pagination?: Paginable,
+    context?: ExecutionContext,
   ): Observable<DefaultChannel> {
     const list = (
       workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
       pagination: Paginable,
     ) => {
-      return this.repository.find(workspace, {
-        pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token },
-      });
+      return this.repository.find(
+        workspace,
+        {
+          pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token },
+        },
+        context,
+      );
     };
 
     return from(list(workspace, pagination)).pipe(

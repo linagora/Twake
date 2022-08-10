@@ -27,7 +27,11 @@ export class CompanyApplicationController
   ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
     const resource = await gr.services.applications.companyApps.get(
-      { application_id: request.params.application_id, company_id: context.company.id },
+      {
+        application_id: request.params.application_id,
+        company_id: context.company.id,
+        id: undefined,
+      },
       context,
     );
     return {
@@ -72,8 +76,11 @@ export class CompanyApplicationController
       {},
       context,
     );
+
+    const app = await gr.services.applications.companyApps.get(resource.entity);
+
     return {
-      resource: resource.entity.application,
+      resource: app.application,
     };
   }
 
@@ -82,10 +89,11 @@ export class CompanyApplicationController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
-    const resource = await gr.services.applications.companyApps.delete(
-      { application_id: request.params.application_id, company_id: context.company.id },
-      context,
-    );
+    const resource = await gr.services.applications.companyApps.delete({
+      application_id: request.params.application_id,
+      company_id: context.company.id,
+      id: undefined,
+    });
     return {
       status: resource.deleted ? "success" : "error",
     };

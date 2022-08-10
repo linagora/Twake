@@ -2,7 +2,10 @@ import { MessageHook, MessageLocalEvent } from "../../../../types";
 import { ParticipantObject, Thread } from "../../../../entities/threads";
 import { logger } from "../../../../../../core/platform/framework";
 import { Channel } from "../../../../../channels/entities";
-import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
+import {
+  ExecutionContext,
+  Pagination,
+} from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../entities/messages";
 import gr from "../../../../../global-resolver";
 
@@ -13,7 +16,11 @@ export class MessageToHooksProcessor {
     return this;
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     logger.debug(`${this.name} - Share message with channel microservice for hooks`);
 
     if (message.resource.ephemeral) {
@@ -35,13 +42,7 @@ export class MessageToHooksProcessor {
             company_id: participant.company_id,
             workspace_id: participant.workspace_id,
           },
-          {
-            user: { server_request: true, id: null },
-            workspace: {
-              company_id: participant.company_id,
-              workspace_id: participant.workspace_id,
-            },
-          },
+          context,
         );
 
         if (!channel) {
@@ -51,16 +52,19 @@ export class MessageToHooksProcessor {
         for (const appId of channel.connectors) {
           if (message.resource.application_id !== appId) {
             //Publish hook
-            await gr.platformServices.pubsub.publish<MessageHook>("application:hook:message", {
-              data: {
-                type: "message",
-                application_id: appId,
-                company_id: participant.company_id,
-                channel: channel,
-                thread: thread,
-                message: messageResource,
+            await gr.platformServices.messageQueue.publish<MessageHook>(
+              "application:hook:message",
+              {
+                data: {
+                  type: "message",
+                  application_id: appId,
+                  company_id: participant.company_id,
+                  channel: channel,
+                  thread: thread,
+                  message: messageResource,
+                },
               },
-            });
+            );
           }
         }
       }

@@ -1,12 +1,12 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { DeleteResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeDeleted } from "../../../../../../../src/core/platform/framework/decorators";
-import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
+import { websocketEventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
 import { ResourcePath } from "../../../../../../../src/core/platform/services/realtime/types";
 
 describe("The RealtimeDeleted decorator", () => {
   it("should call the original method send back original result but do not emit event if result type is wrong", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeDeleted({ room: "/foo/bar" })
@@ -31,7 +31,7 @@ describe("The RealtimeDeleted decorator", () => {
   });
 
   it("should call the original method send back original result and emit event", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeDeleted({ room: "/foo/bar", path: "/foo/bar/baz" })
@@ -72,7 +72,7 @@ describe("The RealtimeDeleted decorator", () => {
   });
 
   it("should emit event with path computed from function", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeDeleted(result => [

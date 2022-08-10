@@ -8,6 +8,7 @@ import gr from "../../../services/global-resolver";
 import { MessageFileRef, TYPE as TYPERef } from "../entities/message-file-refs";
 import { MessageFile, TYPE } from "../entities/message-files";
 import { Message } from "../entities/messages";
+import _ from "lodash";
 
 export class MessagesFilesService implements Initializable {
   version: "1";
@@ -64,7 +65,7 @@ export class MessagesFilesService implements Initializable {
       user: UserObject;
       message: Message;
       channel: Channel;
-      navigation: { next: string; previous: string };
+      navigation: { next: Partial<MessageFile>; previous: Partial<MessageFile> };
     }
   > {
     const msgFile = await this.msgFilesRepository.findOne({ message_id, id });
@@ -86,30 +87,7 @@ export class MessagesFilesService implements Initializable {
       company_id: channel.company_id,
       target_id: channel.id,
     };
-    const next = (
-      await this.msgFilesRefRepository.find(navigationPk, {
-        pagination: {
-          page_token: null,
-          limitStr: "2",
-          reversed: true,
-        },
-        $gte: [["id", msgFile.id]],
-      })
-    )
-      .getEntities()
-      .filter(a => a.id !== msgFile.id)?.[0]?.id;
-    const previous = (
-      await this.msgFilesRefRepository.find(navigationPk, {
-        pagination: {
-          page_token: null,
-          limitStr: "2",
-          reversed: false,
-        },
-        $gte: [["id", msgFile.id]],
-      })
-    )
-      .getEntities()
-      .filter(a => a.id !== msgFile.id)?.[0]?.id;
+    const { previous, next } = await this.getMessageFileNavigation(navigationPk, msgFile.id);
 
     return {
       ...msgFile,
@@ -117,9 +95,79 @@ export class MessagesFilesService implements Initializable {
       message,
       channel,
       navigation: {
-        next,
-        previous,
+        next: next
+          ? {
+              id: next.message_file_id,
+              message_id: next.message_id,
+            }
+          : null,
+        previous: previous
+          ? {
+              id: previous.message_file_id,
+              message_id: previous.message_id,
+            }
+          : null,
       },
     };
+  }
+
+  /**
+   * Message file references are ordered with an id based on the time the file was uploaded
+   * We cannot get this specific ID directly from the message file right now
+   */
+  private async getMessageFileNavigation(
+    navigationPk: { target_type: string; company_id: string; target_id: string },
+    id: string,
+  ) {
+    const list = [
+      ...(
+        await this.msgFilesRefRepository.find(navigationPk, {
+          pagination: {
+            page_token: null,
+            limitStr: "5",
+            reversed: false,
+          },
+          $gte: [["id", id]],
+        })
+      ).getEntities(),
+      ...(
+        await this.msgFilesRefRepository.find(navigationPk, {
+          pagination: {
+            page_token: null,
+            limitStr: "5",
+            reversed: true,
+          },
+          $lte: [["id", id]],
+        })
+      ).getEntities(),
+    ];
+    const offsetRef = list.find(a => a.message_file_id === id) || null;
+
+    let next = (
+      await this.msgFilesRefRepository.find(navigationPk, {
+        pagination: {
+          page_token: null,
+          limitStr: "2",
+          reversed: true,
+        },
+        $gte: [["id", offsetRef?.id || id]],
+      })
+    )
+      .getEntities()
+      .filter(a => a.message_file_id !== id)?.[0];
+    let previous = (
+      await this.msgFilesRefRepository.find(navigationPk, {
+        pagination: {
+          page_token: null,
+          limitStr: "2",
+          reversed: false,
+        },
+        $lte: [["id", offsetRef?.id || id]],
+      })
+    )
+      .getEntities()
+      .filter(a => a.message_file_id !== id)?.[0];
+
+    return { previous, next };
   }
 }

@@ -1,5 +1,6 @@
 import Repository from "../database/services/orm/repository/repository";
 import { logger } from "../../framework";
+import { ExecutionContext } from "../../framework/api/crud-service";
 
 type LastRevised = {
   calls: number;
@@ -22,13 +23,13 @@ export class CounterProvider<T> {
     logger.debug(`${this.name} Created counter provider for ${this.repository.table}`);
   }
 
-  async increase(pk: Partial<T>, value: number): Promise<void> {
-    return this.repository.save(this.repository.createEntityFromObject({ value, ...pk }));
+  async increase(pk: Partial<T>, value: number, context?: ExecutionContext): Promise<void> {
+    return this.repository.save(this.repository.createEntityFromObject({ value, ...pk }), context);
   }
 
-  async get(pk: Partial<T>): Promise<number> {
+  async get(pk: Partial<T>, context?: ExecutionContext): Promise<number> {
     try {
-      const counter = await this.repository.findOne(pk);
+      const counter = await this.repository.findOne(pk, {}, context);
       const val = counter ? (counter as any).value : 0;
       return this.revise(pk, val);
     } catch (e) {

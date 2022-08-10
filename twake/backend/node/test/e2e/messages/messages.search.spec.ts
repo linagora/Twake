@@ -21,7 +21,7 @@ describe("The /messages API", () => {
       services: [
         "database",
         "search",
-        "pubsub",
+        "message-queue",
         "websocket",
         "webserver",
         "user",

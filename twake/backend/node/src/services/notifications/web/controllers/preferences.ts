@@ -13,6 +13,7 @@ import {
 } from "../../../../utils/types";
 import { UserNotificationPreferences } from "../../entities";
 import gr from "../../../global-resolver";
+import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
 const ALL = "all";
 
@@ -43,6 +44,7 @@ export class NotificationPreferencesController
   async save(
     request: FastifyRequest<{ Body: CreateNotificationPreferencesBody }>,
     reply: FastifyReply,
+    context?: ExecutionContext,
   ): Promise<ResourceCreateResponse<UserNotificationPreferences>> {
     const entity = {
       ...request.body.resource,
@@ -56,6 +58,7 @@ export class NotificationPreferencesController
     try {
       const result = await gr.services.notifications.preferences.savePreferences(
         entity as UserNotificationPreferences,
+        context,
       );
 
       if (result) {

@@ -1,26 +1,35 @@
-import React from 'react';
-import { Lock } from 'react-feather';
 import { Button, Col, Row, Typography } from 'antd';
+import { File, Info, Lock, Users } from 'react-feather';
 
 import Emojione from 'app/components/emojione/emojione';
 import ModalManager from 'app/components/modal/modal-manager';
-import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
-import RouterServices from 'app/features/router/services/router-service';
-import SearchInput from '../Search';
-import ChannelUsersHeader from './ChannelUsersHeader';
-import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
-import ChannelAvatars from './ChannelAvatars';
-import Languages from 'app/features/global/services/languages-service';
-import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
-import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
+import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
+import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
+import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
+import Languages from 'app/features/global/services/languages-service';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
+import RouterServices from 'app/features/router/services/router-service';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
+import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
+import { useRecoilState } from 'recoil';
+import SearchInput from '../Search';
+import ChannelAvatars from './ChannelAvatars';
+import ChannelUsersHeader from './ChannelUsersHeader';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
-
   const { channel } = useChannel(channelId || '');
-
   const members = channel?.members || [];
+  const [, setChannelAttachmentState] = useRecoilState(channelAttachmentListState);
+  const { user: currentUser } = useCurrentUser();
+  const canAccessChannelParameters =
+    AccessRightsService.hasLevel(workspaceId, 'member') &&
+    AccessRightsService.getCompanyLevel(companyId) !== 'guest';
+
+  const { setOpen: setParticipantsOpen } = useUsersSearchModal();
 
   useUsersListener(members);
 
@@ -86,20 +95,48 @@ export default (): JSX.Element => {
               </div>
             )}
             {channel.visibility !== 'direct' && (
-              <Button
-                size="small"
-                type="text"
-                onClick={() => {
-                  ModalManager.open(<ChannelMembersList channel={channel} closable />, {
-                    position: 'center',
-                    size: { width: '600px', minHeight: '329px' },
-                  });
-                }}
-              >
-                <Typography.Text>
-                  {Languages.t('scenes.apps.parameters.workspace_sections.members')}
-                </Typography.Text>
-              </Button>
+              <>
+                {canAccessChannelParameters && (
+                  <Button
+                    size="small"
+                    type="text"
+                    className="px-1"
+                    onClick={() => {
+                      ModalManager.open(
+                        <ChannelWorkspaceEditor
+                          title={Languages.t('scenes.app.channelsbar.modify_channel_menu')}
+                          channel={channel || {}}
+                          currentUserId={currentUser?.id}
+                        />,
+                        {
+                          position: 'center',
+                          size: { width: '600px' },
+                        },
+                      );
+                    }}
+                  >
+                    <Info className="h-5" />
+                  </Button>
+                )}
+                <Button
+                  size="small"
+                  type="text"
+                  className="px-1"
+                  onClick={() => setParticipantsOpen(true)}
+                >
+                  <Users className="h-5" />
+                </Button>
+                <Button
+                  size="small"
+                  type="text"
+                  className="w-auto px-1 mr-2"
+                  onClick={() => {
+                    setChannelAttachmentState(true);
+                  }}
+                >
+                  <File className="h-5" />
+                </Button>
+              </>
             )}
           </Row>
         )}

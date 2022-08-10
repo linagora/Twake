@@ -10,6 +10,9 @@ import {
 import { UserNotificationBadge } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
 import gr from "../../../global-resolver";
+import { getCompanyExecutionContext } from "../../../messages/web/controllers";
+import { BaseChannelsParameters } from "../../../channels/web/types";
+import { WorkspaceExecutionContext } from "../../../channels/types";
 
 export class NotificationController
   implements
@@ -25,6 +28,8 @@ export class NotificationController
       Querystring: NotificationListQueryParameters;
     }>,
   ): Promise<ResourceListResponse<UserNotificationBadge>> {
+    const context = getExecutionContext(request);
+
     let resources: UserNotificationBadge[] = [];
     let page_token = "";
 
@@ -32,6 +37,7 @@ export class NotificationController
     if (request.query.all_companies) {
       const list = await gr.services.notifications.badges.listForUserPerCompanies(
         request.currentUser.id,
+        context,
       );
       resources = resources.concat(list.getEntities());
     }
@@ -41,6 +47,7 @@ export class NotificationController
         request.query.company_id,
         request.currentUser.id,
         { ...request.query },
+        context,
       );
       resources = resources.concat(list.getEntities());
       page_token = list.page_token;
@@ -61,4 +68,18 @@ export class NotificationController
       }),
     };
   }
+}
+
+function getExecutionContext(request: FastifyRequest): WorkspaceExecutionContext {
+  return {
+    user: request.currentUser,
+    url: request.url,
+    method: request.routerMethod,
+    reqId: request.id,
+    transport: "http",
+    workspace: {
+      company_id: undefined,
+      workspace_id: undefined,
+    },
+  };
 }

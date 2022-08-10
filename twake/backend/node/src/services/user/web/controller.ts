@@ -58,7 +58,7 @@ export class UsersCrudController
       id = context.user.id;
     }
 
-    const user = await gr.services.users.get({ id: id }, getExecutionContext(request));
+    const user = await gr.services.users.get({ id: id });
 
     if (!user) {
       throw CrudException.notFound(`User ${id} not found`);
@@ -82,7 +82,7 @@ export class UsersCrudController
   ): Promise<ResourceCreateResponse<UserObject>> {
     const context = getExecutionContext(request);
 
-    const user = await gr.services.users.get({ id: context.user.id }, getExecutionContext(request));
+    const user = await gr.services.users.get({ id: context.user.id });
     if (!user) {
       reply.notFound(`User ${context.user.id} not found`);
       return;
@@ -90,7 +90,7 @@ export class UsersCrudController
 
     user.status_icon = coalesce(request.body.resource, user.status_icon);
 
-    await gr.services.users.save(user, {}, context);
+    await gr.services.users.save(user, context);
 
     return {
       resource: await formatUser(user),
@@ -153,7 +153,7 @@ export class UsersCrudController
   ): Promise<ResourceListResponse<CompanyObject>> {
     const context = getExecutionContext(request);
 
-    const user = await gr.services.users.get({ id: request.params.id }, context);
+    const user = await gr.services.users.get({ id: request.params.id });
 
     if (!user) {
       throw CrudException.notFound(`User ${request.params.id} not found`);
@@ -291,7 +291,7 @@ export class UsersCrudController
     const companyId = request.params.id;
 
     let channels: UserChannel[] = await gr.services.channels.channels
-      .getChannelsForUsersInWorkspace(companyId, "direct", userId)
+      .getChannelsForUsersInWorkspace(companyId, "direct", userId, undefined, context)
       .then(list => list.getEntities());
 
     channels = channels.sort((a, b) => b.last_activity - a.last_activity);

@@ -1,27 +1,28 @@
-import { NotificationPubsubHandler } from "../../../api";
 import { logger } from "../../../../../core/platform/framework";
 import { MobilePushNotifier } from "../../../notifiers";
 import {
   MentionNotification,
   MentionNotificationResult,
+  NotificationMessageQueueHandler,
   PushNotificationMessage,
 } from "../../../types";
 import { ChannelMemberNotificationPreference } from "../../../entities";
 import { UserNotificationBadge } from "../../../entities";
 import _ from "lodash";
-import { eventBus } from "../../../../../core/platform/services/realtime/bus";
+import { websocketEventBus } from "../../../../../core/platform/services/realtime/bus";
 import {
   RealtimeEntityActionType,
   ResourcePath,
 } from "../../../../../core/platform/services/realtime/types";
 import { getNotificationRoomName } from "../../realtime";
 import gr from "../../../../global-resolver";
+import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 /**
  * Push new message notification to a set of users
  */
 export class PushNotificationToUsersMessageProcessor
-  implements NotificationPubsubHandler<MentionNotification, MentionNotificationResult>
+  implements NotificationMessageQueueHandler<MentionNotification, MentionNotificationResult>
 {
   readonly topics = {
     in: "notification:mentions",
@@ -44,7 +45,10 @@ export class PushNotificationToUsersMessageProcessor
     );
   }
 
-  async process(message: MentionNotification): Promise<MentionNotificationResult> {
+  async process(
+    message: MentionNotification,
+    context?: ExecutionContext,
+  ): Promise<MentionNotificationResult> {
     logger.info(`${this.name} - Processing mention notification for channel ${message.channel_id}`);
 
     if (
@@ -65,6 +69,7 @@ export class PushNotificationToUsersMessageProcessor
       { channel_id: message.channel_id, company_id: message.company_id },
       message.mentions.users,
       message.creation_date,
+      context,
     );
 
     if (!usersToUpdate.length) {
@@ -81,6 +86,7 @@ export class PushNotificationToUsersMessageProcessor
         message_id: message.message_id,
       },
       usersToUpdate,
+      context,
     );
 
     badges.forEach(badge => {
@@ -93,7 +99,7 @@ export class PushNotificationToUsersMessageProcessor
         message_id: message.message_id,
       };
 
-      eventBus.publish(RealtimeEntityActionType.Event, {
+      websocketEventBus.publish(RealtimeEntityActionType.Event, {
         type: "notification:desktop",
         room: ResourcePath.get(getNotificationRoomName(badge.user_id)),
         entity: {
@@ -118,6 +124,7 @@ export class PushNotificationToUsersMessageProcessor
     channel: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
     users: string[] = [],
     timestamp: number,
+    context?: ExecutionContext,
   ): Promise<string[]> {
     if (!users.length) {
       return [];
@@ -130,6 +137,7 @@ export class PushNotificationToUsersMessageProcessor
         {
           lessThan: timestamp,
         },
+        context,
       )
     )
       .getEntities()
@@ -142,6 +150,7 @@ export class PushNotificationToUsersMessageProcessor
       "channel_id" | "company_id" | "thread_id" | "workspace_id" | "message_id"
     >,
     users: string[] = [],
+    context: ExecutionContext,
   ): Promise<Array<UserNotificationBadge>> {
     logger.info(`${this.name} - Update badge for users ${users.join("/")}`);
 
@@ -157,15 +166,18 @@ export class PushNotificationToUsersMessageProcessor
             message_id: badge.message_id,
             user_id: user,
           });
-          return this.saveBadge(badgeEntity);
+          return this.saveBadge(badgeEntity, context);
         }),
       )
     ).filter(Boolean);
   }
 
-  private saveBadge(badge: UserNotificationBadge): Promise<UserNotificationBadge> {
+  private saveBadge(
+    badge: UserNotificationBadge,
+    context: ExecutionContext,
+  ): Promise<UserNotificationBadge> {
     return gr.services.notifications.badges
-      .save(badge)
+      .save(badge, context)
       .then(result => result.entity)
       .catch(err => {
         logger.warn({ err }, `${this.name} - A badge has not been saved for user ${badge.user_id}`);
@@ -174,7 +186,7 @@ export class PushNotificationToUsersMessageProcessor
   }
 
   sendPushNotification(user: string, pushNotification: PushNotificationMessage): void {
-    MobilePushNotifier.get(gr.platformServices.pubsub).notify(user, pushNotification);
+    MobilePushNotifier.get(gr.platformServices.messageQueue).notify(user, pushNotification);
   }
 }
 

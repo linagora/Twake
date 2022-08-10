@@ -1,10 +1,18 @@
+# Twake 2022.Q3.1071
+
+- Message delivery status 🟢
+- New quote-reply feature ⤴️
+- Notification when someone react to your message 👍
+- New file preview and medias gallery with navigation, caption, and message context 🕶
+- Big simplification of backend 👩‍💻
+
 # Twake 2022.Q3.1065
 
+- File and medias channel gallery view 🎞
 - New channel members invitation and management modal ⚙️
-- New file preview and medias gallery with navigation, caption, and message context 🕶
 - Fixed connection status of users 🟢
-- Notification when someone react to your message 👍
-- Backend simplification for faster development 👩‍💻
+- New messages search feature on mobile 🔎
+- Fixed bugs and translation #2425 #2424 #2420 #2442 #2436 #2435
 
 # Twake 2022.Q3.1050
 

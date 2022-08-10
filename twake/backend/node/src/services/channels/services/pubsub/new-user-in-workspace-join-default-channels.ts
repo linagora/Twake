@@ -1,17 +1,19 @@
 import { getLogger } from "../../../../core/platform/framework";
-import { PubsubHandler } from "../../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../../core/platform/services/message-queue/api";
 import { NewUserInWorkspaceNotification } from "../channel/types";
 import gr from "../../../global-resolver";
 
 const NAME = "Channel::NewUserInWorkspaceJoinDefaultChannelsProcessor";
-const logger = getLogger("channel.pubsub.new-user-in-workspace-join-default-channels-processor");
+const logger = getLogger(
+  "channel.message-queue.new-user-in-workspace-join-default-channels-processor",
+);
 
 /**
  * When a new user is added in a workspace, a `workspace:user:added` event is published.
  * In such case, the user must be added to all the default channels of the workspace.
  */
 export class NewUserInWorkspaceJoinDefaultChannelsProcessor
-  implements PubsubHandler<NewUserInWorkspaceNotification, void>
+  implements MessageQueueHandler<NewUserInWorkspaceNotification, void>
 {
   readonly topics = {
     in: "workspace:member:added",
