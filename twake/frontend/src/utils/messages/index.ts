@@ -2,9 +2,12 @@ import { NodeMessage } from 'app/features/messages/types/message';
 import routerService from 'app/features/router/services/router-service';
 
 /**
- * Go to a specific message
+ * Go to a specific message.
  * 
- * @param {Message} message - The message to scroll to
+ * @param {NodeMessage} message - The message to scroll to
+ * @param {String} companyId - The company id
+ * @param {String} channelId - The channel id
+ * @param {String} workspaceId - The workspace id
  */
 export const gotoMessage = (message: NodeMessage, companyId: string, channelId: string, workspaceId: string): void => {
   routerService.push(

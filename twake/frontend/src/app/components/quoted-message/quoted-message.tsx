@@ -31,7 +31,7 @@ export default ({ closable = true, onClose }: PropsType): React.ReactElement => 
 
   const { message } = quotedMessage;
   const author = useUser(message.user_id);
-  const authorName = author ? User.getFullName(author || {}) : 'Anonymous';
+  const authorName = author ? User.getFullName(author) : 'Anonymous';
   const deleted = message.subtype === 'deleted';
 
   return (
