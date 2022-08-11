@@ -146,7 +146,7 @@ const getFileDownloadRoute = (file: MessageFileType): string => {
 
   return fileUploadService.getDownloadRoute({
     companyId: file.metadata?.external_id?.company_id,
-    fileId: file.metadata?.external_id?.file_id,
+    fileId: file.metadata?.external_id?.id,
   });
 };
 

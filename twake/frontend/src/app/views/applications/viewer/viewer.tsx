@@ -12,6 +12,8 @@ import { useFileViewer } from 'app/features/viewer/hooks/use-viewer';
 import { useEffect, useState } from 'react';
 import { fadeTransition, fadeZoomTransition } from 'src/utils/transitions';
 import * as Text from '@atoms/text';
+import Controls from './controls';
+import Display from './display';
 
 let animationTimeout: any = setTimeout(() => {});
 
@@ -55,8 +57,8 @@ export default () => {
         className="flex flex-col h-full"
         {...fadeTransition}
       >
-        <div className="px-16 py-2 grow">
-          <Preview />
+        <div className="px-16 py-2 grow relative">
+          <Display />
         </div>
         <Footer />
       </Transition>
@@ -81,14 +83,14 @@ const Navigation = () => {
   return (
     <>
       <XIcon
-        className="cursor-pointer absolute right-5 top-5 w-10 h-10 text-zinc-300 hover:text-white"
+        className="z-10 cursor-pointer absolute right-5 top-5 w-10 h-10 text-zinc-300 hover:text-white"
         onClick={() => close()}
       />
 
       <Transition
         as="div"
         show={!!status.details?.navigation.previous}
-        className="absolute left-5 top-0 bottom-0 m-auto w-12 h-12"
+        className="z-10 absolute left-5 top-0 bottom-0 m-auto w-12 h-12"
         {...fadeZoomTransition}
       >
         <ChevronLeftIcon
@@ -100,7 +102,7 @@ const Navigation = () => {
       <Transition
         as="div"
         show={!!status.details?.navigation.next}
-        className="absolute right-5 top-0 bottom-0 m-auto w-12 h-12"
+        className="z-10 absolute right-5 top-0 bottom-0 m-auto w-12 h-12"
         {...fadeZoomTransition}
       >
         <ChevronRightIcon
@@ -121,13 +123,13 @@ const Footer = () => {
   return (
     <>
       {status.details?.message.text && (
-        <div className="p-5 pb-0 bg-black w-full flex text-white">
+        <div className="z-10 p-5 pb-0 bg-black w-full flex text-white">
           <Text.Base noColor className="block text-white">
             {status.details?.message.text.substring(0, 500)}
           </Text.Base>
         </div>
       )}
-      <div className="p-5 bg-black w-full flex text-white">
+      <div className="z-10 p-5 bg-black w-full flex text-white">
         <div className="mr-4 w-12">
           <Avatar
             title={currentUserService.getFullName(user)}
@@ -146,17 +148,9 @@ const Footer = () => {
         </div>
 
         <div className="ml-4">
-          <PreviewButtons />
+          <Controls />
         </div>
       </div>
     </>
   );
-};
-
-const PreviewButtons = () => {
-  return <>[Preview buttons]</>;
-};
-
-const Preview = () => {
-  return <>[Preview]</>;
 };
