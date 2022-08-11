@@ -148,7 +148,7 @@
     "multistream": "^4.1.0",
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.0",
-    "node-fetch": "^3.2.10",
+    "node-fetch": "^2.6.7",
     "node-uuid": "^1.4.8",
     "ora": "^5.4.0",
     "pdf2pic": "^2.1.4",
