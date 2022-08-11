@@ -22,7 +22,7 @@ const services = [
   "auth",
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "user",
   "files",
   "messages",
@@ -126,6 +126,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       const page = await gr.services.channels.channels.getDirectChannelsInCompany(
         pagination,
         company.id,
+        undefined,
       );
       for (const channel of page.getEntities()) {
         const channelDetail = await gr.services.channels.channels.get(
@@ -134,10 +135,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
             workspace_id: "direct",
             id: channel.id,
           },
-          {
-            user: { id: "", server_request: true },
-            workspace: { workspace_id: workspaces[0].id, company_id: company.id },
-          },
+          undefined,
         );
         directChannels.push(channelDetail);
       }

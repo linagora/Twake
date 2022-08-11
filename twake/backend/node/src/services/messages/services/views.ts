@@ -1,5 +1,9 @@
 import _, { uniqBy } from "lodash";
-import { TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import {
   ExecutionContext,
   ListResult,
@@ -11,7 +15,6 @@ import SearchRepository from "../../../core/platform/services/search/repository"
 import { fileIsMedia } from "../../../services/files/utils";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
-import { MessageViewsServiceAPI } from "../api";
 import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
 import { MessageChannelRef } from "../entities/message-channel-refs";
 import { MessageFileRef } from "../entities/message-file-refs";
@@ -31,7 +34,7 @@ import {
 import { FileSearchResult } from "../web/controllers/views/search-files";
 import { buildMessageListPagination } from "./utils";
 
-export class ViewsServiceImpl implements MessageViewsServiceAPI {
+export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repositoryChannelRefs: Repository<MessageChannelRef>;
   repositoryThreads: Repository<Thread>;
@@ -88,10 +91,14 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
 
     const threads: (MessageWithReplies & { context: MessageFileRef })[] = [];
     for (const ref of refs.getEntities()) {
-      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
-      const extendedThread = await gr.services.messages.messages.getThread(thread, {
-        replies_per_thread: options.replies_per_thread || 1,
-      });
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id }, {});
+      const extendedThread = await gr.services.messages.messages.getThread(
+        thread,
+        {
+          replies_per_thread: options.replies_per_thread || 1,
+        },
+        context,
+      );
 
       const message = await gr.services.messages.messages.get({
         thread_id: ref.thread_id,
@@ -104,18 +111,22 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     }
 
     if (options.flat) {
-      const files: FlatFileFromMessage[] = [];
+      let files: FlatFileFromMessage[] = [];
       for (const thread of threads) {
         for (const reply of thread.highlighted_replies) {
           for (const file of reply.files || []) {
-            files.push({
-              file: file as MessageFile,
-              thread,
-              context: thread.context,
-            });
+            if (file.id === thread.context.message_file_id) {
+              files.push({
+                file: file as MessageFile,
+                thread,
+                context: thread.context,
+              });
+            }
           }
         }
       }
+      files = _.uniqBy(files, f => f.file.id);
+      refs.nextPage.page_token = files.length > 0 ? files[files.length - 1].context?.id : null;
       return new ListResult("file", files, refs.nextPage);
     }
 
@@ -135,14 +146,19 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
         channel_id: context.channel.id,
       },
       buildMessageListPagination(pagination, "thread_id"),
+      context,
     );
 
     const threads: MessageWithReplies[] = [];
     for (const ref of uniqBy(refs.getEntities(), "thread_id")) {
-      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
-      const extendedThread = await gr.services.messages.messages.getThread(thread, {
-        replies_per_thread: options.replies_per_thread || 1,
-      });
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id }, {});
+      const extendedThread = await gr.services.messages.messages.getThread(
+        thread,
+        {
+          replies_per_thread: options.replies_per_thread || 1,
+        },
+        context,
+      );
       if (extendedThread) {
         threads.push(extendedThread);
       }
@@ -206,7 +222,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
    * @returns
    */
   async listChannel(
-    pagination: Pagination,
+    pagination: Paginable,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies>> {
@@ -216,7 +232,8 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
         workspace_id: context.channel.workspace_id,
         channel_id: context.channel.id,
       },
-      buildMessageListPagination(pagination, "message_id"),
+      buildMessageListPagination(Pagination.fromPaginable(pagination), "message_id"),
+      context,
     );
 
     const threads = uniqBy(
@@ -226,6 +243,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           {
             $in: [["id", threadsRefs.getEntities().map(ref => ref.thread_id)]],
           },
+          context,
         )
       ).getEntities(),
       thread => thread.id,
@@ -236,9 +254,13 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     if (options.replies_per_thread !== 0) {
       await Promise.all(
         threads.map(async (thread: Thread) => {
-          const extendedThread = await gr.services.messages.messages.getThread(thread, {
-            replies_per_thread: options.replies_per_thread || 3,
-          });
+          const extendedThread = await gr.services.messages.messages.getThread(
+            thread,
+            {
+              replies_per_thread: options.replies_per_thread || 3,
+            },
+            context,
+          );
 
           if (
             extendedThread?.last_replies?.length === 0 &&
@@ -285,6 +307,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
             created_at: "desc",
           },
         },
+        context,
       )
       .then(a => {
         return a;
@@ -316,6 +339,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
             created_at: "desc",
           },
         },
+        context,
       )
       .then(a => {
         return a;
@@ -341,6 +365,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
                 {
                   pagination: { ...pagination, page_token: nextPageUploads?.page_token },
                 },
+                context,
               )
               .then(a => {
                 nextPageUploads = a.nextPage;
@@ -356,6 +381,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
                 {
                   pagination: { ...pagination, page_token: nextPageDownloads?.page_token },
                 },
+                context,
               )
               .then(a => {
                 nextPageDownloads = a.nextPage;
@@ -363,16 +389,20 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
               })
           : [];
 
-      let refs = [...uploads, ...downloads];
+      const refs = [...uploads, ...downloads];
 
       const messageFilePromises: Promise<MessageFile & { context: MessageFileRef }>[] = refs.map(
         async ref => {
           try {
             return {
-              ...(await this.repositoryMessageFile.findOne({
-                message_id: ref.message_id,
-                id: ref.message_file_id,
-              })),
+              ...(await this.repositoryMessageFile.findOne(
+                {
+                  message_id: ref.message_id,
+                  id: ref.message_file_id,
+                },
+                {},
+                context,
+              )),
               context: ref,
             };
           } catch (e) {

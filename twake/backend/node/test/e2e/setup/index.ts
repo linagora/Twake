@@ -6,7 +6,7 @@ import WebServerAPI from "../../../src/core/platform/services/webserver/provider
 import { DatabaseServiceAPI } from "../../../src/core/platform/services/database/api";
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { Workspace } from "../../../src/utils/types";
-import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
+import { MessageQueueServiceAPI } from "../../../src/core/platform/services/message-queue/api";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import config from "config";
@@ -32,7 +32,7 @@ export interface TestPlatform {
   workspace: Workspace;
   app: FastifyInstance;
   database: DatabaseServiceAPI;
-  pubsub: PubsubServiceAPI;
+  messageQueue: MessageQueueServiceAPI;
   authService: AuthServiceAPI;
   auth: {
     getJWTToken(payload?: TokenPayload): Promise<string>;
@@ -68,13 +68,13 @@ export async function init(
     await platform.start();
 
     const database = platform.getProvider<DatabaseServiceAPI>("database");
-    const pubsub = platform.getProvider<PubsubServiceAPI>("pubsub");
+    const messageQueue = platform.getProvider<MessageQueueServiceAPI>("message-queue");
     const auth = platform.getProvider<AuthServiceAPI>("auth");
 
     testPlatform = {
       platform,
       app,
-      pubsub,
+      messageQueue,
       database,
       workspace: { company_id: "", workspace_id: "" },
       currentUser: { id: "" },
@@ -95,7 +95,7 @@ export async function init(
   };
 
   testPlatform.app.server.listen(3000);
-  //await testPlatform.pubsub.start();
+  //await testPlatform.messageQueue.start();
 
   async function getJWTToken(
     payload: TokenPayload = { sub: testPlatform.currentUser.id },
@@ -117,7 +117,7 @@ export async function init(
   async function tearDown(): Promise<void> {
     if (testPlatform) {
       testPlatform.app.server.close();
-      //await testPlatform.pubsub.stop();
+      //await testPlatform.messageQueue.stop();
     }
   }
 

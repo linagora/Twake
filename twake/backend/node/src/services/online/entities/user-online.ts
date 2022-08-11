@@ -13,6 +13,10 @@ export default class UserOnline {
   @Column("user_id", "timeuuid", { generator: "timeuuid" })
   user_id: string;
 
+  @Type(() => Boolean)
+  @Column("is_connected", "boolean")
+  is_connected: boolean;
+
   /**
    * Save the date the user has been seen connected
    */

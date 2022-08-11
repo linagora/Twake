@@ -1,11 +1,11 @@
-import { PubsubHandler } from "../../../core/platform/services/pubsub/api";
+import { MessageQueueHandler } from "../../../core/platform/services/message-queue/api";
 import { getLogger } from "../../../core/platform/framework";
 import { MessageNotification } from "../../messages/types";
 import gr from "../../global-resolver";
 
-const logger = getLogger("statistics.pubsub.messages");
+const logger = getLogger("statistics.messages");
 
-export class StatisticsMessageProcessor implements PubsubHandler<MessageNotification, void> {
+export class StatisticsMessageProcessor implements MessageQueueHandler<MessageNotification, void> {
   readonly topics = {
     in: "message:created",
   };

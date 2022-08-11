@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { RealtimeDeleted, RealtimeSaved, TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  RealtimeDeleted,
+  RealtimeSaved,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import {
   CrudException,
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import { UserNotificationBadgeServiceAPI } from "../api";
 import {
   getUserNotificationBadgeInstance,
   UserNotificationBadge,
@@ -20,10 +26,9 @@ import { NotificationExecutionContext } from "../types";
 import { getNotificationRoomName } from "./realtime";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
-import { pick, uniq } from "lodash";
-import _ from "lodash";
+import _, { pick, uniq } from "lodash";
 
-export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
+export class UserNotificationBadgeService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<UserNotificationBadge>;
 
@@ -36,8 +41,11 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     return this;
   }
 
-  async get(pk: UserNotificationBadgePrimaryKey): Promise<UserNotificationBadge> {
-    return await this.repository.findOne(pk);
+  async get(
+    pk: UserNotificationBadgePrimaryKey,
+    context: ExecutionContext,
+  ): Promise<UserNotificationBadge> {
+    return await this.repository.findOne(pk, {}, context);
   }
 
   @RealtimeSaved<UserNotificationBadge>((badge, context) => {
@@ -49,10 +57,9 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   })
   async save<SaveOptions>(
     badge: UserNotificationBadge,
-    options: SaveOptions,
-    context: NotificationExecutionContext,
+    context: ExecutionContext,
   ): Promise<SaveResult<UserNotificationBadge>> {
-    await this.repository.save(getUserNotificationBadgeInstance(badge));
+    await this.repository.save(getUserNotificationBadgeInstance(badge), context);
 
     return new SaveResult(UserNotificationBadgeType, badge, OperationType.CREATE);
   }
@@ -68,7 +75,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<DeleteResult<UserNotificationBadge>> {
-    await this.repository.remove(pk as UserNotificationBadge);
+    await this.repository.remove(pk as UserNotificationBadge, context);
 
     return new DeleteResult(UserNotificationBadgeType, pk as UserNotificationBadge, true);
   }
@@ -77,7 +84,10 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     throw new Error("Not implemented");
   }
 
-  async listForUserPerCompanies(user_id: string): Promise<ListResult<UserNotificationBadge>> {
+  async listForUserPerCompanies(
+    user_id: string,
+    context: ExecutionContext,
+  ): Promise<ListResult<UserNotificationBadge>> {
     //We remove all badge from current company as next block will create dupicates
     const companies_ids = (await gr.services.companies.getAllForUser(user_id)).map(
       gu => gu.group_id,
@@ -94,13 +104,14 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
         {
           pagination: new Pagination("", "1"),
         },
+        context,
       );
       type = find.type;
       result = result.concat(find.getEntities());
     }
 
     const badges = new ListResult(type, result);
-    await this.ensureBadgesAreReachable(badges);
+    await this.ensureBadgesAreReachable(badges, context);
 
     return badges;
   }
@@ -109,20 +120,25 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     company_id: string,
     user_id: string,
     filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
+    context: ExecutionContext,
   ): Promise<ListResult<UserNotificationBadge>> {
     if (!company_id || !user_id) {
       throw CrudException.badRequest("company_id and user_id are required");
     }
 
-    const badges = await this.repository.find({
-      ...{
-        company_id,
-        user_id,
+    const badges = await this.repository.find(
+      {
+        ...{
+          company_id,
+          user_id,
+        },
+        ...pick(filter, ["workspace_id", "channel_id", "thread_id"]),
       },
-      ...pick(filter, ["workspace_id", "channel_id", "thread_id"]),
-    });
+      {},
+      context,
+    );
 
-    await this.ensureBadgesAreReachable(badges);
+    await this.ensureBadgesAreReachable(badges, context);
 
     return badges;
   }
@@ -133,6 +149,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   // - Are we in the company?
   async ensureBadgesAreReachable(
     badges: ListResult<UserNotificationBadge>,
+    context: ExecutionContext,
   ): Promise<ListResult<UserNotificationBadge>> {
     if (badges.getEntities().length === 0) {
       return badges;
@@ -154,13 +171,16 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
         channel: { id: channelId, ...channelMemberPk },
       };
       const exists =
-        (await gr.services.channels.channels.get({
-          id: channelId,
-          ..._.pick(channelMemberPk, "company_id", "workspace_id"),
-        })) && (await gr.services.channels.members.get(channelMemberPk, context));
+        (await gr.services.channels.channels.get(
+          {
+            id: channelId,
+            ..._.pick(channelMemberPk, "company_id", "workspace_id"),
+          },
+          context,
+        )) && (await gr.services.channels.members.get(channelMemberPk, context));
       if (!exists) {
         for (const badge of badges.getEntities()) {
-          if (badge.channel_id === channelId) this.removeUserChannelBadges(badge);
+          if (badge.channel_id === channelId) this.removeUserChannelBadges(badge, context);
         }
         badges.filterEntities(b => b.channel_id !== channelId);
       }
@@ -187,9 +207,10 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
           await gr.services.channels.members.ensureUserNotInWorkspaceIsNotInChannel(
             { id: userId },
             { id: workspaceId, company_id: companyId },
+            context,
           );
           for (const badge of badges.getEntities()) {
-            if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
+            if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge, context);
           }
           badges.filterEntities(b => b.workspace_id !== workspaceId);
         }
@@ -203,16 +224,20 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
    * FIXME: This is a temporary implementation which is sending as many websocket notifications as there are badges to remove
    * A better implementation will be to do a bulk delete and have a single websocket notification event
    * @param filter
+   * @param context
    */
   async removeUserChannelBadges(
     filter: Pick<
       UserNotificationBadgePrimaryKey,
       "workspace_id" | "company_id" | "channel_id" | "user_id"
     >,
+    context: ExecutionContext,
   ): Promise<number> {
     const badges = (
       await this.repository.find(
         _.pick(filter, ["workspace_id", "company_id", "channel_id", "user_id"]),
+        {},
+        context,
       )
     ).getEntities();
 

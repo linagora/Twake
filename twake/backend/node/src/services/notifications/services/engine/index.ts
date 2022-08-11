@@ -14,14 +14,20 @@ import gr from "../../../global-resolver";
  */
 export class NotificationEngine implements Initializable {
   async init(): Promise<this> {
-    gr.platformServices.pubsub.processor.addHandler(new UpdateChannelMemberMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new JoinChannelMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new LeaveChannelMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new MarkChannelAsReadMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new MarkChannelAsUnreadMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new NewChannelMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new PushNotificationMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new PushNotificationToUsersMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(
+      new UpdateChannelMemberMessageProcessor(),
+    );
+    gr.platformServices.messageQueue.processor.addHandler(new JoinChannelMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new LeaveChannelMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new MarkChannelAsReadMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(
+      new MarkChannelAsUnreadMessageProcessor(),
+    );
+    gr.platformServices.messageQueue.processor.addHandler(new NewChannelMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new PushNotificationMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(
+      new PushNotificationToUsersMessageProcessor(),
+    );
 
     return this;
   }

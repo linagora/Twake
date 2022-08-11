@@ -5,11 +5,15 @@ import { OnlineUserStateFamily, OnlineUserType } from '../state/atoms/online-use
 import { OnlineUserRealtimeAPI } from '../api/online-user-realtime-api-client';
 import WebSocketFactory from '../../global/services/websocket-factory-service';
 import Logger from 'app/features/global/framework/logger-service';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 const logger = Logger.getLogger('useOnlineUser');
-const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get());
+
 
 export const useOnlineUser = (id: string): OnlineUserType => {
+  const companyId = useRouterCompany();
+  const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get(), companyId);
+
   const updateUser = useRecoilCallback(
     ({ set }) =>
       (status: { id: string; connected: boolean }) => {

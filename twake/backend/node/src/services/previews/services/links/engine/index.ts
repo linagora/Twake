@@ -4,7 +4,7 @@ import gr from "../../../../global-resolver";
 
 export class LinkPreviewEngine implements Initializable {
   async init(): Promise<this> {
-    gr.platformServices.pubsub.processor.addHandler(new LinkPreviewProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new LinkPreviewProcessor());
 
     return this;
   }

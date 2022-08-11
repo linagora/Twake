@@ -25,9 +25,12 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
       let companyId: string = request.body?.resource?.company_id;
 
       if (request.params.application_id) {
-        const application = await gr.services.applications.marketplaceApps.get({
-          id: request.params.application_id,
-        });
+        const application = await gr.services.applications.marketplaceApps.get(
+          {
+            id: request.params.application_id,
+          },
+          undefined,
+        );
 
         if (!application) {
           throw fastify.httpErrors.notFound("Application is not defined");

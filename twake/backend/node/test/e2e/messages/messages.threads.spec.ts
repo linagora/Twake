@@ -20,7 +20,7 @@ describe("The Messages Threads feature", () => {
         "applications",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "files",

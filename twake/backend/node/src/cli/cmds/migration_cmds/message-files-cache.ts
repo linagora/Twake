@@ -8,13 +8,12 @@ import {
   Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import User, { TYPE as userTYPE } from "../../../services/user/entities/user";
-import _ from "lodash";
 import gr from "../../../services/global-resolver";
 import { getInstance, MessageFileRef } from "../../../services/messages/entities/message-file-refs";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import uuid from "node-uuid";
 import { MessageFile } from "../../../services/messages/entities/message-files";
+import { ThreadExecutionContext } from "../../../services/messages/types";
 
 type Options = {};
 
@@ -27,7 +26,7 @@ class MessageFilesCacheMigrator {
     this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
   }
 
-  public async run(options: Options = {}): Promise<void> {
+  public async run(options: Options = {}, context?: ExecutionContext): Promise<void> {
     this.repository = await gr.database.getRepository<MessageFileRef>(
       "message_file_refs",
       MessageFileRef,
@@ -52,6 +51,7 @@ class MessageFilesCacheMigrator {
           const channelsList = await gr.services.channels.channels.getAllChannelsInWorkspace(
             companyId,
             workspaceId,
+            context,
           );
 
           for (const channel of channelsList) {
@@ -84,7 +84,7 @@ class MessageFilesCacheMigrator {
                       workspace: { id: workspaceId },
                       channel: { id: channelId },
                       user: { id: null },
-                    } as ExecutionContext,
+                    } as ThreadExecutionContext,
                   );
                   messagesPagination = messagesList.nextPage;
                   messagesPagination.page_token = messagesList.getEntities()[0]?.id;
@@ -94,10 +94,14 @@ class MessageFilesCacheMigrator {
                       for (const _messageFile of message.files) {
                         count++;
                         try {
-                          const messageFile = await this.messageFileRepository.findOne({
-                            message_id: message.id,
-                            id: _messageFile.id,
-                          });
+                          const messageFile = await this.messageFileRepository.findOne(
+                            {
+                              message_id: message.id,
+                              id: _messageFile.id,
+                            },
+                            {},
+                            undefined,
+                          );
 
                           if (messageFile) {
                             console.log(messageFile.metadata.name);
@@ -116,7 +120,7 @@ class MessageFilesCacheMigrator {
                               message_file_id: messageFile.id,
                               file_id: messageFile.metadata.external_id,
                             });
-                            await this.repository.save(fileRef);
+                            await this.repository.save(fileRef, undefined);
 
                             //Update messageFileRepository
 
@@ -128,7 +132,7 @@ class MessageFilesCacheMigrator {
                             };
                             messageFile.thread_id = message.thread_id;
 
-                            await this.messageFileRepository.save(messageFile);
+                            await this.messageFileRepository.save(messageFile, undefined);
                           }
                         } catch (e) {}
                       }
@@ -157,7 +161,7 @@ const services = [
   "auth",
   "counter",
   "cron",
-  "pubsub",
+  "message-queue",
   "push",
   "realtime",
   "storage",

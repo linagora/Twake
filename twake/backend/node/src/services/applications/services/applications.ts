@@ -1,4 +1,3 @@
-import { MarketplaceApplicationServiceAPI } from "../api";
 import Application, {
   ApplicationPrimaryKey,
   getInstance as getApplicationInstance,
@@ -6,7 +5,7 @@ import Application, {
   TYPE,
 } from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger } from "../../../core/platform/framework";
+import { Initializable, logger, TwakeServiceProvider } from "../../../core/platform/framework";
 import {
   DeleteResult,
   ExecutionContext,
@@ -21,7 +20,7 @@ import assert from "assert";
 import gr from "../../global-resolver";
 import { InternalToHooksProcessor } from "./internal-event-to-hooks";
 
-export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI {
+export class ApplicationServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<Application>;
   searchRepository: SearchRepository<Application>;
@@ -38,13 +37,13 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
       logger.error("Error while initializing applications service");
     }
 
-    gr.platformServices.pubsub.processor.addHandler(new InternalToHooksProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(new InternalToHooksProcessor());
 
     return this;
   }
 
-  async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<Application> {
-    return await this.repository.findOne(pk);
+  async get(pk: ApplicationPrimaryKey, context: ExecutionContext): Promise<Application> {
+    return await this.repository.findOne(pk, {}, context);
   }
 
   async list<ListOptions>(
@@ -62,9 +61,10 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
             $search: options.search,
           },
         },
+        context,
       );
     } else {
-      entities = await this.repository.find({}, { pagination });
+      entities = await this.repository.find({}, { pagination }, context);
     }
     entities.filterEntities(app => app.publication.published);
 
@@ -75,24 +75,20 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
     return new ListResult(entities.type, applications, entities.nextPage);
   }
 
-  async listUnpublished(): Promise<Application[]> {
-    const entities = await this.repository.find({}, {});
+  async listUnpublished(context: ExecutionContext): Promise<Application[]> {
+    const entities = await this.repository.find({}, {}, context);
     entities.filterEntities(app => !app.publication.published);
     return entities.getEntities();
   }
 
   async listDefaults<ListOptions>(
-    pagination: Pagination,
-    options?: ListOptions,
-    context?: ExecutionContext,
+    context: ExecutionContext,
   ): Promise<ListResult<PublicApplicationObject>> {
-    //Fixme: this is not great if we have a lot of applications in the future
-
     const entities = [];
 
     let page: Pagination = { limitStr: "100" };
     do {
-      const applicationListResult = await this.repository.find({}, { pagination: page });
+      const applicationListResult = await this.repository.find({}, { pagination: page }, context);
       page = applicationListResult.nextPage as Pagination;
       applicationListResult.filterEntities(app => app.publication.published && app.is_default);
 
@@ -113,7 +109,7 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
 
     try {
       const entity = getApplicationInstance(item);
-      await this.repository.save(entity);
+      await this.repository.save(entity, context);
       return new SaveResult<Application>("application", entity, OperationType.UPDATE);
     } catch (e) {
       throw e;
@@ -124,26 +120,26 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
     pk: ApplicationPrimaryKey,
     context?: ExecutionContext,
   ): Promise<DeleteResult<Application>> {
-    const entity = await this.get(pk);
-    await this.repository.remove(entity);
+    const entity = await this.get(pk, context);
+    await this.repository.remove(entity, context);
     return new DeleteResult<Application>("application", entity, true);
   }
 
-  async publish(pk: ApplicationPrimaryKey): Promise<void> {
-    const entity = await this.get(pk);
+  async publish(pk: ApplicationPrimaryKey, context: ExecutionContext): Promise<void> {
+    const entity = await this.get(pk, context);
     if (!entity) {
       throw new Error("Entity not found");
     }
     entity.publication.published = true;
-    await this.repository.save(entity);
+    await this.repository.save(entity, context);
   }
 
-  async unpublish(pk: ApplicationPrimaryKey): Promise<void> {
-    const entity = await this.get(pk);
+  async unpublish(pk: ApplicationPrimaryKey, context: ExecutionContext): Promise<void> {
+    const entity = await this.get(pk, context);
     if (!entity) {
       throw new Error("Entity not found");
     }
     entity.publication.published = false;
-    await this.repository.save(entity);
+    await this.repository.save(entity, context);
   }
 }

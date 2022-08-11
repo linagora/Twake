@@ -14,7 +14,7 @@
       }
     }
   },
-  "pubsub": {
+  "message-queue": {
     "type": "amqp",
     "amqp": {
       "urls": ["amqp://guest:guest@rabbitmq:5672"]

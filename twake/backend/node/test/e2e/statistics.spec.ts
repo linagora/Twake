@@ -12,7 +12,6 @@ import { Thread } from "../../src/services/messages/entities/threads";
 import { deserialize } from "class-transformer";
 import { WorkspaceExecutionContext } from "../../src/services/channels/types";
 import { ChannelUtils, get as getChannelUtils } from "./channels/utils";
-import { StatisticsAPI } from "../../src/services/statistics/types";
 import { ResourceUpdateResponse, User } from "../../src/utils/types";
 import gr from "../../src/services/global-resolver";
 

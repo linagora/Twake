@@ -1,15 +1,21 @@
-import { CompanyApplicationServiceAPI } from "../api";
 import CompanyApplication, {
   CompanyApplicationPrimaryKey,
   CompanyApplicationWithApplication,
   TYPE,
 } from "../entities/company-application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger, RealtimeDeleted, RealtimeSaved } from "../../../core/platform/framework";
+import {
+  Initializable,
+  logger,
+  RealtimeDeleted,
+  RealtimeSaved,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import {
   DeleteResult,
   ListResult,
   OperationType,
+  Paginable,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
@@ -17,7 +23,7 @@ import { CompanyExecutionContext } from "../web/types";
 import { getCompanyApplicationRoom } from "../realtime";
 import gr from "../../global-resolver";
 
-export class CompanyApplicationServiceImpl implements CompanyApplicationServiceAPI {
+export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<CompanyApplication>;
 
@@ -34,18 +40,26 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
     return this;
   }
 
+  // TODO: remove logic from context
   async get(
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<CompanyApplicationWithApplication> {
-    const companyApplication = await this.repository.findOne({
-      group_id: context ? context.company.id : pk.company_id,
-      app_id: pk.application_id,
-    });
+    const companyApplication = await this.repository.findOne(
+      {
+        group_id: context ? context.company.id : pk.company_id,
+        app_id: pk.application_id,
+      },
+      {},
+      context,
+    );
 
-    const application = await gr.services.applications.marketplaceApps.get({
-      id: pk.application_id,
-    });
+    const application = await gr.services.applications.marketplaceApps.get(
+      {
+        id: pk.application_id,
+      },
+      context,
+    );
 
     return {
       ...companyApplication,
@@ -72,10 +86,14 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
     }
 
     let operation = OperationType.UPDATE;
-    let companyApplication = await this.repository.findOne({
-      group_id: context?.company.id,
-      app_id: item.application_id,
-    });
+    let companyApplication = await this.repository.findOne(
+      {
+        group_id: context?.company.id,
+        app_id: item.application_id,
+      },
+      {},
+      context,
+    );
     if (!companyApplication) {
       operation = OperationType.CREATE;
 
@@ -85,7 +103,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
       companyApplication.created_at = new Date().getTime();
       companyApplication.created_by = context?.user?.id || "";
 
-      await this.repository.save(companyApplication);
+      await this.repository.save(companyApplication, context);
     }
 
     return new SaveResult(TYPE, companyApplication, operation);
@@ -95,7 +113,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
     companyId: string,
     context: CompanyExecutionContext,
   ): Promise<void> {
-    const defaultApps = await gr.services.applications.marketplaceApps.listDefaults();
+    const defaultApps = await gr.services.applications.marketplaceApps.listDefaults(context);
     for (const defaultApp of defaultApps.getEntities()) {
       await this.save({ company_id: companyId, application_id: defaultApp.id }, {}, context);
     }
@@ -114,14 +132,18 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<CompanyApplication>> {
-    const companyApplication = await this.repository.findOne({
-      group_id: context.company.id,
-      app_id: pk.application_id,
-    });
+    const companyApplication = await this.repository.findOne(
+      {
+        group_id: context.company.id,
+        app_id: pk.application_id,
+      },
+      {},
+      context,
+    );
 
     let deleted = false;
     if (companyApplication) {
-      this.repository.remove(companyApplication);
+      this.repository.remove(companyApplication, context);
       deleted = true;
     }
 
@@ -129,7 +151,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
   }
 
   async list<ListOptions>(
-    pagination: Pagination,
+    pagination: Paginable,
     options?: ListOptions,
     context?: CompanyExecutionContext,
   ): Promise<ListResult<CompanyApplicationWithApplication>> {
@@ -137,15 +159,19 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
       {
         group_id: context.company.id,
       },
-      { pagination },
+      { pagination: Pagination.fromPaginable(pagination) },
+      context,
     );
 
     const applications = [];
 
     for (const companyApplication of companyApplications.getEntities()) {
-      const application = await gr.services.applications.marketplaceApps.get({
-        id: companyApplication.application_id,
-      });
+      const application = await gr.services.applications.marketplaceApps.get(
+        {
+          id: companyApplication.application_id,
+        },
+        context,
+      );
       if (application)
         applications.push({
           ...companyApplication,

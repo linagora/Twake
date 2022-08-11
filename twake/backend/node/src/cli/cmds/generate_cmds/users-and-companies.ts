@@ -33,7 +33,7 @@ const services = [
   "notifications",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
 ];
 
 // eslint-disable-next-line @typescript-eslint/ban-types

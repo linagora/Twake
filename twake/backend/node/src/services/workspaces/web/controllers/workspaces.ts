@@ -19,7 +19,10 @@ import { plainToClass } from "class-transformer";
 import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/company";
 import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
 import { getWorkspaceRooms } from "../../realtime";
-import { CrudException } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  ExecutionContext,
+} from "../../../../core/platform/framework/api/crud-service";
 import CompanyUser from "../../../user/entities/company_user";
 import gr from "../../../global-resolver";
 import { getLogger, TwakeLogger } from "../../../../core/platform/framework";
@@ -34,20 +37,20 @@ export class WorkspacesCrudController
     >
 {
   private logger: TwakeLogger;
-  private getCompanyUserRole(context: WorkspaceExecutionContext) {
+  private getCompanyUserRole(companyId: string, userId: string, context?: ExecutionContext) {
     return gr.services.companies
-      .getCompanyUser({ id: context.company_id }, { id: context.user.id })
+      .getCompanyUser({ id: companyId }, { id: userId }, context)
       .then(a => (a ? a.role : null));
   }
 
-  private getWorkspaceUserRole(workspaceId: string, userId: string) {
+  private getWorkspaceUserRole(workspaceId: string, userId: string, context?: ExecutionContext) {
     return gr.services.workspaces
-      .getUser({ workspaceId, userId })
+      .getUser({ workspaceId, userId }, context)
       .then(a => (a ? a.role || "member" : null));
   }
 
-  private getWorkspaceUsersCount(workspaceId: string) {
-    return gr.services.workspaces.getUsersCount(workspaceId);
+  private getWorkspaceUsersCount(workspaceId: string, context?: ExecutionContext) {
+    return gr.services.workspaces.getUsersCount(workspaceId, context);
   }
 
   private async formatWorkspace(
@@ -118,7 +121,7 @@ export class WorkspacesCrudController
 
     const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
     if (!workspaceUserRole) {
-      const companyUserRole = await this.getCompanyUserRole(context);
+      const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
       if (companyUserRole !== "admin") {
         throw CrudException.forbidden(`You are not belong to workspace ${request.params.id}`);
       }
@@ -169,7 +172,7 @@ export class WorkspacesCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
-    const companyUserRole = await this.getCompanyUserRole(context);
+    const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
 
     if (!hasCompanyMemberLevel(companyUserRole)) {
       throw CrudException.forbidden(`You are not a member of company ${context.company_id}`);
@@ -177,7 +180,7 @@ export class WorkspacesCrudController
 
     if (!hasCompanyAdminLevel(companyUserRole) && request.params.id) {
       const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
-      const companyUserRole = await this.getCompanyUserRole(context);
+      const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
 
       if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {
         throw CrudException.forbidden("You are not a admin of workspace or company");
@@ -226,19 +229,19 @@ export class WorkspacesCrudController
     const context = getExecutionContext(request);
 
     const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
-    const companyUserRole = await this.getCompanyUserRole(context);
+    const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
 
     if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {
-      const companyUserRole = await this.getCompanyUserRole(context);
+      const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
       if (companyUserRole !== "admin") {
         throw CrudException.forbidden("You are not a admin of workspace or company");
       }
     }
 
-    const deleteResult = await gr.services.workspaces.delete(
-      { id: request.params.id, company_id: context.company_id },
-      context,
-    );
+    const deleteResult = await gr.services.workspaces.delete({
+      id: request.params.id,
+      company_id: context.company_id,
+    });
 
     if (deleteResult.deleted) {
       reply.code(204);

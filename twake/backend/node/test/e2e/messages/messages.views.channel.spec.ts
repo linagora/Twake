@@ -21,7 +21,7 @@ describe("The Messages feature", () => {
         "storage",
         "files",
         "applications",
-        "pubsub",
+        "message-queue",
         "user",
         "websocket",
         "messages",

@@ -53,6 +53,8 @@ export interface UserObject {
   deleted: boolean;
   status: string; //Single string for the status
   last_activity: number;
+  last_seen?: number;
+  is_connected?: boolean;
 
   //Below is only if this is myself
   preferences?: User["preferences"];

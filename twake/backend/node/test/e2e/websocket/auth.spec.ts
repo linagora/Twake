@@ -15,7 +15,7 @@ describe("The Websocket authentication", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "websocket",
         "webserver",
