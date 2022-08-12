@@ -1,17 +1,26 @@
+import { DownloadIcon, VerticalDotsIcon } from '@atoms/icons-agnostic';
 import { Modal } from '@atoms/modal';
+import * as Text from '@atoms/text';
 import { Transition } from '@headlessui/react';
 import { ChevronLeftIcon, ChevronRightIcon, XIcon } from '@heroicons/react/outline';
 import Avatar from 'app/atoms/avatar';
+import { Button } from 'app/atoms/button/button';
 import { Loader } from 'app/atoms/loader';
+import MenuManager from 'app/components/menus/menus-manager';
+import { openMessage } from 'app/components/search-popup/common';
+import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
+import Languages from 'app/features/global/services/languages-service';
 import { addShortcut, removeShortcut } from 'app/features/global/services/shortcut-service';
 import { formatDate } from 'app/features/global/utils/format-date';
 import { formatSize } from 'app/features/global/utils/format-file-size';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import currentUserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';
-import { useFileViewer } from 'app/features/viewer/hooks/use-viewer';
+import { useFileViewer, useViewerDisplayData } from 'app/features/viewer/hooks/use-viewer';
+import { Message } from 'features/messages/types/message';
 import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import { fadeTransition, fadeZoomTransition } from 'src/utils/transitions';
-import * as Text from '@atoms/text';
 import Controls from './controls';
 import Display from './display';
 
@@ -115,10 +124,14 @@ const Navigation = () => {
 };
 
 const Footer = () => {
-  const { status } = useFileViewer();
+  const { status, close } = useFileViewer();
+  const { download } = useViewerDisplayData();
   const user = status?.details?.user as UserType;
   const name = status.details?.metadata?.name;
   const extension = name?.split('.').pop();
+
+  const workspaceId = useRouterWorkspace();
+  const [, setChannelAttachmentState] = useRecoilState(channelAttachmentListState);
 
   return (
     <>
@@ -147,8 +160,54 @@ const Footer = () => {
           </Text.Info>
         </div>
 
-        <div className="ml-4">
+        <div className="whitespace-nowrap">
           <Controls />
+
+          <Button
+            iconSize="lg"
+            className="ml-4 !rounded-full"
+            theme="dark"
+            size="lg"
+            icon={DownloadIcon}
+            onClick={() => {
+              download && (window.location.href = download);
+            }}
+          />
+
+          <Button
+            iconSize="lg"
+            className="ml-4 !rounded-full"
+            theme="dark"
+            size="lg"
+            icon={VerticalDotsIcon}
+            onClick={e => {
+              e.stopPropagation();
+
+              MenuManager.openMenu(
+                [
+                  {
+                    type: 'menu',
+                    text: Languages.t('scenes.apps.messages.jump'),
+                    onClick: () => {
+                      close();
+                      openMessage(status.details?.message as unknown as Message, workspaceId);
+                    },
+                  },
+                  {
+                    type: 'menu',
+                    text: Languages.t('components.channel_attachement_list.open'),
+                    onClick: () => {
+                      close();
+                      setChannelAttachmentState(true);
+                    },
+                  },
+                ],
+                (window as any).getBoundingClientRect(e.target),
+                'top',
+                { margin: 0 },
+              );
+            }}
+          />
         </div>
       </div>
     </>

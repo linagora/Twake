@@ -1,11 +1,16 @@
-import { useFileViewer, useViewerDisplayData } from 'app/features/viewer/hooks/use-viewer';
+import {
+  useFileViewer,
+  useFileViewerModal,
+  useViewerDisplayData,
+} from 'app/features/viewer/hooks/use-viewer';
 import ImageDisplay from './images/display';
 import VideoDisplay from './videos/display';
 
 export default () => {
   const { download, type } = useViewerDisplayData();
+  const { isOpen } = useFileViewerModal();
 
-  if (!download) {
+  if (!download || !isOpen) {
     return <></>;
   }
 
@@ -18,8 +23,8 @@ export default () => {
   }
 
   return (
-    <div className="text-white m-auto text-center block h-full flex items-center">
-      <span className="block">We can't display this document.</span>
+    <div className="text-white m-auto w-full text-center block h-full flex items-center">
+      <span className="block w-full text-center">We can't display this document.</span>
     </div>
   );
 };

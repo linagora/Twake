@@ -227,6 +227,7 @@
     "react-transition-group": "^4.4.1",
     "react-virtualized": "^9.22.2",
     "react-virtuoso": "2.10.2",
+    "react-zoom-pan-pinch": "^2.1.3",
     "recoil": "^0.4.0",
     "redux": "^4.0.5",
     "resize-observer-polyfill": "^1.5.1",

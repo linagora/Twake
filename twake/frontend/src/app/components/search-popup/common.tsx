@@ -26,19 +26,6 @@ export const getFileMessageDownloadRoute = (file: MessageFileType): string => {
   return '';
 };
 
-export const onFilePreviewClick = (file: MessageFileType) => {
-  if (file?.metadata?.source === 'internal')
-    DriveService.viewDocument(
-      {
-        id: file.metadata?.external_id?.id,
-        name: file.metadata?.name,
-        url: getFileMessageDownloadRoute(file),
-        extension: (file.metadata?.name || '').split('.').pop(),
-      },
-      true,
-    );
-};
-
 export const onFileDownloadClick = (file: MessageFileType) => {
   const url = getFileMessageDownloadRoute(file);
 

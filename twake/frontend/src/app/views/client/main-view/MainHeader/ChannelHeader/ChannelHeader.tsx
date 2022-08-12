@@ -126,18 +126,18 @@ export default (): JSX.Element => {
                 >
                   <Users className="h-5" />
                 </Button>
-                <Button
-                  size="small"
-                  type="text"
-                  className="w-auto px-1 mr-2"
-                  onClick={() => {
-                    setChannelAttachmentState(true);
-                  }}
-                >
-                  <File className="h-5" />
-                </Button>
               </>
             )}
+            <Button
+              size="small"
+              type="text"
+              className="w-auto px-1 mr-2"
+              onClick={() => {
+                setChannelAttachmentState(true);
+              }}
+            >
+              <File className="h-5" />
+            </Button>
           </Row>
         )}
       </Col>

@@ -22,7 +22,9 @@ export const useFileViewerModal = () => {
   const [status, setStatus] = useRecoilState(FileViewerState);
 
   return {
-    open: (file: MessageFileType) => setStatus({ file, loading: true }),
+    open: (file: MessageFileType) => {
+      if (file.metadata?.source === 'internal') setStatus({ file, loading: true });
+    },
     close: () => setStatus({ file: null, loading: true }),
     isOpen: !!status?.file,
   };
