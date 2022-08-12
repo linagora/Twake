@@ -1,9 +1,13 @@
 import { useViewerDisplayData } from 'app/features/viewer/hooks/use-viewer';
 import ImageControls from './images/controls';
 import VideoControls from './videos/controls';
+import PdfControls from './pdf/controls';
+import ArchiveControls from './archive/controls';
+import CodeControls from './code/controls';
+import OtherControls from './other/controls';
 
 export default () => {
-  const { type } = useViewerDisplayData();
+  const { type, name } = useViewerDisplayData();
 
   if (!type) {
     return <></>;
@@ -13,8 +17,24 @@ export default () => {
     return <ImageControls />;
   }
 
-  if (type === 'video') {
+  if (type === 'video' || type === 'audio') {
     return <VideoControls />;
+  }
+
+  if (type === 'pdf') {
+    return <PdfControls />;
+  }
+
+  if (type === 'code') {
+    return <CodeControls />;
+  }
+
+  if (type === 'archive') {
+    return <ArchiveControls />;
+  }
+
+  if (type) {
+    return <OtherControls name={name} />;
   }
 
   return <></>;

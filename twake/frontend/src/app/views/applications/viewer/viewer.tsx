@@ -82,6 +82,7 @@ export default () => {
 
 const Navigation = () => {
   const { close, status, next, previous } = useFileViewer();
+  const { type } = useViewerDisplayData();
 
   useEffect(() => {
     addShortcut({ shortcut: 'esc', handler: close });
@@ -94,33 +95,35 @@ const Navigation = () => {
     };
   }, []);
 
+  const isMedia = ['audio', 'video', 'image'].includes(type || '');
+
   return (
     <>
       <XIcon
-        className="z-10 cursor-pointer absolute right-5 top-5 w-10 h-10 text-zinc-300 hover:text-white"
+        className="z-10 cursor-pointer absolute right-5 top-5 w-12 h-12 text-zinc-300 hover:text-white rounded-full p-1 hover:bg-black hover:bg-opacity-25"
         onClick={() => close()}
       />
 
       <Transition
         as="div"
-        show={!!status.details?.navigation.previous}
-        className="z-10 absolute left-5 top-0 bottom-0 m-auto w-12 h-12"
+        show={!!status.details?.navigation.previous && isMedia}
+        className="z-10 absolute left-5 top-0 bottom-0 m-auto w-12 h-12 rounded-full p-1 hover:bg-black hover:bg-opacity-25"
         {...fadeZoomTransition}
       >
         <ChevronLeftIcon
-          className="cursor-pointer w-12 h-12 text-zinc-300 hover:text-white"
+          className="cursor-pointer w-10 h-10 text-zinc-300 hover:text-white"
           onClick={() => previous()}
         />
       </Transition>
 
       <Transition
         as="div"
-        show={!!status.details?.navigation.next}
-        className="z-10 absolute right-5 top-0 bottom-0 m-auto w-12 h-12"
+        show={!!status.details?.navigation.next && isMedia}
+        className="z-10 absolute right-5 top-0 bottom-0 m-auto w-12 h-12 rounded-full p-1 hover:bg-black hover:bg-opacity-25"
         {...fadeZoomTransition}
       >
         <ChevronRightIcon
-          className="cursor-pointer w-12 h-12 text-zinc-300 hover:text-white"
+          className="cursor-pointer w-10 h-10 text-zinc-300 hover:text-white"
           onClick={() => next()}
         />
       </Transition>

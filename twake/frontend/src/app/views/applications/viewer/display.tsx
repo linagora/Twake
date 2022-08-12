@@ -5,9 +5,13 @@ import {
 } from 'app/features/viewer/hooks/use-viewer';
 import ImageDisplay from './images/display';
 import VideoDisplay from './videos/display';
+import PdfDisplay from './pdf/display';
+import CodeDisplay from './code/display';
+import ArchiveDisplay from './archive/display';
+import OtherDisplay from './other/display';
 
 export default () => {
-  const { download, type } = useViewerDisplayData();
+  const { download, type, name } = useViewerDisplayData();
   const { isOpen } = useFileViewerModal();
 
   if (!download || !isOpen) {
@@ -18,8 +22,24 @@ export default () => {
     return <ImageDisplay download={download} />;
   }
 
-  if (type === 'video') {
+  if (type === 'video' || type === 'audio') {
     return <VideoDisplay download={download} />;
+  }
+
+  if (type === 'pdf') {
+    return <PdfDisplay download={download} name={name} />;
+  }
+
+  if (type === 'code') {
+    return <CodeDisplay download={download} name={name} />;
+  }
+
+  if (type === 'archive') {
+    return <ArchiveDisplay download={download} name={name} />;
+  }
+
+  if (type) {
+    return <OtherDisplay download={download} name={name} />;
   }
 
   return (

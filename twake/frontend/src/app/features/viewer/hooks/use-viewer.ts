@@ -99,12 +99,15 @@ export const useViewerDisplayData = () => {
     return {};
   }
 
+  const name = status?.details?.metadata?.name || '';
+  const extension = name?.split('.').pop();
+
   const download = FileUploadService.getDownloadRoute({
     companyId: status?.details?.metadata?.external_id?.company_id,
     fileId: status?.details?.metadata?.external_id?.id,
   });
 
-  const type = FileUploadApiClient.mimeToType(status?.details?.metadata?.mime || '');
+  const type = FileUploadApiClient.mimeToType(status?.details?.metadata?.mime || '', extension);
 
-  return { download, type };
+  return { download, type, name };
 };
