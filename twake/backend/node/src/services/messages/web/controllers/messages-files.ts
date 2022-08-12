@@ -21,7 +21,7 @@ export class MessagesFilesController {
 
     if (!resp) reply.code(404).send();
 
-    reply.send(resp);
+    reply.send({ resource: resp });
   }
 
   async getMessageFile(
@@ -47,6 +47,6 @@ export class MessagesFilesController {
       reply.code(403).send();
     }
 
-    reply.send(resp);
+    reply.send({ resource: resp });
   }
 }

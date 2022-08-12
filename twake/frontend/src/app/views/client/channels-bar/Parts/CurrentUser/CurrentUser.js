@@ -243,10 +243,7 @@ export default class CurrentUser extends Component {
             : '',
         onClick: () => {
           if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
-            return window.open(
-              InitService.server_infos?.configuration?.accounts?.console?.account_management_url,
-              '_blank',
-            );
+            return window.open(InitService.getConsoleLink('account_management_url'), '_blank');
           } else {
             ModalManagerDepreciated.open(<UserParameter />);
           }

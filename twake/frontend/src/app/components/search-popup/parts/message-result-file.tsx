@@ -12,7 +12,7 @@ import { UserType } from 'app/features/users/types/user';
 import { ArrowRight } from 'react-feather';
 import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
-import { onFileDownloadClick, onFilePreviewClick, openMessage } from '../common';
+import { onFileDownloadClick, openMessage } from '../common';
 import { FileResultMedia } from './file-result';
 
 export default (props: { file: MessageFileType & { message?: Message } & { user?: UserType } }) => {
@@ -27,11 +27,12 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
   if (url) iconClassName = 'absolute bottom-1 left-1 w-6 h-6';
 
   const { setOpen } = useSearchModal();
+  const { open: openViewer } = useFileViewerModal();
 
   return (
     <div
       className="flex items-center p-2 rounded-md cursor-pointer"
-      onClick={() => onFilePreviewClick(file)}
+      onClick={() => openViewer(file)}
     >
       <FileResultMedia size="sm" file={file} className=" w-12 h-12 mr-3" />
       <div className="grow mr-3 overflow-hidden">

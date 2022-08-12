@@ -92,6 +92,7 @@
     "scenes.apps.drive.right_preview.operations_delete": "Move to trash",
     "scenes.apps.drive.right_preview.public_link": "Public link",
     "scenes.apps.messages.messages": "Messages",
+    "scenes.apps.messages.jump": "Jump to message",
     "scenes.apps.messages.chatbox.chat.delete_message": "Delete this message",
     "scenes.apps.messages.chatbox.chat.delete_message_btn": "Delete message",
     "scenes.apps.messages.left_bar.stream_modal.placeholder_name": "Name",
@@ -927,6 +928,7 @@
     "components.channel_attachement_list.medias": "Medias",
     "components.channel_attachement_list.files": "Files",
     "components.channel_attachement_list.title": "Channel files and medias",
+    "components.channel_attachement_list.open": "Open gallery",
     "components.channel_attachement_list.nothing_found": "Nothing here yet",
     "molecules.message_quote.deleted": "This message was deleted"
 }

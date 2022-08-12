@@ -40,7 +40,7 @@ export default class FileType extends React.Component {
       case 'slides':
         TypeIcon = Slide;
         break;
-      case 'sound':
+      case 'audio':
         TypeIcon = Sound;
         break;
       case 'spreadsheet':

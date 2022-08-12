@@ -9,7 +9,9 @@ type PropsType = {
 
 export const FileThumbnail = ({ file }: PropsType): JSX.Element => {
   const type = file.type;
-  const canHavePreview = ['image', 'video', 'pdf', 'document', 'slides', 'spreadsheet'].includes(type);
+  const canHavePreview = ['image', 'video', 'pdf', 'document', 'slides', 'spreadsheet'].includes(
+    type,
+  );
 
   return (
     <div className={classNames('file-thumbnail-container', 'small-right-margin')}>
@@ -30,7 +32,7 @@ export const FileThumbnail = ({ file }: PropsType): JSX.Element => {
       {['pdf', 'document', 'slides', 'spreadsheet', 'other'].includes(type) && !file.thumbnail && (
         <FileText size={20} />
       )}
-      {type === 'sound' && <Headphones size={20} />}
+      {type === 'audio' && <Headphones size={20} />}
       {type === 'archive' && <Archive size={20} />}
       {type === 'link' && <Link size={20} />}
     </div>

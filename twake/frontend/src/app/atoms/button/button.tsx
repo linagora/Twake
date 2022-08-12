@@ -2,9 +2,10 @@ import React from 'react';
 import _ from 'lodash';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  theme?: 'primary' | 'secondary' | 'danger' | 'default' | 'outline';
+  theme?: 'primary' | 'secondary' | 'danger' | 'default' | 'outline' | 'dark';
   size?: 'md' | 'lg' | 'sm';
   icon?: (props: any) => JSX.Element;
+  iconSize?: 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
   children?: React.ReactNode;
@@ -29,6 +30,10 @@ export const Button = (props: ButtonProps) => {
   if (props.theme === 'outline')
     className =
       'text-blue-500 bg-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 hover:bg-gray-50 active:bg-gray-200 border-blue-500';
+
+  if (props.theme === 'dark')
+    className =
+      'text-zinc-300 border-0 bg-zinc-900 hover:bg-zinc-800 hover:text-white active:bg-zinc-900';
 
   if (disabled) className += ' opacity-50 pointer-events-none';
 
@@ -79,7 +84,12 @@ export const Button = (props: ButtonProps) => {
         </>
       )}
       {props.icon && !(props.loading && !props.children) && (
-        <props.icon className={'w-4 h-4 ' + (props.children ? 'mr-1 -ml-1' : '-mx-1')} />
+        <props.icon
+          className={
+            (props.iconSize === 'lg' ? 'w-6 h-6 ' : 'w-4 h-4 ') +
+            (props.children ? 'mr-1 -ml-1' : '-mx-1')
+          }
+        />
       )}
       {props.children}
     </button>
