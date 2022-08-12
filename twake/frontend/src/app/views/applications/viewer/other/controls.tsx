@@ -7,13 +7,15 @@ import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
 import { useEditors } from './editors-service';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 export default (props: { name: string }) => {
   const extension = props.name.split('.').pop();
   const { candidates, openFile } = useEditors(extension || '');
 
-  //TODO
-  const previewOnly = true;
+  const companyId = useRouterCompany();
+  const previewOnly = AccessRightsService.getCompanyLevel(companyId) !== 'guest';
 
   if (previewOnly) {
     return <></>;

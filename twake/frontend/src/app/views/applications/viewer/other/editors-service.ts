@@ -58,16 +58,30 @@ export const useEditors = (
   const openFile = (app: any) => {
     if (app.url && app.is_url_file) {
       window.open(app.url);
+      return;
     }
+    const documentId = ''; //TODO
     DriveService.getFileUrlForEdition(
       app.display?.twake?.files?.editor?.edition_url,
       app,
-      '', //TODO: this.viewed_document.id,
+      documentId,
       (url: string) => window.open(url),
     );
   };
 
-  const getPreviewUrl = () => preview_candidate?.[0]?.url;
+  const getPreviewUrl = async (): Promise<string> => {
+    const documentId = ''; //TODO
+    return new Promise(r =>
+      DriveService.getFileUrlForEdition(
+        preview_candidate?.[0]?.url,
+        preview_candidate?.[0],
+        documentId,
+        (url: string) => {
+          r(url);
+        },
+      ),
+    );
+  };
 
   return { candidates: editor_candidate, openFile, getPreviewUrl };
 };
