@@ -38,9 +38,10 @@ export default () => {
     return <ArchiveDisplay download={download} name={name} />;
   }
 
+  /* Uncomment after https://github.com/linagora/Twake/issues/2453 is done
   if (type) {
     return <OtherDisplay download={download} name={name} />;
-  }
+  }*/
 
   return (
     <div className="text-white m-auto w-full text-center block h-full flex items-center">

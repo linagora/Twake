@@ -33,9 +33,10 @@ export default () => {
     return <ArchiveControls />;
   }
 
+  /* Uncomment after https://github.com/linagora/Twake/issues/2453 is done
   if (type) {
     return <OtherControls name={name} />;
-  }
+  }*/
 
   return <></>;
 };
