@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import 'moment-timezone';
-import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
+import { MoreHorizontal, Smile, ArrowUpRight, Trash2, CornerDownLeft } from 'react-feather';
 
 import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
 import Menu from 'components/menus/menu.js';
@@ -28,6 +28,7 @@ import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { addUrlTryDesktop } from 'app/views/desktop-redirect';
+import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
 
 type Props = {
   onOpen?: () => void;
@@ -57,6 +58,8 @@ export default (props: Props) => {
     subLocation,
   );
 
+  const { set: setQuoteReply } = useMessageQuoteReply(channelId);
+
   const menu: any[] = [];
 
   const triggerApp = (app: any) => {
@@ -84,21 +87,23 @@ export default (props: Props) => {
       },
     });
   } else {
-    menu.push({
-      type: 'menu',
-      icon: 'arrow-up-right',
-      text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
-      onClick: () => {
-        SideViewService.select(channel?.id || '', {
-          app: { identity: { code: 'messages' } } as Application,
-          context: {
-            viewType: 'channel_thread',
-            threadId: message.thread_id,
-          },
-        });
-      },
-    });
-
+    if (channel && channel.visibility !== 'direct') {
+      menu.push({
+        type: 'menu',
+        icon: 'arrow-up-right',
+        text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
+        onClick: () => {
+          SideViewService.select(channel?.id || '', {
+            app: { identity: { code: 'messages' } } as Application,
+            context: {
+              viewType: 'channel_thread',
+              threadId: message.thread_id,
+            },
+          });
+        },
+      });
+    }
+      
     menu.push({
       type: 'menu',
       icon: 'link',
@@ -116,6 +121,17 @@ export default (props: Props) => {
         copyToClipboard(url);
       },
     });
+
+    if(channel && channel.visibility === 'direct') {
+      menu.push({
+        type: 'menu',
+        icon: 'corner-down-left',
+        text: Languages.t('scenes.apps.messages.message.reply_button', [], 'Reply'),
+        onClick: () => {
+          setQuoteReply({ message: message.id, channel: channelId });
+        }
+      });
+    }
 
     if (!message.context?.disable_pin)
       menu.push({
@@ -272,7 +288,7 @@ export default (props: Props) => {
         </Menu>
         <div className="separator"></div>
 
-        {!props.threadHeader && (
+        {!props.threadHeader && channel && channel.visibility !== 'direct' && (
           <>
             <div
               className="option"
@@ -287,6 +303,20 @@ export default (props: Props) => {
               }}
             >
               <ArrowUpRight size={16} />
+            </div>
+            <div className="separator"></div>
+          </>
+        )}
+
+        {channel && channel.visibility === 'direct' && (
+          <>
+            <div
+              className="option"
+              onClick={() => {
+                setQuoteReply({ message: message.id, channel: channelId });
+              }}
+            >
+              <CornerDownLeft size={16} />
             </div>
             <div className="separator"></div>
           </>
