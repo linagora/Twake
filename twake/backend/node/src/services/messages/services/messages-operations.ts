@@ -106,7 +106,7 @@ export class ThreadMessagesOperationsService {
     );
     await this.repository.save(message, context);
 
-    if ((operation.reactions || []).length === 1) {
+    if ((operation.reactions || []).length === 1 && context.user.id !== message.user_id) {
       await gr.platformServices.messageQueue.publish<ReactionNotification>(
         "notification:reaction",
         {
