@@ -48,7 +48,7 @@ export type PushNotificationMessage = {
   channel_id: uuid;
   message_id: uuid;
   thread_id: uuid;
-  badge_value: number;
+  badge_value?: number;
   user: string;
   title: string;
   text: string;
@@ -81,3 +81,17 @@ export type NotificationMessageQueueHandler<InputMessage, OutputMessage> = Messa
   InputMessage,
   OutputMessage
 >;
+
+export type ReactionNotification = {
+  company_id: uuid;
+  workspace_id: uuid | "direct";
+  channel_id: uuid;
+  thread_id: uuid;
+  message_id: uuid;
+  creation_date: number;
+  user_id: string;
+  reaction: string;
+  reaction_user_id: string;
+};
+
+export type ReactionNotificationResult = ReactionNotification;
