@@ -20,7 +20,12 @@ import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import MessageAttachments from './MessageAttachments';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import LinkPreview from './LinkPreview';
-import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import MessageQuote from 'app/molecules/message-quote';
+import { useUser } from 'app/features/users/hooks/use-user';
+import User from 'app/features/users/services/current-user-service';
+import { gotoMessage } from 'src/utils/messages';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 type Props = {
   linkToThread?: boolean;
@@ -37,6 +42,26 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   const channelId = context.channelId;
   const { message } = useMessage(context);
+  const quotedMessage = useMessage({
+    ...context,
+    threadId: message.quote_message?.thread_id as string,
+    id: message.quote_message?.id as string,
+  }).message;
+
+  console.debug('message quoted anon', quotedMessage);
+
+  const { channel } = useChannel(channelId);
+  const showQuotedMessage = quotedMessage && quotedMessage.thread_id && channel.visibility === 'direct';
+  let authorName = '';
+  const currentRouterWorkspace = useRouterWorkspace();
+  const workspaceId =
+    context.workspaceId === 'direct' ? currentRouterWorkspace : context.workspaceId;
+  const deletedQuotedMessage = quotedMessage && quotedMessage.subtype === 'deleted';
+
+  if (showQuotedMessage) {
+    const author = useUser(quotedMessage.user_id);
+    authorName = author ? User.getFullName(author) : 'Anonymous';
+  }
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
     const app_id = message.application_id;
@@ -92,6 +117,17 @@ export default (props: Props) => {
       onClick={() => setActive(false)}
     >
       <MessageHeader linkToThread={props.linkToThread} />
+      {showQuotedMessage && (
+        <MessageQuote
+          author={authorName}
+          message={quotedMessage.text}
+          closable={false}
+          deleted={deletedQuotedMessage}
+          goToMessage={() =>
+            gotoMessage(quotedMessage, context.companyId, context.channelId, workspaceId)
+          }
+        />
+      )}
       {!!showEdition && !deleted && (
         <div className="content-parent">
           <MessageEdition />
@@ -101,7 +137,7 @@ export default (props: Props) => {
         <div className="content-parent dont-break-out">
           {deleted === true ? (
             <div className="deleted-message">
-              <DeletedContent userId={message.user_id || ''} />
+              <DeletedContent userId={message.user_id || ''} key={message.thread_id} />
             </div>
           ) : (
             <>

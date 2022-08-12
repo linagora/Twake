@@ -40,6 +40,8 @@ import MessageExternalFilePicker from './parts/MessageExternalFilePicker';
 import FilePicker from 'app/components/drive/file-picker/file-picker';
 import { MessageFileType } from 'app/features/messages/types/message';
 import { ChannelType } from 'app/features/channels/types/channel';
+import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
+import QuotedMessage from 'app/components/quoted-message/quoted-message';
 
 type Props = {
   messageId?: string;
@@ -84,6 +86,10 @@ export default (props: Props) => {
     threadId: props.threadId,
     id: props.threadId,
   });
+
+  const { isActive: isBeingQuoted, close } = useMessageQuoteReply(
+    props.channelId || '',
+  );
 
   const { upload, clear: clearUploads } = useUploadZones(editorId);
   const format = props.format || 'markdown';
@@ -347,6 +353,7 @@ export default (props: Props) => {
   const disabled = isEmpty() || isTooLong;
   return (
     <div className={'message-input'} ref={props.ref} onClick={() => focus()}>
+      {isBeingQuoted && <QuotedMessage onClose={() => close()} />}
       <UploadZone
         className="upload-zone-centerer"
         ref={setUploadZoneRef}
