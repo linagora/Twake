@@ -4,6 +4,7 @@ import ViewerAPIClient, { MessageFileDetails } from '../api/viewer-api-client';
 import { atom, useRecoilState } from 'recoil';
 import FileUploadApiClient from 'app/features/files/api/file-upload-api-client';
 import FileUploadService from 'app/features/files/services/file-upload-service';
+import { LoadingState } from 'app/features/global/state/atoms/Loading';
 
 export const FileViewerState = atom<{
   file: null | { company_id?: string; message_id?: string; id?: string };
@@ -84,6 +85,11 @@ export const useFileViewer = () => {
         });
     },
   };
+};
+
+export const useViewerDataLoading = () => {
+  const [loading, setLoading] = useRecoilState(LoadingState('useViewerDataLoading'));
+  return { loading, setLoading };
 };
 
 export const useViewerDisplayData = () => {

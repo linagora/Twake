@@ -16,7 +16,11 @@ import { formatSize } from 'app/features/global/utils/format-file-size';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import currentUserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';
-import { useFileViewer, useViewerDisplayData } from 'app/features/viewer/hooks/use-viewer';
+import {
+  useFileViewer,
+  useViewerDataLoading,
+  useViewerDisplayData,
+} from 'app/features/viewer/hooks/use-viewer';
 import { Message } from 'features/messages/types/message';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
@@ -29,6 +33,7 @@ let animationTimeout: any = setTimeout(() => {});
 export default () => {
   const { loading, isOpen } = useFileViewer();
   const [animatedLoading, setAnimatedLoading] = useState(true);
+  const { loading: loadingData } = useViewerDataLoading();
 
   useEffect(() => {
     clearTimeout(animationTimeout);
@@ -52,7 +57,7 @@ export default () => {
       <Navigation />
 
       <Transition
-        show={animatedLoading}
+        show={animatedLoading || loadingData}
         as="div"
         className="absolute m-auto w-8 h-8 left-0 right-0 top-0 bottom-0"
         {...fadeTransition}
