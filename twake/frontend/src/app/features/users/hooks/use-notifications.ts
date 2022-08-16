@@ -70,6 +70,9 @@ export const useNotifications = () => {
           'id',
         );
         setBadges(list);
+        list.map(notification => {
+          userNotificationApiClient.acknowledge(notification);
+        });
       },
     [setBadges, badges],
   );
@@ -129,6 +132,7 @@ export const useNotifications = () => {
 
         if (action === 'event' && resource._type === 'notification:desktop') {
           pushDesktopNotification({ ...resource, routerState });
+          userNotificationApiClient.acknowledge(resource);
         }
         if (action === 'saved') addBadges([resource]);
         if (action === 'deleted') removeBadges([resource]);

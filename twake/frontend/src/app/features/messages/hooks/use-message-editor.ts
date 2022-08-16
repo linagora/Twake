@@ -80,10 +80,11 @@ export const useMessageEditor = (key: EditorKey) => {
       closeQuoteReply();
     }
 
-    const tempMessage = {
+    const tempMessage: NodeMessage = {
       ...editedMessage,
       _status: 'sending',
       id: key.threadId ? uuidv1() : editedMessage.thread_id,
+      status: 'sending'
     };
     propagateMessage(tempMessage as NodeMessage);
 

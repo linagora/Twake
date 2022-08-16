@@ -8,6 +8,7 @@ import {
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
+  UpdateDeliveryStatusOperation,
 } from "../types";
 import emoji from "emoji-name-map";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
@@ -227,6 +228,72 @@ export class ThreadMessagesOperationsService {
 
     message.links = message.links.filter(({ url }: { url: string }) => url !== operation.link);
 
+    await this.repository.save(message, context);
+    this.threadMessagesService.onSaved(message, { created: false }, context);
+
+    return new SaveResult<Message>("message", message, OperationType.UPDATE);
+  }
+
+  /**
+   * Update message delivery status operation
+   *
+   * @param {UpdateDeliveryStatusOperation} operation - the operation params
+   * @param {ThreadExecutionContext} context - Thread execution context
+   * @returns {Promise<SaveResult<Message>>} - Result of the operation
+   */
+  async updateDeliveryStatus(
+    operation: UpdateDeliveryStatusOperation,
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    if (
+      !context?.user?.server_request &&
+      !gr.services.messages.threads.checkAccessToThread(context)
+    ) {
+      logger.error(`no access  ${context.thread.id}`);
+      throw Error("can't update message delivery status.");
+    }
+
+    // check if operation is valid
+    if (!operation.message_id || !operation.status) {
+      logger.error("Invalid operation");
+      throw Error("Invalid operation");
+    }
+
+    if (operation.status !== "delivered" && operation.status !== "read") {
+      logger.error("Invalid status");
+      throw Error("Invalid status");
+    }
+
+    const message = await this.repository.findOne(
+      {
+        thread_id: context.thread.id,
+        id: operation.message_id,
+      },
+      {},
+      context,
+    );
+
+    if (!message) {
+      logger.error("This message doesn't exists");
+      throw Error("Can't update message delivery status.");
+    }
+
+    if (operation.status === "delivered" && message.status === "delivered") {
+      logger.error("Message already delivered");
+      throw Error("Message already delivered");
+    }
+
+    if (operation.status === "read" && message.status === "read") {
+      logger.error("Message already read");
+      throw Error("Message already read");
+    }
+
+    if (operation.status === "delivered" && message.status === "read") {
+      logger.error("Invalid operation");
+      throw Error("Invalid operation");
+    }
+
+    message.status = operation.status;
     await this.repository.save(message, context);
     this.threadMessagesService.onSaved(message, { created: false }, context);
 

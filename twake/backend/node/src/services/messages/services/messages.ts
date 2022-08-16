@@ -34,6 +34,7 @@ import {
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
+  UpdateDeliveryStatusOperation,
 } from "../types";
 import _ from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
@@ -922,5 +923,19 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     return this.operations.deleteLinkPreview(operation, context);
+  }
+
+  /**
+   * Updates the message delivery status to delivered or read.
+   *
+   * @param {UpdateDeliveryStatusOperation} operation - The update delivery status operation
+   * @param {ThreadExecutionContext} context - The thread execution context
+   * @returns {Promise<SaveResult<Message>>} - The save result
+   */
+  async updateDeliveryStatus(
+    operation: UpdateDeliveryStatusOperation,
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.updateDeliveryStatus(operation, context);
   }
 }

@@ -1,13 +1,13 @@
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { NotificationListQueryParameters } from "../../types";
+import { NotificationAcknowledgeBody, NotificationListQueryParameters } from "../../types";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../../utils/types";
-import { UserNotificationBadge } from "../../entities";
+import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
 import gr from "../../../global-resolver";
 import { getCompanyExecutionContext } from "../../../messages/web/controllers";
@@ -67,6 +67,47 @@ export class NotificationController
         next_page_token: page_token,
       }),
     };
+  }
+
+  /**
+   * Acknowledge a notification
+   *
+   * @param {FastifyRequest} request - The request object
+   * @param {FastifyReply} reply - The reply object
+   * @returns {Promise<boolean>} - The response object
+   */
+  async acknowledge(
+    request: FastifyRequest<{
+      Params: {
+        notification_id: string;
+        company_id: string;
+      };
+      Body: NotificationAcknowledgeBody;
+    }>,
+    reply: FastifyReply,
+  ): Promise<boolean> {
+    const context = getExecutionContext(request);
+    const { notification_id, company_id } = request.params;
+    const { workspace_id, channel_id, thread_id } = request.body;
+    const pk: UserNotificationBadgePrimaryKey = {
+      channel_id,
+      company_id,
+      thread_id,
+      user_id: context.user.id,
+      workspace_id,
+    };
+
+    try {
+      await gr.services.notifications.badges.acknowledge(pk, {
+        notification_id,
+        ...pk,
+        ...context,
+      });
+
+      return reply.send(true);
+    } catch (err) {
+      return reply.send(false);
+    }
   }
 }
 

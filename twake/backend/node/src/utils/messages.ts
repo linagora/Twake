@@ -87,6 +87,7 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
             picture: item.override.picture,
           }
         : null, // Only apps and server can set an override on a message
+    status: "sent",
   });
 
   if (context.user.server_request) {
@@ -94,6 +95,10 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
       instance,
       _.pickBy(item, v => v !== undefined),
     );
+  }
+
+  if (context.workspace && context.workspace?.id !== "direct") {
+    delete instance.status;
   }
 
   return instance;

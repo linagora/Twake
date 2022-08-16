@@ -22,7 +22,7 @@ import {
   UserNotificationBadgePrimaryKey,
   UserNotificationBadgeType,
 } from "../entities";
-import { NotificationExecutionContext } from "../types";
+import { NotificationAcknowledgeContext, NotificationExecutionContext } from "../types";
 import { getNotificationRoomName } from "./realtime";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
@@ -250,5 +250,48 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
         }),
       )
     ).filter(Boolean).length;
+  }
+
+  /**
+   * Acknoledge a notification and set the message status to delivered.
+   *
+   * @param {UserNotificationBadgePrimaryKey} pk - The primary key of the badge to acknowledge
+   * @param {NotificationAcknowledgeContext} context - The context of the acknowledge
+   * @returns {Promise<boolean>} - The result of the acknowledge
+   */
+  async acknowledge(
+    pk: UserNotificationBadgePrimaryKey,
+    context: NotificationAcknowledgeContext,
+  ): Promise<boolean> {
+    const badge = await this.repository.findOne(pk, {}, context);
+    if (!badge) {
+      return false;
+    }
+
+    const ThreadExecutionContext = {
+      company: {
+        id: badge.company_id,
+      },
+      thread: {
+        id: badge.thread_id,
+      },
+      message_id: badge.message_id,
+      ...context,
+    };
+
+    const result = await gr.services.messages.messages.updateDeliveryStatus(
+      {
+        message_id: badge.message_id,
+        status: "delivered",
+        thread_id: badge.thread_id,
+      },
+      ThreadExecutionContext,
+    );
+
+    if (result) {
+      return true;
+    }
+
+    return false;
   }
 }

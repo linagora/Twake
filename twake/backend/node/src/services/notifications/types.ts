@@ -95,3 +95,14 @@ export type ReactionNotification = {
 };
 
 export type ReactionNotificationResult = ReactionNotification;
+
+export type NotificationAcknowledgeBody = {
+  thread_id: uuid;
+  workspace_id: uuid | "direct";
+  channel_id: uuid;
+};
+
+export type NotificationAcknowledgeContext = {
+  notification_id: uuid;
+} & NotificationAcknowledgeBody &
+  ExecutionContext;

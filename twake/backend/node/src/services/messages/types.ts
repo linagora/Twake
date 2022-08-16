@@ -171,3 +171,9 @@ export interface DeleteLinkOperation {
   thread_id: string;
   link: string;
 }
+
+export interface UpdateDeliveryStatusOperation {
+  message_id: string;
+  thread_id: string;
+  status: "delivered" | "read";
+}
