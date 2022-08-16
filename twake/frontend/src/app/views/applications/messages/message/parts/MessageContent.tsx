@@ -48,8 +48,6 @@ export default (props: Props) => {
     id: message.quote_message?.id as string,
   }).message;
 
-  console.debug('message quoted anon', quotedMessage);
-
   const { channel } = useChannel(channelId);
   const showQuotedMessage = quotedMessage && quotedMessage.thread_id && channel.visibility === 'direct';
   let authorName = '';
