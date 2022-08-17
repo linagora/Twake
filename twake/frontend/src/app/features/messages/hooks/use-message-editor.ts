@@ -108,11 +108,11 @@ export const useMessageEditor = (key: EditorKey) => {
       if (!newMessage) {
         throw new Error('Not sent');
       }
-
-      propagateMessage({ ...tempMessage, _status: 'sent' });
-      propagateMessage(newMessage);
+      
+      propagateMessage({ ...tempMessage, _status: 'sent', status: 'sent' });
+      propagateMessage({ ...newMessage, _status: 'sent' });
     } catch (err) {
-      propagateMessage({ ...tempMessage, _status: 'failed' });
+      propagateMessage({ ...tempMessage, _status: 'failed', status: 'error' });
     }
   };
 

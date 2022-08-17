@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckDouble, faClock, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 type PropsType = {
-  status: MessageDeliveryStatusType | null;
+  status: MessageDeliveryStatusType | null | undefined;
 }
 
 export default ({ status }: PropsType) => {

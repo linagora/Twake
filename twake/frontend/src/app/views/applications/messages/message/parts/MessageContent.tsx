@@ -194,7 +194,7 @@ export default (props: Props) => {
             threadHeader={props.threadHeader}
           />
         )}
-      {showMessageStatus && <MessageStatus status={message.status ?? 'sent'} />}
+      {showMessageStatus && <MessageStatus status={message.status} />}
     </div>
   );
 };

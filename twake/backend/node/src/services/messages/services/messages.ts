@@ -27,6 +27,7 @@ import {
   BookmarkOperation,
   CompanyExecutionContext,
   DeleteLinkOperation,
+  MessageReadType,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -937,5 +938,30 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     return this.operations.updateDeliveryStatus(operation, context);
+  }
+
+  /**
+   * Updates the messages delivery status to read.
+   *
+   * @param {MessageReadType[]} messages - The messages to mark as read
+   * @param {CompanyExecutionContext} context - The company execution context
+   * @returns {Promise<boolean>} - The promise result of the operation
+   */
+  async read(messages: MessageReadType[], context: CompanyExecutionContext): Promise<boolean> {
+    const updates = await Promise.all(
+      messages.map(async message => {
+        const readOperation: UpdateDeliveryStatusOperation = {
+          ...message,
+          status: "read",
+        };
+
+        return this.updateDeliveryStatus(readOperation, {
+          ...context,
+          thread: { id: message.thread_id },
+        });
+      }),
+    );
+
+    return updates.every(item => !!item);
   }
 }

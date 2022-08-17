@@ -177,3 +177,8 @@ export interface UpdateDeliveryStatusOperation {
   thread_id: string;
   status: "delivered" | "read";
 }
+
+export interface MessageReadType {
+  message_id: string;
+  thread_id: string;
+}

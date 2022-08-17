@@ -21,6 +21,8 @@ import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
 import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
 import { getMessage } from 'app/features/messages/hooks/use-message';
+import messageApiClient from 'app/features/messages/api/message-api-client';
+import User from 'app/features/users/services/current-user-service';
 
 type Props = {
   companyId: string;
@@ -71,6 +73,17 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   useEffect(() => {
     if (messages.length === 0) loadMore('history');
   }, []);
+
+  useEffect(() => {
+    if (window.reachedEnd && atBottom) {
+      const seenMessages = messages.filter(message => {
+        const m = getMessage(message.id || message.threadId);
+
+        return m.user_id !== User.getCurrentUserId() && m.status === 'delivered';
+      });
+      messageApiClient.read(companyId, seenMessages);
+    }
+  }, [messages, window.reachedEnd]);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
