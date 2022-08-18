@@ -205,7 +205,7 @@ const WorkspaceIdentity = () => {
                         }
 
                         // Delete workspace logo
-                        onClickUpdateWorkspace({ logo: uploadInputRef.current?.value });
+                        onClickUpdateWorkspace({ logo: uploadInputRef.current?.value || "none" });
                       }}
                     >
                       {Languages.t('general.delete')}
