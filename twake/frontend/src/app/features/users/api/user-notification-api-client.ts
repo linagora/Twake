@@ -28,13 +28,14 @@ class UserNotificationAPIClient {
   }
 
   async acknowledge(notification: NotificationType): Promise<void> {
-    const {id, channel_id, company_id, thread_id, workspace_id } = notification;
-    await Api.post<{ thread_id: string, channel_id: string, workspace_id: string}, boolean>(
-      `/internal/services/notifications/v1/badges/${company_id}/${id}/acknowledge`,
+    const { message_id, channel_id, company_id, thread_id, workspace_id } = notification;
+    await Api.post<{ message_id: string, thread_id: string, channel_id: string, workspace_id: string}, boolean>(
+      `/internal/services/notifications/v1/badges/${company_id}/acknowledge`,
       {
         channel_id,
         workspace_id,
         thread_id,
+        message_id,
       }
     );
   }

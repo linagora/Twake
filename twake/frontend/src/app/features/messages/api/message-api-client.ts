@@ -4,6 +4,7 @@ import {
   Message,
   MessageExtended,
   MessageFileType,
+  MessageSeenType,
   MessageWithReplies,
   NodeMessage,
 } from 'app/features/messages/types/message';
@@ -210,22 +211,26 @@ class MessageAPIClient {
    * Mark messages as seen
    * 
    * @param {String} companyId - The company id
+   * @param {String} channelId - The channel
    * @param {AtomMessageKey[]} messages - the messages to mark as seen 
-   * @returns 
+   * @returns {Promise<boolean>} - true if the messages were marked as seen
    */
-  async read(companyId: string, messages: AtomMessageKey[]): Promise<boolean> {
+  async read(companyId: string, channelId: string, messages: AtomMessageKey[]): Promise<boolean> {
     if (!messages || !messages.length) {
       return true;
     }
 
-    const body = messages.map(message => ({
-      thread_id: message.threadId,
-      message_id: message.id || message.threadId,
-    }));
+    const body = {
+      messages: messages.map(message => ({
+        thread_id: message.threadId,
+        message_id: message.id || message.threadId,
+      })),
+      channel_id: channelId,
+    };
 
-    return await Api.post<{ messages: { thread_id: string, message_id: string }[]}, boolean >(
+    return await Api.post<MessageSeenType, boolean >(
       `${this.prefixUrl}/companies/${companyId}/threads/read`,
-      { messages: body },
+      body,
     );
   }
 }

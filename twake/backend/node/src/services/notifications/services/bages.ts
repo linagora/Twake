@@ -22,7 +22,7 @@ import {
   UserNotificationBadgePrimaryKey,
   UserNotificationBadgeType,
 } from "../entities";
-import { NotificationAcknowledgeContext, NotificationExecutionContext } from "../types";
+import { NotificationExecutionContext } from "../types";
 import { getNotificationRoomName } from "./realtime";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
@@ -256,34 +256,32 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
    * Acknoledge a notification and set the message status to delivered.
    *
    * @param {UserNotificationBadgePrimaryKey} pk - The primary key of the badge to acknowledge
-   * @param {NotificationAcknowledgeContext} context - The context of the acknowledge
+   * @param {ExecutionContext} context - The context of the acknowledge
    * @returns {Promise<boolean>} - The result of the acknowledge
    */
   async acknowledge(
-    pk: UserNotificationBadgePrimaryKey,
-    context: NotificationAcknowledgeContext,
+    notification: UserNotificationBadgePrimaryKey & { message_id: string },
+    context: ExecutionContext,
   ): Promise<boolean> {
+    const { message_id, ...pk } = notification;
     const badge = await this.repository.findOne(pk, {}, context);
-    if (!badge) {
-      return false;
-    }
+    const payload = badge || notification;
 
     const ThreadExecutionContext = {
       company: {
-        id: badge.company_id,
+        id: payload.company_id,
       },
       thread: {
-        id: badge.thread_id,
+        id: payload.thread_id,
       },
-      message_id: badge.message_id,
+      message_id,
       ...context,
     };
 
     const result = await gr.services.messages.messages.updateDeliveryStatus(
       {
-        message_id: badge.message_id,
+        ...payload,
         status: "delivered",
-        thread_id: badge.thread_id,
       },
       ThreadExecutionContext,
     );

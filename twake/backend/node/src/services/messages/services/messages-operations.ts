@@ -253,7 +253,6 @@ export class ThreadMessagesOperationsService {
       throw Error("can't update message delivery status.");
     }
 
-    // check if operation is valid
     if (!operation.message_id || !operation.status) {
       logger.error("Invalid operation");
       throw Error("Invalid operation");
@@ -280,17 +279,17 @@ export class ThreadMessagesOperationsService {
 
     if (operation.status === "delivered" && message.status === "delivered") {
       logger.error("Message already delivered");
-      throw Error("Message already delivered");
+      return;
     }
 
     if (operation.status === "read" && message.status === "read") {
       logger.error("Message already read");
-      throw Error("Message already read");
+      return;
     }
 
     if (operation.status === "delivered" && message.status === "read") {
       logger.error("Invalid operation");
-      throw Error("Invalid operation");
+      return;
     }
 
     message.status = operation.status;

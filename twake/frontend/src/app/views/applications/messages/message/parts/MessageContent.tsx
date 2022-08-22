@@ -104,7 +104,8 @@ export default (props: Props) => {
 
   const isChannelMember = useIsChannelMember(channelId);
   const quotedContent = <QuotedContent message={quotedMessage} />;
-  const showMessageStatus = message.user_id === User.getCurrentUserId();
+  const showMessageStatus =
+    message.user_id === User.getCurrentUserId() && context.workspaceId === 'direct';
 
   return (
     <div
@@ -192,9 +193,10 @@ export default (props: Props) => {
             onOpen={() => setActive(true)}
             onClose={() => setActive(false)}
             threadHeader={props.threadHeader}
+            key={message.id}
           />
         )}
-      {showMessageStatus && <MessageStatus status={message.status} />}
+      {showMessageStatus && <MessageStatus key={message.id} status={message.status} />}
     </div>
   );
 };

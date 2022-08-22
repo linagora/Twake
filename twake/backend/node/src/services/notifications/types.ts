@@ -100,9 +100,5 @@ export type NotificationAcknowledgeBody = {
   thread_id: uuid;
   workspace_id: uuid | "direct";
   channel_id: uuid;
+  message_id: uuid;
 };
-
-export type NotificationAcknowledgeContext = {
-  notification_id: uuid;
-} & NotificationAcknowledgeBody &
-  ExecutionContext;

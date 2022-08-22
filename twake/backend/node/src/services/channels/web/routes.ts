@@ -172,6 +172,22 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     handler: membersController.delete.bind(membersController),
   });
 
+  fastify.route({
+    method: "GET",
+    url: `${membersUrl}/read_sections`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: membersController.getAllChannelMembersReadSections.bind(membersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${membersUrl}/:member_id/read_sections`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: membersController.getChannelMemberReadSections.bind(membersController),
+  });
+
   // pending_emails
 
   fastify.route({

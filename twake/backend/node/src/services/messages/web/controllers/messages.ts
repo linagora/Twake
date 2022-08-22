@@ -19,6 +19,7 @@ import { getThreadMessageWebsocketRoom } from "../realtime";
 import { ThreadPrimaryKey } from "../../entities/threads";
 import { extendExecutionContentWithChannel } from "./index";
 import gr from "../../../global-resolver";
+import { ChannelExecutionContext } from "../../../../services/channels/types";
 
 export class MessagesController
   implements
@@ -407,13 +408,12 @@ export class MessagesController
       Params: {
         company_id: string;
       };
-      Body: {
-        messages: MessageReadType[];
-      };
+      Body: MessageReadType;
     }>,
     reply: FastifyReply,
   ): Promise<boolean> {
     try {
+      const { messages, channel_id } = request.body;
       const context: CompanyExecutionContext = {
         company: { id: request.params.company_id },
         user: request.currentUser,
@@ -423,8 +423,10 @@ export class MessagesController
         transport: "http",
       };
 
-      const { messages } = request.body;
-      const result = await gr.services.messages.messages.read(messages, context);
+      const result = await gr.services.messages.messages.read(messages, {
+        ...context,
+        channel_id,
+      });
       return !!result;
     } catch (err) {
       handleError(reply, err);

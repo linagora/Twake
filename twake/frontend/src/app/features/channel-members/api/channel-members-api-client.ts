@@ -5,6 +5,7 @@ import {
   ChannelMemberType,
 } from 'app/features/channel-members/types/channel-member-types';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
+import { ChannelMemberReadSectionType } from '../types/channel-member-read-section-type';
 
 type ChannelMembersSaveRequest = { resource: Partial<ChannelMemberType> };
 type ChannelMembersSaveResponse = { resource: ChannelMemberType };
@@ -70,6 +71,34 @@ class ChannelMembersAPIClientService {
         resource: { ...channelMember, ...partialsToUpdate },
       },
     ).then(result => result.resource);
+  }
+
+  /**
+   * Get the channel members read sections.
+   * 
+   * @param context - channel members read sections context
+   * @returns {Promise<ChannelMemberReadSectionType[]>}
+   */
+  async getChannelMembersReadSections(
+    context: { companyId: string; workspaceId: string; channelId: string },
+  ): Promise<ChannelMemberReadSectionType[]> {
+    return Api.get<{ resources: ChannelMemberReadSectionType[] }>(
+      `${this.prefix}/${context.companyId}/workspaces/${context.workspaceId}/channels/${context.channelId}/members/read_sections`,
+    ).then(({ resources }) => resources);
+  }
+
+  /**
+   * Get the read sections for a specific member.
+   * 
+   * @param context - channel member read sections context
+   * @returns {Promise<ChannelMemberReadSectionType>}
+   */
+  async getChannelMemberReadSection(
+    context: { companyId: string; workspaceId: string; channelId: string; userId: string },
+  ): Promise<ChannelMemberReadSectionType> {
+    return Api.get<{ resource: ChannelMemberReadSectionType }>(
+      `${this.prefix}/${context.companyId}/workspaces/${context.workspaceId}/channels/${context.channelId}/members/${context.userId}/read_sections`,
+    ).then(({ resource }) => resource);
   }
 }
 const ChannelMembersAPIClient = new ChannelMembersAPIClientService();

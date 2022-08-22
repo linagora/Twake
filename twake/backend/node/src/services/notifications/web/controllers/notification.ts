@@ -79,7 +79,6 @@ export class NotificationController
   async acknowledge(
     request: FastifyRequest<{
       Params: {
-        notification_id: string;
         company_id: string;
       };
       Body: NotificationAcknowledgeBody;
@@ -87,22 +86,21 @@ export class NotificationController
     reply: FastifyReply,
   ): Promise<boolean> {
     const context = getExecutionContext(request);
-    const { notification_id, company_id } = request.params;
-    const { workspace_id, channel_id, thread_id } = request.body;
-    const pk: UserNotificationBadgePrimaryKey = {
-      channel_id,
-      company_id,
-      thread_id,
-      user_id: context.user.id,
-      workspace_id,
-    };
+    const { company_id } = request.params;
+    const { workspace_id, channel_id, thread_id, message_id } = request.body;
 
     try {
-      await gr.services.notifications.badges.acknowledge(pk, {
-        notification_id,
-        ...pk,
-        ...context,
-      });
+      await gr.services.notifications.badges.acknowledge(
+        {
+          channel_id,
+          company_id,
+          thread_id,
+          user_id: context.user.id,
+          workspace_id,
+          message_id,
+        },
+        context,
+      );
 
       return reply.send(true);
     } catch (err) {

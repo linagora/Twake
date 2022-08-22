@@ -254,3 +254,11 @@ export type MessageLinkType = {
 };
 
 export type MessageDeliveryStatusType = 'sending' | 'sent' | 'delivered' | 'read' | 'error';
+
+export type MessageSeenType = {
+  messages: {
+    message_id: string;
+    thread_id: string;
+  }[];
+  channel_id: string;
+}
