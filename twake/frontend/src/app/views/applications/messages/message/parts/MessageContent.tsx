@@ -26,6 +26,7 @@ import { useUser } from 'app/features/users/hooks/use-user';
 import User from 'app/features/users/services/current-user-service';
 import { gotoMessage } from 'src/utils/messages';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import QuotedContent from 'app/molecules/quoted-content';
 
 type Props = {
   linkToThread?: boolean;
@@ -101,6 +102,7 @@ export default (props: Props) => {
   const messageSaveFailed = (message as any)._status === 'failed';
 
   const isChannelMember = useIsChannelMember(channelId);
+  const quotedContent = <QuotedContent message={quotedMessage} />;
 
   return (
     <div
@@ -118,7 +120,7 @@ export default (props: Props) => {
       {showQuotedMessage && (
         <MessageQuote
           author={authorName}
-          message={quotedMessage.text}
+          message={quotedContent}
           closable={false}
           deleted={deletedQuotedMessage}
           goToMessage={() =>

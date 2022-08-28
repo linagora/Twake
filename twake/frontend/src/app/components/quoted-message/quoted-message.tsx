@@ -8,6 +8,7 @@ import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import User from 'app/features/users/services/current-user-service';
 import { gotoMessage } from 'src/utils/messages';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import QuotedContent from 'app/molecules/quoted-content';
 
 type PropsType = {
   closable?: boolean;
@@ -33,10 +34,11 @@ export default ({ closable = true, onClose }: PropsType): React.ReactElement => 
   const author = useUser(message.user_id);
   const authorName = author ? User.getFullName(author) : 'Anonymous';
   const deleted = message.subtype === 'deleted';
+  const quotedContent = <QuotedContent message={message} />
 
   return (
     <MessageQuote
-      message={message.text}
+      message={quotedContent}
       author={authorName}
       closable={closable}
       onClose={onClose}

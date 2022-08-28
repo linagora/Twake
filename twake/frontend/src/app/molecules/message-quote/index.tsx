@@ -4,7 +4,7 @@ import Languages from 'app/features/global/services/languages-service';
 import { X } from 'react-feather';
 
 type PropsType = {
-  message: string;
+  message: JSX.Element;
   author: string;
   closable?: boolean;
   deleted?: boolean;
@@ -34,7 +34,7 @@ export default ({
           {deleted ? (
             <Info className="italic">{Languages.t('molecules.message_quote.deleted')}</Info>
           ) : (
-            <Base>{message}</Base>
+            message
           )}
         </div>
       </div>

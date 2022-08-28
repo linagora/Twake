@@ -930,5 +930,6 @@
     "components.channel_attachement_list.title": "Channel files and medias",
     "components.channel_attachement_list.open": "Open gallery",
     "components.channel_attachement_list.nothing_found": "Nothing here yet",
-    "molecules.message_quote.deleted": "This message was deleted"
+    "molecules.message_quote.deleted": "This message was deleted",
+    "molecules.quoted_content.attachement": "Attachment"
 }
