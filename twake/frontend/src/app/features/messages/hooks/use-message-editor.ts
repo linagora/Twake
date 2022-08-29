@@ -36,7 +36,7 @@ export const useMessageEditor = (key: EditorKey) => {
     : `new-${key.channelId}`;
   const [editor, setEditor] = useRecoilState(MessagesEditorState(location));
   const editorRef = useRef(editor);
-  const { isActive: isQuoted, message: quotedMessageId } = useMessageQuoteReply(key.channelId || '');
+  const { isActive: isQuoted, message: quotedMessageId, close: closeQuoteReply } = useMessageQuoteReply(key.channelId || '');
   let quotedMessage: MessageWithReplies | null = null;
   let message: NodeMessage | null = null;
   if (key.messageId) {
@@ -77,6 +77,7 @@ export const useMessageEditor = (key: EditorKey) => {
 
     if (isQuoted && quotedMessage) {
       editedMessage.quote_message = quotedMessage;
+      closeQuoteReply();
     }
 
     const tempMessage = {
