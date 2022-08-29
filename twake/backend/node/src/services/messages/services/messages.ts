@@ -1,5 +1,6 @@
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   Pagination,
@@ -263,10 +264,13 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     //Check new thread exists
-    let thread = await gr.services.messages.threads.get({ id: context.thread.id });
+    let thread = await gr.services.messages.threads.get({ id: context.thread.id }, context);
     if (!thread && `${context.thread.id}` === `${pk.id}`) {
       logger.info("Create empty thread for message moved out of thread");
-      const oldThread = await gr.services.messages.threads.get({ id: options.previous_thread });
+      const oldThread = await gr.services.messages.threads.get(
+        { id: options.previous_thread },
+        context,
+      );
       const upgradedContext = _.cloneDeep(context);
       upgradedContext.user.server_request = true;
       thread = (
@@ -477,7 +481,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return new ListResult("messages", extendedList, list.nextPage);
   }
 
-  async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
+  async includeUsersInMessage(
+    message: Message,
+    context?: ExecutionContext,
+  ): Promise<MessageWithUsers> {
     let ids: string[] = [];
     if (message.user_id) ids.push(message.user_id);
     if (message.pinned_info?.pinned_by) ids.push(message.pinned_info?.pinned_by);
@@ -497,9 +504,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let application = null;
     if (message.application_id) {
-      application = await gr.services.applications.marketplaceApps.get({
-        id: message.application_id,
-      });
+      application = await gr.services.applications.marketplaceApps.get(
+        {
+          id: message.application_id,
+        },
+        context,
+      );
     }
 
     const messageWithUsers: MessageWithUsers = { ...message, users, application };
@@ -649,13 +659,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
     if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
-      message.quote_message = await this.get(
-        {
-          thread_id: (message.quote_message as Message["quote_message"]).thread_id,
-          id: (message.quote_message as Message["quote_message"]).id,
-        },
-        undefined,
-        { includeQuoteInMessage: false },
+      message.quote_message = await this.includeUsersInMessage(
+        await this.getSingleMessage(
+          {
+            thread_id: (message.quote_message as Message["quote_message"]).thread_id,
+            id: (message.quote_message as Message["quote_message"]).id,
+          },
+          { includeQuoteInMessage: false },
+        ),
       );
     }
     return message;
