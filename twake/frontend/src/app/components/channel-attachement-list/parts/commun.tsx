@@ -6,7 +6,7 @@ import React from 'react';
 export const LoadingAttachements = (): React.ReactElement => {
   return (
     <div className="flex h-full justify-center items-center px-2">
-      <Loader className="h-8 w-8 m-auto" />;
+      <Loader className="h-8 w-8 m-auto" />
     </div>
   );
 };
