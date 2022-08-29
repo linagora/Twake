@@ -516,7 +516,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
   async includeUsersInMessage(
     message: Message,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<MessageWithUsers> {
     let ids: string[] = [];
     if (message.user_id) ids.push(message.user_id);
@@ -698,13 +698,14 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
   async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
     if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
-      message.quote_message = await this.get(
-        {
-          thread_id: (message.quote_message as Message["quote_message"]).thread_id,
-          id: (message.quote_message as Message["quote_message"]).id,
-        },
-        undefined,
-        { includeQuoteInMessage: false },
+      message.quote_message = await this.includeUsersInMessage(
+        await this.getSingleMessage(
+          {
+            thread_id: (message.quote_message as Message["quote_message"]).thread_id,
+            id: (message.quote_message as Message["quote_message"]).id,
+          },
+          { includeQuoteInMessage: false },
+        ),
       );
     }
     return message;
