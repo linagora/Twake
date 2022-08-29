@@ -253,7 +253,7 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
   }
 
   /**
-   * Acknoledge a notification and set the message status to delivered.
+   * acknowledge a notification and set the message status to delivered.
    *
    * @param {UserNotificationBadgePrimaryKey} pk - The primary key of the badge to acknowledge
    * @param {ExecutionContext} context - The context of the acknowledge
