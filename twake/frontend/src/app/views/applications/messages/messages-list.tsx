@@ -21,6 +21,10 @@ import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
 import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
 import { getMessage } from 'app/features/messages/hooks/use-message';
+import messageApiClient from 'app/features/messages/api/message-api-client';
+import User from 'app/features/users/services/current-user-service';
+import { useChannelMembersReadSections } from 'app/features/channel-members/hooks/use-channel-members-read-sections';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 
 type Props = {
   companyId: string;
@@ -34,6 +38,7 @@ export const MessagesListContext = React.createContext({ hideReplies: false, wit
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
+  const { seen, refresh: loadReadSections } = useChannelMembersReadSections(companyId, workspaceId || 'direct', channelId || '');
 
   const {
     messages: _messages,
@@ -71,6 +76,23 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   useEffect(() => {
     if (messages.length === 0) loadMore('history');
   }, []);
+
+  useEffect(() => {
+    if (window.reachedEnd && atBottom && messages.length > 0) {
+      const seenMessages = messages.filter(message => {
+        const m = getMessage(message.id || message.threadId);
+
+        return (
+          m.user_id !== User.getCurrentUserId() &&
+          (m.status === 'delivered' ||
+            (m.status === 'read' && !seen(User.getCurrentUserId(), m.id)))
+        );
+      });
+      if (seenMessages.length > 0) {
+        messageApiClient.read(companyId, channelId || '', seenMessages).then(loadReadSections);
+      }
+    }
+  }, [messages, window.reachedEnd]);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
@@ -112,6 +134,12 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     if (messages.length)
       ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
   }, [messages.length > 0]);
+
+  useEffect(() => {
+    if (messages.length && workspaceId === 'direct') {
+      loadReadSections();
+    }
+  }, [companyId, workspaceId, channelId, messages.length > 0]);
 
   const row = React.useMemo(
     () => (_: number, m: MessagesAndComponentsType) => {

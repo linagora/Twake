@@ -143,6 +143,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     handler: messagesController.deleteLinkPreview.bind(messagesController),
   });
 
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/read",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.read.bind(messagesController),
+  });
+
   /**
    * Views routes
    */

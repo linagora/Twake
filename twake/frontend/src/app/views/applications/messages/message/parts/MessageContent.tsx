@@ -27,6 +27,7 @@ import User from 'app/features/users/services/current-user-service';
 import { gotoMessage } from 'src/utils/messages';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import QuotedContent from 'app/molecules/quoted-content';
+import MessageStatus from 'app/molecules/message-status';
 
 type Props = {
   linkToThread?: boolean;
@@ -103,6 +104,8 @@ export default (props: Props) => {
 
   const isChannelMember = useIsChannelMember(channelId);
   const quotedContent = <QuotedContent message={quotedMessage} />;
+  const showMessageStatus =
+    message.user_id === User.getCurrentUserId() && context.workspaceId === 'direct';
 
   return (
     <div
@@ -115,6 +118,7 @@ export default (props: Props) => {
         setDidMouseOver(true);
       }}
       onClick={() => setActive(false)}
+      key={`message_container_${message.id}`}
     >
       <MessageHeader linkToThread={props.linkToThread} />
       {showQuotedMessage && (
@@ -137,7 +141,7 @@ export default (props: Props) => {
         <div className="content-parent dont-break-out">
           {deleted === true ? (
             <div className="deleted-message">
-              <DeletedContent userId={message.user_id || ''} key={message.thread_id} />
+              <DeletedContent userId={message.user_id || ''} key={`deleted_${message.thread_id}`} />
             </div>
           ) : (
             <>
@@ -190,8 +194,10 @@ export default (props: Props) => {
             onOpen={() => setActive(true)}
             onClose={() => setActive(false)}
             threadHeader={props.threadHeader}
+            key={`options_${message.id}`}
           />
         )}
+      {showMessageStatus && <MessageStatus key={`message_status_${message.id}`} status={message.status} />}
     </div>
   );
 };

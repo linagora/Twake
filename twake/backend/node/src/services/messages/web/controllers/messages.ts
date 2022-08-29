@@ -7,13 +7,19 @@ import {
   ResourceUpdateResponse,
 } from "../../../../utils/types";
 import { getInstance as getMessageInstance, Message } from "../../entities/messages";
-import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
+import {
+  CompanyExecutionContext,
+  MessageListQueryParameters,
+  MessageReadType,
+  ThreadExecutionContext,
+} from "../../types";
 import { handleError } from "../../../../utils/handleError";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { getThreadMessageWebsocketRoom } from "../realtime";
 import { ThreadPrimaryKey } from "../../entities/threads";
 import { extendExecutionContentWithChannel } from "./index";
 import gr from "../../../global-resolver";
+import { ChannelExecutionContext } from "../../../../services/channels/types";
 
 export class MessagesController
   implements
@@ -387,6 +393,44 @@ export class MessagesController
       };
     } catch (err) {
       handleError(reply, err);
+    }
+  }
+
+  /**
+   * Mark messages as seen
+   *
+   * @param {FastifyRequest} request - The request object
+   * @param {FastifyReply} reply - The reply object
+   * @returns {Promise<boolean>} - The response promise
+   */
+  async read(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+      };
+      Body: MessageReadType;
+    }>,
+    reply: FastifyReply,
+  ): Promise<boolean> {
+    try {
+      const { messages, channel_id } = request.body;
+      const context: CompanyExecutionContext = {
+        company: { id: request.params.company_id },
+        user: request.currentUser,
+        url: request.url,
+        method: request.routerMethod,
+        reqId: request.id,
+        transport: "http",
+      };
+
+      const result = await gr.services.messages.messages.read(messages, {
+        ...context,
+        channel_id,
+      });
+      return !!result;
+    } catch (err) {
+      handleError(reply, err);
+      return false;
     }
   }
 }

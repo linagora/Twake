@@ -92,6 +92,9 @@ export class Message {
 
   @Column("links", "encoded_json")
   links: null | MessageLinks[];
+
+  @Column("status", "encoded_json")
+  status: null | MessageDeliveryStatus;
 }
 
 export type MessageReaction = { count: number; name: string; users: string[] };
@@ -146,3 +149,5 @@ export type MessageLinks = {
   img_height: number | null;
   url: string;
 };
+
+export type MessageDeliveryStatus = "sent" | "delivered" | "read";

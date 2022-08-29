@@ -203,6 +203,18 @@ export const useSetMessage = (companyId: string) => {
   return useRecoilCallback(
     ({ set }) =>
       async (message: NodeMessage) => {
+        const storedMessage = messagesStore[message.id];
+
+        if (storedMessage && storedMessage?.status) {
+          if (
+            (storedMessage.status == 'delivered' && message.status === 'sent') ||
+            (storedMessage.status === 'read' &&
+              (message.status === 'delivered' || message.status === 'sent'))
+          ) {
+            return;
+          }
+        }
+
         messagesStore[message.id] = message;
 
         set(

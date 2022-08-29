@@ -80,10 +80,11 @@ export const useMessageEditor = (key: EditorKey) => {
       closeQuoteReply();
     }
 
-    const tempMessage = {
+    const tempMessage: NodeMessage = {
       ...editedMessage,
       _status: 'sending',
       id: key.threadId ? uuidv1() : editedMessage.thread_id,
+      status: 'sending'
     };
     propagateMessage(tempMessage as NodeMessage);
 
@@ -107,11 +108,11 @@ export const useMessageEditor = (key: EditorKey) => {
       if (!newMessage) {
         throw new Error('Not sent');
       }
-
-      propagateMessage({ ...tempMessage, _status: 'sent' });
-      propagateMessage(newMessage);
+      
+      propagateMessage({ ...tempMessage, _status: 'sent', status: 'sent' });
+      propagateMessage({ ...newMessage, _status: 'sent' });
     } catch (err) {
-      propagateMessage({ ...tempMessage, _status: 'failed' });
+      propagateMessage({ ...tempMessage, _status: 'failed', status: 'error' });
     }
   };
 

@@ -4,6 +4,7 @@ import {
   Message,
   MessageExtended,
   MessageFileType,
+  MessageSeenType,
   MessageWithReplies,
   NodeMessage,
 } from 'app/features/messages/types/message';
@@ -18,6 +19,7 @@ import Logger from 'features/global/framework/logger-service';
 import { UserType } from 'features/users/types/user';
 import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
 import assert from 'assert';
+import { AtomMessageKey } from '../state/atoms/messages';
 
 /**
  * This service is to get, update, create, list messages in a thread
@@ -203,6 +205,33 @@ class MessageAPIClient {
     } catch (e) {
       return { resources: [], next_page_token: null };
     }
+  }
+
+  /**
+   * Mark messages as seen
+   * 
+   * @param {String} companyId - The company id
+   * @param {String} channelId - The channel
+   * @param {AtomMessageKey[]} messages - the messages to mark as seen 
+   * @returns {Promise<boolean>} - true if the messages were marked as seen
+   */
+  async read(companyId: string, channelId: string, messages: AtomMessageKey[]): Promise<boolean> {
+    if (!messages || !messages.length) {
+      return true;
+    }
+
+    const body = {
+      messages: messages.map(message => ({
+        thread_id: message.threadId,
+        message_id: message.id || message.threadId,
+      })),
+      channel_id: channelId,
+    };
+
+    return await Api.post<MessageSeenType, boolean >(
+      `${this.prefixUrl}/companies/${companyId}/threads/read`,
+      body,
+    );
   }
 }
 

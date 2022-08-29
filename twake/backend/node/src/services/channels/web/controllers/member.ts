@@ -1,6 +1,11 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelMember, ChannelMemberPrimaryKey, ChannelMemberWithUser } from "../../entities";
+import {
+  ChannelMember,
+  ChannelMemberPrimaryKey,
+  ChannelMemberReadCursors,
+  ChannelMemberWithUser,
+} from "../../entities";
 import {
   ChannelMemberParameters,
   ChannelParameters,
@@ -240,6 +245,55 @@ export class ChannelMemberCrudController
     }
 
     return reply.status(200).send({ has_access: true });
+  }
+
+  /**
+   * Lists the channel read sections for all members.
+   *
+   * @param {FastifyRequest<{ Params: ChannelParameters }>} request - the request object
+   * @param {FastifyReply} reply - the reply object
+   * @returns {Promise<ResourceListResponse<ChannelMemberReadCursors>>} - the response
+   */
+  async getAllChannelMembersReadSections(
+    request: FastifyRequest<{ Params: ChannelParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<ChannelMemberReadCursors>> {
+    try {
+      const context = getExecutionContext(request);
+      const channelMembersReadSections =
+        await gr.services.channels.members.getChannelMembersReadSections(context);
+
+      return {
+        resources: channelMembersReadSections.getEntities(),
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
+
+  /**
+   * Get the channel member read section for a user.
+   *
+   * @param {FastifyRequest<{ Params: ChannelMemberParameters }>} request - the request object
+   * @param {FastifyReply} reply - the reply object
+   * @returns {Promise<ResourceGetResponse<ChannelMemberReadCursors>>} - the read section for the member
+   */
+  async getChannelMemberReadSections(
+    request: FastifyRequest<{ Params: ChannelMemberParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceGetResponse<ChannelMemberReadCursors>> {
+    try {
+      const { member_id } = request.params;
+      const context = getExecutionContext(request);
+      const channelMembersReadSections =
+        await gr.services.channels.members.getChannelMemberReadSections(member_id, context);
+
+      return {
+        resource: channelMembersReadSections,
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
   }
 }
 

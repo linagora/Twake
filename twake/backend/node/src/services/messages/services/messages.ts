@@ -27,6 +27,8 @@ import {
   BookmarkOperation,
   CompanyExecutionContext,
   DeleteLinkOperation,
+  MessageIdentifier,
+  MessageReadType,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -34,6 +36,7 @@ import {
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
+  UpdateDeliveryStatusOperation,
 } from "../types";
 import _ from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
@@ -53,6 +56,8 @@ import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
 import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs-reversed";
 import { LinkPreviewMessageQueueRequest } from "../../../services/previews/types";
 import { Thumbnail } from "../../files/entities/file";
+import uuidTime from "uuid-time";
+import { ChannelExecutionContext } from "../../../services/channels/types";
 
 export class ThreadMessagesService implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -922,5 +927,61 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     return this.operations.deleteLinkPreview(operation, context);
+  }
+
+  /**
+   * Updates the message delivery status to delivered or read.
+   *
+   * @param {UpdateDeliveryStatusOperation} operation - The update delivery status operation
+   * @param {ThreadExecutionContext} context - The thread execution context
+   * @returns {Promise<SaveResult<Message>>} - The save result
+   */
+  async updateDeliveryStatus(
+    operation: UpdateDeliveryStatusOperation,
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.updateDeliveryStatus(operation, context);
+  }
+
+  /**
+   * Updates the messages delivery status to read.
+   *
+   * @param {MessageReadType} messages - The messages to mark as read
+   * @param {CompanyExecutionContext  & { channel_id: string }} context - The company execution context
+   * @returns {Promise<boolean>} - The promise result of the operation
+   */
+  async read(
+    messages: MessageIdentifier[],
+    context: CompanyExecutionContext & { channel_id: string },
+  ): Promise<boolean> {
+    const timestamps = messages
+      .map(({ message_id }) => ({
+        message_id,
+        timestamp: uuidTime.v1(message_id),
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp);
+
+    const read_section = {
+      start: timestamps[0].message_id,
+      end: timestamps[timestamps.length - 1].message_id,
+    };
+
+    await gr.services.channels.members.setChannelMemberReadSections(read_section, context);
+
+    const updates = await Promise.all(
+      messages.map(async message => {
+        const readOperation: UpdateDeliveryStatusOperation = {
+          ...message,
+          status: "read",
+        };
+
+        return this.updateDeliveryStatus(readOperation, {
+          ...context,
+          thread: { id: message.thread_id },
+        });
+      }),
+    );
+
+    return updates.every(item => !!item);
   }
 }

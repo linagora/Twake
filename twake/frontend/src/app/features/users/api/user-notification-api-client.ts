@@ -26,6 +26,19 @@ class UserNotificationAPIClient {
     if (response.websockets) this.realtime = response.websockets[0];
     return response.resources ? response.resources : [];
   }
+
+  async acknowledge(notification: NotificationType): Promise<void> {
+    const { message_id, channel_id, company_id, thread_id, workspace_id } = notification;
+    await Api.post<{ message_id: string, thread_id: string, channel_id: string, workspace_id: string}, boolean>(
+      `/internal/services/notifications/v1/badges/${company_id}/acknowledge`,
+      {
+        channel_id,
+        workspace_id,
+        thread_id,
+        message_id,
+      }
+    );
+  }
 }
 
 export default new UserNotificationAPIClient();

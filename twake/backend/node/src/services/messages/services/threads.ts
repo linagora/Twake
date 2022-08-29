@@ -133,6 +133,8 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
     }
 
     if (message) {
+      message.status = "sent";
+
       await gr.services.messages.messages.save(
         message,
         {

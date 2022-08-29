@@ -171,3 +171,17 @@ export interface DeleteLinkOperation {
   thread_id: string;
   link: string;
 }
+
+export type UpdateDeliveryStatusOperation = {
+  status: "delivered" | "read";
+} & MessageIdentifier;
+
+export type MessageReadType = {
+  messages: MessageIdentifier[];
+  channel_id: string;
+};
+
+export type MessageIdentifier = {
+  message_id: string;
+  thread_id: string;
+};

@@ -251,4 +251,45 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
       )
     ).filter(Boolean).length;
   }
+
+  /**
+   * acknowledge a notification and set the message status to delivered.
+   *
+   * @param {UserNotificationBadgePrimaryKey} pk - The primary key of the badge to acknowledge
+   * @param {ExecutionContext} context - The context of the acknowledge
+   * @returns {Promise<boolean>} - The result of the acknowledge
+   */
+  async acknowledge(
+    notification: UserNotificationBadgePrimaryKey & { message_id: string },
+    context: ExecutionContext,
+  ): Promise<boolean> {
+    const { message_id, ...pk } = notification;
+    const badge = await this.repository.findOne(pk, {}, context);
+    const payload = badge || notification;
+
+    const ThreadExecutionContext = {
+      company: {
+        id: payload.company_id,
+      },
+      thread: {
+        id: payload.thread_id,
+      },
+      message_id,
+      ...context,
+    };
+
+    const result = await gr.services.messages.messages.updateDeliveryStatus(
+      {
+        ...payload,
+        status: "delivered",
+      },
+      ThreadExecutionContext,
+    );
+
+    if (result) {
+      return true;
+    }
+
+    return false;
+  }
 }

@@ -15,9 +15,11 @@ import {
   Channel as ChannelEntity,
   ChannelMember,
   ChannelMemberPrimaryKey,
+  ChannelMemberReadCursors,
   getChannelMemberInstance,
   getMemberOfChannelInstance,
   MemberOfChannel,
+  ReadSection,
 } from "../../entities";
 import {
   ChannelExecutionContext,
@@ -48,6 +50,8 @@ import { UserPrimaryKey } from "../../../user/entities/user";
 import { WorkspacePrimaryKey } from "../../../workspaces/entities/workspace";
 
 import gr from "../../../global-resolver";
+import uuidTime from "uuid-time";
+import { CompanyExecutionContext } from "../../../../services/messages/types";
 
 const USER_CHANNEL_KEYS = [
   "id",
@@ -77,6 +81,7 @@ export class MemberServiceImpl {
   version: "1";
   userChannelsRepository: Repository<ChannelMember>;
   channelMembersRepository: Repository<MemberOfChannel>;
+  channelMembersReadCursorRepository: Repository<ChannelMemberReadCursors>;
   private channelCounter: CounterProvider<ChannelCounterEntity>;
   private cache: NodeCache;
 
@@ -86,6 +91,10 @@ export class MemberServiceImpl {
       this.channelMembersRepository = await gr.database.getRepository(
         "channel_members",
         MemberOfChannel,
+      );
+      this.channelMembersReadCursorRepository = await gr.database.getRepository(
+        "channel_members_read_cursors",
+        ChannelMemberReadCursors,
       );
     } catch (err) {
       logger.error({ err }, "Can not initialize channel member service");
@@ -718,5 +727,151 @@ export class MemberServiceImpl {
         await this.delete(channel, { user: { id: userPk.id }, channel });
       }
     }
+  }
+
+  /**
+   * The list of members read sections of the channel.
+   *
+   * @param {ChannelExecutionContext} context - The context of the execution.
+   * @returns {Promise<ListResult<ChannelMemberReadCursors>>} - The channel members read cursors.
+   */
+  async getChannelMembersReadSections(
+    context: ChannelExecutionContext,
+  ): Promise<ListResult<ChannelMemberReadCursors>> {
+    try {
+      const readCursors = await this.channelMembersReadCursorRepository.find(
+        {
+          company_id: context.channel.company_id,
+          channel_id: context.channel.id,
+        },
+        {},
+        context,
+      );
+
+      return new ListResult<ChannelMemberReadCursors>(
+        "channel_members_read_cursors",
+        readCursors.getEntities(),
+      );
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }
+
+  /**
+   * The channel member read section of the channel.
+   *
+   * @param {ChannelExecutionContext} context - The context of the execution.
+   * @returns {Promise<ChannelMemberReadCursors>} - The channel member read cursors.
+   */
+  async getChannelMemberReadSections(
+    member: string,
+    context: ChannelExecutionContext,
+  ): Promise<ChannelMemberReadCursors> {
+    try {
+      const readCursors = await this.channelMembersReadCursorRepository.findOne(
+        {
+          company_id: context.channel.company_id,
+          channel_id: context.channel.id,
+          user_id: member,
+        },
+        {},
+        context,
+      );
+
+      return readCursors;
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }
+
+  /**
+   * Updates the channel member read section.
+   *
+   * @param {{ start: string; end: string }} section - The section to save the cursor for.
+   * @param {CompanyExecutionContext & { channel_id: string }} context - The channel execution context.
+   * @returns {Promise<SaveResult<ChannelMemberReadCursors>>} - The result of the save operation.
+   */
+  async setChannelMemberReadSections(
+    section: { start: string; end: string },
+    context: CompanyExecutionContext & { channel_id: string },
+  ): Promise<SaveResult<ChannelMemberReadCursors>> {
+    const member = await this.getChannelMember(
+      context.user,
+      { id: context.channel_id, company_id: context.company.id, workspace_id: "direct" },
+      null,
+      context,
+    );
+
+    if (!member) {
+      throw CrudException.badRequest(
+        `User ${context.user.id} is not a member of channel ${context.channel_id}`,
+      );
+    }
+
+    const existingReadSection = await this.channelMembersReadCursorRepository.findOne(
+      {
+        company_id: context.company.id,
+        channel_id: context.channel_id,
+        user_id: context.user.id,
+      },
+      {},
+      context,
+    );
+
+    const { start, end } = section;
+
+    if (
+      !existingReadSection ||
+      !existingReadSection.read_section ||
+      !existingReadSection.read_section.length
+    ) {
+      const newMemberReadCursor = new ChannelMemberReadCursors();
+      newMemberReadCursor.company_id = context.company.id;
+      newMemberReadCursor.channel_id = context.channel_id;
+      newMemberReadCursor.user_id = context.user.id;
+      newMemberReadCursor.read_section = [start, end] as ReadSection;
+
+      await this.channelMembersReadCursorRepository.save(newMemberReadCursor, context);
+
+      return new SaveResult<ChannelMemberReadCursors>(
+        "channel_members_read_cursors",
+        newMemberReadCursor,
+        OperationType.CREATE,
+      );
+    }
+
+    const updatedReadSection = { start, end };
+    const [existingStart, existingEnd] = existingReadSection.read_section;
+    const existingStartTime = uuidTime.v1(existingStart);
+    const existingEndTime = uuidTime.v1(existingEnd);
+    const startTime = uuidTime.v1(start);
+    const endTime = uuidTime.v1(end);
+
+    if (existingStartTime < startTime) {
+      updatedReadSection.start = existingStart;
+    }
+
+    if (existingEndTime > endTime) {
+      updatedReadSection.end = existingEnd;
+    }
+
+    if (existingStart === updatedReadSection.start && existingEnd === updatedReadSection.end) {
+      return new SaveResult<ChannelMemberReadCursors>(
+        "channel_members_read_cursors",
+        existingReadSection,
+        OperationType.EXISTS,
+      );
+    }
+
+    existingReadSection.read_section = [updatedReadSection.start, updatedReadSection.end];
+    await this.channelMembersReadCursorRepository.save(existingReadSection, context);
+
+    return new SaveResult<ChannelMemberReadCursors>(
+      "channel_members_read_cursors",
+      existingReadSection,
+      OperationType.UPDATE,
+    );
   }
 }

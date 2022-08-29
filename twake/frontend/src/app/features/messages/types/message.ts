@@ -80,6 +80,7 @@ export type Message = {
     | 'system';
   files?: MessageFileType[];
   text?: string;
+  status?: MessageDeliveryStatusType;
 };
 
 export interface MessageExtended extends Message {
@@ -229,6 +230,8 @@ export type NodeMessage = {
   quote_message?: NodeMessage & {
     users?: UserType[];
   };
+
+  status?: MessageDeliveryStatusType | null;
 };
 
 export type MessageWithReplies = NodeMessage & {
@@ -249,3 +252,13 @@ export type MessageLinkType = {
   img_height: number | undefined;
   url: string;
 };
+
+export type MessageDeliveryStatusType = 'sending' | 'sent' | 'delivered' | 'read' | 'error';
+
+export type MessageSeenType = {
+  messages: {
+    message_id: string;
+    thread_id: string;
+  }[];
+  channel_id: string;
+}
