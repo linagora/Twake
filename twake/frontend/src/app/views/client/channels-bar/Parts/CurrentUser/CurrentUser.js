@@ -13,6 +13,7 @@ import ListenUsers from 'app/features/users/services/listen-users-service';
 import UserParameter from 'app/views/client/popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/inputs/input-with-icon';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
+import AccountParameter from 'app/views/client/popup/UserParameter/UserParameter';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/views/client/popup/CreateWorkspacePage/CreateWorkspacePage.js';
@@ -237,16 +238,8 @@ export default class CurrentUser extends Component {
         type: 'menu',
         icon: 'user',
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
-        rightIcon:
-          InitService.server_infos?.configuration?.accounts?.type === 'console'
-            ? 'external-link-alt'
-            : '',
         onClick: () => {
-          if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
-            return window.open(InitService.getConsoleLink('account_management_url'), '_blank');
-          } else {
-            ModalManagerDepreciated.open(<UserParameter />);
-          }
+          ModalManagerDepreciated.open(<AccountParameter />, true, 'account_parameters');
         },
       },
       {

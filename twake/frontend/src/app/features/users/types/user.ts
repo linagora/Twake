@@ -13,6 +13,7 @@ export type UserPreferencesType = null | {
   tutorial_done?: boolean;
   channel_ordering?: 'chronological' | 'alphabetical';
   recent_workspaces?: { company_id: string; workspace_id: string }[];
+  knowledge_graph?: 'all' | 'nothing' | 'metadata';
 };
 
 export type UserCompanyType = {
