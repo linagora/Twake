@@ -4,7 +4,6 @@ import './company-messages-counter.scss';
 import i18n from 'i18next';
 
 import Languages from 'app/features/global/services/languages-service';
-import InitService from 'app/features/global/services/init-service';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import FeatureTogglesService, {
   FeatureNames,

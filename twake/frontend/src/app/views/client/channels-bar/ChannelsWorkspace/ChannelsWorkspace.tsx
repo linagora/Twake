@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { ChannelType } from 'app/features/channels/types/channel';
-import RouterServices from 'app/features/router/services/router-service';
 import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'app/features/global/services/languages-service';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
@@ -15,7 +14,6 @@ type channelCategoryType = {
 };
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const channelCategory: channelCategoryType = {
     favorite: [],
     workspace: [],

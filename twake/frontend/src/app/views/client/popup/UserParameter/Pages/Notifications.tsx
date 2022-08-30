@@ -18,7 +18,6 @@ import {
 
 export default () => {
   const loading = useRef(true);
-  const url = '/notifications/v1/preferences/';
 
   const notificationPreferences: NotificationPreferencesType[] = [];
 
@@ -30,7 +29,10 @@ export default () => {
   }
 
   const saveNewPreferences = async (preferences: preferencesType) => {
-    const newPreferences: any = Object.entries(preferences).map(([key, value]) => ({ key, value }));
+    const newPreferences: {
+      key: keyof preferencesType;
+      value: preferencesType[keyof preferencesType];
+    }[] = Object.entries(preferences).map(([key, value]) => ({ key: key as keyof preferencesType, value }));
 
     NotificationPreferences.save(newPreferences);
   };
@@ -115,7 +117,7 @@ export default () => {
                       -new Date().getTimezoneOffset() / 60,
                     )[0]
                   }
-                  onChange={(evt: any) => {
+                  onChange={(evt) => {
                     setNewPreferences({
                       ...newPreferences,
                       night_break: {
@@ -143,7 +145,7 @@ export default () => {
                       -new Date().getTimezoneOffset() / 60,
                     )[1]
                   }
-                  onChange={(evt: any) => {
+                  onChange={(evt) => {
                     setNewPreferences({
                       ...newPreferences,
                       night_break: {
@@ -229,10 +231,10 @@ export default () => {
               }}
               type="number"
               value={newPreferences.email_notifications_delay}
-              onChange={(evt: any) => {
+              onChange={evt => {
                 setNewPreferences({
                   ...newPreferences,
-                  email_notifications_delay: evt.target.value,
+                  email_notifications_delay: (evt.target as HTMLInputElement).value,
                 });
               }}
             />

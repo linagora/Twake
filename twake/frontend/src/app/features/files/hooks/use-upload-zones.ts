@@ -7,7 +7,7 @@ import { useUpload } from './use-upload';
 import { PendingFileType } from 'app/features/files/types/file';
 
 export const useUploadZones = (zoneId: string) => {
-  const { pendingFilesListState, currentTask, getOnePendingFile } = useUpload();
+  const { currentTask, getOnePendingFile } = useUpload();
   const [files, setFiles] = useRecoilState(PendingUploadZonesListState(zoneId));
 
   useEffect(() => {

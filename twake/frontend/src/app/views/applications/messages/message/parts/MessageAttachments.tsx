@@ -5,7 +5,6 @@ import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
-import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 
 export default () => {
   const context = useContext(MessageContext);
@@ -33,7 +32,7 @@ export default () => {
     <Row justify="start" align="middle" className="small-top-margin" wrap>
       {files
         .filter(f => f.metadata)
-        .map((file, i) => (
+        .map(file => (
           <PossiblyPendingAttachment
             key={file.metadata?.external_id || file.id}
             type={'message'}

@@ -11,9 +11,7 @@ import Icon from '../icon/icon';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import AutoCompleteExtended from 'components/auto-complete-extended/auto-complete-extended';
 import { UserType } from 'app/features/users/types/user';
-import UserAPIClient from 'app/features/users/api/user-api-client';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { useWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 import './user-list-manager.scss';

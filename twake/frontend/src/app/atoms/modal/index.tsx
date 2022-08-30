@@ -17,11 +17,11 @@ export const Modal = (props: {
   children?: React.ReactNode;
   closable?: boolean;
   className?: string;
-  style?: any;
+  style?: React.CSSProperties;
   positioned?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
-  const [modalsCountState, setModalsCountState] = useRecoilState(ModalsCountState);
+  const [, setModalsCountState] = useRecoilState(ModalsCountState);
   const [level, setLevel] = useState(0);
   const [didOpenOnce, setDidOpenOnce] = useState(false);
 

@@ -1,7 +1,6 @@
 import React, { ReactNode, useContext, useState } from 'react';
 
 import 'moment-timezone';
-import moment from 'moment';
 import Moment from 'react-moment';
 import { Typography } from 'antd';
 import classNames from 'classnames';

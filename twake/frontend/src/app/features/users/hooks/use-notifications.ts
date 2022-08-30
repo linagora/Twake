@@ -15,11 +15,11 @@ import { NotificationType } from '../types/notification-types';
 import ElectronService from 'app/features/global/framework/electron-service';
 import windowState from 'app/features/global/utils/window';
 import RouterService, { ClientStateType } from '../../router/services/router-service';
-import { useCallback } from 'react';
 import { pushDesktopNotification } from '../services/push-desktop-notification';
 import { RouterState } from 'app/features/router/state/atoms/router';
 
-export let removeBadgesNow = (type: 'channel' | 'workspace' | 'company', id: string) => {};
+export let removeBadgesNow: (type: 'company' | 'workspace' | 'channel', id: string) => void = () =>
+  undefined;
 
 export const useNotifications = () => {
   const [badges, setBadges] = useRecoilState(NotificationsBadgesState);

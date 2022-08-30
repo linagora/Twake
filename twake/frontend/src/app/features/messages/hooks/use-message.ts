@@ -13,7 +13,7 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     id: partialKey.id || partialKey.threadId,
   };
   const setValue = useSetMessage(key.companyId);
-  const [message, _setValue] = useRecoilState(MessageState(key));
+  const [message] = useRecoilState(MessageState(key));
 
   const get = async () => {
     const message = await MessageAPIClient.get(

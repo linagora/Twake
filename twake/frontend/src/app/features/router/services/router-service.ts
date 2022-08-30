@@ -7,8 +7,6 @@ import Login from 'app/views/login/login';
 import Logout from 'app/views/login/logout';
 import Error from 'app/views/error';
 import Join from 'app/views/join';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
-
 import PublicMainView from 'app/views/client/main-view/PublicMainView';
 import Observable from '../../../deprecated/Observable/Observable';
 import { getWorkspacesByCompany } from 'app/features/workspaces/state/workspace-list';
@@ -43,7 +41,7 @@ class RouterServices extends Observable {
   public history: History<unknown> = createBrowserHistory();
   public match = (pathSchema: string): match<object> | null =>
     matchPath(this.history.location.pathname, { path: pathSchema });
-  public setRecoilState: (state: ClientStateType) => void = _ => {};
+  public setRecoilState: (state: ClientStateType) => void = () => undefined;
 
   //List of client sub paths
   clientSubPathnames: Readonly<string[]> = [

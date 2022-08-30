@@ -8,9 +8,7 @@ import ConsoleService from 'app/features/console/services/console-service';
 import RouterServices from 'app/features/router/services/router-service';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 
-type PropsType = {};
-
-export default (props: PropsType): JSX.Element => {
+export default (): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const [emails, _setEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);

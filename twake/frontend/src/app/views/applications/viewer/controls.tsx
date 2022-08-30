@@ -4,10 +4,9 @@ import VideoControls from './videos/controls';
 import PdfControls from './pdf/controls';
 import ArchiveControls from './archive/controls';
 import CodeControls from './code/controls';
-import OtherControls from './other/controls';
 
 export default () => {
-  const { type, name } = useViewerDisplayData();
+  const { type } = useViewerDisplayData();
 
   if (!type) {
     return <></>;

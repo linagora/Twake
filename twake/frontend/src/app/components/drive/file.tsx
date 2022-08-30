@@ -16,7 +16,7 @@ type NodeType = any;
 export default class File extends DriveElement {
   node: NodeType;
   state: StateType;
-  constructor(props: PropsType) {
+  constructor() {
     super();
     this.state = {
       loading: true,

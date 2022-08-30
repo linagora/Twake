@@ -28,7 +28,7 @@ import { fadeTransition, fadeZoomTransition } from 'src/utils/transitions';
 import Controls from './controls';
 import Display from './display';
 
-let animationTimeout: any = setTimeout(() => {});
+let animationTimeout: number = setTimeout(() => undefined);
 
 export default () => {
   const { loading, isOpen } = useFileViewer();
@@ -40,7 +40,7 @@ export default () => {
     if (loading) {
       setAnimatedLoading(true);
     } else {
-      animationTimeout = setTimeout(() => {
+      animationTimeout = window.setTimeout(() => {
         setAnimatedLoading(false);
       }, 400);
     }

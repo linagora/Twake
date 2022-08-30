@@ -19,6 +19,9 @@ type PropsType = {
   [key: string]: any;
   noMagicLink?: boolean;
   inline?: boolean;
+  onChange?: (emails: string[]) => void;
+  finish?: () => void;
+  loading?: boolean;
 };
 
 export default (props: PropsType): JSX.Element => {

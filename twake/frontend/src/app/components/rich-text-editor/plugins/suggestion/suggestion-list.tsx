@@ -1,7 +1,7 @@
 import React, { useState, CSSProperties, useEffect } from 'react';
 import classNames from 'classnames';
 import { Row, Typography } from 'antd';
-import { Frown, Terminal, Search, X, Loader } from 'react-feather';
+import { Frown, Terminal, Search } from 'react-feather';
 
 import { isCommandType, isEmojiType, isMentionType } from './utils';
 import Languages from 'app/features/global/services/languages-service';

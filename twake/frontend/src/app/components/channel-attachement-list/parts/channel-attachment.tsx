@@ -18,7 +18,6 @@ import routerService from 'app/features/router/services/router-service';
 import { UserType } from 'app/features/users/types/user';
 import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 import Media from 'app/molecules/media';
-import DriveService from 'deprecated/Apps/Drive/Drive';
 import React from 'react';
 import { ArrowRight } from 'react-feather';
 import { useRecoilState } from 'recoil';

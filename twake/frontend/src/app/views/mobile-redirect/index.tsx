@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { getDevice } from '../../features/global/utils/device';
 import configuration from '../../environment/environment';
 import { Smartphone, X } from 'react-feather';
@@ -7,16 +7,22 @@ import { Button } from 'antd';
 import InitService from '../../features/global/services/init-service';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 
-const environment = configuration as any;
+const environment = configuration;
+
+type SearchParamsType = {
+  [k: string]: string;
+};
 
 export default function MobileRedirect(props: { children: ReactNode }) {
   const os = getDevice();
-  const searchParams = Object.fromEntries(new URLSearchParams(window.location.search)) as any;
+  const searchParams: SearchParamsType = Object.fromEntries(
+    new URLSearchParams(window.location.search),
+  );
 
   const parameters = InitService.server_infos?.configuration.mobile;
 
   const getapp = searchParams.getapp;
-  let forceUseWeb = searchParams.useweb;
+  let forceUseWeb: string | boolean = searchParams.useweb;
   const originInUrl = searchParams.origin;
 
   delete searchParams.useweb;

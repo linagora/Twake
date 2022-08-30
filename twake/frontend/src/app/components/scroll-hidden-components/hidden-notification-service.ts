@@ -58,7 +58,7 @@ class HiddenNotificationService extends Observable {
     });
   }
 
-  private detectHiddenBeacons(evt: any = null) {
+  private detectHiddenBeacons() {
     if (!this.scroller.node) return;
 
     clearTimeout(executionTimeout);

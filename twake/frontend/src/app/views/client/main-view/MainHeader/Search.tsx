@@ -1,5 +1,3 @@
-import { Col, Row } from 'antd';
-import { Search } from 'react-feather';
 import RouterServices from 'app/features/router/services/router-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Languages from 'app/features/global/services/languages-service';
@@ -8,9 +6,8 @@ import { Button } from '@atoms/button/button';
 import { SearchIcon } from '@heroicons/react/solid';
 import { Input } from '@atoms/input/input-text';
 import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { SearchInputState } from 'app/features/search/state/search-input';
-import input from 'app/views/applications/messages/input/input';
 
 export default (): JSX.Element => {
   const { workspaceId, companyId, channelId } = RouterServices.getStateFromRoute();

@@ -7,7 +7,7 @@ import './MagicLinks.scss';
 import { MagicLinksGeneratorService } from 'app/features/workspaces/services/magic-links-service';
 
 type PropsType = {
-  [key: string]: any;
+  loading?: boolean;
 };
 
 export default (props: PropsType): JSX.Element => {
@@ -24,13 +24,11 @@ export default (props: PropsType): JSX.Element => {
     setDisabled(val);
   };
 
-  const magicLinksService = new MagicLinksGeneratorService(companyId!, workspaceId!, busy);
+  const magicLinksService = new MagicLinksGeneratorService(companyId as string, workspaceId as string, busy);
 
-  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     init();
   }, []);
-  /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
     setLink(`${window.location.origin}/?join=${currentToken}`);
@@ -55,7 +53,7 @@ export default (props: PropsType): JSX.Element => {
   };
 
   const onCopyBtnClick = () => {
-    navigator.clipboard.writeText(link!);
+    navigator.clipboard.writeText(link as string);
     message.success(Languages.t('scenes.app.popup.adduser.magiclinks.copied_to_clipboard'));
   };
 

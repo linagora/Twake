@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react';
-import { useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { ChannelType } from 'app/features/channels/types/channel';
 import { MineChannelsState } from '../state/channels';
@@ -53,7 +52,7 @@ export function usePublicOrPrivateChannelsSetup() {
   useRealtimeRoom<ChannelType[]>(
     ChannelsMineAPIClient.websockets(companyId, workspaceId)[0],
     'usePublicOrPrivateChannelsPublic',
-    (_action, _resource) => {
+    (_action) => {
       //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
     },
@@ -63,7 +62,7 @@ export function usePublicOrPrivateChannelsSetup() {
   useRealtimeRoom<ChannelType[]>(
     ChannelsMineAPIClient.websockets(companyId, workspaceId)[1],
     'usePublicOrPrivateChannelsPrivate',
-    (_action, _resource) => {
+    (_action) => {
       //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
     },

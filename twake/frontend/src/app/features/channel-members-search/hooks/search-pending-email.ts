@@ -10,7 +10,7 @@ export const useSearchChannelPendingEmail = (params?: ParamsChannelMember) => {
 
   if (searchInput) {
     filteredList = pendingEmails.filter(({ email }) => {
-      return searchInput.split(' ').every(_ => {
+      return searchInput.split(' ').every(() => {
         return email.includes(searchInput);
       });
     });

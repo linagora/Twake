@@ -1,8 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
-import MediumPopupComponent from 'app/components/modal/modal-manager';
-import ObjectModal from 'components/object-modal/object-modal';
 import ModalManager from 'app/components/modal/modal-manager';
 import { Typography } from 'antd';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
@@ -17,7 +15,7 @@ export default (props: { onClose: () => void }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { openDiscussion } = useDirectChannels();
 
-  const upsertDirectMessage = async (): Promise<any> => {
+  const upsertDirectMessage = async (): Promise<void> => {
     setLoading(true);
     await openDiscussion(newUserDiscussion);
     props.onClose();

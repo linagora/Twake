@@ -1,5 +1,5 @@
 import React from 'react';
-import { PauseCircle, PlayCircle, Trash2, X } from 'react-feather';
+import { PauseCircle, PlayCircle, Trash2 } from 'react-feather';
 import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
 import { capitalize } from 'lodash';
 

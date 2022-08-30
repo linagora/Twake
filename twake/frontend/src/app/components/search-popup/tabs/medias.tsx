@@ -28,7 +28,7 @@ export default () => {
 };
 
 export const MediasResults = (props: { max?: number; showAsFiles?: boolean }) => {
-  const { files, loading, loadMore } = useSearchMessagesMedias();
+  const { files, loading } = useSearchMessagesMedias();
 
   if (files.length === 0 && !loading) return <NothingFound />;
 

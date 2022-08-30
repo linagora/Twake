@@ -6,7 +6,6 @@ import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import UnverifiedAccount from './popups/unverified-account';
 import BlockedAccount from './popups/blocked-account';
-import UserService from 'app/features/users/services/current-user-service';
 import InitService from 'app/features/global/services/init-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 

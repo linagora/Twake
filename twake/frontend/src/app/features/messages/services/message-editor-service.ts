@@ -28,7 +28,7 @@ export class MessageEditorService extends Observable {
   filesAttachements: { [threadId: string]: string[] } = {};
   editorsUploadZones: { [threadId: string]: any } = {};
 
-  setInputNode(threadId: string, messageId: string, context: string, node: any) {}
+  setInputNode = () => undefined;
 
   /**
    * Set the message to cache for the given thread/message

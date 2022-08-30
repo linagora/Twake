@@ -1,9 +1,6 @@
-import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
-import CurrentUser from 'app/deprecated/user/CurrentUser';
-import UserAPIClient from 'app/features/users/api/user-api-client';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import {
   ChannelWritingActivityState,
   ChannelWritingActivityType,
@@ -103,7 +100,7 @@ export function useChannelWritingActivityEmit(
   const { send } = useRealtimeRoom<WritingEvent>(
     WorkspaceAPIClient.websockets(companyId)[0],
     'useChannelWritingActivityEmit',
-    (action, resource) => {},
+    () => undefined,
   );
   (window as any).send = send;
 

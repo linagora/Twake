@@ -1,8 +1,6 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import MessageContent from './parts/MessageContent';
 
-type Props = {};
-
-export default (props: Props) => {
+export default () => {
   return <MessageContent />;
 };

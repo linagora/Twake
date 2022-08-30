@@ -80,7 +80,7 @@ export default () => {
           onClick={async () => {
             setLoading(true);
             await WorkspaceAPIClient.delete(workspace.company_id, workspace.id);
-            (window as any).location.replace('/');
+            window.location.replace('/');
             setLoading(false);
             ModalManager.close();
           }}
@@ -127,7 +127,7 @@ export default () => {
       </Row>
 
       <Row className="x-margin">
-        <Checkbox onChange={e => setChecked(!checked)}>
+        <Checkbox onChange={() => setChecked(!checked)}>
           {Languages.t('scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox')}
         </Checkbox>
       </Row>

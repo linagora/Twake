@@ -17,14 +17,14 @@ const { Option } = Select;
 
 type PropsType = {
   tab?: TabType;
-  onChangeTabs?: any;
+  onChangeTabs: (tab: TabType) => void;
   currentUserId?: string;
 };
 
 export default (props: PropsType): JSX.Element => {
   const [appId, setAppId] = useState<string>(props.tab?.application_id || '');
   const [tabName, setTabName] = useState<string>(props.tab?.name || '');
-  const [workspacesApps, setWorkspacesApps] = useState<AppType[]>([]);
+  const [, setWorkspacesApps] = useState<AppType[]>([]);
   const { company } = useCurrentCompany();
 
   const { applications: companyApplications } = useCompanyApplications(company?.id || '');

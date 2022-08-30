@@ -2,14 +2,12 @@ import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/mes
 import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
-import _ from 'lodash';
-import { useState } from 'react';
 import { atomFamily, useRecoilCallback, useRecoilState } from 'recoil';
 import { useSetMessage } from './use-message';
 import { v4 as uuidv4 } from 'uuid';
 const EphemeralMessageState = atomFamily<NodeMessage | null, string>({
   key: 'EphemeralMessageState',
-  default: key => null,
+  default: () => null,
 });
 
 export const useEphemeralMessages = (key: { companyId: string; channelId: string }) => {
@@ -25,7 +23,7 @@ export const useEphemeralMessages = (key: { companyId: string; channelId: string
   useRealtimeRoom<MessageWithReplies>(
     MessageViewAPIClient.feedWebsockets(key.channelId)[0],
     'useEphemeralMessages',
-    async (action: string, event: any) => {
+    async (action: string, event: NodeMessage) => {
       if (action === 'created' || action === 'updated') {
         const message = event as NodeMessage;
         const lastEphemeral = getLastEphemeral(key);

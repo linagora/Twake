@@ -3,15 +3,12 @@ import { useUpload } from 'app/features/files/hooks/use-upload';
 import FileComponent from 'app/components/file/file-component';
 import { DataFileType } from 'app/components/file/types';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
-import _ from 'lodash';
 import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 import { MessageFileType } from 'app/features/messages/types/message';
-import consoleLogin from 'app/views/login/console/console-login';
-import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 type PropsType = {
   file: MessageFileType;
-  onRemove?: Function;
+  onRemove?: () => void;
   type: 'input' | 'message';
   large?: boolean;
 };

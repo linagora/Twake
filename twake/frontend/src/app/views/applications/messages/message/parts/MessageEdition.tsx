@@ -1,12 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import 'moment-timezone';
-import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
 import MessageInput from '../../input/input';
 import Button from 'components/buttons/button.js';
-import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import Languages from 'app/features/global/services/languages-service';
-import { Message } from 'app/features/messages/types/message';
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';
 import RichTextEditorStateService from 'app/components/rich-text-editor/editor-state-service';
 import './MessageEdition.scss';
@@ -14,10 +11,7 @@ import { EditorState } from 'draft-js';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { MessageContext } from '../message-with-replies';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
-import {
-  useMessageEditor,
-  useVisibleMessagesEditorLocation,
-} from 'app/features/messages/hooks/use-message-editor';
+import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 
 type Props = {
   /**
@@ -70,7 +64,7 @@ export default (props: Props) => {
         () => {
           remove();
         },
-        () => {},
+        () => undefined,
         {
           title: Languages.t('scenes.apps.messages.chatbox.chat.delete_message_btn', [], 'Delete'),
         },
@@ -94,7 +88,7 @@ export default (props: Props) => {
         threadId={context.threadId}
         messageId={context.id}
         context={'edition'}
-        onSend={content => save()}
+        onSend={() => save()}
         editorState={editorState}
         onChange={editorState => {
           setRichTextEditorState(editorState);

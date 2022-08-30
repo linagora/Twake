@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Input, Row, Typography } from 'antd';
 
 import { Application } from 'app/features/applications/types/application';
 import Languages from 'app/features/global/services/languages-service';
-import { getApplicationIdentityCode } from 'app/features/applications/utils/application';
 
 const { Title, Text } = Typography;
 export const ApplicationIdentity = ({

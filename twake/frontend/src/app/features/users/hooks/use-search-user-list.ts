@@ -5,7 +5,7 @@ import { UserType } from 'app/features/users/types/user';
 import { getCurrentUserList, setUserList, useSetUserList, useUserList } from './use-user-list';
 import UserAPIClient, { SearchContextType } from '../api/user-api-client';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-import Strings, { distanceFromQuery, matchQuery } from 'app/features/global/utils/strings';
+import { distanceFromQuery, matchQuery } from 'app/features/global/utils/strings';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import _ from 'lodash';
 

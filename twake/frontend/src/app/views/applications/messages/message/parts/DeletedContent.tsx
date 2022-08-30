@@ -25,7 +25,7 @@ export default ({ userId }: PropsType) => {
     _setFullName();
   });
 
-  let user_name_node: any = null;
+  let user_name_node: HTMLSpanElement | null = null;
   const displayUserCard = async () => {
     const box = (window as any).getBoundingClientRect(user_name_node);
     const user = await userAsyncGet(userId);
@@ -45,12 +45,12 @@ export default ({ userId }: PropsType) => {
     );
   };
 
-  const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
+  const translateUsingReactNode = (key: string, replacements: JSX.Element[]): JSX.Element[] => {
     let temp = Languages.t(
       key,
       replacements.map((_, i) => `{${i}}`),
     );
-    const list: any[] = [];
+    const list: JSX.Element[] = [];
     replacements.forEach((replacement, i) => {
       const split = temp.split(`{${i}}`);
       list.push(

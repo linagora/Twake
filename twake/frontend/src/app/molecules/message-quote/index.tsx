@@ -1,5 +1,5 @@
 import React from 'react';
-import { Base, Info } from 'app/atoms/text';
+import { Info } from 'app/atoms/text';
 import Languages from 'app/features/global/services/languages-service';
 import { X } from 'react-feather';
 

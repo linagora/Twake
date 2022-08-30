@@ -9,7 +9,7 @@ export class MagicLinksGeneratorService {
   constructor(
     protected companyId: string,
     protected workspaceId: string,
-    protected loading = (arg: boolean) => {},
+    protected loading = (_arg: boolean) => {},
   ) {}
 
   private route = `/internal/services/workspaces/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/users/tokens`;

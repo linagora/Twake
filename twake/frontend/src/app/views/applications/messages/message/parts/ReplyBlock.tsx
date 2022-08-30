@@ -10,9 +10,8 @@ import Input from '../../input/input';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { getChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 
-type Props = {};
 
-export default (props: Props) => {
+export default () => {
   const context = useContext(MessageContext);
   const channelId = useRouterChannel();
   const { message } = useMessage(context);

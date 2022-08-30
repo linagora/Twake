@@ -73,3 +73,4 @@ declare module 'draftjs-utils';
 declare module 'jquery';
 declare module 'react-highlight-words';
 declare module 'uuid-time';
+declare module 'emoji-name-map';

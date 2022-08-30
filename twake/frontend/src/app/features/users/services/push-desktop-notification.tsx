@@ -81,7 +81,7 @@ export const pushDesktopNotification = (
     if ('Notification' in window && window.Notification.requestPermission) {
       const request = window.Notification.requestPermission();
       if (request && request.then) {
-        request.then(function (result) {});
+        request.then(() => undefined);
       }
     }
     firstTime = false;

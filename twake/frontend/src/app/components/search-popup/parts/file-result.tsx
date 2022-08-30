@@ -30,10 +30,6 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
   const file = props.file;
   const name = file?.metadata?.name;
   const extension = name?.split('.').pop();
-  const url = FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file);
-
-  let iconClassName = 'absolute left-0 top-0 bottom-0 right-0 m-auto w-8 h-8';
-  if (url) iconClassName = 'absolute bottom-1 left-1 w-6 h-6';
 
   const { setOpen } = useSearchModal();
   const { open: openViewer } = useFileViewerModal();

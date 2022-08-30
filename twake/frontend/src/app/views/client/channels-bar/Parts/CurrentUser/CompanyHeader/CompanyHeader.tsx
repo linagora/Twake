@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
-import { Avatar, Badge, Skeleton } from 'antd';
+import { Badge } from 'antd';
 
 import UserService from 'app/features/users/services/current-user-service';
 import Icon from 'app/components/icon/icon.js';
@@ -12,8 +11,8 @@ import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 type PropsType = {
-  onClickUser?: (event: any) => void;
-  refDivUser: any;
+  onClickUser?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  refDivUser: React.LegacyRef<HTMLDivElement> | undefined;
 };
 
 export default (props: PropsType): JSX.Element => {

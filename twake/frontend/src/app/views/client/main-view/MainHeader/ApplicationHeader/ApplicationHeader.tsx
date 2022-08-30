@@ -1,12 +1,7 @@
 import React from 'react';
-import { Col, Input, Row, Typography } from 'antd';
-import Icon from 'app/components/icon/icon';
+import { Col, Typography } from 'antd';
 import { capitalize } from 'lodash';
-import { ChannelType } from 'app/features/channels/types/channel';
-import RouterServices from 'app/features/router/services/router-service';
-import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Languages from 'app/features/global/services/languages-service';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
 import MainViewService from 'app/features/router/services/main-view-service';
 import { Calendar, CheckSquare, Folder } from 'react-feather';
@@ -26,13 +21,6 @@ export default (): JSX.Element => {
       application.identity?.name,
     ),
   };
-  const IconType = WorkspacesApps.getAppIcon(application, true);
-  let icon: JSX.Element;
-  if (typeof IconType === 'string') {
-    icon = <Icon type={IconType} style={{ width: 16, height: 16 }} />;
-  } else {
-    icon = <IconType size={16} />;
-  }
 
   const getDefaultApplicationIcon = (app: Partial<Application>) => {
     switch (app?.identity?.code) {

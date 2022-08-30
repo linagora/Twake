@@ -16,7 +16,7 @@ import { EmailItem } from './email-item';
 import { MemberItem } from './member-item';
 import { UserItem } from './user-item';
 
-export const ChannelMembersListModal = (props: { channelId: string }): JSX.Element => {
+export const ChannelMembersListModal = (): JSX.Element => {
   const channelId = useRouterChannel();
 
   const { addEmailSuggestion, pendingEmailList, channelMembersList, usersList, search, query } =

@@ -9,7 +9,6 @@ import {
 } from 'app/features/files/utils/pending-files';
 import { DataFileType } from './types';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
-import FileUploadService from '../../features/files/services/file-upload-service';
 import RouterService from 'app/features/router/services/router-service';
 
 import './file.scss';
@@ -28,7 +27,7 @@ type PropsType = {
   context: 'input' | 'message' | 'drive';
   progress?: number;
   status?: PendingFileRecoilType['status'];
-  onRemove?: Function;
+  onRemove?: () => void;
   className?: string;
   large?: boolean;
 };

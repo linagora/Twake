@@ -5,7 +5,7 @@ import { capitalize } from 'lodash';
 import { Check } from 'react-feather';
 import { Tabs, Button, Typography, Col, Tag, Descriptions, Row, Divider } from 'antd';
 
-import { Application } from 'app/features/applications/types/application';
+import { Application, ApplicationAccess } from 'app/features/applications/types/application';
 import Languages from 'app/features/global/services/languages-service';
 import AvatarComponent from 'app/components/avatar/avatar';
 import ObjectModal from 'app/components/object-modal/object-modal';
@@ -73,7 +73,9 @@ const InformationsDescriptions = ({ application }: { application: Application })
 const AccessDescriptions = ({ application }: { application: Application }) => (
   <Descriptions layout="vertical" bordered>
     {Object.keys(application.access).map(key => {
-      const values: string[] = (application.access as any)[key];
+      const values: string[] = (application.access as ApplicationAccess)[
+        key as keyof ApplicationAccess
+      ];
 
       return (
         <Item key={key} label={capitalize(key === 'hooks' ? 'listened events' : key)} span={3}>

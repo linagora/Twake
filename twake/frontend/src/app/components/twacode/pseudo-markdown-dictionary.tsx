@@ -334,7 +334,7 @@ class PseudoMarkdownDictionary {
       object: (_child: any, object: any) => <DynamicComponent type="iframe" data={object} />,
     },
     image: {
-      object: (_child: any, object: any, _eventContainer: any) => (
+      object: (_child: any, object: any) => (
         <DynamicComponent type="image" data={object} />
       ),
     },

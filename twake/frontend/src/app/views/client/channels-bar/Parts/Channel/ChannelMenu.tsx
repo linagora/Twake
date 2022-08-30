@@ -1,8 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
 import Icon from 'app/components/icon/icon';
-import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 import ModalManager from 'app/components/modal/modal-manager';
 import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
@@ -57,7 +55,6 @@ const FullMenu = (props: PropsType): JSX.Element => {
   const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
   const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
   const { refresh: refreshChannel } = useChannel(props.channel.id || '');
-  const { Feature, FeatureNames } = useFeatureToggles();
   const channelMember = props.channel.user_member || {};
   const { setOpen: setParticipantsOpen } = useUsersSearchModal();
 
