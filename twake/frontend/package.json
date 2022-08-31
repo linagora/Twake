@@ -186,7 +186,7 @@
     "mini-css-extract-plugin": "0.12.0",
     "minimongo": "^6.10.0",
     "moment": "^2.29.3",
-    "moment-timezone": "^0.5.4",
+    "moment-timezone": "^0.5.35",
     "oidc-client": "^1.11.5",
     "oidc-react": "^1.5.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
