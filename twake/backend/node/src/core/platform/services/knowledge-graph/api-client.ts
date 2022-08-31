@@ -139,7 +139,7 @@ export default class KnowledgeGraphAPIClient {
             properties: {
               message_thread_id: message.thread_id,
               message_created_at: message.created_at.toLocaleString(),
-              message_content: sensitiveData ? message.text : "secret",
+              message_content: sensitiveData ? message.text : "",
               type_message: message.type,
               message_updated_at: message.updated_at.toLocaleString(),
               user_id: message.user_id,
