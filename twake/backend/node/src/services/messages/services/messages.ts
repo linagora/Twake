@@ -947,12 +947,12 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
    * Updates the messages delivery status to read.
    *
    * @param {MessageReadType} messages - The messages to mark as read
-   * @param {CompanyExecutionContext  & { channel_id: string }} context - The company execution context
+   * @param {CompanyExecutionContext  & { channel_id: string; workspace_id: string }} context - The company execution context
    * @returns {Promise<boolean>} - The promise result of the operation
    */
   async read(
     messages: MessageIdentifier[],
-    context: CompanyExecutionContext & { channel_id: string },
+    context: CompanyExecutionContext & { channel_id: string; workspace_id: string },
   ): Promise<boolean> {
     const timestamps = messages
       .map(({ message_id }) => ({
@@ -983,5 +983,49 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     );
 
     return updates.every(item => !!item);
+  }
+
+  /**
+   * List users who've seen the specified message
+   *
+   * @param { String} id - the message id
+   * @param {ThreadExecutionContext} context - the thread execution context
+   * @returns {Promise<string[]>} - the users list
+   */
+  async listSeenBy(id: string, context: ThreadExecutionContext): Promise<string[]> {
+    try {
+      const message = await this.repository.findOne(
+        {
+          thread_id: context.thread.id,
+          id,
+        },
+        {},
+        context,
+      );
+
+      if (!message) {
+        logger.error(`message ${id} doesn't exist`);
+        throw Error("failed to list seen by users: message doesn't exist");
+      }
+
+      if (!message.status || message.status !== "read") {
+        logger.error(`message ${id} is not seen yet, status: ${message.status}`);
+        throw Error("failed to list seen by users: message is not seen");
+      }
+
+      const channelContext = {
+        ...context,
+        channel: {
+          id: message.cache.channel_id,
+          company_id: context.company.id,
+          workspace_id: context.workspace.id,
+        },
+      };
+
+      return await gr.services.channels.members.getChannelMessageSeenByUsers(id, channelContext);
+    } catch (error) {
+      logger.error(error);
+      return [];
+    }
   }
 }

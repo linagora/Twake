@@ -145,9 +145,16 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
 
   fastify.route({
     method: "POST",
-    url: "/companies/:company_id/threads/read",
+    url: "/companies/:company_id/workspaces/:workspace_id/threads/read",
     preValidation: [fastify.authenticate],
     handler: messagesController.read.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/workspaces/:workspace_id/threads/:thread_id/messages/:message_id/seen",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.seenBy.bind(messagesController),
   });
 
   /**

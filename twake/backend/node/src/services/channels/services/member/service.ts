@@ -795,11 +795,15 @@ export class MemberServiceImpl {
    */
   async setChannelMemberReadSections(
     section: { start: string; end: string },
-    context: CompanyExecutionContext & { channel_id: string },
+    context: CompanyExecutionContext & { channel_id: string; workspace_id: string },
   ): Promise<SaveResult<ChannelMemberReadCursors>> {
     const member = await this.getChannelMember(
       context.user,
-      { id: context.channel_id, company_id: context.company.id, workspace_id: "direct" },
+      {
+        id: context.channel_id,
+        company_id: context.company.id,
+        workspace_id: context.workspace_id,
+      },
       null,
       context,
     );
@@ -873,5 +877,30 @@ export class MemberServiceImpl {
       existingReadSection,
       OperationType.UPDATE,
     );
+  }
+
+  /**
+   * list users who have seen the message.
+   *
+   * @param {String} id - the message id
+   * @param {ChannelExecutionContext} context - the thread execution context
+   * @returns { Promise<string[]>} - the promise containing the user id list
+   */
+  async getChannelMessageSeenByUsers(
+    id: string,
+    context: ChannelExecutionContext,
+  ): Promise<string[]> {
+    const channelReadSections = await this.getChannelMembersReadSections(context);
+
+    return channelReadSections
+      .getEntities()
+      .filter(section => {
+        const sectionEnd = section.read_section[1];
+        const sectionEndTime = uuidTime.v1(sectionEnd);
+        const messageTime = uuidTime.v1(id);
+
+        return messageTime <= sectionEndTime;
+      })
+      .map(section => section.user_id);
   }
 }
