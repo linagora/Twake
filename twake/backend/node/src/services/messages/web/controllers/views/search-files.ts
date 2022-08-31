@@ -41,6 +41,39 @@ export default async (
   }>,
   context: ChannelViewExecutionContext,
 ): Promise<ResourceListResponse<MessageFile>> => {
+  const files = await searchFiles(request, context);
+
+  //Include channel in reply everytime
+  await Promise.all(
+    files.resources.map((f, i) => {
+      return (async () => {
+        const channel = gr.services.channels.channels.get(
+          {
+            id: f.cache.channel_id,
+            company_id: f.cache.company_id,
+            workspace_id: f.cache.workspace_id,
+          },
+          context,
+        );
+        files.resources[i] = { ...f, channel } as MessageFile;
+      })();
+    }),
+  );
+
+  return files;
+};
+
+const searchFiles = async (
+  request: FastifyRequest<{
+    Querystring: MessageViewSearchFilesQueryParameters & {
+      page_token: string;
+    };
+    Params: {
+      company_id: string;
+    };
+  }>,
+  context: ChannelViewExecutionContext,
+): Promise<ResourceListResponse<MessageFile>> => {
   const limit = +request.query.limit || 100;
 
   if (isEmpty(request.query?.q)) {
