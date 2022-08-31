@@ -41,6 +41,22 @@ export default async (
   }>,
   context: ChannelViewExecutionContext,
 ): Promise<ResourceListResponse<MessageFile>> => {
+  const files = await searchFiles(request, context);
+  //TODO add channels here
+  return files;
+}
+
+async function searchFiles (
+  request: FastifyRequest<{
+    Querystring: MessageViewSearchFilesQueryParameters & {
+      page_token: string;
+    };
+    Params: {
+      company_id: string;
+    };
+  }>,
+  context: ChannelViewExecutionContext,
+): Promise<ResourceListResponse<MessageFile>> => {
   const limit = +request.query.limit || 100;
 
   if (isEmpty(request.query?.q)) {
