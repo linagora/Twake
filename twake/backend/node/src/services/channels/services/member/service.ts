@@ -744,7 +744,7 @@ export class MemberServiceImpl {
           company_id: context.channel.company_id,
           channel_id: context.channel.id,
         },
-        {},
+        { pagination: { limitStr: "100" } },
         context,
       );
 
