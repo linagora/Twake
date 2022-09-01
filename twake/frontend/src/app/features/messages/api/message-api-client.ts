@@ -254,9 +254,11 @@ class MessageAPIClient {
     companyId: string,
     workspaceId: string,
   ): Promise<UserType[]> {
-    return Api.get<UserType[]>(
+    const { resources } = await Api.get<{ resources: UserType[] }>(
       `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/threads/${threadId}/messages/${messageId}/seen`,
     );
+
+    return resources;
   }
 }
 

@@ -11,6 +11,7 @@ import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reach
 import UserService from 'app/features/users/services/current-user-service';
 import * as Text from '@atoms/text';
 import Languages from 'app/features/global/services/languages-service';
+import MessageSeenBy from 'app/components/message-seen-by/message-seen-by';
 
 type Props = {
   channel: ChannelType;
@@ -51,6 +52,7 @@ export default (props: Props) => {
             threadId={threadId}
           />
         )}{' '}
+      <MessageSeenBy />
       </Suspense>
       <IsWriting channelId={channelId} threadId={threadId} />
       {isChannelMember && (
