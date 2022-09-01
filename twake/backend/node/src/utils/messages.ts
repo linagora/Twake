@@ -97,9 +97,5 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
     );
   }
 
-  if (context.workspace && context.workspace?.id !== "direct") {
-    delete instance.status;
-  }
-
   return instance;
 }

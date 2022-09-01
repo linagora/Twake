@@ -104,8 +104,7 @@ export default (props: Props) => {
 
   const isChannelMember = useIsChannelMember(channelId);
   const quotedContent = <QuotedContent message={quotedMessage} />;
-  const showMessageStatus =
-    message.user_id === User.getCurrentUserId() && context.workspaceId === 'direct';
+  const showMessageStatus = message.user_id === User.getCurrentUserId();
 
   return (
     <div

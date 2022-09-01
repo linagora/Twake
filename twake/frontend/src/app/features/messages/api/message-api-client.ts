@@ -209,13 +209,19 @@ class MessageAPIClient {
 
   /**
    * Mark messages as seen
-   * 
+   *
    * @param {String} companyId - The company id
    * @param {String} channelId - The channel
-   * @param {AtomMessageKey[]} messages - the messages to mark as seen 
+   * @param {String} workspaceId - the workspace
+   * @param {AtomMessageKey[]} messages - the messages to mark as seen
    * @returns {Promise<boolean>} - true if the messages were marked as seen
    */
-  async read(companyId: string, channelId: string, messages: AtomMessageKey[]): Promise<boolean> {
+  async read(
+    companyId: string,
+    channelId: string,
+    workspaceId: string,
+    messages: AtomMessageKey[],
+  ): Promise<boolean> {
     if (!messages || !messages.length) {
       return true;
     }
@@ -228,10 +234,31 @@ class MessageAPIClient {
       channel_id: channelId,
     };
 
-    return await Api.post<MessageSeenType, boolean >(
-      `${this.prefixUrl}/companies/${companyId}/threads/read`,
+    return await Api.post<MessageSeenType, boolean>(
+      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/threads/read`,
       body,
     );
+  }
+
+  /**
+   * List the users who've seen the message
+   *
+   * @param {String} messageId - the message id
+   * @param {String} companyId - the company id
+   * @param {String} workspaceId - the workspace id
+   * @returns {Promise<UserType[]>} - the users list
+   */
+  async seenBy(
+    messageId: string,
+    threadId: string,
+    companyId: string,
+    workspaceId: string,
+  ): Promise<UserType[]> {
+    const { resources } = await Api.get<{ resources: UserType[] }>(
+      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/threads/${threadId}/messages/${messageId}/seen`,
+    );
+
+    return resources;
   }
 }
 

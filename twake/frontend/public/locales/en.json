@@ -938,5 +938,8 @@
     "components.channel_attachement_list.open": "Open gallery",
     "components.channel_attachement_list.nothing_found": "Nothing here yet",
     "molecules.message_quote.deleted": "This message was deleted",
-    "molecules.quoted_content.attachement": "Attachment"
+    "molecules.quoted_content.attachement": "Attachment",
+    "components.message_seen_by.title": "Users who've seen the message",
+    "components.message_seen_by.none_seen_it": "No one has seen the message yet",
+    "components.message_seen_by.btn": "Information"
 }

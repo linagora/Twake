@@ -19,7 +19,8 @@ import { getThreadMessageWebsocketRoom } from "../realtime";
 import { ThreadPrimaryKey } from "../../entities/threads";
 import { extendExecutionContentWithChannel } from "./index";
 import gr from "../../../global-resolver";
-import { ChannelExecutionContext } from "../../../../services/channels/types";
+import { formatUser } from "../../../../utils/users";
+import { UserObject } from "../../../../services/user/web/types";
 
 export class MessagesController
   implements
@@ -407,6 +408,7 @@ export class MessagesController
     request: FastifyRequest<{
       Params: {
         company_id: string;
+        workspace_id: string;
       };
       Body: MessageReadType;
     }>,
@@ -426,11 +428,50 @@ export class MessagesController
       const result = await gr.services.messages.messages.read(messages, {
         ...context,
         channel_id,
+        workspace_id: request.params.workspace_id,
       });
       return !!result;
     } catch (err) {
       handleError(reply, err);
       return false;
+    }
+  }
+
+  /**
+   * get users who've seen the message
+   *
+   * @param {FastifyRequest} request - the request object
+   * @param {FastifyReply} reply - the reply object
+   * @returns {Promise<ResourceListResponse<UserObject>>} - the users list
+   */
+  async seenBy(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        workspace_id: string;
+        thread_id: string;
+        message_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<UserObject>> {
+    try {
+      const { message_id, workspace_id } = request.params;
+      const context = getThreadExecutionContext(request);
+
+      const userIds = await gr.services.messages.messages.listSeenBy(message_id, {
+        ...context,
+        workspace: { id: workspace_id },
+      });
+
+      const users = await Promise.all(userIds.map(id => gr.services.users.get({ id }, context)));
+      const resources = await Promise.all(users.map(user => formatUser(user)));
+
+      return {
+        resources,
+      };
+    } catch (error) {
+      handleError(reply, error);
     }
   }
 }
