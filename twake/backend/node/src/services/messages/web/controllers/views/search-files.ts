@@ -47,13 +47,19 @@ export default async (
   await Promise.all(
     files.resources.map((f, i) => {
       return (async () => {
-        const channel = gr.services.channels.channels.get(
+        const channel = await gr.services.channels.channels.get(
           {
             id: f.cache.channel_id,
             company_id: f.cache.company_id,
             workspace_id: f.cache.workspace_id,
           },
-          context,
+          {
+            user: context.user,
+            workspace: {
+              workspace_id: context.channel.workspace_id,
+              company_id: context.channel.company_id,
+            },
+          },
         );
         files.resources[i] = { ...f, channel } as MessageFile;
       })();
