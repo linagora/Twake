@@ -55,6 +55,7 @@ export default React.memo((props: Props) => {
       <div className="markdown">
         <Markdown
           options={{
+            forceBlock: true,
             overrides: {
               code: {
                 component: Code,
