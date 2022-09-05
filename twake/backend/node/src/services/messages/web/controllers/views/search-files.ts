@@ -13,7 +13,7 @@ import gr from "../../../../global-resolver";
 import { MessageFileRef } from "../../../../../services/messages/entities/message-file-refs";
 import recentFiles from "./recent-files";
 import { isEmpty } from "lodash";
-import { Channel } from "src/services/channels/entities";
+import { Channel } from "../../../../../services/channels/entities";
 
 interface MessageViewSearchFilesQueryParameters extends PaginationQueryParameters {
   q: string;
