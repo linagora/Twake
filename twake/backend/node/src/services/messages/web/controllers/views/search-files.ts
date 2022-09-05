@@ -13,6 +13,7 @@ import gr from "../../../../global-resolver";
 import { MessageFileRef } from "../../../../../services/messages/entities/message-file-refs";
 import recentFiles from "./recent-files";
 import { isEmpty } from "lodash";
+import { Channel } from "../../../../../services/channels/entities";
 
 interface MessageViewSearchFilesQueryParameters extends PaginationQueryParameters {
   q: string;
@@ -31,6 +32,50 @@ export type FileSearchResult = MessageFile & {
 };
 
 export default async (
+  request: FastifyRequest<{
+    Querystring: MessageViewSearchFilesQueryParameters & {
+      page_token: string;
+    };
+    Params: {
+      company_id: string;
+    };
+  }>,
+  context: ChannelViewExecutionContext,
+): Promise<ResourceListResponse<MessageFile>> => {
+  const files = await searchFiles(request, context);
+
+  //Include channel in reply everytime
+  await Promise.all(
+    files.resources.map((f, i) => {
+      return (async () => {
+        let channel: Channel = null;
+        try {
+          channel = await gr.services.channels.channels.get(
+            {
+              id: f.cache.channel_id,
+              company_id: f.cache.company_id,
+              workspace_id: f.cache.workspace_id,
+            },
+            {
+              user: context.user,
+              workspace: {
+                workspace_id: f.cache.workspace_id,
+                company_id: f.cache.company_id,
+              },
+            },
+          );
+        } catch (e) {
+          console.log(e);
+        }
+        files.resources[i] = { ...f, channel } as MessageFile;
+      })();
+    }),
+  );
+
+  return files;
+};
+
+const searchFiles = async (
   request: FastifyRequest<{
     Querystring: MessageViewSearchFilesQueryParameters & {
       page_token: string;
