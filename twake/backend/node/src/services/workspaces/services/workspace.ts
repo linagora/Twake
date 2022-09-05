@@ -194,7 +194,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
       workspace.company_id
     }/workspaces/${workspace.id}/thumbnail?t=${new Date().getTime()}`;
     let logoPublicUrl = undefined;
-    if (workspace.logo) {
+    if (workspace.logo && item.logo === "none") {
       if (!options.logo_b64) {
         await gr.platformServices.storage.remove(logoInternalPath);
         workspace.logo = null;
@@ -210,9 +210,9 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
 
     workspace = merge(workspace, {
       name: await this.getWorkspaceName(item.name, context.company_id, workspace.id),
-      logo: logoPublicUrl || workspace.logo,
       isArchived: item.isArchived,
       isDefault: item.isDefault,
+      logo: logoPublicUrl || workspace.logo,
     });
 
     await this.workspaceRepository.save(workspace, context);

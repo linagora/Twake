@@ -27,9 +27,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public onCompanyCreated(company: Partial<Company>): void {
-    this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateCompanyObjectData[]>
-    >(`${this.apiUrl}/graph/create/company`, {
+    this.send({
       records: [
         {
           key: "null",
@@ -46,9 +44,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public async onWorkspaceCreated(workspace: Partial<Workspace>): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateWorkspaceObjectData[]>
-    >(`${this.apiUrl}/graph/create/workspace`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -70,9 +66,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public async onUserCreated(companyId: string, user: Partial<User>): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateUserObjectData[]>
-    >(`${this.apiUrl}/graph/create/user`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -99,9 +93,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public async onChannelCreated(channel: Partial<Channel>): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateChannelObjectData[]>
-    >(`${this.apiUrl}/graph/create/channel`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -128,9 +120,7 @@ export default class KnowledgeGraphAPIClient {
     message: Partial<Message>,
     sensitiveData: boolean,
   ): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateMessageObjectData[]>
-    >(`${this.apiUrl}/graph/create/message`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -153,5 +143,16 @@ export default class KnowledgeGraphAPIClient {
     if (response.statusText === "OK") {
       this.logger.info("onMessageCreated %o", response.config.data);
     }
+  }
+
+  private async send(data: any) {
+    return await this.axiosInstance.post<
+      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateMessageObjectData[]>
+    >(`${this.apiUrl}/topics/twake`, data, {
+      headers: {
+        "Content-Type": "application/vnd.kafka.json.v2+json",
+        Accept: "application/vnd.kafka.v2+json",
+      },
+    });
   }
 }

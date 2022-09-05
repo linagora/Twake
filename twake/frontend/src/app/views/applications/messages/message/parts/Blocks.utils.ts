@@ -2,7 +2,7 @@ export const preparse = (str: string) => {
   return (
     str
       //Fix markdown simple line break
-      .replace(/\n/g, '  \n')
+      .replace(/^((?![0-9]+\.)[^>`\-*].*\n) *$\n/gm, '$1\n  \n')
       //Prevent html security issues
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -11,8 +11,6 @@ export const preparse = (str: string) => {
       .replace(/([ \t]|^)#([\w]+)/g, '$1<channel id="$2"/>')
       //Prepare code
       .replace(/[^\n]\r?\n{1}`{3}/, '\n\n```')
-      // prepare quote
-      .replace(/^(>{1})([^>]*)\n(.*)/gm, '> $2\n\n$3')
   );
 };
 

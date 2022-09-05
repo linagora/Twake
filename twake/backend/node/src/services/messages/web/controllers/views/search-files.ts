@@ -47,7 +47,7 @@ export default async (
   await Promise.all(
     files.resources.map((f, i) => {
       return (async () => {
-        const channel = gr.services.channels.channels.get(
+        const channel = await gr.services.channels.channels.get(
           {
             id: f.cache.channel_id,
             company_id: f.cache.company_id,

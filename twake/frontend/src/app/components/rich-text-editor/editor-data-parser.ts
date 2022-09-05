@@ -60,7 +60,7 @@ export default class EditorDataParser {
   fromString(markup: string, format: EditorTextFormat): ContentState {
     switch (format) {
       case 'markdown': {
-        return convertFromRaw(markdownToDraft(markup));
+        return convertFromRaw(markdownToDraft(markup, { preserveNewlines: true }));
       }
       case 'raw': {
         return convertFromRaw(JSON.parse(markup));

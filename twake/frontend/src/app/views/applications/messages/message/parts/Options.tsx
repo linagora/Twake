@@ -29,6 +29,7 @@ import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
+import { useMessageSeenBy } from 'app/features/messages/hooks/use-message-seen-by';
 
 type Props = {
   onOpen?: () => void;
@@ -59,6 +60,8 @@ export default (props: Props) => {
   );
 
   const { set: setQuoteReply } = useMessageQuoteReply(channelId);
+
+  const { openSeenBy } = useMessageSeenBy();
 
   const menu: any[] = [];
 
@@ -132,6 +135,20 @@ export default (props: Props) => {
         }
       });
     }
+
+    menu.push({
+      type: 'menu',
+      icon: 'comment-info',
+      text: Languages.t('components.message_seen_by.btn', [], 'Information'),
+      onClick: () => {
+        openSeenBy({
+          message_id: message.id,
+          company_id: context.companyId,
+          thread_id: message.thread_id,
+          workspace_id: context.workspaceId,
+        });
+      },
+    });
 
     if (!message.context?.disable_pin)
       menu.push({
