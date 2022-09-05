@@ -13,6 +13,7 @@ import gr from "../../../../global-resolver";
 import { MessageFileRef } from "../../../../../services/messages/entities/message-file-refs";
 import recentFiles from "./recent-files";
 import { isEmpty } from "lodash";
+import { Channel } from "src/services/channels/entities";
 
 interface MessageViewSearchFilesQueryParameters extends PaginationQueryParameters {
   q: string;
@@ -47,20 +48,25 @@ export default async (
   await Promise.all(
     files.resources.map((f, i) => {
       return (async () => {
-        const channel = await gr.services.channels.channels.get(
-          {
-            id: f.cache.channel_id,
-            company_id: f.cache.company_id,
-            workspace_id: f.cache.workspace_id,
-          },
-          {
-            user: context.user,
-            workspace: {
-              workspace_id: context.channel.workspace_id,
-              company_id: context.channel.company_id,
+        let channel: Channel = null;
+        try {
+          channel = await gr.services.channels.channels.get(
+            {
+              id: f.cache.channel_id,
+              company_id: f.cache.company_id,
+              workspace_id: f.cache.workspace_id,
             },
-          },
-        );
+            {
+              user: context.user,
+              workspace: {
+                workspace_id: f.cache.workspace_id,
+                company_id: f.cache.company_id,
+              },
+            },
+          );
+        } catch (e) {
+          console.log(e);
+        }
         files.resources[i] = { ...f, channel } as MessageFile;
       })();
     }),
