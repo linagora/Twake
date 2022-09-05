@@ -1,17 +1,17 @@
 export const preparse = (str: string) => {
-  return (
-    str
-      //Fix markdown simple line break
-      .replace(/^((?![0-9]+\.)[^>`\-*].*\n) *$\n/gm, '$1\n  \n')
-      //Prevent html security issues
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      //Prepare mentions
-      .replace(/([ \t]|^)@([\w]+)/g, '$1<user id="$2"/>')
-      .replace(/([ \t]|^)#([\w]+)/g, '$1<channel id="$2"/>')
-      //Prepare code
-      .replace(/[^\n]\r?\n{1}`{3}/, '\n\n```')
-  );
+  const ret = str
+    //Fix markdown simple line break
+    .replace(/\n/g, '  \n')
+    .replace(/^(([0-9]+\.)|[>`\-*].*\n) *$\n/gm, '$1\n\n')
+    //Prevent html security issues
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    //Prepare mentions
+    .replace(/([ \t]|^)@([\w]+)/g, '$1<user id="$2"/>')
+    .replace(/([ \t]|^)#([\w]+)/g, '$1<channel id="$2"/>')
+    //Prepare code
+    .replace(/[^\n]\r?\n{1}`{3}/, '\n\n```');
+  return ret;
 };
 
 export const preunparse = (str: string) => {
