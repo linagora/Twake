@@ -621,17 +621,21 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       );
 
       await gr.services.messages.threads.addReply(message.thread_id, 1, context);
-      await gr.services.channels.members.setChannelMemberReadSections(
-        {
-          start: message.id,
-          end: message.id,
-        },
-        {
-          ...context,
-          channel_id: message.cache.channel_id,
-          workspace_id: message.cache.workspace_id,
-        },
-      );
+      try {
+        await gr.services.channels.members.setChannelMemberReadSections(
+          {
+            start: message.id,
+            end: message.id,
+          },
+          {
+            ...context,
+            channel_id: message.cache.channel_id,
+            workspace_id: message.cache.workspace_id,
+          },
+        );
+      } catch (error) {
+        logger.error("failed to set read sections");
+      }
     }
 
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
