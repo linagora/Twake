@@ -23,6 +23,10 @@ a {
     color: var(--primary) !important;
 }
 
+.ant-switch-checked {
+    background-color: #004dff !important;
+}
+
 @layer base {
     ul,ol {
         list-style: revert;
