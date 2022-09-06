@@ -621,6 +621,17 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       );
 
       await gr.services.messages.threads.addReply(message.thread_id, 1, context);
+      await gr.services.channels.members.setChannelMemberReadSections(
+        {
+          start: message.id,
+          end: message.id,
+        },
+        {
+          ...context,
+          channel_id: message.cache.channel_id,
+          workspace_id: message.cache.workspace_id,
+        },
+      );
     }
 
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
@@ -1004,11 +1015,6 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       if (!message) {
         logger.error(`message ${id} doesn't exist`);
         throw Error("failed to list seen by users: message doesn't exist");
-      }
-
-      if (!message.status || message.status !== "read") {
-        logger.error(`message ${id} is not seen yet, status: ${message.status}`);
-        throw Error("failed to list seen by users: message is not seen");
       }
 
       const channelContext = {

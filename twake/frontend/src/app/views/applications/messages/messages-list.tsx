@@ -24,7 +24,6 @@ import { getMessage } from 'app/features/messages/hooks/use-message';
 import messageApiClient from 'app/features/messages/api/message-api-client';
 import User from 'app/features/users/services/current-user-service';
 import { useChannelMembersReadSections } from 'app/features/channel-members/hooks/use-channel-members-read-sections';
-import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 
 type Props = {
