@@ -82,10 +82,13 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     if (window.reachedEnd && atBottom && messages.length > 0) {
       const seenMessages = messages.filter(message => {
         const m = getMessage(message.id || message.threadId);
+        const currentUserId = User.getCurrentUserId();
 
-        return (
-          m.status === 'delivered' || (m.status === 'read' && !seen(User.getCurrentUserId(), m.id))
-        );
+        if (m.user_id === currentUserId) {
+          return false;
+        }
+
+        return m.status === 'delivered' || (m.status === 'read' && !seen(currentUserId, m.id));
       });
       if (seenMessages.length > 0) {
         delayRequest('message-list-read-request', async () => {
@@ -139,7 +142,9 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
   useEffect(() => {
     if (messages.length && workspaceId === 'direct') {
-      loadReadSections();
+      delayRequest('message-list-load-read-sections', async () => {
+        loadReadSections();
+      });
     }
   }, [companyId, workspaceId, channelId, messages.length > 0]);
 

@@ -28,7 +28,6 @@ import {
   CompanyExecutionContext,
   DeleteLinkOperation,
   MessageIdentifier,
-  MessageReadType,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -57,7 +56,6 @@ import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs
 import { LinkPreviewMessageQueueRequest } from "../../../services/previews/types";
 import { Thumbnail } from "../../files/entities/file";
 import uuidTime from "uuid-time";
-import { ChannelExecutionContext } from "../../../services/channels/types";
 
 export class ThreadMessagesService implements TwakeServiceProvider, Initializable {
   version: "1";

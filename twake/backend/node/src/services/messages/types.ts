@@ -174,6 +174,7 @@ export interface DeleteLinkOperation {
 
 export type UpdateDeliveryStatusOperation = {
   status: "delivered" | "read";
+  self_message?: boolean;
 } & MessageIdentifier;
 
 export type MessageReadType = {

@@ -87,7 +87,7 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
             picture: item.override.picture,
           }
         : null, // Only apps and server can set an override on a message
-    status: "sent",
+    status: item.status || "sent",
   });
 
   if (context.user.server_request) {
