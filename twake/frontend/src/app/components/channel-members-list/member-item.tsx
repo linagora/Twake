@@ -1,5 +1,4 @@
 import Avatar from 'app/atoms/avatar';
-import { Button } from 'app/atoms/button/button';
 import { ChannelMemberWithUser } from 'app/features/channel-members-search/types/channel-members';
 import Languages from 'app/features/global/services/languages-service';
 import UsersService from 'app/features/users/services/current-user-service';

@@ -12,8 +12,8 @@ import {
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
 // This should be deleted
-export default class ChannelsApps extends Component {
-  constructor(props: any) {
+export default class ChannelsApps extends Component<unknown> {
+  constructor(props: unknown) {
     super(props);
 
     this.state = {

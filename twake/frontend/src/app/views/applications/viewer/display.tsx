@@ -1,5 +1,4 @@
 import {
-  useFileViewer,
   useFileViewerModal,
   useViewerDisplayData,
 } from 'app/features/viewer/hooks/use-viewer';
@@ -8,7 +7,6 @@ import VideoDisplay from './videos/display';
 import PdfDisplay from './pdf/display';
 import CodeDisplay from './code/display';
 import ArchiveDisplay from './archive/display';
-import OtherDisplay from './other/display';
 
 export default () => {
   const { download, type, name } = useViewerDisplayData();

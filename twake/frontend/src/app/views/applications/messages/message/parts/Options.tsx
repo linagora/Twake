@@ -18,11 +18,9 @@ import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
-import _ from 'lodash';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import SideViewService from 'app/features/router/services/side-view-service';
-import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
@@ -30,6 +28,7 @@ import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
 import { useMessageSeenBy } from 'app/features/messages/hooks/use-message-seen-by';
+import { EmojiSuggestionType } from 'app/components/rich-text-editor/plugins/emoji';
 
 type Props = {
   onOpen?: () => void;
@@ -54,7 +53,7 @@ export default (props: Props) => {
   });
   const location = `message-${message.id}`;
   const subLocation = useContext(ViewContext).type;
-  const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
+  const { set: setVisibleEditor } = useVisibleMessagesEditorLocation(
     location,
     subLocation,
   );
@@ -63,9 +62,9 @@ export default (props: Props) => {
 
   const { openSeenBy } = useMessageSeenBy();
 
-  const menu: any[] = [];
+  const menu: Record<string, string | (() => void)>[] = [];
 
-  const triggerApp = (app: any) => {
+  const triggerApp = (app: Application) => {
     const data = {
       channel: channel,
       thread: thread.id && thread.id !== message.id ? thread : null,
@@ -74,9 +73,11 @@ export default (props: Props) => {
     WorkspacesApps.notifyApp(app.id, 'action', 'action', data);
   };
 
-  const onOpen = (evt: any) => {
+  const onOpen = (evt: Event) => {
     props.onOpen && props.onOpen();
-    evt && evt.preventDefault() && evt.stopPropagation();
+    if (evt) {
+      evt.preventDefault() ; evt.stopPropagation();
+    }
   };
 
   if (message.ephemeral) {
@@ -176,8 +177,8 @@ export default (props: Props) => {
       menu.push({ type: 'separator' });
       menu.push({
         type: 'react-element',
-        reactElement: (level: any) => {
-          return apps.map((app: any) => {
+        reactElement: () => {
+          return apps.map((app: Application) => {
             return (
               <div
                 key={app.id}
@@ -191,7 +192,7 @@ export default (props: Props) => {
                     className="menu-app-icon"
                     style={{ backgroundImage: 'url(' + app.identity?.icon + ')' }}
                   />
-                  {app.display.twake.chat.actions[0].description || app.identity?.name}
+                  {app?.display?.twake?.chat?.actions?.[0].description || app.identity?.name}
                 </div>
               </div>
             );
@@ -280,7 +281,7 @@ export default (props: Props) => {
 
         <Menu
           className="option"
-          onOpen={(evt: any) => onOpen(evt)}
+          onOpen={(evt: Event) => onOpen(evt)}
           menu={[
             {
               type: 'react-element',
@@ -289,7 +290,7 @@ export default (props: Props) => {
                 return (
                   <EmojiPicker
                     selected={userReactions.map(e => e.name) || []}
-                    onChange={(emoji: any) => {
+                    onChange={(emoji: EmojiSuggestionType) => {
                       MenusManager.closeMenu();
                       props.onClose && props.onClose();
                       react([emoji.colons], 'toggle');
@@ -341,7 +342,7 @@ export default (props: Props) => {
 
         <Menu
           className="option"
-          onOpen={(evt: any) => onOpen(evt)}
+          onOpen={(evt: Event) => onOpen(evt)}
           onClose={() => props.onClose && props.onClose()}
           menu={menu}
           position={'left'}

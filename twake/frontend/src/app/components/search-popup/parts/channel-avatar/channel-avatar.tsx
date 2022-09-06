@@ -4,7 +4,6 @@ import './channel-avatar.scss';
 import UsersService from 'features/users/services/current-user-service';
 import UserService from 'features/users/services/current-user-service';
 import { UserType } from 'features/users/types/user';
-import { getUser } from 'features/users/hooks/use-user-list';
 import { addApiUrlIfNeeded } from 'features/global/utils/URLUtils';
 import emoji from 'emoji-name-map';
 import _ from 'lodash';

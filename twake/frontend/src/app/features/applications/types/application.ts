@@ -7,6 +7,7 @@ export type AppType = { [key: string]: any };
 export type PluginAction = {
   name: string;
   id: string;
+  description: string;
 };
 
 export type FilePlugin = {

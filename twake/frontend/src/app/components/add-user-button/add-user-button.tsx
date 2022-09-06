@@ -5,12 +5,12 @@ import './add-user-button.scss';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';
 
-export default (props: any) => {
+export default () => {
   return (
     <div
       className="channel addUserButton"
       onClick={() => {
-        return popupManager.open(<AddUserByEmail standalone />);
+        return popupManager.open(<AddUserByEmail  standalone />);
       }}
     >
       <div className="icon">

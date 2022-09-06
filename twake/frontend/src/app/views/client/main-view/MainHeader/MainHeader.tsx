@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { Layout, Divider } from 'antd';
+import { Layout } from 'antd';
 import ChannelBar from './ChannelHeader/ChannelHeader';
 import MainViewService from 'app/features/router/services/main-view-service';
 import ApplicationBar from './ApplicationHeader/ApplicationHeader';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
-const MainHeader: FC<{}> = () => {
+const MainHeader: FC<unknown> = () => {
   const channelId = useRouterChannel();
   const channelType = MainViewService.useWatcher(() => MainViewService.getViewType());
 

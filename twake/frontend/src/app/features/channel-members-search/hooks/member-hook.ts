@@ -21,7 +21,7 @@ export function useChannelMember(userId: string, params?: ParamsChannelMember) {
   const leave = async (userId: string) => {
     setLoading(true);
 
-    const _ = await ChannelMembersAPIClient.deleteMember(userId, {
+    await ChannelMembersAPIClient.deleteMember(userId, {
       companyId,
       workspaceId,
       channelId,
@@ -33,7 +33,7 @@ export function useChannelMember(userId: string, params?: ParamsChannelMember) {
   const addMember = async (userId: string) => {
     setLoading(true);
 
-    const _ = await ChannelMembersAPIClient.addMember(
+    await ChannelMembersAPIClient.addMember(
       { user_id: userId },
       {
         companyId,

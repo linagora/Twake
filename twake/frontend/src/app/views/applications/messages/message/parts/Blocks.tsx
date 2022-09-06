@@ -7,11 +7,12 @@ import User from 'components/twacode/blocks/user';
 import Chan from 'components/twacode/blocks/chan';
 import { blocksToTwacode, formatData } from 'app/components/twacode/blocksCompiler';
 import environment from 'app/environment/environment';
+import { Block } from '../../../../../../../../backend/node/src/services/messages/blocks-types';
 
 type Props = {
   blocks: any;
   fallback: string | ReactNode;
-  onAction: Function;
+  onAction: (type: string, id: string, context: unknown, passives: unknown, evt: unknown) => void;
   allowAdvancedBlocks?: boolean;
 };
 
@@ -46,7 +47,7 @@ const Link = ({ href, children }: { href: string; children: string }) => {
 };
 
 export default React.memo((props: Props) => {
-  const flattedBlocks: any[] = [];
+  const flattedBlocks: Block[] = [];
   formatData(props.blocks || [], 'content', flattedBlocks);
   const blocks = blocksToTwacode(flattedBlocks);
 
@@ -99,7 +100,7 @@ export default React.memo((props: Props) => {
       <Twacode
         content={blocks}
         isApp={props.allowAdvancedBlocks}
-        onAction={(type: string, id: string, context: any, passives: any, evt: any) =>
+        onAction={(type: string, id: string, context: unknown, passives: unknown, evt: unknown) =>
           props.onAction(type, id, context, passives, evt)
         }
       />

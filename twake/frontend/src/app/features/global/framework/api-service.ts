@@ -140,7 +140,7 @@ export default class Api {
       requestType?: 'post' | 'get' | 'put' | 'delete';
     } = {},
   ): Promise<Response> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (data && data._grouped && route === 'core/collections/init') {
         GroupedQueryApiInstance.post(route, data, callback);
         return;

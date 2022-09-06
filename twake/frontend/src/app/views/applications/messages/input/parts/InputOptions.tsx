@@ -11,7 +11,6 @@ import MessageEditorsManager from 'app/features/messages/services/message-editor
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';
 import { Application } from 'app/features/applications/types/application';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
-import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 type Props = {
   channelId: string;
@@ -34,8 +33,8 @@ type MenuItem = {
 
 export default (props: Props) => {
   const [displayRichTextOptions, setDisplayRichTextOptions] = useState(false);
-  const [displayFileMenu, setDisplayFileMenu] = useState(false);
-  const [displayEmojiMenu, setDisplayEmojiMenu] = useState(false);
+  const [, setDisplayFileMenu] = useState(false);
+  const [, setDisplayEmojiMenu] = useState(false);
   const addon_menu: MenuItem[] = [];
   const addon_right_icon: any[] = [];
   const addon_files: any[] = [];

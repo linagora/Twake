@@ -10,8 +10,8 @@ import ViewName from './AppView/ViewName';
 
 export const ViewContext = React.createContext({ type: '', id: '' });
 
-const MainContent: FC<{}> = () => {
-  const [mainType, mainId] = MainViewService.useWatcher(() => [
+const MainContent: FC<unknown> = () => {
+  const [, mainId] = MainViewService.useWatcher(() => [
     MainViewService.getViewType(),
     MainViewService.getId(),
   ]);

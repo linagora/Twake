@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { PlusCircle } from 'react-feather';
 
 import Thread from '../parts/thread';

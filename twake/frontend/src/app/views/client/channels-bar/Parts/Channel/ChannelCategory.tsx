@@ -4,20 +4,20 @@ import './Channel.scss';
 
 type PropsType = {
   text?: string;
-  editable?: any;
-  refAdd?: any;
-  sub?: any;
-  onClick?: any;
-  onAdd?: any;
-  suffix?: any;
-  addIcon?: any;
+  editable?: boolean;
+  refAdd?: React.LegacyRef<HTMLDivElement> | undefined;
+  sub?: boolean;
+  onClick?: () => void;
+  onAdd?: () => void;
+  suffix?: string;
+  addIcon?: JSX.Element;
 };
 
 const ChannelCategory: FC<PropsType> = (props): JSX.Element => {
   return (
     <div
       className={'channel_category ' + (props.sub ? 'sub ' : '')}
-      onClick={props.editable && props.onClick}
+      onClick={() => props.editable && props.onClick  && props.onClick()}
     >
       <div className="text">{props.text}</div>
       {props.sub && props.editable && (

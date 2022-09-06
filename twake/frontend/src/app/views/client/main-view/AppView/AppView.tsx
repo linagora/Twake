@@ -10,8 +10,6 @@ import { useChannel } from 'app/features/channels/hooks/use-channel';
 type PropsType = {
   viewService: AppViewService;
   id: string;
-  current_channelTab?: any;
-  current_channel?: any;
 };
 
 const AppView: FC<PropsType> = props => {

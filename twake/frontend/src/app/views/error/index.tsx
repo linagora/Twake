@@ -44,9 +44,9 @@ export default () => {
               className="input medium full_width"
               style={{ height: 200, overflow: 'scroll', maxHeight: '50vh', padding: 16 }}
               readOnly
-              onClick={(evt: any) => {
-                evt.target.focus();
-                evt.target.select();
+              onClick={evt => {
+                (evt.target as HTMLTextAreaElement).focus();
+                (evt.target as HTMLTextAreaElement).select();
               }}
             >
               {state.error.name + '\n----------------------------\n' + state.error.info}

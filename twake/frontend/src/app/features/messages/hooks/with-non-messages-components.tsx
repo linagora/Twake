@@ -1,4 +1,3 @@
-import { MessageType } from 'antd/lib/message';
 import { getMessage } from 'app/features/messages/hooks/use-message';
 import { AtomMessageKey } from 'app/features/messages/state/atoms/messages';
 import { NodeMessage } from 'app/features/messages/types/message';

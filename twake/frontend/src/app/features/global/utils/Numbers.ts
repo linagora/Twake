@@ -76,7 +76,6 @@ export default class Numbers {
     const srcBase = srcAlphabet.length;
     const dstBase = dstAlphabet.length;
 
-    const wet = src;
     let val = 0;
     let mlt = 1;
 

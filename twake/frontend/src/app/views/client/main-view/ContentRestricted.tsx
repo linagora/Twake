@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import { LockOpenIcon } from '@heroicons/react/outline';
 

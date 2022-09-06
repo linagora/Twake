@@ -9,7 +9,7 @@ import NothingFound from '../parts/nothing-found';
 export default () => {
   const input = useRecoilValue(SearchInputState);
   const isRecent = input?.query?.trim()?.length === 0;
-  const { files, loading, loadMore } = useSearchMessagesFiles();
+  const { files, loading } = useSearchMessagesFiles();
 
   if (files.length === 0 && !loading) return <NothingFound />;
 
@@ -29,7 +29,7 @@ export default () => {
 };
 
 export const FilesResults = (props: { max?: number }) => {
-  const { files, loading, loadMore } = useSearchMessagesFiles();
+  const { files, loading } = useSearchMessagesFiles();
 
   if (files.length === 0 && !loading) return <NothingFound />;
 

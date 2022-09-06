@@ -22,7 +22,7 @@ type PropsType = {
   status?: PendingFileRecoilType['status'];
   deletable?: boolean;
   actionMenu?: boolean;
-  onRemove?: Function;
+  onRemove?: () => void;
   source?: string;
 };
 
@@ -33,7 +33,6 @@ export const FileActions = ({
   deletable,
   actionMenu,
   onRemove,
-  source,
 }: PropsType): JSX.Element => {
   const { cancelUpload, deleteOneFile, downloadOneFile, retryUpload } = useUpload();
   const menuRef = useRef<HTMLElement>();

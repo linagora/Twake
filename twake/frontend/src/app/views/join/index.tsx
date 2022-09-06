@@ -20,24 +20,20 @@ import LocalStorage from 'app/features/global/framework/local-storage-service';
 
 const { Title, Text } = Typography;
 
-type PropsType = {
-  [key: string]: any;
-};
-
 type JoinError = {
   title: string;
   description: string;
 };
 
-export default (props: PropsType): JSX.Element => {
+export default (): JSX.Element => {
   const [error, setError] = useState<JoinError>();
   const [info, setInfo] = useState<MagicLinksJoinResponse>();
   const [busy, setBusy] = useState<boolean>(false);
-  const [cookies, setCookie] = useCookies(['pending-redirect']);
+  const [,setCookie] = useCookies(['pending-redirect']);
 
   if (info?.company?.plan) FeatureTogglesService.setFeaturesFromCompanyPlan(info?.company?.plan);
 
-  const params = useParams() as any;
+  const params = useParams() as Record<string, string>;
   const service = new MagicLinksJoinService(params.token, (val: boolean) => setBusy(val));
 
   useEffect(() => {

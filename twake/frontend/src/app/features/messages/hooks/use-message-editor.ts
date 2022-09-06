@@ -38,14 +38,6 @@ export const useMessageEditor = (key: EditorKey) => {
   const editorRef = useRef(editor);
   const { isActive: isQuoted, message: quotedMessageId, close: closeQuoteReply } = useMessageQuoteReply(key.channelId || '');
   let quotedMessage: MessageWithReplies | null = null;
-  let message: NodeMessage | null = null;
-  if (key.messageId) {
-    message = useMessage({
-      companyId: key.companyId,
-      threadId: key.threadId || '',
-      id: key.messageId,
-    }).message;
-  }
 
   quotedMessage = useMessage({
     companyId: key.companyId,

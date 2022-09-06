@@ -1,7 +1,5 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
-import { capitalize } from 'lodash';
-
 import Menu from 'components/menus/menu';
 import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
@@ -16,8 +14,9 @@ import {
   useOtherCompanyNotifications,
 } from 'app/features/users/hooks/use-notifications';
 import menusManager from 'app/components/menus/menus-manager';
+import { UserCompanyType } from 'app/features/users/types/user';
 
-type MenuObjectType = { [key: string]: any };
+type MenuObjectType = { [key: string]: unknown };
 
 export default ({
   children,
@@ -108,7 +107,7 @@ export const CurrentCompanyLogo = ({
   );
 };
 
-const CompanyInMenu = (props: { company: any }) => {
+const CompanyInMenu = (props: { company: UserCompanyType['company'] }) => {
   const c = props.company;
   const { badges } = useCompanyNotifications(c.id || '');
 

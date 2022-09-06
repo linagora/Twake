@@ -54,7 +54,7 @@ export default () => {
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
       shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
-      handler: (event: any) => {
+      handler: event => {
         event.preventDefault();
         setSearchopen(true);
         setSearchInput({ query: '' });

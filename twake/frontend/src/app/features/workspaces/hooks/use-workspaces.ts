@@ -3,7 +3,6 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { WorkspaceListStateFamily } from '../state/workspace-list';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
-import Logger from 'app/features/global/framework/logger-service';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import RouterService from 'app/features/router/services/router-service';
@@ -19,8 +18,6 @@ import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import { LoadingState } from '../../global/state/atoms/Loading';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useEffect } from 'react';
-
-const logger = Logger.getLogger('useWorkspaces');
 
 export const useWorkspacesCommons = (companyId = '') => {
   const [workspaces, setWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));

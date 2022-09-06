@@ -10,7 +10,7 @@ import NothingFound from '../parts/nothing-found';
 export default () => {
   const input = useRecoilValue(SearchInputState);
   const isRecent = input?.query?.trim()?.length === 0;
-  const { channels, loading, loadMore } = useSearchChannels();
+  const { channels, loading } = useSearchChannels();
 
   if (channels.length === 0 && !loading) return <NothingFound />;
 
@@ -54,7 +54,7 @@ export default () => {
 };
 
 export const ChannelsRowResults = (props: { max?: number }) => {
-  const { channels, loading, loadMore } = useSearchChannels();
+  const { channels, loading } = useSearchChannels();
 
   if (channels.length === 0 && !loading) return <NothingFound />;
 
@@ -73,7 +73,7 @@ export const ChannelsRowResults = (props: { max?: number }) => {
 };
 
 export const ChannelsResults = (props: { max?: number }) => {
-  const { channels, loading, loadMore } = useSearchChannels();
+  const { channels, loading } = useSearchChannels();
 
   if (channels.length === 0 && !loading) return <NothingFound />;
 

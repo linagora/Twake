@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import Logger from 'app/features/global/framework/logger-service';
 import Languages from 'app/features/global/services/languages-service';
@@ -9,7 +9,6 @@ import {
 } from '../state/company-applications';
 import CompanyApplicationsAPIClient from 'app/features/applications/api/company-applications-api-client';
 import { useCurrentCompany } from '../../companies/hooks/use-companies';
-import _ from 'lodash';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { Application } from 'app/features/applications/types/application';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
@@ -104,7 +103,7 @@ export const useCompanyApplicationsRealtime = (companyId = '') => {
   const { refresh } = useCompanyApplications(companyId);
 
   const room = CompanyApplicationsAPIClient.websockets(companyId || '')[0];
-  useRealtimeRoom<Application[]>(room, 'useCompanyApplications', (_action, _resource) => {
+  useRealtimeRoom<Application[]>(room, 'useCompanyApplications', () => {
     refresh();
   });
 };

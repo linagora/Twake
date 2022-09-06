@@ -11,7 +11,7 @@ type PropsType = { [key: string]: any };
 type StateType = { [key: string]: any };
 
 export default class InputWithIcon extends React.Component<PropsType, StateType> {
-  outsideClickListener: (event: any) => void = () => {};
+  outsideClickListener: (event: any) => void = () => undefined;
   input: any;
   emojiPickerIsOpen: any;
   emojipicker_dom: any;
@@ -166,7 +166,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
             <div
               className="emoji"
               ref={node => (this.emoji_dom = node)}
-              onClick={evt => {
+              onClick={() => {
                 this.openEmojiPicker();
               }}
             >

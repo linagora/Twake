@@ -1,7 +1,6 @@
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import useRouteState from 'app/features/router/hooks/use-route-state';
-import { useEffect } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { HighlightMessageState } from '../state/atoms/message-highlight';
 
 export const useHighlightMessage = () => {

@@ -1,6 +1,5 @@
 import Strings from 'features/global/utils/strings';
-import { FileSearchResult, Message, MessageFileType } from 'features/messages/types/message';
-import DriveService from 'deprecated/Apps/Drive/Drive';
+import { Message, MessageFileType } from 'features/messages/types/message';
 import FileUploadService from 'features/files/services/file-upload-service';
 import routerService from 'app/features/router/services/router-service';
 import { ChannelType } from 'app/features/channels/types/channel';

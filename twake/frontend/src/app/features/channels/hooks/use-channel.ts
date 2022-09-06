@@ -26,7 +26,7 @@ export function useChannel(
 
   const save = async (channel: ChannelType) => {
     setLoading(true);
-    const _ = await ChannelAPIClient.save(channel, {
+    await ChannelAPIClient.save(channel, {
       companyId: channel.company_id || '',
       workspaceId: channel.workspace_id || '',
       channelId: channel.id,
@@ -74,7 +74,7 @@ export function getAllChannelsCache() {
 }
 
 export function useSetChannel() {
-  const set = useRecoilCallback(({ set, snapshot }) => (channel: ChannelType) => {
+  const set = useRecoilCallback(({ set }) => (channel: ChannelType) => {
     if (channel.id) {
       channelsKeeper = channelsKeeper.filter(c => c.id !== channel.id);
       channelsKeeper.push(channel);

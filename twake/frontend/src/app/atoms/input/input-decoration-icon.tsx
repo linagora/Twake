@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { ReactNode } from 'react';
 
 interface InputLabelProps {

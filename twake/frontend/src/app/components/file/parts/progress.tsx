@@ -29,7 +29,7 @@ const setStatus = (status: PendingFileRecoilType['status']): 'normal' | 'excepti
   }
 };
 
-export const FileProgress = ({ file, status, progress }: PropsType): JSX.Element => {
+export const FileProgress = ({ status, progress }: PropsType): JSX.Element => {
   const setProgressStrokeColor = (): string => {
     if (!status) return '';
 

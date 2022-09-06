@@ -3,7 +3,6 @@ import moment from 'moment';
 import Observable from 'app/deprecated/Observable/Observable';
 import Languages from 'app/features/global/services/languages-service';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
-import Login from 'app/features/auth/login-service';
 import {
   NotificationPreferencesType,
   preferencesType,
@@ -26,9 +25,6 @@ class NotificationPreferencesService extends Observable {
    */
   async save(preferences: { key: Keys; value: Values }[]): Promise<void> {
     const newPreferences: any = {};
-    const user_id = Login.currentUserId;
-    const workspace_id = 'all';
-    const company_id = 'all';
 
     preferences.map(({ key, value }) => (newPreferences[key] = value));
 

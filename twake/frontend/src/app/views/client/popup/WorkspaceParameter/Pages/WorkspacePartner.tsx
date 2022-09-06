@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search } from 'react-feather';
 import { Row, Col, Button, Input, Typography, Divider } from 'antd';
-
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
@@ -17,12 +16,20 @@ import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
-import ConsoleService from 'app/features/console/services/console-service';
 
 import './Pages.scss';
 
-export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: any }) => {
-  workspacesUsers.useListener(useState as any);
+type PropsType = {
+  col: {
+    user: Record<string, string>;
+    level: string;
+  };
+  adminLevelId: string;
+  onChange: () => void;
+};
+
+export const AdminSwitch = (props: PropsType) => {
+  workspacesUsers.useListener(useState as unknown as undefined);
   const loading = workspacesUsers.updateLevelUserLoading[props.col.user.id];
   const checked = props.col.level === props.adminLevelId;
   return (

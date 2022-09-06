@@ -16,7 +16,7 @@ export const CompaniesState = atomFamily<CompanyType | null, string>({
   default: id => (id ? CompanyAPIClient.get(id) : null),
 
   //Retro compatibility
-  effects_UNSTABLE: id => [
+  effects_UNSTABLE: () => [
     ({ onSet }) => {
       onSet(company => {
         if (company?.id) {

@@ -14,7 +14,7 @@ type Props = {
   withAvatar?: boolean;
   pinned?: boolean;
   className?: string;
-  onClick?: any;
+  onClick?: () => void;
 };
 
 export default (props: Props) => {

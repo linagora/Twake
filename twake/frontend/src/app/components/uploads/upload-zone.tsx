@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
 import UploadManager from './upload-manager';
@@ -149,7 +148,7 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
     /**
      * DRAGOVER EVENT
      */
-    currentNode.addEventListener('dragover', (e: DragEvent) =>
+    currentNode.addEventListener('dragover', () =>
       currentNode.classList.add('input-drag-focus'),
     );
 
@@ -163,7 +162,7 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
     /**
      * DRAGLEAVE EVENT
      */
-    currentNode.addEventListener('dragleave', (e: DragEvent) =>
+    currentNode.addEventListener('dragleave', () =>
       currentNode.classList.remove('input-drag-focus'),
     );
 

@@ -3,7 +3,6 @@ import ObjectModal from 'app/components/object-modal/object-modal';
 import { Button, Row, Typography } from 'antd';
 import ModalManager from 'app/components/modal/modal-manager';
 import Languages from 'app/features/global/services/languages-service';
-import InitService from 'app/features/global/services/init-service';
 import consoleService from 'app/features/console/services/console-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 

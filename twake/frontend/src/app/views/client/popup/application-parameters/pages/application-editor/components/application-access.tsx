@@ -1,10 +1,14 @@
 import React from 'react';
 import { capitalize } from 'lodash';
-import { Descriptions, Row, Typography } from 'antd';
+import { Row, Typography } from 'antd';
 
 import { TagPicker } from './tag-picker';
 import { defaultApplicationScopes } from '../default-scopes';
-import { Application, ApplicationScopes } from 'app/features/applications/types/application';
+import {
+  Application,
+  ApplicationAccess as ApplicationAccessType,
+  ApplicationScopes,
+} from 'app/features/applications/types/application';
 import { ApplicationHelp } from './application-help';
 import Languages from 'app/features/global/services/languages-service';
 
@@ -25,7 +29,9 @@ export const ApplicationAccess = ({
         <ApplicationHelp />
       </Row>
       {Object.keys(application.access).map((key: string) => {
-        const currentScopes: ApplicationScopes[] = (application.access as any)[key];
+        const currentScopes: ApplicationScopes[] = (application.access as ApplicationAccessType)[
+          key as keyof ApplicationAccessType
+        ];
         return (
           <div key={key === 'hooks' ? 'listened events' : key} className="bottom-margin">
             <Row>

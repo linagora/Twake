@@ -1,5 +1,5 @@
 import { Button, Col, Row, Input } from 'antd';
-import React, { Component } from 'react';
+import React from 'react';
 
 export default () => {
   const [isInvitationLink, setIsInvitationLink] = React.useState(false);
@@ -15,7 +15,7 @@ export default () => {
             <Col flex="auto" className="small-right-margin">
               <Input
                 placeholder={'Copy and paste it here'}
-                onChange={(e: any) => setInvitationLink(e.target.value)}
+                onChange={e => setInvitationLink(e.target.value)}
               />
             </Col>
             <Col>
@@ -23,7 +23,7 @@ export default () => {
                 type="primary"
                 disabled={
                   !invitationLink.match(
-                    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6}|:[0-9]{2,4})\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+                    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6}|:[0-9]{2,4})\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
                   )
                 }
                 onClick={() => document.location.replace(invitationLink)}

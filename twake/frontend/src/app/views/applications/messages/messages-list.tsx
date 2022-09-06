@@ -13,10 +13,8 @@ import {
   withNonMessagesComponents,
 } from '../../../features/messages/hooks/with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
-import { VirtuosoHandle } from 'react-virtuoso';
 import SideViewService from 'app/features/router/services/side-view-service';
 import { Application } from 'app/features/applications/types/application';
-import RouterServices from 'app/features/router/services/router-service';
 import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
 import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
@@ -24,7 +22,6 @@ import { getMessage } from 'app/features/messages/hooks/use-message';
 import messageApiClient from 'app/features/messages/api/message-api-client';
 import User from 'app/features/users/services/current-user-service';
 import { useChannelMembersReadSections } from 'app/features/channel-members/hooks/use-channel-members-read-sections';
-import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 
 type Props = {
@@ -36,7 +33,7 @@ type Props = {
 
 export const MessagesListContext = React.createContext({ hideReplies: false, withBlock: false });
 
-export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
+export default ({ channelId, companyId, workspaceId }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
   const { seen, refresh: loadReadSections } = useChannelMembersReadSections(companyId, workspaceId || 'direct', channelId || '');
@@ -203,8 +200,11 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
         <ListBuilder
           ref={listBuilderRef}
           style={virtuosoLoading ? { opacity: 0 } : {}}
-          onScroll={(e: any) => {
-            const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+          onScroll={(e: React.UIEvent<'div', UIEvent>) => {
+            const scrollBottom =
+              (e.target as HTMLElement).scrollHeight -
+              (e.target as HTMLElement).scrollTop -
+              (e.target as HTMLElement).clientHeight;
             const closeToBottom = scrollBottom < 500;
             if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
             cancelHighlight();

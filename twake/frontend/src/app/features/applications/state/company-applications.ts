@@ -1,4 +1,4 @@
-import { AtomEffect, atomFamily, selectorFamily } from 'recoil';
+import { atomFamily, selectorFamily } from 'recoil';
 
 import { Application } from 'app/features/applications/types/application';
 import Logger from 'app/features/global/framework/logger-service';

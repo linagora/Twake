@@ -3,8 +3,6 @@ import Numbers from 'app/features/global/utils/Numbers';
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
-import UserAPIClient from 'app/features/users/api/user-api-client';
-import RouterServices from 'app/features/router/services/router-service';
 import { CompanyType } from 'app/features/companies/types/company';
 
 class MessageHistoryService {

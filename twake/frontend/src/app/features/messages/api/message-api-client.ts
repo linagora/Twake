@@ -1,6 +1,5 @@
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import {
-  FileSearchResult,
   Message,
   MessageExtended,
   MessageFileType,
@@ -13,12 +12,10 @@ import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 import Numbers from 'app/features/global/utils/Numbers';
-import { FileType, MetaDataType } from 'features/files/types/file';
+import { MetaDataType } from 'features/files/types/file';
 import Workspace from 'deprecated/workspaces/workspaces';
 import Logger from 'features/global/framework/logger-service';
 import { UserType } from 'features/users/types/user';
-import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
-import assert from 'assert';
 import { AtomMessageKey } from '../state/atoms/messages';
 
 /**
@@ -112,7 +109,7 @@ class MessageAPIClient {
   }
 
   async delete(companyId: string, threadId: string, messageId: string) {
-    const response = await Api.post<{}, { resource: NodeMessage }>(
+    const response = await Api.post<unknown, { resource: NodeMessage }>(
       `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/delete`,
       {},
     );

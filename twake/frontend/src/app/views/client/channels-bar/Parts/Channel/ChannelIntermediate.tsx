@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { getUserParts } from 'app/components/member/user-parts';
-import _ from 'lodash';
 import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
 import useRouterChannelSelected from 'app/features/router/hooks/use-router-channel-selected';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { cloneDeep, concat, isEqual, uniqBy } from 'lodash';
+import { cloneDeep, isEqual, uniqBy } from 'lodash';
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil';
 
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
@@ -7,7 +7,6 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { UserCompanyType, UserType, UserWorkspaceType } from 'app/features/users/types/user';
 import WorkspaceUserAPIClient from 'app/features/workspace-members/api/workspace-members-api-client';
 import { UserListState } from '../state/atoms/user-list';
-import Logger from 'app/features/global/framework/logger-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import _ from 'lodash';
 
@@ -40,7 +39,7 @@ export const useUserList = (): {
 
 // Access from any services
 // You can't use it before calling the useSetUserList hook
-export let setUserList: (nextList: UserType[]) => void = _ => {};
+export let setUserList: (nextList: UserType[]) => void = () => undefined;
 
 let currentUserList: UserType[] = [];
 
@@ -68,8 +67,6 @@ const completeUserWithWorkspaces = (
 
 // Access from hooks-components
 export function useSetUserList(key: string) {
-  const logger = Logger.getLogger(`[${key}]`);
-
   const set = useRecoilCallback(({ set }) => (nextList: UserType[]) => {
     const currentList = currentUserList;
 

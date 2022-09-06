@@ -2,10 +2,14 @@ import { useViewerDataLoading } from 'app/features/viewer/hooks/use-viewer';
 import { useEffect, useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
-let imageControls = {
-  zoomIn: () => {},
-  zoomOut: () => {},
-  rotateCw: () => {},
+let imageControls: {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  rotateCw: () => void;
+} = {
+  zoomIn: () => undefined,
+  zoomOut: () => undefined,
+  rotateCw: () => undefined,
 };
 
 export const getImageControls = () => {
@@ -22,7 +26,7 @@ export default (props: { download: string }) => {
 
   return (
     <TransformWrapper initialScale={0.9}>
-      {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
+      {({ zoomIn, zoomOut }) => {
         imageControls = { zoomIn, zoomOut, rotateCw: () => setRotated(rotated + 90) };
         return (
           <TransformComponent wrapperClass="absolute w-full h-full top-0 left-0 right-0 bottom-0">

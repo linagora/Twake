@@ -35,7 +35,6 @@ export default () => {
     applications: companyApplications,
     loading: isLoadingCompanyApplications,
     remove: deleteOneCompanyApplication,
-    isInstalled: isApplicationInstalledInCompany,
   } = useCompanyApplications(companyId);
   useCompanyApplicationsRealtime();
 
@@ -133,7 +132,7 @@ export default () => {
       dataIndex: 'actions',
       width: 200,
 
-      render: (initialValue: any, record: ColumnObjectType, index: number) => {
+      render: (_initialValue, record: ColumnObjectType) => {
         const { key, ...application } = record;
         return (
           <div style={{ float: 'right' }}>

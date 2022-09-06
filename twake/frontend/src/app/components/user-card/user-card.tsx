@@ -9,7 +9,7 @@ import './user-card.scss';
 
 type PropsType = {
   user: UserType;
-  onClick: (evt: any) => {};
+  onClick: (evt: any) => void;
 };
 
 export default (props: PropsType): JSX.Element => {

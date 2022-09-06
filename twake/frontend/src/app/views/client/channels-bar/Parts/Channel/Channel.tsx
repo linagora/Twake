@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Tooltip } from 'antd';
 import { Calendar, CheckSquare, Folder, Hexagon, Star } from 'react-feather';
-
-import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
 import WritingLoader from 'app/components/writing-loader/writing-loader';
 import Icon from 'app/components/icon/icon';
 import { Application } from 'app/features/applications/types/application';

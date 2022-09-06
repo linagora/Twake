@@ -1,8 +1,7 @@
-import Strings from 'app/features/global/utils/strings';
 import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import { UserType } from 'app/features/users/types/user';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { SearchChannelMemberInputState } from '../state/search-channel-member';
 import { ChannelMemberWithUser, ParamsChannelMember } from '../types/channel-members';

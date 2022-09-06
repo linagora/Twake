@@ -59,7 +59,7 @@ const WorkspaceIdentity = () => {
     }
   };
 
-  const onChangeWorkspaceLogo = async (e: Event) => {
+  const onChangeWorkspaceLogo = async () => {
     if (!uploadInputRef?.current) return;
     const file = uploadInputRef.current.files?.[0];
     try {

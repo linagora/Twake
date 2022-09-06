@@ -14,7 +14,6 @@ import LocalStorage from 'app/features/global/framework/local-storage-service';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
-const OIDC_SILENT_URL = '/oidcsilientrenew';
 const OIDC_CLIENT_ID = 'twake';
 
 @TwakeService('OIDCAuthProvider')

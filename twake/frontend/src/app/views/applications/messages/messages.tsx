@@ -15,7 +15,7 @@ import MessageSeenBy from 'app/components/message-seen-by/message-seen-by';
 
 type Props = {
   channel: ChannelType;
-  tab?: any;
+  tab?: unknown;
   options: ViewConfiguration;
 };
 

@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import InputWithIcon from 'components/inputs/input-with-icon';
 import { ChannelType } from 'app/features/channels/types/channel';
@@ -27,12 +27,12 @@ const ChannelTemplateEditor = ({
   const [icon, setIcon] = useState<string>(channel?.icon || '');
   const [name, setName] = useState<string>(channel?.name || '');
   const [description, setDescription] = useState<string>(channel?.description || '');
-  const [visibility, setVisibility] = useState<string>(
+  const [visibility, setVisibility] = useState<'public' | 'direct' | 'private'>(
     channel?.visibility || defaultVisibility || 'public',
   );
   const [defaultChannel, setDefaultChannel] = useState<boolean>(channel?.is_default || false);
   const [group, setGroup] = useState<string>(channel?.channel_group || '');
-  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+  const { workspaceId } = RouterServices.getStateFromRoute();
   const { privateChannels, publicChannels } = usePublicOrPrivateChannels();
   useEffect(() => {
     onChange({
@@ -122,7 +122,7 @@ const ChannelTemplateEditor = ({
             <Select
               size={'large'}
               value={visibility ? visibility : 'private'}
-              onChange={(value: string) => setVisibility(value)}
+              onChange={(value: 'public' | 'direct' | 'private') => setVisibility(value)}
             >
               <Option value="private">
                 {Languages.t('scenes.app.channelsbar.private_channel_label', [], 'Private channel')}

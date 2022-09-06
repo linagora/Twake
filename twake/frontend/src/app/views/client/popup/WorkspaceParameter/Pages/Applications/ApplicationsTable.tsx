@@ -77,7 +77,7 @@ export default () => {
     },
     {
       dataIndex: 'actions',
-      render: (initialValue: any, record: ColumnObjectType, index: number) => {
+      render: (_initialValue, record: ColumnObjectType) => {
         const { key, ...application } = record;
         return (
           <Button

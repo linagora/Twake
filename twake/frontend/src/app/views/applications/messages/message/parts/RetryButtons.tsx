@@ -1,12 +1,10 @@
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { useMessageEditor } from 'app/features/messages/hooks/use-message-editor';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import { MessageContext } from '../message-with-replies';
 
-type Props = {};
-
-export default (props: Props) => {
+export default () => {
   const context = useContext(MessageContext);
   const { message } = useMessage(context);
   const { retry, cancel } = useMessageEditor(context);

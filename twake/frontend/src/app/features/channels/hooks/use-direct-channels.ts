@@ -45,7 +45,6 @@ export function useRefreshDirectChannels(): {
 
 export function useDirectChannelsSetup() {
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
   const [, setLoading] = useRecoilState(LoadingState(`channels-direct-${companyId}`));
   const [didLoad, setDidLoad] = useRecoilState(
     LoadingState(`channels-direct-did-load-${companyId}`),
@@ -66,7 +65,7 @@ export function useDirectChannelsSetup() {
   useRealtimeRoom<ChannelType[]>(
     ChannelsMineAPIClient.websockets(companyId, 'direct')[0],
     'useDirectChannels',
-    (_action, _resource) => {
+    (_action) => {
       //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
     },
@@ -79,7 +78,7 @@ export function useDirectChannels(): {
   openDiscussion: (membersId: string[]) => Promise<void>;
 } {
   const companyId = useRouterCompany();
-  const [directChannels, _setDirectChannels] = useRecoilState(DirectChannelsState(companyId));
+  const [directChannels] = useRecoilState(DirectChannelsState(companyId));
   const { refresh } = useRefreshDirectChannels();
 
   const openDiscussion = async (membersIds: string[]) => {

@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import User from 'app/features/users/services/current-user-service';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import 'moment-timezone';
 import Emojione from 'components/emojione/emojione';
 import { ReactionType } from 'app/features/messages/types/message';
@@ -8,7 +7,6 @@ import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
-import _ from 'lodash';
 import { getUser } from 'app/features/users/hooks/use-user-list';
 
 export default () => {
@@ -37,7 +35,7 @@ const Reaction = ({
   react,
 }: {
   reaction: ReactionType;
-  react: Function;
+  react: (emojis: string[], mode?: 'add' | 'toggle' | 'remove' | 'replace') => Promise<void>;
 }): JSX.Element => {
   const noReactions: boolean = (reaction.count || 0) <= 0;
   const users: ReactionType['users'] = reaction.users || [];

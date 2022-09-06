@@ -1,5 +1,5 @@
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
-import { getAllChannelsCache, useSetChannel } from 'app/features/channels/hooks/use-channel';
+import { getAllChannelsCache } from 'app/features/channels/hooks/use-channel';
 import { ChannelType, createDirectChannelFromUsers } from 'app/features/channels/types/channel';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';

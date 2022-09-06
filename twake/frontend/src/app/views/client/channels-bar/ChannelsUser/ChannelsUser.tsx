@@ -3,12 +3,9 @@ import React, { useEffect, useState } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
 
-import MediumPopupComponent from 'app/components/modal/modal-manager';
 import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/new-direct-channel-popup';
 import ChannelCategory from 'app/views/client/channels-bar/Parts/Channel/ChannelCategory';
-import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
-import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 import { Modal } from 'app/atoms/modal';
@@ -56,7 +53,7 @@ export default () => {
           'Direct messages',
         )}
         addIcon={<PencilAltIcon className="h-5 w-5" />}
-        onAdd={AccessRightsService.hasCompanyLevel(companyId, 'member') ? () => openConv() : null}
+        onAdd={() => AccessRightsService.hasCompanyLevel(companyId, 'member') ? () => openConv() : null}
       />
       {nonfavoriteDirectChannels
         .sort(

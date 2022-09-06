@@ -13,7 +13,7 @@ type PropsType = {
 };
 
 const WrappedUserStatus = ({ user, size = 'medium' }: PropsType): JSX.Element => {
-  const userOnlineStatus = useOnlineUser(user.id!);
+  const userOnlineStatus = useOnlineUser(user.id as string);
 
   return (
     <div

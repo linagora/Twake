@@ -4,7 +4,6 @@ import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import User from 'app/components/ui/user';
 import { Button } from '@atoms/button/button';
 import { UserType } from 'app/features/users/types/user';
-import { Trash, Trash2, X, XCircle } from 'react-feather';
 import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
 import { SearchIcon } from '@heroicons/react/solid';
 import { Info } from 'app/atoms/text';
@@ -12,7 +11,7 @@ import Languages from 'app/features/global/services/languages-service';
 
 export default (props: { onChange: (users: UserType[]) => void; initialUsers: UserType[] }) => {
   const [users, setUsers] = useState<UserType[]>(props.initialUsers);
-  const { search, query, result } = useSearchUsers({ scope: 'company' });
+  const { search, result } = useSearchUsers({ scope: 'company' });
 
   const inputElement = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -41,7 +40,7 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
             className={className + ' mt-2 mb-4 w-full'}
             theme="plain"
             inputRef={inputElement}
-            onChange={(e: any) => search(e.target.value)}
+            onChange={e => search(e.target.value)}
           />
         )}
       />
