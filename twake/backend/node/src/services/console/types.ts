@@ -194,6 +194,10 @@ export type ConsoleHookBodyContent = {
   user: ConsoleHookUser;
 };
 
+export type ConsoleHookCompanyDeletedContent = {
+  companyCode: string;
+};
+
 export type ConsoleHookPreferenceContent = {
   preference: {
     targetCode: string;
@@ -202,7 +206,11 @@ export type ConsoleHookPreferenceContent = {
 
 export type ConsoleHookBody = {
   type: string;
-  content: ConsoleHookBodyContent | ConsoleHookUser | ConsoleHookCompany;
+  content:
+    | ConsoleHookBodyContent
+    | ConsoleHookUser
+    | ConsoleHookCompany
+    | ConsoleHookCompanyDeletedContent;
   signature: string;
   secret_key?: string;
 };
