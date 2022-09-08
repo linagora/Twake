@@ -135,7 +135,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
     if (message) {
       message.status = "sent";
 
-      await gr.services.messages.messages.save(
+      const result = await gr.services.messages.messages.save(
         message,
         {
           threadInitialMessage: true,
@@ -145,6 +145,43 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
           Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
         ),
       );
+      try {
+        const channelMembersCount = await gr.services.channels.members.getUsersCount({
+          id: result.entity.cache.channel_id,
+          company_id: result.entity.cache.company_id,
+          workspace_id: result.entity.cache.workspace_id,
+          counter_type: "members",
+        });
+
+        if (channelMembersCount === 1) {
+          await gr.services.messages.messages.updateDeliveryStatus(
+            {
+              message_id: result.entity.id,
+              self_message: true,
+              status: "read",
+              thread_id: result.entity.thread_id,
+            },
+            {
+              ...context,
+              thread: { id: thread.id },
+            },
+          );
+
+          await gr.services.channels.members.setChannelMemberReadSections(
+            {
+              start: result.entity.id,
+              end: result.entity.id,
+            },
+            {
+              ...context,
+              channel_id: result.entity.cache.channel_id,
+              workspace_id: result.entity.cache.workspace_id,
+            },
+          );
+        }
+      } catch (err) {
+        logger.error("failed to update message delivery status");
+      }
     }
 
     return new SaveResult(

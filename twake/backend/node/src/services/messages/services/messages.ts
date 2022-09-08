@@ -28,7 +28,6 @@ import {
   CompanyExecutionContext,
   DeleteLinkOperation,
   MessageIdentifier,
-  MessageReadType,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -57,7 +56,6 @@ import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs
 import { LinkPreviewMessageQueueRequest } from "../../../services/previews/types";
 import { Thumbnail } from "../../files/entities/file";
 import uuidTime from "uuid-time";
-import { ChannelExecutionContext } from "../../../services/channels/types";
 
 export class ThreadMessagesService implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -623,6 +621,21 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       );
 
       await gr.services.messages.threads.addReply(message.thread_id, 1, context);
+      try {
+        await gr.services.channels.members.setChannelMemberReadSections(
+          {
+            start: message.id,
+            end: message.id,
+          },
+          {
+            ...context,
+            channel_id: message.cache.channel_id,
+            workspace_id: message.cache.workspace_id,
+          },
+        );
+      } catch (error) {
+        logger.error("failed to set read sections");
+      }
     }
 
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
@@ -1006,11 +1019,6 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       if (!message) {
         logger.error(`message ${id} doesn't exist`);
         throw Error("failed to list seen by users: message doesn't exist");
-      }
-
-      if (!message.status || message.status !== "read") {
-        logger.error(`message ${id} is not seen yet, status: ${message.status}`);
-        throw Error("failed to list seen by users: message is not seen");
       }
 
       const channelContext = {

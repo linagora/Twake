@@ -287,7 +287,7 @@ export class ThreadMessagesOperationsService {
       return;
     }
 
-    if (operation.status === "delivered" && message.status === "read") {
+    if (operation.status === "delivered" && message.status === "read" && !operation.self_message) {
       logger.error("Invalid operation");
       return;
     }
