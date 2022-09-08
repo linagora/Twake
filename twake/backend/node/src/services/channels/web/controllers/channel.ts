@@ -109,7 +109,7 @@ export class ChannelCrudController
       user_member: ChannelMemberObject.mapTo(member),
     });
 
-    await this.completeWithStatistics([channelObject]);
+    await gr.services.channels.channels.completeWithStatistics([channelObject]);
 
     return {
       websocket: gr.platformServices.realtime.sign(
@@ -201,7 +201,7 @@ export class ChannelCrudController
       }
     }
 
-    await this.completeWithStatistics(channels as ChannelObject[]);
+    await gr.services.channels.channels.completeWithStatistics(channels as ChannelObject[]);
 
     return { resources: channels };
   }
@@ -356,7 +356,7 @@ export class ChannelCrudController
 
     const resources = entities.map(a => ChannelObject.mapTo(a));
 
-    await this.completeWithStatistics(resources);
+    await gr.services.channels.channels.completeWithStatistics(resources);
 
     return {
       ...{
@@ -489,24 +489,6 @@ export class ChannelCrudController
     return { status: pendingEmail.deleted ? "success" : "error" };
   }
 
-  async completeWithStatistics(channels: ChannelObject[]) {
-    await new Promise(r => setTimeout(r, 2000));
-    await Promise.all(
-      channels.map(async a => {
-        const members = await gr.services.channels.members.getUsersCount({
-          ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MEMBERS,
-        });
-        //Fixme: even if it works strange to use "getUsersCount" to get messages count
-        const messages = await gr.services.channels.members.getUsersCount({
-          ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MESSAGES,
-        });
-        a.stats = { members, messages };
-      }),
-    );
-  }
-
   async recent(
     request: FastifyRequest<{
       Querystring: { limit?: string };
@@ -573,7 +555,7 @@ export class ChannelCrudController
     );
 
     const resources = userIncludedChannels.slice(0, limit).map(r => ChannelObject.mapTo(r, {}));
-    await this.completeWithStatistics(resources);
+    await gr.services.channels.channels.completeWithStatistics(resources);
 
     await new Promise(r => setTimeout(r, 2000));
 

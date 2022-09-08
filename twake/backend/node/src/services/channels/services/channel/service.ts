@@ -49,6 +49,7 @@ import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
 } from "../../../../core/platform/services/knowledge-graph/types";
+import { ChannelUserCounterType } from "../../entities/channel-counters";
 
 const logger = getLogger("channel.service");
 
@@ -656,11 +657,13 @@ export class ChannelServiceImpl {
     context: ExecutionContext,
   ): Promise<boolean> {
     const now = Date.now();
-    const channel = await this.get(pk, context);
+    let channel = await this.get(pk, context);
 
     if (!channel) {
       throw CrudException.notFound("Channel not found");
     }
+
+    await this.completeWithStatistics([channel]);
 
     const member = await gr.services.channels.members.getChannelMember(
       user,
@@ -677,6 +680,7 @@ export class ChannelServiceImpl {
     // This message will be handled in the notification service and will update the notification preferences for the member
     // cf this.members.onUpdated
     member.last_access = now;
+    member.last_increment = channel.stats.messages;
     const updatedMember = (
       await gr.services.channels.members.save(member, {
         channel,
@@ -928,5 +932,23 @@ export class ChannelServiceImpl {
     } while (pagination.page_token);
 
     return channels;
+  }
+
+  async completeWithStatistics(channels: ChannelObject[]) {
+    await new Promise(r => setTimeout(r, 2000));
+    await Promise.all(
+      channels.map(async a => {
+        const members = await gr.services.channels.members.getUsersCount({
+          ..._.pick(a, "id", "company_id", "workspace_id"),
+          counter_type: ChannelUserCounterType.MEMBERS,
+        });
+        //Fixme: even if it works strange to use "getUsersCount" to get messages count
+        const messages = await gr.services.channels.members.getUsersCount({
+          ..._.pick(a, "id", "company_id", "workspace_id"),
+          counter_type: ChannelUserCounterType.MESSAGES,
+        });
+        a.stats = { members, messages };
+      }),
+    );
   }
 }

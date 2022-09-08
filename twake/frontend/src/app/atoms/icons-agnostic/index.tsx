@@ -13,6 +13,11 @@ import { ReactComponent as ZommInSvg } from './assets/zoom-in.svg';
 import { ReactComponent as ZoomOutSvg } from './assets/zoom-out.svg';
 import { ReactComponent as VerticalDotsSvg } from './assets/vertical-dots.svg';
 import { ReactComponent as RotateCwSvg } from './assets/rotate-cw.svg';
+import { ReactComponent as Plus } from './assets/plus.svg';
+import { ReactComponent as Up } from './assets/up.svg';
+import { ReactComponent as X } from './assets/x.svg';
+import { ReactComponent as StatusCheckDouble } from './assets/status-check-double.svg';
+import { ReactComponent as StatusCheck } from './assets/status-check.svg';
 
 export const CopyIcon = (props: ComponentProps<'svg'>) => <CopySvg {...props} />;
 export const DeleteIcon = (props: ComponentProps<'svg'>) => <DeleteSvg {...props} />;
@@ -27,3 +32,10 @@ export const ZoomOutIcon = (props: ComponentProps<'svg'>) => <ZoomOutSvg {...pro
 export const VerticalDotsIcon = (props: ComponentProps<'svg'>) => <VerticalDotsSvg {...props} />;
 export const RotateCwIcon = (props: ComponentProps<'svg'>) => <RotateCwSvg {...props} />;
 export const UploadCwIcon = (props: ComponentProps<'svg'>) => <UploadSvg {...props} />;
+export const PlusIcon = (props: ComponentProps<'svg'>) => <Plus {...props} />;
+export const UpIcon = (props: ComponentProps<'svg'>) => <Up {...props} />;
+export const XIcon = (props: ComponentProps<'svg'>) => <X {...props} />;
+export const StatusCheckDoubleIcon = (props: ComponentProps<'svg'>) => (
+  <StatusCheckDouble {...props} />
+);
+export const StatusCheckIcon = (props: ComponentProps<'svg'>) => <StatusCheck {...props} />;

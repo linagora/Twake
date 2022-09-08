@@ -47,7 +47,8 @@ export default (props: Props) => {
   }).message;
 
   const { channel } = useChannel(channelId);
-  const showQuotedMessage = quotedMessage && quotedMessage.thread_id && channel.visibility === 'direct';
+  const showQuotedMessage =
+    quotedMessage && quotedMessage.thread_id && channel.visibility === 'direct';
   let authorName = '';
   const currentRouterWorkspace = useRouterWorkspace();
   const workspaceId =
@@ -59,11 +60,7 @@ export default (props: Props) => {
     authorName = author ? User.getFullName(author) : 'Anonymous';
   }
 
-  const onInteractiveMessageAction = (
-    action_id: string,
-    context: unknown,
-    passives: unknown
-  ) => {
+  const onInteractiveMessageAction = (action_id: string, context: unknown, passives: unknown) => {
     const app_id = message.application_id;
     const type = 'interactive_message_action';
     const event = action_id;
@@ -122,6 +119,7 @@ export default (props: Props) => {
       <MessageHeader linkToThread={props.linkToThread} />
       {showQuotedMessage && (
         <MessageQuote
+          className="mb-1"
           author={authorName}
           message={quotedContent}
           closable={false}
@@ -156,12 +154,7 @@ export default (props: Props) => {
                     <Blocks
                       blocks={message.blocks}
                       fallback={PseudoMarkdownCompiler.transformBackChannelsUsers(message.text)}
-                      onAction={(
-                        type: string,
-                        id: string,
-                        context: unknown,
-                        passives: unknown,
-                      ) => {
+                      onAction={(type: string, id: string, context: unknown, passives: unknown) => {
                         if (isChannelMember) onAction(type, id, context, passives);
                       }}
                       allowAdvancedBlocks={message.subtype === 'application'}
@@ -195,7 +188,9 @@ export default (props: Props) => {
             key={`options_${message.id}`}
           />
         )}
-      {showMessageStatus && <MessageStatus key={`message_status_${message.id}`} status={message.status} />}
+      {showMessageStatus && (
+        <MessageStatus key={`message_status_${message.id}`} status={message.status} />
+      )}
     </div>
   );
 };

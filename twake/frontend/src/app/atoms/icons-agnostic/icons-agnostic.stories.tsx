@@ -14,6 +14,11 @@ import {
   VerticalDotsIcon,
   RotateCwIcon,
   UploadCwIcon,
+  PlusIcon,
+  UpIcon,
+  XIcon,
+  StatusCheckDoubleIcon,
+  StatusCheckIcon,
 } from '@atoms/icons-agnostic/index';
 
 export default {
@@ -54,6 +59,11 @@ const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
         <Icon icon={<VerticalDotsIcon />} title="VerticalDots" />
         <Icon icon={<RotateCwIcon />} title="RotateCw" />
         <Icon icon={<UploadCwIcon />} title="Upload" />
+        <Icon icon={<PlusIcon />} title="Plus" />
+        <Icon icon={<UpIcon />} title="Up" />
+        <Icon icon={<XIcon />} title="X" />
+        <Icon icon={<StatusCheckDoubleIcon />} title="StatusCheckDouble" />
+        <Icon icon={<StatusCheckIcon />} title="StatusCheck" />
       </div>
     </>
   );
