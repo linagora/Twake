@@ -655,7 +655,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       <>
         <OnScreenElement onScreen={this.updateVisible} />
         <div
-          className={classNames('editor', {
+          className={classNames('bg-zinc-50 border border-zinc-200 rounded-lg py-1 px-3 editor', {
             'scrollable-editor': this.shouldScroll(),
             'editor-hide-placeholder': this.shouldHidePlaceHolder(),
           })}

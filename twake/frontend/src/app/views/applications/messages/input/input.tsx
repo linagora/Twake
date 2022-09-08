@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
-import { Send } from 'react-feather';
 import { EditorState } from 'draft-js';
 import { Tooltip } from 'antd';
 
@@ -42,6 +41,7 @@ import { MessageFileType } from 'app/features/messages/types/message';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
 import QuotedMessage from 'app/components/quoted-message/quoted-message';
+import { UpIcon, PlusIcon } from 'app/atoms/icons-agnostic';
 
 type Props = {
   messageId?: string;
@@ -87,9 +87,7 @@ export default (props: Props) => {
     id: props.threadId,
   });
 
-  const { isActive: isBeingQuoted, close } = useMessageQuoteReply(
-    props.channelId || '',
-  );
+  const { isActive: isBeingQuoted, close } = useMessageQuoteReply(props.channelId || '');
 
   const { upload, clear: clearUploads } = useUploadZones(editorId);
   const format = props.format || 'markdown';
@@ -103,6 +101,7 @@ export default (props: Props) => {
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
   );
   const [isTooLong, setTooLong] = useState(false);
+  const [inPlus, setInPlus] = useState(false);
 
   const { iAmWriting } = useChannelWritingActivityEmit(props.channelId || '', props.threadId);
 
@@ -384,14 +383,23 @@ export default (props: Props) => {
           }}
         />
 
-        <PendingAttachments
-          zoneId={editorId}
-          initialValue={editor.files || []}
-          onChange={list => setFiles(list)}
-        />
-
         {!hasEphemeralMessage && (
-          <div className="editorview-submit">
+          <div className="editorview-submit flex flex-row items-center px-1 relative">
+            <div className="absolute -bottom-2 right-8">
+              <TextCount editorState={editorState} displayOnlyAfterThresold={true} />
+            </div>
+
+            <div className="mr-2 self-start mt-[6px]">
+              <PlusIcon
+                onClick={() => {
+                  setInPlus(!inPlus);
+                }}
+                className={
+                  'cursor-pointer text-blue-500 hover:text-blue-600 w-5 h-5 transition-transform ' +
+                  (inPlus ? ' rotate-45 ' : '')
+                }
+              />
+            </div>
             <EditorView
               ref={editorRef}
               onChange={editorState => {
@@ -413,9 +421,9 @@ export default (props: Props) => {
               >
                 <div
                   ref={submitRef}
-                  className={classNames('submit-button', {
+                  className={classNames('ml-2 submit-button self-start mt-0.5', {
                     disabled: disabled,
-                    skew_in_right: !disabled,
+                    scale: !disabled,
                   })}
                   onClick={() => {
                     if (!isEmpty() && !isTooLong) {
@@ -423,29 +431,33 @@ export default (props: Props) => {
                     }
                   }}
                 >
-                  <Send className="send-icon" size={20} />
+                  <UpIcon className="text-blue-500 hover:text-blue-600 w-7 h-7" />
                 </div>
               </Tooltip>
             )}
           </div>
         )}
 
-        <div className="counter-right">
-          <TextCount editorState={editorState} displayOnlyAfterThresold={true} />
-        </div>
-
         {!hasEphemeralMessage && !props.messageId && (
-          <InputOptions
-            isEmpty={isEmpty()}
-            channelId={props.channelId || ''}
-            threadId={props.threadId}
-            onSend={() => onSend()}
-            triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
-            onAddEmoji={emoji => editorRef.current?.insertCommand('EMOJI', emoji)}
-            richTextEditorState={editorState}
-            onRichTextChange={editorState => setRichTextEditorState(editorState)}
-          />
+          <div className={'transition-all ' + (inPlus ? 'h-8 opacity-1' : 'h-0 opacity-0')}>
+            <InputOptions
+              isEmpty={isEmpty()}
+              channelId={props.channelId || ''}
+              threadId={props.threadId}
+              onSend={() => onSend()}
+              triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
+              onAddEmoji={emoji => editorRef.current?.insertCommand('EMOJI', emoji)}
+              richTextEditorState={editorState}
+              onRichTextChange={editorState => setRichTextEditorState(editorState)}
+            />
+          </div>
         )}
+
+        <PendingAttachments
+          zoneId={editorId}
+          initialValue={editor.files || []}
+          onChange={list => setFiles(list)}
+        />
       </UploadZone>
     </div>
   );

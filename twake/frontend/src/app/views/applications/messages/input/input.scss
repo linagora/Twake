@@ -24,8 +24,7 @@
 .new-thread {
   .message-input {
     .upload-zone-centerer {
-      padding: 8px;
-      padding-bottom: 0px;
+      margin-top: 8px;
     }
   }
 }
@@ -78,8 +77,11 @@
       align-self: flex-start;
       color: var(--primary);
       opacity: 50%;
-      padding-right: 10px;
       cursor: not-allowed;
+
+      &.disabled{
+        pointer-events: none;
+      }
 
       &:not(.disabled):hover {
         color: var(--primary-hover);
@@ -91,9 +93,6 @@
         opacity: unset;
       }
 
-      .send-icon {
-        transform: rotate(45deg);
-      }
     }
   }
 
