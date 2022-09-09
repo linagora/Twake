@@ -3,6 +3,7 @@ import { CompanyType } from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { WebsocketRoom } from '../../global/types/websocket-types';
+import _ from 'lodash';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 
@@ -91,7 +92,7 @@ class WorkspaceAPIClient {
       UpdateWorkspaceBody & { options?: { logo_b64?: string } },
       { resource: WorkspaceType }
     >(`${PREFIX}/${companyId}/workspaces/${workspaceId}`, {
-      resource: workspace,
+      resource: _.omit(workspace, 'logo_b64'),
       options: { logo_b64: workspace?.logo_b64 },
     }).then(result => result.resource);
   }

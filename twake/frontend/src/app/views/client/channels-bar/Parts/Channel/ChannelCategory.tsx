@@ -17,7 +17,7 @@ const ChannelCategory: FC<PropsType> = (props): JSX.Element => {
   return (
     <div
       className={'channel_category ' + (props.sub ? 'sub ' : '')}
-      onClick={() => props.editable && props.onClick  && props.onClick()}
+      onClick={() => props.editable && props.onClick && props.onClick()}
     >
       <div className="text">{props.text}</div>
       {props.sub && props.editable && (
