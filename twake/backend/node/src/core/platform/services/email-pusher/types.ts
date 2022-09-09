@@ -10,7 +10,7 @@ export type EmailBuilderDataPayload = {
   notifications: {
     channel: Channel;
     workspace: Workspace;
-    message: Message;
+    message: Message & { user: User };
   }[];
 };
 
@@ -44,3 +44,5 @@ export type EmailPusherResponseType = {
     error_code?: string;
   };
 };
+
+export type EmailLanguageType = "en" | "fr";

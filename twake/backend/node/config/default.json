@@ -149,9 +149,9 @@
     "forwarded_companies": []
   },
   "email-pusher": {
-    "endpoint": "https://api.smtp2go.com/v3/",
-    "token": "secret",
-    "sender": "twake@linagora.com"
+    "endpoint": "https://api.smtp2go.com/v3/email/send",
+    "api_key": "secret",
+    "sender": "noreply@twake.app"
   },
   "services": [
     "auth",

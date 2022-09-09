@@ -35,7 +35,7 @@ export default class EmailPusherClass
     });
 
     this.apiUrl = this.configuration.get<string>("endpoint", "");
-    this.apiKey = this.configuration.get<string>("secret", "");
+    this.apiKey = this.configuration.get<string>("api_key", "");
     this.sender = this.configuration.get<string>("sender", "");
 
     return this;
@@ -55,16 +55,16 @@ export default class EmailPusherClass
     data: EmailBuilderDataPayload,
   ): Promise<EmailBuilderRenderedResult> {
     try {
-      const templatePath = path.join(__dirname, language, template, ".eta");
+      const templatePath = path.join(__dirname, "templates", language, `${template}.eta`);
 
       if (!existsSync(templatePath)) {
-        throw Error("Template not found");
+        throw Error(`template not found: ${templatePath}`);
       }
 
-      const html = await Eta.renderFile(templatePath, data, { async: true });
+      const html = await Eta.renderFile(templatePath, data);
 
-      if (!html || html.length) {
-        throw Error("Failed to render tempalte");
+      if (!html || !html.length) {
+        throw Error("Failed to render template");
       }
 
       const text = convert(html);
@@ -101,7 +101,7 @@ export default class EmailPusherClass
       };
 
       const { data } = await axios.post<EmailPusherEmailType, EmailPusherResponseType>(
-        `${this.apiUrl}/email/send`,
+        `${this.apiUrl}`,
         emailObject,
       );
 
@@ -109,8 +109,12 @@ export default class EmailPusherClass
         throw Error(data.error);
       }
 
-      if (data.failed && data.failures.length) {
+      if (data.failed === 1 && data.failures.length) {
         throw Error(data.failures.join(""));
+      }
+
+      if (data.succeeded) {
+        this.logger.info("email sent");
       }
     } catch (error) {
       this.logger.error("Failed to send email", error);
