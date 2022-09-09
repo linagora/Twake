@@ -39,6 +39,7 @@ export async function formatUser(
       ...resUser,
       last_seen,
       is_connected,
+      last_activity: last_seen
     };
   }
 

@@ -15,10 +15,10 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 const logger = Logger.getLogger('useOnlineUsers');
 
-const GET_INTERVAL = 10000;
-const SET_INTERVAL = 600000;
-let getIntervalId: any;
-let setIntervalId: any;
+const GET_INTERVAL = 30000; //30 seconds
+const SET_INTERVAL = 600000; //10 minutes
+let getIntervalId: any = setTimeout(() => {}, 0);
+let setIntervalId: any = setTimeout(() => {}, 0);
 
 export const useOnlineUsers = (): void => {
   logger.trace('Running online hook');
@@ -27,7 +27,7 @@ export const useOnlineUsers = (): void => {
   const [onlineUsers, setOnlineUsersState] = useRecoilState(OnlineUsersState);
 
   const updateOnline = useCallback((statuses: Array<[string, boolean]> = []): void => {
-    logger.debug(`Update online status for ${statuses.length} users`);
+    logger.debug(`Update online status for ${statuses.length} users`, statuses);
     const lastSeen = Date.now();
     setOnlineUsersState(users => {
       if (!statuses.length) {
@@ -58,13 +58,15 @@ export const useOnlineUsers = (): void => {
   useEffect(() => {
     if (websocket) {
       // got some local users, ask if there are still online
-      const api = OnlineUserRealtimeAPI(websocket, companyId);
+      const api = OnlineUserRealtimeAPI(websocket);
+      clearInterval(getIntervalId);
       getIntervalId = setInterval(async () => {
         const users = onlineUsers.map(u => u.id).filter(<T>(n?: T): n is T => Boolean(n));
         const status = await api.getUsersStatus(users);
         updateOnline(status);
       }, GET_INTERVAL);
 
+      clearInterval(setIntervalId);
       setIntervalId = setInterval(async () => await api.setMyStatus(), SET_INTERVAL);
     }
 
@@ -78,13 +80,12 @@ export const useOnlineUsers = (): void => {
   // listen to room events in which online events are pushed
   useRealtimeRoom<RealtimeUpdateMessageType>(
     { room: ONLINE_ROOM(companyId), token: JWTStorage.getJWT() },
-    'useOnlineUsers',
-    (action, resource) => {
+    'useOnlineUsers' + companyId,
+    (action, resource: any) => {
+      delete resource['_type'];
+      resource = Object.values(resource?.online || resource);
       if (action === 'event' && resource?.length) {
-        logger.trace('Updating online users');
-        updateOnline(resource);
-      } else {
-        logger.warn('Received unsupported event', action);
+        updateOnline(resource.map((u: any) => [u.user_id, u.is_online]));
       }
     },
   );

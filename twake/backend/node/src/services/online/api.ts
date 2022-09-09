@@ -7,7 +7,7 @@ export type OnlineEvent = {
   is_online: boolean;
 };
 
-export type UsersOnlineMessage = Array<OnlineEvent>;
+export type UsersOnlineMessage = { online: Array<OnlineEvent> };
 
 export type OnlineGetRequest = {
   /* Array of ids to get status */

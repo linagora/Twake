@@ -16,7 +16,7 @@ export class OnlinePubsubService implements Initializable {
     return this;
   }
 
-  async broadcastOnline(online: UsersOnlineMessage = []): Promise<void> {
+  async broadcastOnline(online: UsersOnlineMessage["online"] = []): Promise<void> {
     if (!online.length) {
       return;
     }
@@ -24,7 +24,7 @@ export class OnlinePubsubService implements Initializable {
     this.logger.debug(`Publishing online users ${online.map(u => u.user_id).join(",")}`);
 
     return gr.platformServices.messageQueue.publish<UsersOnlineMessage>(ONLINE_TOPIC, {
-      data: online,
+      data: { online },
     });
   }
 }

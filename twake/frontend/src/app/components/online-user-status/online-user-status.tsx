@@ -14,12 +14,15 @@ type PropsType = {
 
 const WrappedUserStatus = ({ user, size = 'medium' }: PropsType): JSX.Element => {
   const userOnlineStatus = useOnlineUser(user.id as string);
+  const online =
+    (userOnlineStatus && userOnlineStatus.connected) ||
+    (user.last_seen || userOnlineStatus.lastSeen || 0) > Date.now() - 10 * 60 * 1000;
 
   return (
     <div
-      className={classNames('online_user_status', {
-        online: userOnlineStatus && userOnlineStatus.connected,
-        offline: userOnlineStatus && !userOnlineStatus.connected,
+      className={classNames('online_user_status ' + user.last_seen + ' ', {
+        online: !!online,
+        offline: !online,
         small: size === 'small',
         medium: size === 'medium',
         big: size === 'big',

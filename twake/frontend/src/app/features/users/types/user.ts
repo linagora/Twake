@@ -35,6 +35,7 @@ export type UserType = {
   provider_id?: string;
   provider?: string;
   last_activity?: number;
+  last_seen?: number;
   isNew?: boolean;
   isRobot?: boolean;
   language?: string;
