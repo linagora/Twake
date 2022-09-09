@@ -438,7 +438,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
   async getThread(
     thread: Thread,
     options: MessagesGetThreadOptions = {},
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<MessageWithReplies> {
     const lastRepliesUncompleted = (
       await this.repository.find(

@@ -7,7 +7,7 @@ export const TYPE = "user_notification_preferences";
  * Table user-notification-preferences
  */
 @Entity(TYPE, {
-  primaryKey: [["user_id"], "company_id", "workspace_id"],
+  primaryKey: [["user_id"], "company_id"],
   type: TYPE,
 })
 export class UserNotificationPreferences {
@@ -24,13 +24,6 @@ export class UserNotificationPreferences {
    */
   @Column("company_id", "string")
   company_id: string | "all";
-
-  /**
-   * UUIDv4
-   * Partition key
-   */
-  @Column("workspace_id", "string")
-  workspace_id: string | "all";
 
   @Column("preferences", "encoded_json")
   preferences: {
@@ -50,7 +43,7 @@ export class UserNotificationPreferences {
 
 export type UserNotificationPreferencesPrimaryKey = Pick<
   UserNotificationPreferences,
-  "company_id" | "user_id" | "workspace_id"
+  "company_id" | "user_id"
 >;
 
 export function getInstance(preferences: UserNotificationPreferences): UserNotificationPreferences {

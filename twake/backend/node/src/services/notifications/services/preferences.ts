@@ -35,7 +35,7 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
 
   async get(
     pk: UserNotificationPreferencesPrimaryKey,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<UserNotificationPreferences> {
     return await this.repository.findOne(pk, {}, context);
   }

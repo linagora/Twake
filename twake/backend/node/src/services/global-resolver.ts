@@ -50,6 +50,7 @@ import { PreviewEngine } from "./previews/services/files/engine";
 import { ChannelsMessageQueueListener } from "./channels/services/pubsub";
 import { LinkPreviewProcessService } from "./previews/services/links/processing/service";
 import { LinkPreviewEngine } from "./previews/services/links/engine";
+import { UserNotificationDigestService } from "./notifications/services/digest";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -80,6 +81,7 @@ type TwakeServices = {
     engine: NotificationEngine;
     preferences: NotificationPreferencesService;
     mobilePush: MobilePushService;
+    digest: UserNotificationDigestService;
   };
   preview: {
     files: PreviewProcessService;
@@ -163,6 +165,7 @@ class GlobalResolver {
         engine: await new NotificationEngine().init(),
         preferences: await new NotificationPreferencesService().init(),
         mobilePush: await new MobilePushService().init(),
+        digest: await new UserNotificationDigestService().init(),
       },
       preview: {
         files: await new PreviewProcessService().init(),
