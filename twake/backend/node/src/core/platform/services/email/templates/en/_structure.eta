@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= it.title %></title>
+  </head>
+  <body>
+    <%~ it.body %>
+    <footer>
+
+    </footer>
+  </body>
+</html>
