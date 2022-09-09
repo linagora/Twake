@@ -158,10 +158,10 @@ const Footer = () => {
           />
         </div>
         <div className="grow overflow-hidden text-ellipsis">
-          <Text.Base noColor className="w-full block text-white">
+          <Text.Base noColor className="w-full block text-white whitespace-nowrap">
             {name}
           </Text.Base>
-          <Text.Info>
+          <Text.Info className="whitespace-nowrap">
             {currentUserService.getFullName(user)} •{' '}
             {formatDate(status.details?.message?.created_at)} • {extension?.toLocaleUpperCase()},{' '}
             {formatSize(status.details?.metadata?.size)}

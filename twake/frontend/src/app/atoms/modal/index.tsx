@@ -90,7 +90,11 @@ export const Modal = (props: {
               : '')
           }
         >
-          <div className={'flex items-end justify-center min-h-screen text-center sm:block '}>
+          <div
+            className={
+              'flex items-end justify-center min-h-screen webkit-h-full text-center sm:block '
+            }
+          >
             {
               /* This element is to trick the browser into centering the modal contents. */
               !props.positioned && (
