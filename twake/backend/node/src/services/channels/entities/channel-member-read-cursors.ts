@@ -2,7 +2,7 @@ import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 @Entity("channel_member_read_cursors", {
-  primaryKey: [["company_id"], "user_id", "channel_id"],
+  primaryKey: [["company_id"], "channel_id", "user_id"],
   type: "channel_member_read_cursors",
 })
 export class ChannelMemberReadCursors {
