@@ -47,9 +47,10 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
     let deliver_at = digest?.deliver_at;
     if (!deliver_at) {
       //Get user preferences to set the deliver at
-      const preferences = await gr.services.notifications.preferences.get({
+      const preferences = await gr.services.notifications.preferences.getMerged({
         company_id: badge.company_id,
         user_id: badge.user_id,
+        workspace_id: "all",
       });
       if (!preferences?.preferences?.email_notifications_delay) {
         return;

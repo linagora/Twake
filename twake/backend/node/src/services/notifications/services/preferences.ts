@@ -15,6 +15,7 @@ import Repository from "../../../core/platform/services/database/services/orm/re
 import { assign, pick } from "lodash";
 import gr from "../../global-resolver";
 import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
+import _ from "lodash";
 
 export class NotificationPreferencesService implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -38,6 +39,21 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
     context?: ExecutionContext,
   ): Promise<UserNotificationPreferences> {
     return await this.repository.findOne(pk, {}, context);
+  }
+
+  /** We can define preferences for specifically a workspace or for all a company or all Twake
+   * This function will ensure we get all with inherit and all
+   */
+  async getMerged(pk: UserNotificationPreferencesPrimaryKey): Promise<UserNotificationPreferences> {
+    let preferences = await this.get(pk);
+    if (pk.workspace_id !== "all")
+      preferences = _.merge(await this.get({ ...pk, workspace_id: "all" }), preferences);
+    if (pk.company_id !== "all")
+      preferences = _.merge(
+        await this.get({ ...pk, workspace_id: "all", company_id: "all" }),
+        preferences,
+      );
+    return preferences;
   }
 
   async delete(

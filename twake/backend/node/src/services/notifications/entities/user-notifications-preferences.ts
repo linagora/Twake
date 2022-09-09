@@ -7,7 +7,7 @@ export const TYPE = "user_notification_preferences";
  * Table user-notification-preferences
  */
 @Entity(TYPE, {
-  primaryKey: [["user_id"], "company_id"],
+  primaryKey: [["user_id"], "company_id", "workspace_id"],
   type: TYPE,
 })
 export class UserNotificationPreferences {
@@ -25,25 +25,32 @@ export class UserNotificationPreferences {
   @Column("company_id", "string")
   company_id: string | "all";
 
+  /**
+   * UUIDv4
+   * Partition key
+   */
+  @Column("workspace_id", "string")
+  workspace_id: string | "all";
+
   @Column("preferences", "encoded_json")
   preferences: {
-    highlight_words: string[];
-    night_break: {
+    highlight_words?: string[];
+    night_break?: {
       enable: boolean;
       from: number;
       to: number;
     };
-    private_message_content: boolean;
-    mobile_notifications: "never" | "when_inactive" | "always";
-    email_notifications_delay: number; //0: never send email, 1 and more in minutes from first unread notification
-    deactivate_notifications_until: number;
-    notification_sound: "default" | "none" | string;
+    private_message_content?: boolean;
+    mobile_notifications?: "never" | "when_inactive" | "always";
+    email_notifications_delay?: number; //0: never send email, 1 and more in minutes from first unread notification
+    deactivate_notifications_until?: number;
+    notification_sound?: "default" | "none" | string;
   };
 }
 
 export type UserNotificationPreferencesPrimaryKey = Pick<
   UserNotificationPreferences,
-  "company_id" | "user_id"
+  "company_id" | "user_id" | "workspace_id"
 >;
 
 export function getInstance(preferences: UserNotificationPreferences): UserNotificationPreferences {
