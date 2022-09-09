@@ -95,7 +95,7 @@ export default (props: Props) => {
         }}
       />
 
-      <div className="message-edition-toolbar message-input">
+      <div className="message-edition-toolbar message-input px-1 pl-2 mt-1">
         <div className="input-options-toolbar">
           <div className="richtext-toolbar input-toolbar fade_in">
             <EditorToolbar

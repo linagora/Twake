@@ -18,6 +18,7 @@ export default () => {
   const [openDirect, setOpenDirect] = useState(false);
 
   const openConv = () => {
+    console.log(openDirect);
     setOpenDirect(true);
   };
 
@@ -53,7 +54,7 @@ export default () => {
           'Direct messages',
         )}
         addIcon={<PencilAltIcon className="h-5 w-5" />}
-        onAdd={() => AccessRightsService.hasCompanyLevel(companyId, 'member') ? () => openConv() : null}
+        onAdd={() => (AccessRightsService.hasCompanyLevel(companyId, 'member') ? openConv() : null)}
       />
       {nonfavoriteDirectChannels
         .sort(

@@ -389,7 +389,7 @@ export default (props: Props) => {
               <TextCount editorState={editorState} displayOnlyAfterThresold={true} />
             </div>
 
-            {!hasEphemeralMessage && !props.messageId && (
+            {!props.messageId && (
               <div className="mr-2 self-start mt-[6px]">
                 <PlusIcon
                   onClick={() => {
@@ -416,7 +416,7 @@ export default (props: Props) => {
               onFilePaste={onFilePaste}
               placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
             />
-            {!isEditing() && (
+            {!props.messageId && (
               <Tooltip
                 title={Languages.t('scenes.apps.messages.input.send_message')}
                 placement="top"
