@@ -4,6 +4,7 @@ import { Paginable, Pagination } from "../../../core/platform/framework/api/crud
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { Channel } from "../../../services/channels/entities";
 import { Message } from "../../../services/messages/entities/messages";
+import { UserObject } from "../../../services/user/web/types";
 import Workspace from "../../../services/workspaces/entities/workspace";
 import gr from "../../global-resolver";
 import { UserNotificationBadge } from "../entities";
@@ -95,7 +96,11 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
 
     const user = await gr.services.users.get({ id: digest.user_id });
     const company = await gr.services.companies.getCompany({ id: digest.company_id });
-    let notifications: { channel: Channel; workspace: Workspace; message: Message }[] = [];
+    let notifications: {
+      channel: Channel;
+      workspace: Workspace;
+      message: Message & { user: UserObject };
+    }[] = [];
     let workspaces: { [key: string]: Workspace } = {};
     let channels: { [key: string]: Channel } = {};
 
@@ -127,7 +132,7 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
         notifications.push({
           channel: channels[badge.channel_id],
           workspace: workspaces[badge.workspace_id],
-          message,
+          message: { ...message, user: message.users.find(u => u.id === message.user_id) },
         });
       } catch (e) {}
     }
@@ -139,7 +144,16 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
     };
 
     if (notifications.length > 0) {
-      //TODO generate and send email with etaEntry
+      const { html, text, subject } = await gr.platformServices.emailPusher.build(
+        "notification-digest",
+        user.language,
+        etaEntry,
+      );
+      await gr.platformServices.emailPusher.send(user.email_canonical, {
+        subject,
+        html,
+        text,
+      });
     }
   }
 }

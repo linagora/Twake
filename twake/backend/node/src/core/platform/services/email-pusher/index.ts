@@ -55,10 +55,16 @@ export default class EmailPusherClass
     data: EmailBuilderDataPayload,
   ): Promise<EmailBuilderRenderedResult> {
     try {
+      language = ["en", "fr"].find(l => language.toLocaleLowerCase().includes(l)) || "en";
       const templatePath = path.join(__dirname, "templates", language, `${template}.eta`);
+      const subjectPath = path.join(__dirname, "templates", language, `${template}.subject.eta`);
 
       if (!existsSync(templatePath)) {
         throw Error(`template not found: ${templatePath}`);
+      }
+
+      if (!existsSync(subjectPath)) {
+        throw Error(`subject template not found: ${subjectPath}`);
       }
 
       const html = await Eta.renderFile(templatePath, data);
@@ -69,7 +75,9 @@ export default class EmailPusherClass
 
       const text = convert(html);
 
-      return { html, text };
+      const subject = convert((await Eta.renderFile(subjectPath, data)) as string);
+
+      return { html, text, subject };
     } catch (error) {
       this.logger.error(`Failure when building email template: ${error}`);
     }
