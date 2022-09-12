@@ -41,7 +41,7 @@ export class UserOnlineProcessor implements MessageQueueHandler<UsersOnlineMessa
       websocketEventBus.publish(RealtimeEntityActionType.Event, {
         type: "user:online",
         room: ResourcePath.get(`/users/online/${messagePerCompany[0].company_id}`),
-        entity: messagePerCompany,
+        entity: { online: messagePerCompany },
         resourcePath: null,
         result: null,
       });

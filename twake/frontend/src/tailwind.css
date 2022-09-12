@@ -33,3 +33,20 @@ a {
         padding: revert;
     }
 }
+
+.webkit-h-full, body {
+    height: 100vh;
+}
+
+.min-h-screen {
+    min-height: 100vh;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .webkit-h-full, body {
+        height: -webkit-fill-available;
+    }
+    .min-h-screen {
+        min-height: -webkit-fill-available;
+    }
+}

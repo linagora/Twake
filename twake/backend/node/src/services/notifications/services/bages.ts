@@ -59,8 +59,10 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
     badge: UserNotificationBadge,
     context: ExecutionContext,
   ): Promise<SaveResult<UserNotificationBadge>> {
-    await this.repository.save(getUserNotificationBadgeInstance(badge), context);
+    //Initiate the digest
+    await gr.services.notifications.digest.putBadge(badge);
 
+    await this.repository.save(getUserNotificationBadgeInstance(badge), context);
     return new SaveResult(UserNotificationBadgeType, badge, OperationType.CREATE);
   }
 
@@ -75,8 +77,10 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
     pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<DeleteResult<UserNotificationBadge>> {
-    await this.repository.remove(pk as UserNotificationBadge, context);
+    //Cancel the current digest as we just read the badges
+    await gr.services.notifications.digest.cancelDigest(pk.company_id, pk.user_id);
 
+    await this.repository.remove(pk as UserNotificationBadge, context);
     return new DeleteResult(UserNotificationBadgeType, pk as UserNotificationBadge, true);
   }
 
@@ -120,11 +124,14 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
     company_id: string,
     user_id: string,
     filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<ListResult<UserNotificationBadge>> {
     if (!company_id || !user_id) {
       throw CrudException.badRequest("company_id and user_id are required");
     }
+
+    //Cancel the current digest as we just read the badges
+    await gr.services.notifications.digest.cancelDigest(company_id, user_id);
 
     const badges = await this.repository.find(
       {
@@ -149,7 +156,7 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
   // - Are we in the company?
   async ensureBadgesAreReachable(
     badges: ListResult<UserNotificationBadge>,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<ListResult<UserNotificationBadge>> {
     if (badges.getEntities().length === 0) {
       return badges;
@@ -231,7 +238,7 @@ export class UserNotificationBadgeService implements TwakeServiceProvider, Initi
       UserNotificationBadgePrimaryKey,
       "workspace_id" | "company_id" | "channel_id" | "user_id"
     >,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<number> {
     const badges = (
       await this.repository.find(

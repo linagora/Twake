@@ -194,12 +194,15 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
       workspace.company_id
     }/workspaces/${workspace.id}/thumbnail?t=${new Date().getTime()}`;
     let logoPublicUrl = undefined;
+
     if (workspace.logo && item.logo === "none") {
       if (!options.logo_b64) {
+        //If options.logo_b64 then we'll just replace the file content
         await gr.platformServices.storage.remove(logoInternalPath);
         workspace.logo = null;
       }
     }
+
     if (options.logo_b64) {
       const s = new Readable();
       s.push(Buffer.from(options.logo_b64.split(",").pop(), "base64"));

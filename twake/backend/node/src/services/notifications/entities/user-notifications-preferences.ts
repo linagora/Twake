@@ -34,17 +34,17 @@ export class UserNotificationPreferences {
 
   @Column("preferences", "encoded_json")
   preferences: {
-    highlight_words: string[];
-    night_break: {
+    highlight_words?: string[];
+    night_break?: {
       enable: boolean;
       from: number;
       to: number;
     };
-    private_message_content: boolean;
-    mobile_notifications: "never" | "when_inactive" | "always";
-    email_notifications_delay: number; //0: never send email, 1 and more in minutes from first unread notification
-    deactivate_notifications_until: number;
-    notification_sound: "default" | "none" | string;
+    private_message_content?: boolean;
+    mobile_notifications?: "never" | "when_inactive" | "always";
+    email_notifications_delay?: number; //0: never send email, 1 and more in minutes from first unread notification
+    deactivate_notifications_until?: number;
+    notification_sound?: "default" | "none" | string;
   };
 }
 

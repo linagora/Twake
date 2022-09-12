@@ -8,7 +8,7 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 export const useOnlineUser = (id: string): OnlineUserType => {
   const companyId = useRouterCompany();
-  const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get(), companyId);
+  const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get());
 
   const updateUser = useRecoilCallback(
     ({ set }) =>

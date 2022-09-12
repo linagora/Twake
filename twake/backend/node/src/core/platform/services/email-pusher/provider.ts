@@ -3,14 +3,13 @@ import {
   EmailBuilderDataPayload,
   EmailBuilderRenderedResult,
   EmailBuilderTemplateName,
-  EmailLanguageType,
   EmailPusherPayload,
 } from "./types";
 
 export default interface EmailPusherAPI extends TwakeServiceProvider {
   build(
     template: EmailBuilderTemplateName,
-    language: EmailLanguageType,
+    language: string,
     data: EmailBuilderDataPayload,
   ): Promise<EmailBuilderRenderedResult>;
 

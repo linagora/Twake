@@ -117,7 +117,7 @@ export default (props: Props) => {
       key={`message_container_${message.id}`}
     >
       <MessageHeader linkToThread={props.linkToThread} />
-      {showQuotedMessage && (
+      {showQuotedMessage && !showEdition && (
         <MessageQuote
           className="mb-1"
           author={authorName}
@@ -130,7 +130,7 @@ export default (props: Props) => {
         />
       )}
       {!!showEdition && !deleted && (
-        <div className="content-parent">
+        <div className="content-parent pt-1">
           <MessageEdition />
         </div>
       )}
@@ -188,7 +188,7 @@ export default (props: Props) => {
             key={`options_${message.id}`}
           />
         )}
-      {showMessageStatus && (
+      {showMessageStatus && !showEdition && (
         <MessageStatus key={`message_status_${message.id}`} status={message.status} />
       )}
     </div>

@@ -46,7 +46,7 @@ function computeNewFormat(
   inputMetadata: sharp.Metadata,
   options?: PreviewMessageQueueRequest["output"],
 ): { width: number; height: number } {
-  const maxOutputWidth = options?.width || 300;
+  const maxOutputWidth = options?.width || 600;
   const maxOutputHeight = options?.height || 200;
   const inputWidth = inputMetadata.width;
   const inputHeight = inputMetadata.height;

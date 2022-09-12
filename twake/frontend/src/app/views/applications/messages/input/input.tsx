@@ -389,17 +389,19 @@ export default (props: Props) => {
               <TextCount editorState={editorState} displayOnlyAfterThresold={true} />
             </div>
 
-            <div className="mr-2 self-start mt-[6px]">
-              <PlusIcon
-                onClick={() => {
-                  setInPlus(!inPlus);
-                }}
-                className={
-                  'cursor-pointer text-blue-500 hover:text-blue-600 w-5 h-5 transition-transform ' +
-                  (inPlus ? ' rotate-45 ' : '')
-                }
-              />
-            </div>
+            {!props.messageId && (
+              <div className="mr-2 self-start mt-[6px]">
+                <PlusIcon
+                  onClick={() => {
+                    setInPlus(!inPlus);
+                  }}
+                  className={
+                    'cursor-pointer text-blue-500 hover:text-blue-600 w-5 h-5 transition-transform ' +
+                    (inPlus ? ' rotate-45 ' : '')
+                  }
+                />
+              </div>
+            )}
             <EditorView
               ref={editorRef}
               onChange={editorState => {
@@ -414,7 +416,7 @@ export default (props: Props) => {
               onFilePaste={onFilePaste}
               placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
             />
-            {!isEditing() && (
+            {!props.messageId && (
               <Tooltip
                 title={Languages.t('scenes.apps.messages.input.send_message')}
                 placement="top"

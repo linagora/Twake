@@ -188,11 +188,14 @@ export class WorkspacesCrudController
     }
 
     const r = request.body.resource;
+    const opt = request.body.options;
 
-    const existedEntity = await gr.services.workspaces.get({
-      company_id: request.params.company_id,
-      id: request.params.id,
-    });
+    const existedEntity = request.params.id
+      ? await gr.services.workspaces.get({
+          company_id: request.params.company_id,
+          id: request.params.id,
+        })
+      : null;
 
     const entity = plainToClass(Workspace, {
       ...{
@@ -208,7 +211,7 @@ export class WorkspacesCrudController
     });
 
     const workspaceEntity = await gr.services.workspaces
-      .save(entity, request.body.options || {}, context)
+      .save(entity, opt || {}, context)
       .then(a => a.entity);
 
     request.params.id ? reply.code(200) : reply.code(201);

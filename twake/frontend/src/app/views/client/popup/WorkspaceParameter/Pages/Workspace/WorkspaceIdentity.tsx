@@ -21,7 +21,7 @@ const MAX_LOGO_FILE_SIZE = 5000000;
 const ALLOWED_LOGO_FORMATS = ['image/gif', 'image/jpeg', 'image/png'];
 
 const WorkspaceIdentity = () => {
-  const uploadInputRef = useRef<HTMLInputElement>();
+  const uploadInputRef = useRef<HTMLInputElement>(null);
   const { workspace, refresh } = useCurrentWorkspace();
   const [workspaceName, setWorkspaceName] = useState<string | undefined>(workspace?.name);
 
@@ -113,7 +113,6 @@ const WorkspaceIdentity = () => {
 
   useEffect(() => {
     uploadInputRef?.current && (uploadInputRef.current.onchange = onChangeWorkspaceLogo);
-    return () => (uploadInputRef.current = undefined);
   }, [uploadInputRef, onChangeWorkspaceLogo]);
 
   return (
@@ -163,7 +162,9 @@ const WorkspaceIdentity = () => {
               <Row align="middle" justify="space-between">
                 <Col
                   className="workspace-logo-column"
-                  onClick={() => uploadInputRef.current?.click()}
+                  onClick={() => {
+                    uploadInputRef.current?.click();
+                  }}
                 >
                   {workspace?.logo && workspace?.logo.length > 0 ? (
                     <AvatarComponent size={64} url={addApiUrlIfNeeded(workspace.logo)} />
@@ -205,7 +206,7 @@ const WorkspaceIdentity = () => {
                         }
 
                         // Delete workspace logo
-                        onClickUpdateWorkspace({ logo: uploadInputRef.current?.value || "none" });
+                        onClickUpdateWorkspace({ logo: uploadInputRef.current?.value || 'none' });
                       }}
                     >
                       {Languages.t('general.delete')}
@@ -269,11 +270,7 @@ const WorkspaceIdentity = () => {
             </Item>
           </Descriptions>
         </div>
-        <input
-          ref={node => node && (uploadInputRef.current = node)}
-          type="file"
-          style={{ display: 'none' }}
-        />
+        <input ref={uploadInputRef} type="file" style={{ display: 'none' }} />
       </Suspense>
     </>
   );

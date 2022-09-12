@@ -94,10 +94,12 @@ export class PushReactionNotification
 
     const [company, workspace, user] = await Promise.all([
       gr.services.companies.getCompany({ id: company_id }),
-      gr.services.workspaces.get({
-        company_id: company_id,
-        id: workspace_id,
-      }),
+      workspace_id === "direct"
+        ? null
+        : gr.services.workspaces.get({
+            company_id: company_id,
+            id: workspace_id,
+          }),
       gr.services.users.get({ id: reaction_user_id }),
     ]);
 
@@ -107,7 +109,7 @@ export class PushReactionNotification
     });
 
     const companyName = company?.name || "";
-    const workspaceName = workspace?.name || "";
+    const workspaceName = workspace_id === "direct" ? "Direct" : workspace?.name || "";
     const userName = this.getUserName(user) || "Twake";
 
     if (Channel.isDirectChannel(channel)) {
