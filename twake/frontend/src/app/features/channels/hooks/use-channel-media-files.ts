@@ -13,6 +13,7 @@ import {
 import _ from 'lodash';
 
 export const useChannelAttachmentList = (type: 'file' | 'media') => {
+  const limit = 25;
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
@@ -31,7 +32,7 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
 
   const options = _.omitBy(
     {
-      limit: 25,
+      limit,
       is_file: type === 'file' || undefined,
       is_media: type === 'media' || undefined,
       workspace_id: workspaceId,
@@ -58,7 +59,7 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
   };
 
   const loadMore = async () => {
-    if (result.nextPage) {
+    if (result.nextPage && result.results.length % limit === 0) {
       const response = await messageApiClient.searchFile(null, { ...options, next_page_token: result.nextPage });
       const results = (response.resources || []).sort(
         (a, b) => (b?.message?.created_at || 0) - (a?.message?.created_at || 0),
@@ -86,12 +87,7 @@ export const useChannelAttachmentList = (type: 'file' | 'media') => {
   useGlobalEffect(
     `useChannelAttachmentList${type}`,
     () => {
-      if (isOpen) {
-        (async () => {
-          setLoading(true);
-          await loadItems();
-        })();
-      } else {
+      if (!isOpen) {
         reset();
       }
     },

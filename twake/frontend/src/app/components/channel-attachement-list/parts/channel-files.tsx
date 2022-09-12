@@ -1,5 +1,5 @@
 import { useChannelFileList } from 'app/features/channels/hooks/use-channel-media-files';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ChannelAttachment from './channel-attachment';
 import { LoadingAttachements, NoAttachements } from './commun';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -9,7 +9,11 @@ type PropsType = {
 };
 
 export default ({ maxItems }: PropsType): React.ReactElement => {
-  const { loading, result, loadMore } = useChannelFileList();
+  const { loading, result, loadMore, loadItems } = useChannelFileList();
+
+  useEffect(() => {
+    loadItems();
+  }, []);
 
   return (
     <PerfectScrollbar
