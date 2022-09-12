@@ -15,6 +15,7 @@ import { CronAPI } from "../core/platform/services/cron/api";
 import WebSocketAPI from "../core/platform/services/websocket/provider";
 import TrackerAPI from "../core/platform/services/tracker/provider";
 import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
+import EmailPusherAPI from "../core/platform/services/email-pusher/provider";
 
 import { logger } from "../core/platform/framework";
 import assert from "assert";
@@ -64,6 +65,7 @@ type PlatformServices = {
   webserver: WebServerAPI;
   websocket: WebSocketAPI;
   knowledgeGraph: KnowledgeGraphService;
+  emailPusher: EmailPusherAPI;
 };
 
 type TwakeServices = {
@@ -137,6 +139,7 @@ class GlobalResolver {
       webserver: platform.getProvider<WebServerAPI>("webserver"),
       websocket: platform.getProvider<WebSocketAPI>("websocket"),
       knowledgeGraph: await new KnowledgeGraphService().init(),
+      emailPusher: platform.getProvider<EmailPusherAPI>("email-pusher"),
     };
 
     this.fastify = this.platformServices.webserver.getServer();

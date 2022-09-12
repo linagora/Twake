@@ -1,0 +1,23 @@
+<% layout('./_structure') %>
+<% it.title = 'Notifications manquées de l\'entreprise ' +  it.company.name  %>
+<span>pendant que vous étiez absent</span>
+<br />
+<span>vous avez reçu de nouveaux messages! 😉</span>
+
+<div id="notifications">
+  <% it.notifications.forEach(function(notification) { %>
+  <div>
+    <img src="<%= notification.message.user.picture %>" alt="<%= notification.message.user.first_name %>">
+    <span><%= notification.message.user.first_name %> <%= notification.message.user.last_name || '' %></span>
+    <br />
+    <%= notification.message.text %>
+    <br />
+    <span># <%= notification.channel.name %></span>
+    <span>⏰ <%= new Date(notification.message.created_at) %></span>
+    <br />
+    <a href="#" id="open-in-twake">ouvrir dans twake</a>
+  </div>
+  <hr />
+  <% }) %>
+  <a href="#">voir tous le(s) <%= it.notifications.length %> messages</a>
+</div>

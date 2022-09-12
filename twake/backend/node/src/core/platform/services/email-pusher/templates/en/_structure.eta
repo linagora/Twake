@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title><%~ it.title %></title>
+  <style>
+    body {
+      background: #C5D9E9;
+    }
+
+    #notifications {
+      position: absolute;
+      background: #FFFFFF;
+      border-radius: 30px;
+    }
+
+    #open-in-twake {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 16px;
+    gap: 6px;
+
+    width: 135px;
+    height: 36px;
+
+    background: #007AFF;
+    border-radius: 10px
+  }
+  </style>
+</head>
+
+<body>
+  <%~ it.body %>
+  <footer>
+    Follow us on social media
+    <br />
+    Tel: +33 1 46 96 63 63 · info@linagora.com
+    <br />
+    Sent by LINAGORA · 100 Terrasse Boieldieu - Tour Franklin 92042 Paris - La Défense
+    <br />
+    Help Center · Privacy Policy · Terms of Service
+  </footer>
+</body>
+
+</html>
