@@ -186,6 +186,10 @@ class User {
 
     return currentUserCompany?.role || 'unknown';
   }
+
+  isInCompany(user: UserType, companyId?: string) {
+    return user.cache?.companies?.find(company => company == companyId) !== undefined;
+  }
 }
 
 export default new User();
