@@ -1,23 +1,43 @@
 <% layout('./_structure') %>
 <% it.title = 'Missed notifications from company ' +  it.company.name  %>
-<span>while you were away</span>
-<br />
-<span>you have received new messages! 😉</span>
 
-<div id="notifications">
-  <% it.notifications.forEach(function(notification) { %>
-  <div>
-    <img src="<%= notification.message.user.picture %>" alt="<%= notification.message.user.first_name %>">
-    <span><%= notification.message.user.first_name %> <%= notification.message.user.last_name || '' %></span>
-    <br />
-    <%= notification.message.text %>
-    <br />
-    <span># <%= notification.channel.name %></span>
-    <span>⏰ <%= new Date(notification.message.created_at) %></span>
-    <br />
-    <a href="#" id="open-in-twake">open in twake</a>
+<%~ includeFile("../common/_body.eta", {
+  paragraphs: [
+  `
+  <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%" >
+      <tbody>
+          <tr>
+              <td align="center" style="font-size:0px;padding:0 0 8px;word-break:break-word;">
+                  <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:24px;font-weight:800;line-height:29px;text-align:center;color:#000000;">
+                    While you were away
+                  </div>
+              </td>
+          </tr>
+      </tbody>
+  </table>
+  `,
+  `
+  <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%" >
+      <tbody>
+          <tr>
+              <td align="center" style="font-size:0px;padding:0 0 16px;word-break:break-word;" >
+                  <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:16px;line-height:29px;text-align:center;color:#000000;">
+                    You have received new messages! 😉
+                  </div>
+              </td>
+          </tr>
+      </tbody>
+  </table>
+  `,
+  ...it.notifications.map(notification =>
+    includeFile("./notification-digest/notification.eta", notification)
+  ),
+  `
+  <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;">
+    <a class="main-button" href="https://web.twake.app/">
+    ${it.notifications.length>1 ? `See all ${it.notifications.length} messages` : `See on Twake`}
+    </a>
   </div>
-  <hr />
-  <% }) %>
-  <a href="#">see all <%= it.notifications.length %> messages</a>
-</div>
+  `
+  ]
+}) %>

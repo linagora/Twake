@@ -562,7 +562,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
   async includeUsersInMessageWithReplies(
     message: MessageWithReplies,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<MessageWithRepliesWithUsers> {
     let last_replies = undefined;
     for (const reply of message.last_replies || []) {

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { MessageWithReplies } from "../../../services/messages/types";
 import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
 import { Paginable, Pagination } from "../../../core/platform/framework/api/crud-service";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
@@ -21,7 +22,7 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
     );
 
     gr.platformServices.cron.schedule(
-      "0 */15 * * *",
+      "*/15 * * * *",
       async () => {
         //This being multi-node we will try to avoid running them at the exact same time
         //Fixme: this is until we find a better solution of course
@@ -73,7 +74,9 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
     let digestsPagination: Paginable = new Pagination(null, "100");
     do {
       const digests = await this.repository.find({});
-      const digestsEntities = digests.getEntities();
+      const digestsEntities = digests.getEntities().filter(d => {
+        return d.deliver_at < Date.now();
+      });
 
       for (const digest of digestsEntities) {
         await this.repository.remove(digest);
@@ -107,12 +110,14 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
     for (const badge of badges.getEntities()) {
       if (!badge.thread_id) continue;
       try {
-        const message = await gr.services.messages.messages.get({
-          id: badge.thread_id,
-          thread_id: badge.thread_id,
-        });
+        const message = await gr.services.messages.messages.includeUsersInMessageWithReplies(
+          (await gr.services.messages.messages.get({
+            id: badge.thread_id,
+            thread_id: badge.thread_id,
+          })) as MessageWithReplies,
+        );
 
-        if (message.created_at < digest.deliver_at) continue;
+        if (message.created_at < digest.created_at - 60 * 1000) continue;
 
         channels[badge.channel_id] =
           channels[badge.channel_id] ||
@@ -123,16 +128,18 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
           }));
 
         workspaces[badge.workspace_id] =
-          workspaces[badge.workspace_id] ||
-          (await gr.services.workspaces.get({
-            company_id: badge.company_id,
-            id: badge.workspace_id,
-          }));
+          badge.workspace_id && badge.workspace_id !== "direct"
+            ? workspaces[badge.workspace_id] ||
+              (await gr.services.workspaces.get({
+                company_id: badge.company_id,
+                id: badge.workspace_id,
+              }))
+            : null;
 
         notifications.push({
           channel: channels[badge.channel_id],
           workspace: workspaces[badge.workspace_id],
-          message: { ...message, user: message.users.find(u => u.id === message.user_id) },
+          message: { ...message, user: (message.users || []).find(u => u.id === message.user_id) },
         });
       } catch (e) {}
     }
