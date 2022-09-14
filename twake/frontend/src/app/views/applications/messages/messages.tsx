@@ -29,8 +29,9 @@ export default (props: Props) => {
   const channelId = props.channel.id || '';
   const isDirectChannel = props.channel.visibility !== 'direct';
   const threadId = props.options.context?.threadId || '';
-
   const isChannelMember = useIsChannelMember(channelId);
+  const user = UserService.getCurrentUser();
+  const userIsNotInCompany = !UserService.isInCompany(user, companyId);
 
   return (
     <div className="messages-view">
@@ -55,13 +56,16 @@ export default (props: Props) => {
       <MessageSeenBy />
       </Suspense>
       <IsWriting channelId={channelId} threadId={threadId} />
-      {isChannelMember && (
+      {isChannelMember && !userIsNotInCompany && (
         <NewThread
           collectionKey=""
           useButton={isDirectChannel && !threadId}
           channelId={channelId}
           threadId={threadId}
         />
+      )}
+      {isChannelMember && userIsNotInCompany && (
+        <UserIsNotInCompany />
       )}
       {!isChannelMember && <JoinChanneBlock channelId={channelId} />}
     </div>
@@ -99,4 +103,12 @@ const JoinChanneBlock = ({ channelId }: { channelId: string }) => {
       <Text.Info>{Languages.t('scenes.client.join_public_channel.info')}</Text.Info>
     </div>
   );
+};
+
+const UserIsNotInCompany = () => {
+  return (
+    <div className="border-t border-zinc-200 dark:border-zinc-700 p-8 text-center">
+      <Text.Info>{Languages.t('scenes.apps.messages.message.user_deactivated')}</Text.Info>
+    </div>
+  )
 };

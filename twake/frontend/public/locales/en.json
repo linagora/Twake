@@ -553,6 +553,7 @@
     "scenes.apps.messages.message.types.first_channel_message_text": "This is the first message of the channel",
     "scenes.apps.messages.message.types.first_message_text": "This is the first message",
     "scenes.apps.messages.message.types.no_message_in_thread": "Nobody replied yet.",
+    "scenes.apps.messages.message.user_deactivated": "You are viewing the archives of a deactivated account",
     "scenes.apps.messages.messageslist.get_writing_user": "is writing...",
     "scenes.apps.messages.messageslist.get_writing_users": "are writing...",
     "scenes.apps.messages.messageslist.go_last_message_button": "Go to last message",

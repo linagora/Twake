@@ -539,6 +539,7 @@
     "scenes.apps.messages.message.types.first_channel_message_text": "Ceci est le premier message de la chaîne",
     "scenes.apps.messages.message.types.first_message_text": "C'est le premier message",
     "scenes.apps.messages.message.types.no_message_in_thread": "Personne n'a répondu.",
+    "scenes.apps.messages.message.user_deactivated": "Vous consultez les archives d'un compte désactivé",
     "scenes.apps.messages.messageslist.get_writing_user": "est en train d'écrire...",
     "scenes.apps.messages.messageslist.get_writing_users": "sont en train d'écrire...",
     "scenes.apps.messages.messageslist.go_last_message_button": "Aller au dernier message",
