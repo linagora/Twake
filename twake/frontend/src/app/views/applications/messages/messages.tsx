@@ -12,6 +12,8 @@ import UserService from 'app/features/users/services/current-user-service';
 import * as Text from '@atoms/text';
 import Languages from 'app/features/global/services/languages-service';
 import MessageSeenBy from 'app/components/message-seen-by/message-seen-by';
+import { useUser } from 'app/features/users/hooks/use-user';
+import { UserType } from 'app/features/users/types/user';
 
 type Props = {
   channel: ChannelType;
@@ -30,8 +32,13 @@ export default (props: Props) => {
   const isDirectChannel = props.channel.visibility !== 'direct';
   const threadId = props.options.context?.threadId || '';
   const isChannelMember = useIsChannelMember(channelId);
-  const user = UserService.getCurrentUser();
-  const userIsNotInCompany = !UserService.isInCompany(user, companyId);
+  const currentUser = UserService.getCurrentUser();
+  let userIsNotInCompany = false;
+  const otherChannelsMembersThanMe = (props.channel.members || []).filter(id => id !== currentUser?.id) || [];
+  const otherUserThatIsNotMe = useUser(otherChannelsMembersThanMe[0] || '');
+  if(otherUserThatIsNotMe && otherChannelsMembersThanMe.length === 1 && !UserService.isInCompany(otherUserThatIsNotMe as UserType, companyId)){
+    userIsNotInCompany = true;
+  }
 
   return (
     <div className="messages-view">

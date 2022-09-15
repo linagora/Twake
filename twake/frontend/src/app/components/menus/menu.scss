@@ -3,7 +3,7 @@
 .menu-list {
   width: 100%;
   box-sizing: border-box;
-  padding: 8px 0;
+  padding: 0 0 8px 0;
 
   &.inline,
   &.inline.as_frame {
@@ -54,8 +54,9 @@
   .menu-custom {
     font-size: 12px;
     font-weight: 500;
-    margin: 8px 8px;
+    margin: 8px 0px;
     padding: 0 8px;
+    margin-top: 0;
 
     .menu-cancel-margin,
     &.menu-cancel-margin {

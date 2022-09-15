@@ -7,6 +7,8 @@ import UserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';
 import './user-card.scss';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import { TrashIcon } from '@heroicons/react/outline'
+
 
 type PropsType = {
   user: UserType;
@@ -19,8 +21,9 @@ export default (props: PropsType): JSX.Element => {
   return (
     <>
       {!UserService.isInCompany(props.user, companyId) && (
-        <div className="mt-2 text-center text-xs text-gray-600">
-            {Languages.t('general.user.deactivated')}
+        <div className="bg-zinc-700 flex items-center content-center custom-message mt-0 text-center text-xs py-2 px-2">
+            <TrashIcon className="h-4 w-4 inline-block" />
+            <span className="text-white ml-1">{Languages.t('general.user.deactivated')}</span>
         </div>
       )}
       <div className="user-card allow_selection">
