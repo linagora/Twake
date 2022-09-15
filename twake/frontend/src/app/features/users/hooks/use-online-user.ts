@@ -11,11 +11,12 @@ export const useOnlineUser = (id: string): OnlineUserType => {
   const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get());
 
   const updateUser = useRecoilCallback(
-    ({ set }) =>
+    ({ set, snapshot }) =>
       (status: { id: string; connected: boolean }) => {
+        const current = snapshot.getLoadable(OnlineUserStateFamily(status.id)).contents;
         set(OnlineUserStateFamily(status.id), {
           ...status,
-          lastSeen: Date.now(),
+          lastSeen: status.connected ? Date.now() : current.lastSeen,
           initialized: true,
         });
       },

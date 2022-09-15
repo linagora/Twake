@@ -21,6 +21,21 @@ import { RouterState } from 'app/features/router/state/atoms/router';
 export let removeBadgesNow: (type: 'company' | 'workspace' | 'channel', id: string) => void = () =>
   undefined;
 
+const executeRequest = () => {
+  if ('Notification' in window && window.Notification.requestPermission) {
+    const request = window.Notification.requestPermission();
+    if (request && request.then) {
+      request
+        .then(() => undefined)
+        .finally(() => {
+          window.removeEventListener('click', executeRequest);
+        });
+    }
+  }
+};
+window.addEventListener('click', executeRequest);
+executeRequest();
+
 export const useNotifications = () => {
   const [badges, setBadges] = useRecoilState(NotificationsBadgesState);
   const companyId = useRouterCompany();

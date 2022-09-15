@@ -40,7 +40,7 @@ export const useOnlineUsers = (): void => {
         previousStateMap.set(statusTuple[0], {
           id: statusTuple[0],
           connected: statusTuple[1],
-          lastSeen,
+          lastSeen: statusTuple[1] ? lastSeen : previousStateMap.get(statusTuple[0])?.lastSeen || 0,
           initialized: true,
         });
       }

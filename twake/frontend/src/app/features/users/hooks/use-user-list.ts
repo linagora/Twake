@@ -71,8 +71,16 @@ export function useSetUserList(key: string) {
     const currentList = currentUserList;
 
     if (nextList && nextList.length) {
-      const newList = _.uniqBy([...currentList, ...nextList], 'id')
-        .map(u => cloneDeep(u))
+      const nextListMerged = nextList.map(u =>
+        cloneDeep(
+          _.merge(
+            currentList.find(cu => cu.id === u.id),
+            u,
+          ),
+        ),
+      );
+
+      const newList = _.uniqBy([...nextListMerged, ...currentList], 'id')
         .map(u => completeUserWithCompanies(u, nextList.find(obj => obj.id === u.id)?.companies))
         .map(u => completeUserWithWorkspaces(u, nextList.find(obj => obj.id === u.id)?.workspaces));
 
