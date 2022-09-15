@@ -16,7 +16,6 @@ type DesktopNotification = {
   text: string;
 };
 
-let firstTime = false;
 let inAppNotificationKey = 0;
 const newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
 
@@ -76,17 +75,6 @@ const openNotification = (
 export const pushDesktopNotification = (
   notification: DesktopNotification & { routerState: ClientStateType },
 ) => {
-  //Init notification on the browser
-  if (firstTime) {
-    if ('Notification' in window && window.Notification.requestPermission) {
-      const request = window.Notification.requestPermission();
-      if (request && request.then) {
-        request.then(() => undefined);
-      }
-    }
-    firstTime = false;
-  }
-
   if (notification) {
     const title = notification.title || '';
     const message = notification.text || '';
