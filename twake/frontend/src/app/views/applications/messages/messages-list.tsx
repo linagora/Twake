@@ -76,7 +76,7 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (window.reachedEnd && atBottom && messages.length > 0) {
+    if (window.reachedEnd && atBottom && messages.length > 0 && !document.hidden) {
       const seenMessages = messages.filter(message => {
         const m = getMessage(message.id || message.threadId);
         const currentUserId = User.getCurrentUserId();
@@ -94,7 +94,7 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
         })
       }
     }
-  }, [messages, messages.length,  window.reachedEnd]);
+  }, [messages, messages.length,  window.reachedEnd, document.hidden]);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
