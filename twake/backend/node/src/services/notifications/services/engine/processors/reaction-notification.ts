@@ -120,7 +120,7 @@ export class PushReactionNotification
 
     return {
       title,
-      text: `${userName}: ${reaction} to ${msg?.text}`,
+      text: `${userName}: ${reaction} to ${msg?.text || "your message"}`,
     };
   }
 

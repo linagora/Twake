@@ -21,8 +21,8 @@ export default (props: Props) => {
 
   const { user: currentUser } = useCurrentUser();
 
-  const otherMembers = (props.channel.members || []).filter(u => u !== currentUser?.id)?.[0];
-  const user = useUser(otherMembers || '');
+  const otherMembers = (props.channel.members || []).filter(u => u !== currentUser?.id) || [];
+  const user = useUser(otherMembers[0] || '');
   const userOnlineStatus = useOnlineUser(user?.id as string);
   const lastSeen = userOnlineStatus?.lastSeen || user?.last_seen || 0;
 
