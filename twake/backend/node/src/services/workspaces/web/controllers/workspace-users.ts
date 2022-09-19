@@ -83,6 +83,9 @@ export class WorkspaceUsersCrudController
         deleted: Boolean(user.deleted),
         status: user.status_icon,
         last_activity: user.last_activity,
+        cache: {
+          companies: user.cache.companies,
+        },
         companies: userCompanies
           .filter(cu => companiesMap.get(cu.group_id))
           .map(cu => {

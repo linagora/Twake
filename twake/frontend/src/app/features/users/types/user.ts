@@ -53,6 +53,7 @@ export type UserType = {
   timezone_offset?: string;
   tutorial_status?: any;
   username: string;
+  cache: {companies: string[]};
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
   preference?: UserPreferencesType;

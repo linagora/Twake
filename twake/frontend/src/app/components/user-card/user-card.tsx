@@ -6,6 +6,8 @@ import User from 'components/user/user';
 import UserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';
 import './user-card.scss';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import { TrashIcon } from '@heroicons/react/outline';
 
 type PropsType = {
   user: UserType;
@@ -13,28 +15,38 @@ type PropsType = {
 };
 
 export default (props: PropsType): JSX.Element => {
+  const companyId = useRouterCompany();
+
   return (
-    <div className="user-card allow_selection">
-      <div className="content-popup small-bottom-margin">
-        <div className="avatar">
-          <User withStatus big user={props.user} />
+    <>
+      {!UserService.isInCompany(props.user, companyId) && (
+        <div className="text-white bg-zinc-700 flex items-center content-center -mt-4 -mx-4 mb-2 text-center text-xs p-2">
+          <TrashIcon className="h-4 w-4 inline-block" />
+          <span className="text-white ml-1">{Languages.t('general.user.deactivated')}</span>
         </div>
-        <div className="texts">
-          <div className="text-ellipsis title">{UserService.getFullName(props.user)}</div>
-          <div className="text-ellipsis">{`@${(props.user || {}).username || ''}`}</div>
+      )}
+      <div className="user-card allow_selection">
+        <div className="content-popup small-bottom-margin">
+          <div className="avatar">
+            <User withStatus big user={props.user} />
+          </div>
+          <div className="texts">
+            <div className="text-ellipsis title">{UserService.getFullName(props.user)}</div>
+            <div className="text-ellipsis">{`@${(props.user || {}).username || ''}`}</div>
+          </div>
+        </div>
+        <div className="mail-container small-y-margin">
+          <Emojione type=":envelope_with_arrow:" />
+          <a href={`mailto:${props.user.email}`}>{props.user.email}</a>
+        </div>
+        <div className="footer">
+          <Button
+            type="button"
+            value={Languages.t('general.send', [], 'Save')}
+            onClick={props.onClick}
+          />
         </div>
       </div>
-      <div className="mail-container small-y-margin">
-        <Emojione type=":envelope_with_arrow:" />
-        <a href={`mailto:${props.user.email}`}>{props.user.email}</a>
-      </div>
-      <div className="footer">
-        <Button
-          type="button"
-          value={Languages.t('general.send', [], 'Save')}
-          onClick={props.onClick}
-        />
-      </div>
-    </div>
+    </>
   );
 };

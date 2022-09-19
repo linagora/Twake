@@ -20,6 +20,14 @@ export const userObjectSchema = {
     status: { type: "string" },
     last_activity: { type: "number" },
 
+    // cache: { type: ["object", "null"] },
+    cache: {
+      type: "object",
+      properties: {
+        companies: { type: ["array", "null"] },
+      },
+    },
+
     //Below is only if this is myself
     preferences: {
       type: "object",

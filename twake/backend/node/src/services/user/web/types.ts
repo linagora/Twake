@@ -55,6 +55,7 @@ export interface UserObject {
   last_activity: number;
   last_seen?: number;
   is_connected?: boolean;
+  cache: { companies: string[] };
 
   //Below is only if this is myself
   preferences?: User["preferences"];
