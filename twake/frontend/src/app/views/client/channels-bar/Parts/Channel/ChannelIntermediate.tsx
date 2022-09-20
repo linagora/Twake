@@ -29,11 +29,10 @@ export default (props: Props): JSX.Element => {
       })
     : { avatar: '', name: '' };
 
-  const unreadMessages =
-    (channel.last_activity || 0) !== 0 &&
-    (channel.last_activity || 0) > (channel?.user_member?.last_access || 0) &&
-    channel.last_message?.sender !== channel.user_member?.user_id &&
-    !(isDirectChannel && notifications.length === 0);
+  const unreadMessages = Math.max(
+    0,
+    (channel.stats?.messages || 0) - (channel.user_member.last_increment || 0),
+  );
 
   const channelIcon = isDirectChannel ? avatar : channel.icon || '';
   const channelName = isDirectChannel ? name : channel.name || '';
@@ -42,11 +41,11 @@ export default (props: Props): JSX.Element => {
     <ChannelUI
       name={channelName}
       icon={channelIcon}
-      muted={channel.user_member?.notification_level === 'none'}
+      notificationLevel={channel.user_member?.notification_level || 'mentions'}
       favorite={channel.user_member?.favorite || false}
-      unreadMessages={unreadMessages}
       writingActivity={writingActivity.length > 0}
       visibility={channel.visibility || 'public'}
+      unreadMessages={unreadMessages}
       notifications={notifications.length || 0}
       selected={selected}
       menu={

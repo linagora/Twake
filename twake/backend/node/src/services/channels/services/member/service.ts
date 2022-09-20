@@ -180,6 +180,7 @@ export class MemberServiceImpl {
         notification_level: isCurrentUser,
         favorite: isCurrentUser,
         last_access: isCurrentUser,
+        last_increment: isCurrentUser,
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects

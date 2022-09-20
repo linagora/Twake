@@ -10,6 +10,7 @@ import RouterServices from 'app/features/router/services/router-service';
 
 import './Channel.scss';
 import AvatarComponent from 'app/components/avatar/avatar';
+import { AtSymbolIcon } from '@heroicons/react/outline';
 
 type Props = {
   app?: Application;
@@ -17,9 +18,9 @@ type Props = {
   icon: string | JSX.Element;
   id?: string;
   channelId?: string;
-  muted: boolean;
+  notificationLevel: 'all' | 'none' | 'mentions' | 'me';
   favorite: boolean;
-  unreadMessages: boolean;
+  unreadMessages: number;
   visibility: string; //"private" | "public" | "direct"
   directMembers?: string[];
   notifications: number;
@@ -59,12 +60,13 @@ export default (props: Props) => {
     }
   };
 
+  const grayBadgeClassName = ' bg-zinc-300 text-zinc-700 dark:bg-zing-800 dark:text-zinc-600';
+  const blueBadgeClassName = ' text-white bg-blue-500';
+
   return (
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
-        className={`channel ${selected ? 'selected ' : ''} ${
-          props.unreadMessages ? 'unread ' : ''
-        } ${props.active ? 'menu-open' : ''}`}
+        className={`channel ${selected ? 'selected ' : ''} ${props.active ? 'menu-open' : ''}`}
         onClick={onClick}
       >
         {!!props.favorite && (
@@ -89,11 +91,29 @@ export default (props: Props) => {
         </div>
         <div className="writing_activity">{!selected && writingActivity && <WritingLoader />}</div>
         <div className="more">
-          {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
+          {props.notificationLevel === 'none' && <Icon type="bell-slash merge-icon grey-icon" />}
           {props.notifications > 0 && (
-            <div className="notification_dot">
-              {Math.max(1, props.notifications)}
+            <div
+              className={
+                'text-xs font-medium h-5 w-5 flex items-center justify-center text-sm rounded-full ml-1' +
+                (props.notificationLevel === 'none' ? grayBadgeClassName : blueBadgeClassName)
+              }
+            >
+              <AtSymbolIcon className="h-4 w-4" />
               <Beacon tag="channel_bar_component" />
+            </div>
+          )}
+          {props.unreadMessages > 0 && (
+            <div
+              className={
+                'text-xs font-medium h-5 px-1.5 flex items-center justify-center text-sm rounded-full ml-1' +
+                (props.notificationLevel === 'all' ||
+                (props.notifications > 0 && props.notificationLevel !== 'none')
+                  ? blueBadgeClassName
+                  : grayBadgeClassName)
+              }
+            >
+              {Math.min(99, Math.max(1, props.notifications || props.unreadMessages))}
             </div>
           )}
           {props.menu}
