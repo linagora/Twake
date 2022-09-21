@@ -12,6 +12,7 @@ import Languages from 'app/features/global/services/languages-service';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import Strings from 'app/features/global/utils/strings';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
+import { useEffect, useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { EmailItem } from './email-item';
 import { MemberItem } from './member-item';
@@ -19,11 +20,18 @@ import { UserItem } from './user-item';
 
 export const ChannelMembersListModal = (): JSX.Element => {
   const channelId = useRouterChannel();
+  const [query, setQuery] = useState<string>('');
 
-  const { addEmailSuggestion, pendingEmailList, channelMembersList, usersList, search, query } =
+  const { addEmailSuggestion, pendingEmailList, channelMembersList, usersList, search } =
     useSearchChannelMembersAll({
       channelId,
     });
+
+  useEffect(() => {
+    delayRequest('ChannelMembersListModal', async () => {
+      search(query);
+    });
+  }, [search, query]);
 
   return (
     <div
@@ -39,9 +47,7 @@ export const ChannelMembersListModal = (): JSX.Element => {
               className={className}
               placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.search_invite')}
               onChange={e => {
-                delayRequest('ChannelMembersListModal', async () => {
-                  search(e.target.value);
-                });
+                setQuery(e.target.value);
               }}
               value={query}
             />
