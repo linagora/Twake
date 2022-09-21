@@ -23,20 +23,30 @@ import messageApiClient from 'app/features/messages/api/message-api-client';
 import User from 'app/features/users/services/current-user-service';
 import { useChannelMembersReadSections } from 'app/features/channel-members/hooks/use-channel-members-read-sections';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
+import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type Props = {
   companyId: string;
   workspaceId?: string;
   channelId?: string;
   threadId?: string;
+  readonly?: boolean;
 };
 
-export const MessagesListContext = React.createContext({ hideReplies: false, withBlock: false });
+export const MessagesListContext = React.createContext({
+  hideReplies: false,
+  withBlock: false,
+  readonly: false,
+});
 
-export default ({ channelId, companyId, workspaceId }: Props) => {
+export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
-  const { seen, refresh: loadReadSections } = useChannelMembersReadSections(companyId, workspaceId || 'direct', channelId || '');
+  const { seen, refresh: loadReadSections } = useChannelMembersReadSections(
+    companyId,
+    workspaceId || 'direct',
+    channelId || '',
+  );
 
   const {
     messages: _messages,
@@ -71,6 +81,8 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
     );
   };
 
+  const { refresh: refreshChannels } = useRefreshPublicOrPrivateChannels();
+
   useEffect(() => {
     if (messages.length === 0) loadMore('history');
   }, []);
@@ -89,12 +101,17 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
       });
       if (seenMessages.length > 0) {
         delayRequest('message-list-read-request', async () => {
-          await messageApiClient.read(companyId, channelId || '', workspaceId || 'direct', seenMessages);
+          await messageApiClient.read(
+            companyId,
+            channelId || '',
+            workspaceId || 'direct',
+            seenMessages,
+          );
           await loadReadSections();
-        })
+        });
       }
     }
-  }, [messages, messages.length,  window.reachedEnd, document.hidden]);
+  }, [messages, messages.length, window.reachedEnd, document.hidden]);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
@@ -133,8 +150,13 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
   }, [highlight, messages.length]);
 
   useEffect(() => {
-    if (messages.length)
-      ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+    if (messages.length) {
+      ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true }).then(
+        () => {
+          refreshChannels();
+        },
+      );
+    }
   }, [messages.length > 0]);
 
   useEffect(() => {
@@ -198,7 +220,9 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
   const virtuosoLoading = highlight && !highlight?.reachedThread;
 
   return (
-    <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
+    <MessagesListContext.Provider
+      value={{ hideReplies: false, withBlock: true, readonly: !!readonly }}
+    >
       {(!window.loaded || virtuosoLoading) && <MessagesPlaceholder />}
       {!window.loaded && <div style={{ flex: 1 }}></div>}
       {window.loaded && (
@@ -223,12 +247,13 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
           itemContent={row}
           followOutput={!!window.reachedEnd && 'smooth'}
           loadMore={loadMoreMessages}
-          atBottomStateChange={(atBottom: boolean) => {
+          atBottomStateChange={async (atBottom: boolean) => {
             if (atBottom && window.reachedEnd) {
               setAtBottom(true);
-              ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
+              await ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
                 status: true,
               });
+              refreshChannels();
             }
           }}
         />

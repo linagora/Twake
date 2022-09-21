@@ -39,13 +39,15 @@ export default (props: PropsType): JSX.Element => {
           <Emojione type=":envelope_with_arrow:" />
           <a href={`mailto:${props.user.email}`}>{props.user.email}</a>
         </div>
-        <div className="footer">
-          <Button
-            type="button"
-            value={Languages.t('general.send', [], 'Save')}
-            onClick={props.onClick}
-          />
-        </div>
+        {UserService.isInCompany(props.user, companyId) && (
+          <div className="footer">
+            <Button
+              type="button"
+              value={Languages.t('general.send', [], 'Save')}
+              onClick={props.onClick}
+            />
+          </div>
+        )}
       </div>
     </>
   );

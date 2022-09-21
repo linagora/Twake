@@ -159,7 +159,5 @@ export const distanceFromQuery = (
   )
     score *= 1.1;
 
-  if (score > 6.4) console.log('candidate', query, candidates.join(' '), score);
-
   return 0 - score;
 };

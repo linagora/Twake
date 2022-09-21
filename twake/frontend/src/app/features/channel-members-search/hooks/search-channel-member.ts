@@ -63,6 +63,7 @@ export const useSearchChannelMembers = (channelId: string) => {
   );
 
   const listChannelMembersFiltered = listChannelMembers.filter(cm => {
+    if (!cm.user) return false;
     return matchQuery(
       searchInput,
       `${cm.user.email} ${cm.user.first_name} ${cm.user.last_name} ${cm.user.username}`,

@@ -74,7 +74,7 @@ const MessageType = () => {
             threadId={context.threadId}
             firstMessageId={firstMessageId}
           />
-          <ReplyBlock />
+          {!listContext.readonly && <ReplyBlock />}
         </>
       )}
     </Thread>

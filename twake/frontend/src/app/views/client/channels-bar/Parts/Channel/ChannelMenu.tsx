@@ -24,6 +24,7 @@ import AccessRightsService from 'app/features/workspace-members/services/workspa
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 import Menu from 'components/menus/menu';
+import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type PropsType = {
   channel: ChannelType;
@@ -53,10 +54,10 @@ const FullMenu = (props: PropsType): JSX.Element => {
   const { badges } = useChannelNotifications(props.channel.id || '');
   const { user: currentUser } = useCurrentUser();
   const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
-  const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
   const { refresh: refreshChannel } = useChannel(props.channel.id || '');
   const channelMember = props.channel.user_member || {};
   const { setOpen: setParticipantsOpen } = useUsersSearchModal();
+  const { refresh: refreshChannels } = useRefreshPublicOrPrivateChannels();
 
   Languages.useListener();
 
@@ -113,7 +114,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
       } else {
         redirectToWorkspace();
         refreshFavoriteChannels();
-        refreshDirectChannels();
+        refreshChannels();
       }
 
       refreshChannel();
@@ -148,6 +149,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
       await ChannelsMineAPIClient.removeChannel(companyId, workspaceId, props.channel.id).then(
         redirectToWorkspace,
       );
+      refreshChannels();
     }
   };
 
@@ -166,6 +168,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
           props.channel.id || '',
           { status: badges.length > 0, now: true },
         );
+        refreshChannels();
       },
     },
     {

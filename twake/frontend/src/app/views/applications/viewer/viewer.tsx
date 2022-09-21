@@ -71,7 +71,7 @@ export default () => {
         className="flex flex-col h-full"
         {...fadeTransition}
       >
-        <div className="px-16 py-2 grow relative">
+        <div className="px-16 py-2 grow relative overflow-hidden">
           <Display />
         </div>
         <Footer />
