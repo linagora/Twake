@@ -935,7 +935,6 @@ export class ChannelServiceImpl {
   }
 
   async completeWithStatistics(channels: ChannelObject[]) {
-    await new Promise(r => setTimeout(r, 2000));
     await Promise.all(
       channels.map(async a => {
         const members = await gr.services.channels.members.getUsersCount({
