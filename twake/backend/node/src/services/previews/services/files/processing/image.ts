@@ -47,7 +47,7 @@ function computeNewFormat(
   options?: PreviewMessageQueueRequest["output"],
 ): { width: number; height: number } {
   const maxOutputWidth = options?.width || 600;
-  const maxOutputHeight = options?.height || 200;
+  const maxOutputHeight = options?.height || 400;
   const inputWidth = inputMetadata.width;
   const inputHeight = inputMetadata.height;
   const scale = Math.max(inputWidth / maxOutputWidth, inputHeight / maxOutputHeight);

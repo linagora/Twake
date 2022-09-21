@@ -29,6 +29,7 @@ import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
 import { useMessageSeenBy } from 'app/features/messages/hooks/use-message-seen-by';
 import { EmojiSuggestionType } from 'app/components/rich-text-editor/plugins/emoji';
+import { MessagesListContext } from '../../messages-list';
 
 type Props = {
   onOpen?: () => void;
@@ -40,6 +41,7 @@ export default (props: Props) => {
   const channelId = useRouterChannel();
   const workspaceId = useRouterWorkspace();
   const context = useContext(MessageContext);
+  const listContext = useContext(MessagesListContext);
   const { message, react, remove, pin } = useMessage(context);
   const { channel } = useChannel(channelId);
   const { message: thread } = useMessage({
@@ -53,10 +55,7 @@ export default (props: Props) => {
   });
   const location = `message-${message.id}`;
   const subLocation = useContext(ViewContext).type;
-  const { set: setVisibleEditor } = useVisibleMessagesEditorLocation(
-    location,
-    subLocation,
-  );
+  const { set: setVisibleEditor } = useVisibleMessagesEditorLocation(location, subLocation);
 
   const { set: setQuoteReply } = useMessageQuoteReply(channelId);
 
@@ -76,7 +75,8 @@ export default (props: Props) => {
   const onOpen = (evt: Event) => {
     props.onOpen && props.onOpen();
     if (evt) {
-      evt.preventDefault() ; evt.stopPropagation();
+      evt.preventDefault();
+      evt.stopPropagation();
     }
   };
 
@@ -107,7 +107,7 @@ export default (props: Props) => {
         },
       });
     }
-      
+
     menu.push({
       type: 'menu',
       icon: 'link',
@@ -126,14 +126,14 @@ export default (props: Props) => {
       },
     });
 
-    if(channel && channel.visibility === 'direct') {
+    if (channel && channel.visibility === 'direct' && !listContext.readonly) {
       menu.push({
         type: 'menu',
         icon: 'corner-down-left',
         text: Languages.t('scenes.apps.messages.message.reply_button', [], 'Reply'),
         onClick: () => {
           setQuoteReply({ message: message.id, channel: channelId });
-        }
+        },
       });
     }
 
@@ -151,7 +151,7 @@ export default (props: Props) => {
       },
     });
 
-    if (!message.context?.disable_pin)
+    if (!message.context?.disable_pin && !listContext.readonly)
       menu.push({
         type: 'menu',
         icon: 'map-pin',
@@ -173,7 +173,7 @@ export default (props: Props) => {
         (app: Application) => app.display?.twake?.chat?.actions?.length,
       ) || [];
 
-    if (apps.length > 0) {
+    if (apps.length > 0 && !listContext.readonly) {
       menu.push({ type: 'separator' });
       menu.push({
         type: 'react-element',
@@ -202,11 +202,12 @@ export default (props: Props) => {
     }
 
     if (
-      message.user_id === User.getCurrentUserId() ||
-      (message.application_id && message.context?.allow_delete === 'everyone') ||
-      (message.application_id &&
-        WorkspaceUserRights.hasWorkspacePrivilege() &&
-        message.context?.allow_delete === 'administrators')
+      (message.user_id === User.getCurrentUserId() ||
+        (message.application_id && message.context?.allow_delete === 'everyone') ||
+        (message.application_id &&
+          WorkspaceUserRights.hasWorkspacePrivilege() &&
+          message.context?.allow_delete === 'administrators')) &&
+      !listContext.readonly
     ) {
       if (menu.length > 0 && (!message.application_id || !message?.stats?.replies)) {
         menu.push({ type: 'separator' });
@@ -264,47 +265,51 @@ export default (props: Props) => {
         </div>
       )*/}
       <div className="message-options right" key="options">
-        {[':heart:', ':+1:', ':eyes:', ':tada:'].map(emoji => (
+        {!listContext.readonly && (
           <>
-            <div
-              key={emoji}
-              className={
-                'option ' + (userReactions.map(m => m.name).includes(emoji) ? 'active' : '')
-              }
-              onClick={() => react([emoji], 'toggle')}
+            {[':heart:', ':+1:', ':eyes:', ':tada:'].map(emoji => (
+              <>
+                <div
+                  key={emoji}
+                  className={
+                    'option ' + (userReactions.map(m => m.name).includes(emoji) ? 'active' : '')
+                  }
+                  onClick={() => react([emoji], 'toggle')}
+                >
+                  <Emojione type={emoji} />
+                </div>
+                <div className="separator"></div>
+              </>
+            ))}
+
+            <Menu
+              className="option"
+              onOpen={(evt: Event) => onOpen(evt)}
+              menu={[
+                {
+                  type: 'react-element',
+                  className: 'menu-cancel-margin',
+                  reactElement: () => {
+                    return (
+                      <EmojiPicker
+                        selected={userReactions.map(e => e.name) || []}
+                        onChange={(emoji: EmojiSuggestionType) => {
+                          MenusManager.closeMenu();
+                          props.onClose && props.onClose();
+                          react([emoji.colons], 'toggle');
+                        }}
+                      />
+                    );
+                  },
+                },
+              ]}
+              position="top"
             >
-              <Emojione type={emoji} />
-            </div>
+              <Smile size={16} />
+            </Menu>
             <div className="separator"></div>
           </>
-        ))}
-
-        <Menu
-          className="option"
-          onOpen={(evt: Event) => onOpen(evt)}
-          menu={[
-            {
-              type: 'react-element',
-              className: 'menu-cancel-margin',
-              reactElement: () => {
-                return (
-                  <EmojiPicker
-                    selected={userReactions.map(e => e.name) || []}
-                    onChange={(emoji: EmojiSuggestionType) => {
-                      MenusManager.closeMenu();
-                      props.onClose && props.onClose();
-                      react([emoji.colons], 'toggle');
-                    }}
-                  />
-                );
-              },
-            },
-          ]}
-          position="top"
-        >
-          <Smile size={16} />
-        </Menu>
-        <div className="separator"></div>
+        )}
 
         {!props.threadHeader && channel && channel.visibility !== 'direct' && (
           <>
@@ -326,7 +331,7 @@ export default (props: Props) => {
           </>
         )}
 
-        {channel && channel.visibility === 'direct' && (
+        {channel && channel.visibility === 'direct' && !listContext.readonly && (
           <>
             <div
               className="option"

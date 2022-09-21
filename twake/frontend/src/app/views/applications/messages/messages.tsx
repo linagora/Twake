@@ -34,9 +34,14 @@ export default (props: Props) => {
   const isChannelMember = useIsChannelMember(channelId);
   const currentUser = UserService.getCurrentUser();
   let userIsNotInCompany = false;
-  const otherChannelsMembersThanMe = (props.channel.members || []).filter(id => id !== currentUser?.id) || [];
+  const otherChannelsMembersThanMe =
+    (props.channel.members || []).filter(id => id !== currentUser?.id) || [];
   const otherUserThatIsNotMe = useUser(otherChannelsMembersThanMe[0] || '');
-  if(otherUserThatIsNotMe && otherChannelsMembersThanMe.length === 1 && !UserService.isInCompany(otherUserThatIsNotMe as UserType, companyId)){
+  if (
+    otherUserThatIsNotMe &&
+    otherChannelsMembersThanMe.length === 1 &&
+    !UserService.isInCompany(otherUserThatIsNotMe as UserType, companyId)
+  ) {
     userIsNotInCompany = true;
   }
 
@@ -50,6 +55,7 @@ export default (props: Props) => {
             workspaceId={workspaceId}
             channelId={channelId}
             threadId={threadId}
+            readonly={userIsNotInCompany}
           />
         ) : (
           <ThreadMessagesList
@@ -58,9 +64,10 @@ export default (props: Props) => {
             workspaceId={workspaceId}
             channelId={channelId}
             threadId={threadId}
+            readonly={userIsNotInCompany}
           />
         )}{' '}
-      <MessageSeenBy />
+        <MessageSeenBy />
       </Suspense>
       <IsWriting channelId={channelId} threadId={threadId} />
       {isChannelMember && !userIsNotInCompany && (
@@ -71,9 +78,7 @@ export default (props: Props) => {
           threadId={threadId}
         />
       )}
-      {isChannelMember && userIsNotInCompany && (
-        <UserIsNotInCompany />
-      )}
+      {isChannelMember && userIsNotInCompany && <UserIsNotInCompany />}
       {!isChannelMember && <JoinChanneBlock channelId={channelId} />}
     </div>
   );
@@ -117,5 +122,5 @@ const UserIsNotInCompany = () => {
     <div className="border-t border-zinc-200 dark:border-zinc-700 p-8 text-center">
       <Text.Info>{Languages.t('scenes.apps.messages.message.user_deactivated')}</Text.Info>
     </div>
-  )
+  );
 };

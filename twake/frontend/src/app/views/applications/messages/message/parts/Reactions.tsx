@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { getUser } from 'app/features/users/hooks/use-user-list';
+import { MessagesListContext } from '../../messages-list';
 
 export default () => {
   const context = useContext(MessageContext);
@@ -37,6 +38,7 @@ const Reaction = ({
   reaction: ReactionType;
   react: (emojis: string[], mode?: 'add' | 'toggle' | 'remove' | 'replace') => Promise<void>;
 }): JSX.Element => {
+  const listContext = useContext(MessagesListContext);
   const noReactions: boolean = (reaction.count || 0) <= 0;
   const users: ReactionType['users'] = reaction.users || [];
 
@@ -52,7 +54,12 @@ const Reaction = ({
       placement="top"
       title={<ReactionTooltip users={users} />}
     >
-      <div className={reactionClassName} onClick={() => react([reaction.name], 'toggle')}>
+      <div
+        className={reactionClassName}
+        onClick={() => {
+          if (!listContext.readonly) react([reaction.name], 'toggle');
+        }}
+      >
         <Emojione type={reaction.name} />
         {reaction.count}
       </div>

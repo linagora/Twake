@@ -29,14 +29,23 @@ type Props = {
   workspaceId?: string;
   channelId?: string;
   threadId?: string;
+  readonly?: boolean;
 };
 
-export const MessagesListContext = React.createContext({ hideReplies: false, withBlock: false });
+export const MessagesListContext = React.createContext({
+  hideReplies: false,
+  withBlock: false,
+  readonly: false,
+});
 
-export default ({ channelId, companyId, workspaceId }: Props) => {
+export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
-  const { seen, refresh: loadReadSections } = useChannelMembersReadSections(companyId, workspaceId || 'direct', channelId || '');
+  const { seen, refresh: loadReadSections } = useChannelMembersReadSections(
+    companyId,
+    workspaceId || 'direct',
+    channelId || '',
+  );
 
   const {
     messages: _messages,
@@ -89,12 +98,17 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
       });
       if (seenMessages.length > 0) {
         delayRequest('message-list-read-request', async () => {
-          await messageApiClient.read(companyId, channelId || '', workspaceId || 'direct', seenMessages);
+          await messageApiClient.read(
+            companyId,
+            channelId || '',
+            workspaceId || 'direct',
+            seenMessages,
+          );
           await loadReadSections();
-        })
+        });
       }
     }
-  }, [messages, messages.length,  window.reachedEnd, document.hidden]);
+  }, [messages, messages.length, window.reachedEnd, document.hidden]);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
@@ -198,7 +212,9 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
   const virtuosoLoading = highlight && !highlight?.reachedThread;
 
   return (
-    <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
+    <MessagesListContext.Provider
+      value={{ hideReplies: false, withBlock: true, readonly: !!readonly }}
+    >
       {(!window.loaded || virtuosoLoading) && <MessagesPlaceholder />}
       {!window.loaded && <div style={{ flex: 1 }}></div>}
       {window.loaded && (
