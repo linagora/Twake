@@ -23,6 +23,7 @@ import messageApiClient from 'app/features/messages/api/message-api-client';
 import User from 'app/features/users/services/current-user-service';
 import { useChannelMembersReadSections } from 'app/features/channel-members/hooks/use-channel-members-read-sections';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
+import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type Props = {
   companyId: string;
@@ -79,6 +80,8 @@ export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
       shouldLimit && direction === 'history',
     );
   };
+
+  const { refresh: refreshChannels } = useRefreshPublicOrPrivateChannels();
 
   useEffect(() => {
     if (messages.length === 0) loadMore('history');
@@ -147,8 +150,13 @@ export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
   }, [highlight, messages.length]);
 
   useEffect(() => {
-    if (messages.length)
-      ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+    if (messages.length) {
+      ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true }).then(
+        () => {
+          refreshChannels();
+        },
+      );
+    }
   }, [messages.length > 0]);
 
   useEffect(() => {
@@ -239,12 +247,13 @@ export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
           itemContent={row}
           followOutput={!!window.reachedEnd && 'smooth'}
           loadMore={loadMoreMessages}
-          atBottomStateChange={(atBottom: boolean) => {
+          atBottomStateChange={async (atBottom: boolean) => {
             if (atBottom && window.reachedEnd) {
               setAtBottom(true);
-              ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
+              await ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
                 status: true,
               });
+              refreshChannels();
             }
           }}
         />
