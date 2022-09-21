@@ -32,9 +32,9 @@ export const useSearchChannelMembersAll = (params: ParamsChannelMember) => {
     !pendingEmailList.length &&
     !!searchState.length &&
     ![
-      ...pendingEmailList.map(e => e.email.toLocaleLowerCase()),
-      ...channelMembersList.map(e => e.user.email.toLocaleLowerCase()),
-      ...usersList.map(e => e.email.toLocaleLowerCase()),
+      ...pendingEmailList.map(e => e?.email.toLocaleLowerCase()),
+      ...channelMembersList.map(e => e.user?.email.toLocaleLowerCase()),
+      ...usersList.map(e => e?.email.toLocaleLowerCase()),
     ].includes((searchState || '').toLocaleLowerCase());
 
   return {

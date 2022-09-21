@@ -9,6 +9,7 @@ import { Info } from 'app/atoms/text';
 import { usePendingEmail } from 'app/features/channel-members-search/hooks/use-pending-email-hook';
 import { useSearchChannelMembersAll } from 'app/features/channel-members-search/hooks/use-search-all';
 import Languages from 'app/features/global/services/languages-service';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import Strings from 'app/features/global/utils/strings';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -37,7 +38,11 @@ export const ChannelMembersListModal = (): JSX.Element => {
             <Input
               className={className}
               placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.search_invite')}
-              onChange={e => search(e.target.value)}
+              onChange={e => {
+                delayRequest('ChannelMembersListModal', async () => {
+                  search(e.target.value);
+                });
+              }}
               value={query}
             />
           )}
@@ -95,16 +100,18 @@ export const ChannelMembersListModal = (): JSX.Element => {
               </>
             )}
             {channelMembersList &&
-              channelMembersList.map(cMember => {
-                return (
-                  <div
-                    key={cMember.user_id}
-                    className="flex  py-1 hover:bg-zinc-50 rounded-sm px-2"
-                  >
-                    <MemberItem userId={cMember.user_id} member={cMember} />
-                  </div>
-                );
-              })}
+              channelMembersList
+                .filter(a => a && a?.user)
+                .map(cMember => {
+                  return (
+                    <div
+                      key={cMember.user_id}
+                      className="flex  py-1 hover:bg-zinc-50 rounded-sm px-2"
+                    >
+                      <MemberItem userId={cMember.user_id} member={cMember} />
+                    </div>
+                  );
+                })}
             {usersList?.length > 0 && (
               <>
                 <Info className="px-2 mt-2 block">
