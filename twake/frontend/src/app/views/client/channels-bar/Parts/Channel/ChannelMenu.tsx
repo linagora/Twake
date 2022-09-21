@@ -41,7 +41,7 @@ export default (props: PropsType): JSX.Element => {
 
   return (
     <>
-      <div className="more-icon" onMouseOver={() => setShowMenu(true)}>
+      <div className="more-icon ml-1" onMouseOver={() => setShowMenu(true)}>
         <Icon type="ellipsis-h more-icon grey-icon" />
       </div>
     </>
