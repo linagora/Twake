@@ -47,11 +47,11 @@ export class NotificationPreferencesController
     context?: ExecutionContext,
   ): Promise<ResourceCreateResponse<UserNotificationPreferences>> {
     const entity = {
-      ...request.body.resource,
-      ...{
-        workspace_id: ALL,
-        company_id: ALL,
-        user_id: request.currentUser.id,
+      workspace_id: ALL,
+      company_id: ALL,
+      user_id: request.currentUser.id,
+      preferences: {
+        ...request.body.resource,
       },
     };
 

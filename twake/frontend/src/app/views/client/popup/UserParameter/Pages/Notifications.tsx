@@ -1,11 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Input } from 'antd';
 import { isEqual } from 'lodash';
-
 import Languages from 'app/features/global/services/languages-service';
 import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
-import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
-
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Attribute from 'components/parameters/attribute.js';
 import Switch from 'components/inputs/switch';
@@ -13,28 +10,21 @@ import Radio from 'components/inputs/radio.js';
 
 import {
   preferencesType,
-  NotificationPreferencesType,
 } from 'app/features/users/types/notification-preferences-type';
+import { UseNotificationPreferences } from 'app/features/notifications-preferences/hooks/use-notifications-preference-hook';
 
 export default () => {
   const loading = useRef(true);
-
-  const notificationPreferences: NotificationPreferencesType[] = [];
-
+  const {save, notifsPreferences} = UseNotificationPreferences();
   const [newPreferences, setNewPreferences] = useState<preferencesType>();
 
-  if (loading.current && !!notificationPreferences && notificationPreferences.length) {
-    setNewPreferences(notificationPreferences[0].preferences);
+  if (loading.current && !!notifsPreferences && notifsPreferences.length) {
+    setNewPreferences(notifsPreferences[0].preferences);
     loading.current = false;
   }
 
   const saveNewPreferences = async (preferences: preferencesType) => {
-    const newPreferences: {
-      key: keyof preferencesType;
-      value: preferencesType[keyof preferencesType];
-    }[] = Object.entries(preferences).map(([key, value]) => ({ key: key as keyof preferencesType, value }));
-
-    NotificationPreferences.save(newPreferences);
+    save(preferences);
   };
 
   const generateTimeOptions = () => {
@@ -234,7 +224,7 @@ export default () => {
               onChange={evt => {
                 setNewPreferences({
                   ...newPreferences,
-                  email_notifications_delay: (evt.target as HTMLInputElement).value,
+                  email_notifications_delay: parseInt((evt.target as HTMLInputElement).value),
                 });
               }}
             />
@@ -276,7 +266,7 @@ export default () => {
       <div style={{ textAlign: 'right' }}>
         <ButtonWithTimeout
           className="small buttonValidation"
-          disabled={isEqual(newPreferences, notificationPreferences[0].preferences)}
+          disabled={isEqual(newPreferences, notifsPreferences[0].preferences)}
           onClick={() => saveNewPreferences(newPreferences)}
           value={Languages.t('general.update')}
         />
