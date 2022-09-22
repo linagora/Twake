@@ -641,7 +641,7 @@ export default class UserParameter extends Component {
                   onClick: () => {
                     this.setPage(4);
                   },
-                } /*
+                },
                 {
                   type: 'menu',
                   text: this.state.i18n.t('scenes.apps.account.notifications.title'),
@@ -650,7 +650,7 @@ export default class UserParameter extends Component {
                   onClick: () => {
                     this.setPage(3);
                   },
-                },*/,
+                },
               ]}
             />
           </div>

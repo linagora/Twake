@@ -210,24 +210,22 @@ export default () => {
         >
           <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
             {/* TODO: Add an explanatory message */}
-            <input
-              style={{
-                width: '80px',
-                height: '40px',
-                padding: '0 10px',
-                opacity: 0.8,
-                borderRadius: '3px',
-                border: 'solid 1px rgba(0, 0, 0, 0.3)',
-              }}
-              type="number"
-              value={newPreferences.email_notifications_delay}
-              onChange={evt => {
-                setNewPreferences({
-                  ...newPreferences,
-                  email_notifications_delay: parseInt((evt.target as HTMLInputElement).value),
-                });
-              }}
-            />
+            <div className="parameters_form">
+              <select
+                value={newPreferences.email_notifications_delay}
+                onChange={evt => {
+                  setNewPreferences({
+                    ...newPreferences,
+                    email_notifications_delay: parseInt((evt.target as HTMLSelectElement).value),
+                  });
+                }}
+              >
+                <option value="0">Never</option>
+                <option value="15">15 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="1440">1 day</option>
+              </select>
+            </div>
           </div>
         </Attribute>
         {/* TODO: Add DE and RU traduction and implement the feature */}
