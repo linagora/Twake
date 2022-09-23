@@ -51,7 +51,7 @@ export default () => {
         <div className="subtitle">
           {Languages.t('scenes.app.popup.userparameter.pages.frequency_notif_subtitle')}
         </div>
-        <Attribute
+        {/* <Attribute
           label={Languages.t('scenes.apps.account.notifications.keywords_subtitle')}
           description={Languages.t(
             'scenes.app.popup.userparameter.pages.keywords_notif_description',
@@ -71,8 +71,8 @@ export default () => {
               }}
             ></Input>
           </div>
-        </Attribute>
-        <Attribute
+        </Attribute> */}
+        {/* <Attribute
           label={Languages.t('scenes.app.popup.userparameter.pages.no_night_disturbing_label')}
           description={Languages.t(
             'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description',
@@ -155,7 +155,7 @@ export default () => {
               </div>
             </div>
           </div>
-        </Attribute>
+        </Attribute> */}
         <Attribute
           label={Languages.t('scenes.apps.account.notifications.devices_subtitle')}
           description={Languages.t(
@@ -220,19 +220,19 @@ export default () => {
                   });
                 }}
               >
-                <option value="0">Never</option>
-                <option value="15">15 minutes</option>
-                <option value="60">1 hour</option>
-                <option value="1440">1 day</option>
+                <option value="0">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_never')}</option>
+                <option value="15">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_quarter_hour')}</option>
+                <option value="60">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_hour')}</option>
+                <option value="1440">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_day')}</option>
               </select>
             </div>
           </div>
         </Attribute>
         {/* TODO: Add DE and RU traduction and implement the feature */}
-        <Attribute
+        {/* <Attribute
           label={Languages.t('scenes.apps.account.notifications.sound')}
           description={Languages.t('scenes.apps.account.notifications.sound')}
-        ></Attribute>
+        ></Attribute> */}
       </div>
       <div className="group_section">
         <div className="subtitle">
