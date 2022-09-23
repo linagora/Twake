@@ -77,11 +77,13 @@ export default class ChannelsApps extends Component<unknown> {
                 name={name}
                 icon={icon}
                 id={app.id}
-                muted={false}
                 favorite={false}
                 visibility={'public'}
-                unreadMessages={false}
-                notifications={0}
+                unreadMessages={0}
+                notificationLevel={'all'}
+                mentions={0}
+                replies={0}
+                unread={0}
               />
             );
           }
@@ -115,11 +117,13 @@ export const CompanyApplications = ({ companyId }: PropsType) => {
             app={app}
             name={app.identity.name}
             icon={app.identity.icon || <></>}
-            muted={false}
             favorite={false}
             visibility={'public'}
-            unreadMessages={false}
-            notifications={0}
+            notificationLevel={'all'}
+            unreadMessages={0}
+            mentions={0}
+            replies={0}
+            unread={0}
           />
         ))}
     </div>

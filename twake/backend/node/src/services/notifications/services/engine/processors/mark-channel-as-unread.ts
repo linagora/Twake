@@ -51,7 +51,7 @@ export class MarkChannelAsUnreadMessageProcessor
         company_id: message.channel.company_id,
         channel_id: message.channel.id,
         user_id: message.member.user_id,
-        mention_type: null,
+        mention_type: "unread",
       });
       gr.services.notifications.badges.save(badgeEntity, context);
 

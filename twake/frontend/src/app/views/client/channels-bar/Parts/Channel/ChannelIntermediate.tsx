@@ -47,6 +47,7 @@ export default (props: Props): JSX.Element => {
       notificationLevel={channel.user_member?.notification_level || 'mentions'}
       unreadMessages={unreadMessages}
       replies={notifications.filter(n => n.mention_type === 'reply').length || 0}
+      unread={notifications.filter(n => n.mention_type === 'unread').length || 0}
       mentions={
         notifications.filter(
           n =>
