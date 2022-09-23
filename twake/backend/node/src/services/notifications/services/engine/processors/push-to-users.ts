@@ -86,6 +86,7 @@ export class PushNotificationToUsersMessageProcessor
         message_id: message.message_id,
       },
       usersToUpdate,
+      message.mentions,
       context,
     );
 
@@ -150,6 +151,7 @@ export class PushNotificationToUsersMessageProcessor
       "channel_id" | "company_id" | "thread_id" | "workspace_id" | "message_id"
     >,
     users: string[] = [],
+    mentions: MentionNotification["mentions"],
     context: ExecutionContext,
   ): Promise<Array<UserNotificationBadge>> {
     logger.info(`${this.name} - Update badge for users ${users.join("/")}`);
@@ -165,6 +167,13 @@ export class PushNotificationToUsersMessageProcessor
             thread_id: badge.thread_id,
             message_id: badge.message_id,
             user_id: user,
+            mention_type: mentions.users.includes(user)
+              ? "me"
+              : mentions.specials.length > 0
+              ? "global"
+              : badge.thread_id !== badge.message_id
+              ? "reply"
+              : null,
           });
           return this.saveBadge(badgeEntity, context);
         }),

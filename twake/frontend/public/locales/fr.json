@@ -748,6 +748,7 @@
     "general.user.role.company.guest": "Invité",
     "general.user.deleted": "Compte supprimé",
     "general.user.deactivated": "Cet utilisateur n'est plus dans cette l'entreprise",
+    "general.user.connected": "Connecté",
     "components.richtexteditor.toolbar.bold": "Gras",
     "components.richtexteditor.toolbar.underline": "Souligné",
     "components.richtexteditor.toolbar.italic": "Italique",

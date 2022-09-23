@@ -8,7 +8,7 @@ import { MessageFile } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 
-export type specialMention = "all" | "here" | "everyone" | "channel";
+export type SpecialMention = "all" | "here" | "everyone" | "channel";
 
 export type MessageNotification = {
   company_id: uuid;
@@ -21,7 +21,7 @@ export type MessageNotification = {
   mentions?: {
     users?: uuid[];
     teams?: uuid[];
-    specials?: specialMention[];
+    specials?: SpecialMention[];
   };
 
   sender_name?: string;

@@ -20,6 +20,9 @@ export default class Device {
 
   @Column("version", "string")
   version: string;
+
+  @Column("push_notifications", "boolean")
+  push_notifications: boolean;
 }
 
 export type UserDevicePrimaryKey = Pick<Device, "id">;

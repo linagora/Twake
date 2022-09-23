@@ -23,7 +23,7 @@ import {
 } from 'app/features/viewer/hooks/use-viewer';
 import { Message } from 'features/messages/types/message';
 import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { fadeTransition, fadeZoomTransition } from 'src/utils/transitions';
 import Controls from './controls';
 import Display from './display';
@@ -139,7 +139,7 @@ const Footer = () => {
   const extension = name?.split('.').pop();
 
   const workspaceId = useRouterWorkspace();
-  const [, setChannelAttachmentState] = useRecoilState(channelAttachmentListState);
+  const setChannelAttachmentState = useSetRecoilState(channelAttachmentListState);
 
   return (
     <>
@@ -198,6 +198,7 @@ const Footer = () => {
                     text: Languages.t('scenes.apps.messages.jump'),
                     onClick: () => {
                       close();
+                      setChannelAttachmentState(false);
                       openMessage(status.details?.message as unknown as Message, workspaceId);
                     },
                   },

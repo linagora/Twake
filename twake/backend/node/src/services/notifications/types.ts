@@ -1,8 +1,7 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { Channel, ChannelMember } from "../channels/entities";
-import { UserNotificationPreferences } from "./entities";
 import { PaginationQueryParameters } from "../channels/web/types";
-import { specialMention } from "../messages/types";
+import { SpecialMention } from "../messages/types";
 import { uuid } from "../../utils/types";
 import { MessageQueueHandler } from "../../core/platform/services/message-queue/api";
 
@@ -27,7 +26,7 @@ export type MentionNotification = {
   creation_date: number;
   mentions?: {
     users: uuid[];
-    specials?: specialMention[];
+    specials?: SpecialMention[];
   };
   object_names?: {
     users: { [id: string]: string };
@@ -54,10 +53,6 @@ export type PushNotificationMessage = {
   text: string;
 };
 export type PushNotificationMessageResult = PushNotificationMessage;
-
-export class CreateNotificationPreferencesBody {
-  resource: Pick<UserNotificationPreferences, "user_id">;
-}
 
 export interface NotificationListQueryParameters extends PaginationQueryParameters {
   company_id: uuid;

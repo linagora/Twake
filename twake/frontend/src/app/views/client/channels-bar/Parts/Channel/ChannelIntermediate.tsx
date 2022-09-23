@@ -41,12 +41,21 @@ export default (props: Props): JSX.Element => {
     <ChannelUI
       name={channelName}
       icon={channelIcon}
-      notificationLevel={channel.user_member?.notification_level || 'mentions'}
       favorite={channel.user_member?.favorite || false}
       writingActivity={writingActivity.length > 0}
       visibility={channel.visibility || 'public'}
+      notificationLevel={channel.user_member?.notification_level || 'mentions'}
       unreadMessages={unreadMessages}
-      notifications={notifications.length || 0}
+      replies={notifications.filter(n => n.mention_type === 'reply').length || 0}
+      mentions={
+        notifications.filter(
+          n =>
+            (n.mention_type === 'me' &&
+              ['mentions', 'me'].includes(channel.user_member?.notification_level || '')) ||
+            (n.mention_type === 'global' &&
+              ['mentions'].includes(channel.user_member?.notification_level || '')),
+        ).length || 0
+      }
       selected={selected}
       menu={
         <ChannelMenu

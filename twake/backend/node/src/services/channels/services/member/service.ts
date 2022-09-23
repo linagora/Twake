@@ -52,6 +52,7 @@ import { WorkspacePrimaryKey } from "../../../workspaces/entities/workspace";
 import gr from "../../../global-resolver";
 import uuidTime from "uuid-time";
 import { CompanyExecutionContext } from "../../../../services/messages/types";
+import { ChannelObject } from "../channel/types";
 
 const USER_CHANNEL_KEYS = [
   "id",
@@ -453,7 +454,7 @@ export class MemberServiceImpl {
 
   async addUsersToChannel(
     users: Pick<User, "id">[] = [],
-    channel: ChannelEntity,
+    channel: ChannelEntity & { stats: ChannelObject["stats"] },
     context?: ExecutionContext,
   ): Promise<
     ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
@@ -466,6 +467,8 @@ export class MemberServiceImpl {
       users.map(u => u.id),
       channel.id,
     );
+
+    await gr.services.channels.channels.completeWithStatistics([channel]);
 
     const members: Array<{
       channel: ChannelEntity;
@@ -484,6 +487,8 @@ export class MemberServiceImpl {
           company_id: channel.company_id,
           workspace_id: channel.workspace_id,
           user_id: user.id,
+          last_increment: channel.stats.messages,
+          last_access: Date.now(),
         } as ChannelMember);
 
         try {

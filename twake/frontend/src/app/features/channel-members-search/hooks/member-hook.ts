@@ -1,4 +1,5 @@
 import ChannelMembersAPIClient from 'app/features/channel-members-search/api/members-api-client';
+import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
@@ -16,6 +17,7 @@ export function useChannelMember(userId: string, params?: ParamsChannelMember) {
 
   const member = useRecoilValue(ChannelMemberSelector({ channelId, userId }));
   const { refresh } = useRefreshChannelMembers(parameters);
+  const { refresh: refreshChannelsBar } = useRefreshPublicOrPrivateChannels();
   const [loading, setLoading] = useState<boolean>(false);
 
   const leave = async (userId: string) => {
@@ -27,6 +29,7 @@ export function useChannelMember(userId: string, params?: ParamsChannelMember) {
       channelId,
     });
     refresh();
+    refreshChannelsBar();
     setLoading(false);
   };
 

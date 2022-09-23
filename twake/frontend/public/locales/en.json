@@ -799,6 +799,7 @@
     "general.user.role.company.guest": "Guest",
     "general.user.deleted": "Deleted Account",
     "general.user.deactivated": "User is no longer in this company",
+    "general.user.connected": "Online",
     "components.richtexteditor.toolbar.bold": "Bold",
     "components.richtexteditor.toolbar.underline": "Underline",
     "components.richtexteditor.toolbar.italic": "Italic",

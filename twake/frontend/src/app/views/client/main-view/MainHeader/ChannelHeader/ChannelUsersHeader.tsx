@@ -3,6 +3,7 @@ import { Col, Typography } from 'antd';
 import * as Text from 'app/atoms/text';
 import { getUserParts } from 'app/components/member/user-parts';
 import { ChannelType } from 'app/features/channels/types/channel';
+import Languages from 'app/features/global/services/languages-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useOnlineUser } from 'app/features/users/hooks/use-online-user';
 import { useUser } from 'app/features/users/hooks/use-user';
@@ -28,7 +29,10 @@ export default (props: Props) => {
 
   return (
     <Col>
-      <span className="left-margin text-overflow" style={{ display: 'flex', alignItems: 'center' }}>
+      <span
+        className="left-margin text-overflow overflow-hidden whitespace-nowrap text-ellipsis"
+        style={{ display: 'flex', alignItems: 'center' }}
+      >
         <div className="small-right-margin" style={{ lineHeight: 0 }}>
           {avatar}
         </div>
@@ -43,9 +47,18 @@ export default (props: Props) => {
           lastSeen > 0 &&
           lastSeen > Date.now() - 1000 * 60 * 60 * 24 * 70 &&
           currentUser?.id !== user?.id && (
-            <Text.Info className="small-right-margin">
-              Online {moment(lastSeen).fromNow()}
-            </Text.Info>
+            <>
+              {!userOnlineStatus.connected && (
+                <Text.Info className="small-right-margin">
+                  {Languages.t('general.user.connected')} {moment(lastSeen).fromNow()}
+                </Text.Info>
+              )}
+              {!!userOnlineStatus.connected && (
+                <Text.Info className="small-right-margin">
+                  {Languages.t('general.user.connected')}
+                </Text.Info>
+              )}
+            </>
           )}
       </span>
     </Col>
