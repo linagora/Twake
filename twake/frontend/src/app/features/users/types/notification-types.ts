@@ -6,7 +6,7 @@ export type NotificationType = {
   channel_id: string | 'all';
   thread_id: string | 'all';
   message_id: string;
-  mention_type: 'reply' | 'global' | 'me' | null;
+  mention_type: 'reply' | 'global' | 'me' | 'unread' | null;
 
   count: number;
 };

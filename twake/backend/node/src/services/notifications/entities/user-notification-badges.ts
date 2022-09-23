@@ -65,7 +65,7 @@ export class UserNotificationBadge {
   id: string = uuidv4();
 
   @Column("mention_type", "string")
-  mention_type: "reply" | "global" | "me" | null = "me";
+  mention_type: "reply" | "global" | "me" | "unread" | null = "me";
 }
 
 export type UserNotificationBadgePrimaryKey = Pick<

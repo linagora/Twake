@@ -10,7 +10,7 @@ import RouterServices from 'app/features/router/services/router-service';
 
 import './Channel.scss';
 import AvatarComponent from 'app/components/avatar/avatar';
-import { AtSymbolIcon } from '@heroicons/react/outline';
+import { AtSymbolIcon, BellIcon } from '@heroicons/react/outline';
 
 type Props = {
   app?: Application;
@@ -23,6 +23,7 @@ type Props = {
   unreadMessages: number;
   mentions: number;
   replies: number;
+  unread: number;
   visibility: string; //"private" | "public" | "direct"
   directMembers?: string[];
   menu?: JSX.Element;
@@ -93,6 +94,17 @@ export default (props: Props) => {
         <div className="writing_activity">{!selected && writingActivity && <WritingLoader />}</div>
         <div className="more">
           {props.notificationLevel === 'none' && <Icon type="bell-slash merge-icon grey-icon" />}
+          {props.unread > 0 && props.mentions + props.replies === 0 && (
+            <div
+              className={
+                'text-xs font-medium h-5 w-5 flex items-center justify-center text-sm rounded-full ml-1' +
+                blueBadgeClassName
+              }
+            >
+              <BellIcon className="h-4 w-4" />
+              <Beacon tag="channel_bar_component" />
+            </div>
+          )}
           {props.mentions + props.replies > 0 && (
             <div
               className={
