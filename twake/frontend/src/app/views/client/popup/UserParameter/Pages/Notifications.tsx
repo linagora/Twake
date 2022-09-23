@@ -1,11 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Input } from 'antd';
 import { isEqual } from 'lodash';
-
 import Languages from 'app/features/global/services/languages-service';
 import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
-import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
-
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Attribute from 'components/parameters/attribute.js';
 import Switch from 'components/inputs/switch';
@@ -13,28 +10,21 @@ import Radio from 'components/inputs/radio.js';
 
 import {
   preferencesType,
-  NotificationPreferencesType,
 } from 'app/features/users/types/notification-preferences-type';
+import { UseNotificationPreferences } from 'app/features/notifications-preferences/hooks/use-notifications-preference-hook';
 
 export default () => {
   const loading = useRef(true);
-
-  const notificationPreferences: NotificationPreferencesType[] = [];
-
+  const {save, notifsPreferences} = UseNotificationPreferences();
   const [newPreferences, setNewPreferences] = useState<preferencesType>();
 
-  if (loading.current && !!notificationPreferences && notificationPreferences.length) {
-    setNewPreferences(notificationPreferences[0].preferences);
+  if (loading.current && !!notifsPreferences && notifsPreferences.length) {
+    setNewPreferences(notifsPreferences[0].preferences);
     loading.current = false;
   }
 
   const saveNewPreferences = async (preferences: preferencesType) => {
-    const newPreferences: {
-      key: keyof preferencesType;
-      value: preferencesType[keyof preferencesType];
-    }[] = Object.entries(preferences).map(([key, value]) => ({ key: key as keyof preferencesType, value }));
-
-    NotificationPreferences.save(newPreferences);
+    save(preferences);
   };
 
   const generateTimeOptions = () => {
@@ -61,7 +51,7 @@ export default () => {
         <div className="subtitle">
           {Languages.t('scenes.app.popup.userparameter.pages.frequency_notif_subtitle')}
         </div>
-        <Attribute
+        {/* <Attribute
           label={Languages.t('scenes.apps.account.notifications.keywords_subtitle')}
           description={Languages.t(
             'scenes.app.popup.userparameter.pages.keywords_notif_description',
@@ -81,8 +71,8 @@ export default () => {
               }}
             ></Input>
           </div>
-        </Attribute>
-        <Attribute
+        </Attribute> */}
+        {/* <Attribute
           label={Languages.t('scenes.app.popup.userparameter.pages.no_night_disturbing_label')}
           description={Languages.t(
             'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description',
@@ -165,7 +155,7 @@ export default () => {
               </div>
             </div>
           </div>
-        </Attribute>
+        </Attribute> */}
         <Attribute
           label={Languages.t('scenes.apps.account.notifications.devices_subtitle')}
           description={Languages.t(
@@ -220,31 +210,29 @@ export default () => {
         >
           <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
             {/* TODO: Add an explanatory message */}
-            <input
-              style={{
-                width: '80px',
-                height: '40px',
-                padding: '0 10px',
-                opacity: 0.8,
-                borderRadius: '3px',
-                border: 'solid 1px rgba(0, 0, 0, 0.3)',
-              }}
-              type="number"
-              value={newPreferences.email_notifications_delay}
-              onChange={evt => {
-                setNewPreferences({
-                  ...newPreferences,
-                  email_notifications_delay: (evt.target as HTMLInputElement).value,
-                });
-              }}
-            />
+            <div className="parameters_form">
+              <select
+                value={newPreferences.email_notifications_delay}
+                onChange={evt => {
+                  setNewPreferences({
+                    ...newPreferences,
+                    email_notifications_delay: parseInt((evt.target as HTMLSelectElement).value),
+                  });
+                }}
+              >
+                <option value="0">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_never')}</option>
+                <option value="15">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_quarter_hour')}</option>
+                <option value="60">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_hour')}</option>
+                <option value="1440">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_day')}</option>
+              </select>
+            </div>
           </div>
         </Attribute>
         {/* TODO: Add DE and RU traduction and implement the feature */}
-        <Attribute
+        {/* <Attribute
           label={Languages.t('scenes.apps.account.notifications.sound')}
           description={Languages.t('scenes.apps.account.notifications.sound')}
-        ></Attribute>
+        ></Attribute> */}
       </div>
       <div className="group_section">
         <div className="subtitle">
@@ -276,7 +264,7 @@ export default () => {
       <div style={{ textAlign: 'right' }}>
         <ButtonWithTimeout
           className="small buttonValidation"
-          disabled={isEqual(newPreferences, notificationPreferences[0].preferences)}
+          disabled={isEqual(newPreferences, notifsPreferences[0].preferences)}
           onClick={() => saveNewPreferences(newPreferences)}
           value={Languages.t('general.update')}
         />
