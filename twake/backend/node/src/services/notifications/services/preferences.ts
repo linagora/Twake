@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
 import {
   CrudException,
   DeleteResult,
@@ -6,27 +8,21 @@ import {
   OperationType,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import {
-  UserNotificationPreferences,
-  UserNotificationPreferencesPrimaryKey,
-  UserNotificationPreferencesType,
-} from "../entities";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { assign, pick } from "lodash";
+import User, { UserNotificationPreferences } from "../../../services/user/entities/user";
 import gr from "../../global-resolver";
-import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
-import _ from "lodash";
+
+type UserNotificationPreferencesPrimaryKey = {
+  company_id: string;
+  workspace_id: string;
+  user_id: string;
+};
 
 export class NotificationPreferencesService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<UserNotificationPreferences>;
 
   async init(): Promise<this> {
-    this.repository = await gr.database.getRepository<UserNotificationPreferences>(
-      UserNotificationPreferencesType,
-      UserNotificationPreferences,
-    );
-
     return this;
   }
 
@@ -36,16 +32,24 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
 
   async get(
     pk: UserNotificationPreferencesPrimaryKey,
+    user?: User,
     context?: ExecutionContext,
   ): Promise<UserNotificationPreferences> {
-    return await this.repository.findOne(pk, {}, context);
+    user = user || (await gr.services.users.get({ id: pk.user_id }));
+    const notificationPreferences = (user?.preferences?.notifications || []).find(n => {
+      return n.company_id === pk.company_id && n.workspace_id === pk.workspace_id;
+    });
+    return notificationPreferences;
   }
 
   /** We can define preferences for specifically a workspace or for all a company or all Twake
    * This function will ensure we get all with inherit and all
    */
-  async getMerged(pk: UserNotificationPreferencesPrimaryKey): Promise<UserNotificationPreferences> {
-    let preferences = await this.get(pk);
+  async getMerged(
+    pk: UserNotificationPreferencesPrimaryKey,
+    user?: User,
+  ): Promise<UserNotificationPreferences> {
+    let preferences = await this.get(pk, user);
     if (pk.workspace_id !== "all")
       preferences = _.merge(await this.get({ ...pk, workspace_id: "all" }), preferences);
     if (pk.company_id !== "all")
@@ -60,13 +64,20 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
     pk: UserNotificationPreferencesPrimaryKey,
     context?: ExecutionContext,
   ): Promise<DeleteResult<UserNotificationPreferences>> {
-    await this.repository.remove(pk as UserNotificationPreferences, context);
+    const user = await gr.services.users.get({ id: pk.user_id });
+    const notificationPreferences = (user?.preferences?.notifications || []).filter(n => {
+      return n.company_id !== pk.company_id || n.workspace_id !== pk.workspace_id;
+    });
 
-    return new DeleteResult(
-      UserNotificationPreferencesType,
-      pk as UserNotificationPreferences,
-      true,
+    await gr.services.users.setPreferences(
+      { id: pk.user_id },
+      {
+        notifications: notificationPreferences,
+      },
+      context,
     );
+
+    return new DeleteResult("user_notifications_preference", pk as any, true);
   }
 
   async listPreferences(
@@ -80,30 +91,41 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
       throw CrudException.badRequest("workspace_id, company_id and user_id are required");
     }
 
-    return await this.repository.find(
-      {
-        workspace_id,
-        company_id,
-        user_id,
-        ...pick(filter, ["user_id"]),
-      },
-      {},
-      context,
-    );
+    const user = await gr.services.users.get({ id: user_id });
+
+    const notificationPreferences = (user?.preferences?.notifications || []).filter(n => {
+      return n.company_id === company_id && n.workspace_id === workspace_id;
+    });
+
+    return new ListResult("user_notifications_preference", notificationPreferences);
   }
 
   async savePreferences(
-    notificationPreferences: UserNotificationPreferences,
+    singleNotificationPreferences: UserNotificationPreferences,
+    userId: string,
     context: ExecutionContext,
   ): Promise<SaveResult<UserNotificationPreferences>> {
-    const notificationPreferencesEntity = new UserNotificationPreferences();
-    assign(notificationPreferencesEntity, notificationPreferences);
+    const user = await gr.services.users.get({ id: userId });
 
-    await this.repository.save(notificationPreferencesEntity, context);
+    const notificationPreferences = (user?.preferences?.notifications || []).filter(n => {
+      return (
+        n.company_id !== singleNotificationPreferences.company_id ||
+        n.workspace_id !== singleNotificationPreferences.workspace_id
+      );
+    });
+    notificationPreferences.push(singleNotificationPreferences);
+
+    await gr.services.users.setPreferences(
+      { id: userId },
+      {
+        notifications: notificationPreferences,
+      },
+      context,
+    );
 
     return new SaveResult(
-      UserNotificationPreferencesType,
-      notificationPreferences,
+      "user_notifications_preference",
+      singleNotificationPreferences,
       OperationType.CREATE,
     );
   }

@@ -43,6 +43,17 @@ export class MobilePushService {
       collapse_key: message.channel_id,
     };
 
+    const { preferences } = await gr.services.notifications.preferences.getMerged(
+      { user_id: user.id, company_id: message.company_id, workspace_id: message.workspace_id },
+      user,
+    );
+    if (preferences.mobile_notifications === "never") {
+      return;
+    }
+    if (preferences.private_message_content) {
+      notification.body = "[Private]";
+    }
+
     await gr.platformServices.push.push(user.devices, notification, options);
   }
 }

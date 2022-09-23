@@ -934,7 +934,9 @@ export class ChannelServiceImpl {
     return channels;
   }
 
-  async completeWithStatistics(channels: ChannelObject[]) {
+  async completeWithStatistics(
+    channels: Pick<ChannelObject, "id" | "company_id" | "workspace_id" | "stats">[],
+  ) {
     await Promise.all(
       channels.map(async a => {
         const members = await gr.services.channels.members.getUsersCount({

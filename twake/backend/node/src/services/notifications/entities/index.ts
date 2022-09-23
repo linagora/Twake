@@ -18,10 +18,3 @@ export {
   TYPE as UserNotificationBadgeType,
   getInstance as getUserNotificationBadgeInstance,
 } from "./user-notification-badges";
-
-export {
-  UserNotificationPreferences,
-  UserNotificationPreferencesPrimaryKey,
-  TYPE as UserNotificationPreferencesType,
-  getInstance as getUserNotificationPreferencesInstance,
-} from "./user-notifications-preferences";

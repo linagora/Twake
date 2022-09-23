@@ -1,31 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { handleError } from "../../../../utils/handleError";
-import {
-  CreateNotificationPreferencesBody,
-  NotificationPreferenceListQueryParameters,
-} from "../../types";
-import {
-  ResourceCreateResponse,
-  ResourceDeleteResponse,
-  ResourceGetResponse,
-  ResourceListResponse,
-} from "../../../../utils/types";
-import { UserNotificationPreferences } from "../../entities";
-import gr from "../../../global-resolver";
 import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
+import { UserNotificationPreferences } from "../../../../services/user/entities/user";
+import { handleError } from "../../../../utils/handleError";
+import { ResourceCreateResponse, ResourceListResponse } from "../../../../utils/types";
+import gr from "../../../global-resolver";
+import { NotificationPreferenceListQueryParameters } from "../../types";
 
 const ALL = "all";
 
-export class NotificationPreferencesController
-  implements
-    CrudController<
-      ResourceGetResponse<UserNotificationPreferences>,
-      ResourceCreateResponse<UserNotificationPreferences>,
-      ResourceListResponse<UserNotificationPreferences>,
-      ResourceDeleteResponse
-    >
-{
+export class NotificationPreferencesController {
   async list(
     request: FastifyRequest<{
       Querystring: NotificationPreferenceListQueryParameters;
@@ -42,7 +25,7 @@ export class NotificationPreferencesController
   }
 
   async save(
-    request: FastifyRequest<{ Body: CreateNotificationPreferencesBody }>,
+    request: FastifyRequest<{ Body: { resource: UserNotificationPreferences } }>,
     reply: FastifyReply,
     context?: ExecutionContext,
   ): Promise<ResourceCreateResponse<UserNotificationPreferences>> {
@@ -58,6 +41,7 @@ export class NotificationPreferencesController
     try {
       const result = await gr.services.notifications.preferences.savePreferences(
         entity as UserNotificationPreferences,
+        context.user.id,
         context,
       );
 
