@@ -21,9 +21,10 @@ type Props = {
   notificationLevel: 'all' | 'none' | 'mentions' | 'me';
   favorite: boolean;
   unreadMessages: number;
+  mentions: number;
+  replies: number;
   visibility: string; //"private" | "public" | "direct"
   directMembers?: string[];
-  notifications: number;
   menu?: JSX.Element;
   showTooltip?: boolean;
   active?: boolean;
@@ -92,7 +93,7 @@ export default (props: Props) => {
         <div className="writing_activity">{!selected && writingActivity && <WritingLoader />}</div>
         <div className="more">
           {props.notificationLevel === 'none' && <Icon type="bell-slash merge-icon grey-icon" />}
-          {props.notifications > 0 && (
+          {props.mentions + props.replies > 0 && (
             <div
               className={
                 'text-xs font-medium h-5 w-5 flex items-center justify-center text-sm rounded-full ml-1' +
@@ -103,17 +104,20 @@ export default (props: Props) => {
               <Beacon tag="channel_bar_component" />
             </div>
           )}
-          {props.unreadMessages > 0 && (
+          {Math.max(props.mentions + props.replies, props.unreadMessages) > 0 && (
             <div
               className={
                 'text-xs font-medium h-5 px-1.5 flex items-center justify-center text-sm rounded-full ml-1' +
                 (props.notificationLevel === 'all' ||
-                (props.notifications > 0 && props.notificationLevel !== 'none')
+                (props.mentions + props.replies > 0 && props.notificationLevel !== 'none')
                   ? blueBadgeClassName
                   : grayBadgeClassName)
               }
             >
-              {Math.min(99, Math.max(1, props.notifications || props.unreadMessages))}
+              {Math.min(
+                99,
+                Math.max(1, Math.max(props.mentions + props.replies, props.unreadMessages)),
+              )}
             </div>
           )}
           {props.menu}
