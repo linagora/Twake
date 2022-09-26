@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from 'antd';
 import { isEqual } from 'lodash';
 import Languages from 'app/features/global/services/languages-service';
@@ -14,19 +14,28 @@ import {
 import { UseNotificationPreferences } from 'app/features/notifications-preferences/hooks/use-notifications-preference-hook';
 
 export default () => {
-  const loading = useRef(true);
   const {save, notifsPreferences} = UseNotificationPreferences();
   const [newPreferences, setNewPreferences] = useState<preferencesType>();
 
-  if (loading.current && !!notifsPreferences && notifsPreferences.length) {
-    setNewPreferences(notifsPreferences[0].preferences);
-    loading.current = false;
-  }
+  useEffect(() => {
+    if(notifsPreferences && notifsPreferences.length) {
+      setNewPreferences(notifsPreferences[0]?.preferences || {
+        highlight_words: [],
+        night_break: {enable: false, from: 0, to: 0},
+        private_message_content: false,
+        mobile_notifications: "always",
+        email_notifications_delay: 15,
+        deactivate_notifications_until: 0,
+        notification_sound: "default"
+      });
+    }
+  }, [notifsPreferences])
 
   const saveNewPreferences = async (preferences: preferencesType) => {
     save(preferences);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const generateTimeOptions = () => {
     const options = [];
     for (let value = 0; value < 24; value += 0.5) {
