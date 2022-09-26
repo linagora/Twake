@@ -52,9 +52,9 @@ export default (props: Props): JSX.Element => {
         notifications.filter(
           n =>
             (n.mention_type === 'me' &&
-              ['mentions', 'me'].includes(channel.user_member?.notification_level || '')) ||
+              ['mentions', 'me', 'all'].includes(channel.user_member?.notification_level || '')) ||
             (n.mention_type === 'global' &&
-              ['mentions'].includes(channel.user_member?.notification_level || '')),
+              ['mentions', 'all'].includes(channel.user_member?.notification_level || '')),
         ).length || 0
       }
       selected={selected}
