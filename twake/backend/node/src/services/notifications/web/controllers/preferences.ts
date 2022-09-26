@@ -21,7 +21,27 @@ export class NotificationPreferencesController {
       { ...request.query },
     );
 
-    return { resources: list.getEntities() };
+    let resources = list.getEntities();
+
+    if (!resources.length) {
+      resources = [
+        {
+          company_id: ALL,
+          workspace_id: ALL,
+          preferences: {
+            highlight_words: [],
+            night_break: { enable: false, from: 0, to: 0 },
+            private_message_content: false,
+            mobile_notifications: "always",
+            email_notifications_delay: 15,
+            deactivate_notifications_until: 0,
+            notification_sound: "default",
+          },
+        },
+      ];
+    }
+
+    return { resources };
   }
 
   async save(
@@ -41,7 +61,7 @@ export class NotificationPreferencesController {
     try {
       const result = await gr.services.notifications.preferences.savePreferences(
         entity as UserNotificationPreferences,
-        context.user.id,
+        request.currentUser.id,
         context,
       );
 
