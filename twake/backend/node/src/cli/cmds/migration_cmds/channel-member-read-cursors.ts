@@ -24,6 +24,8 @@ class ChannelMemberReadCursorsMigrator {
     const companyPagination: Paginable = new Pagination(null, "100");
     const companies = await gr.services.companies.getCompanies(companyPagination);
 
+    context.user.server_request = true;
+
     for (const company of companies.getEntities()) {
       const { id: CompanyId } = company;
 
@@ -34,7 +36,6 @@ class ChannelMemberReadCursorsMigrator {
         const channels = await gr.services.channels.channels.getAllChannelsInWorkspace(
           CompanyId,
           workspaceId,
-          context,
         );
 
         for (const channel of channels) {
