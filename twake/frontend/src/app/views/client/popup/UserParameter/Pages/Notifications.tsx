@@ -229,10 +229,29 @@ export default () => {
           </div>
         </Attribute>
         {/* TODO: Add DE and RU traduction and implement the feature */}
-        {/* <Attribute
+        <Attribute
           label={Languages.t('scenes.apps.account.notifications.sound')}
           description={Languages.t('scenes.apps.account.notifications.sound')}
-        ></Attribute> */}
+        >
+          <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
+            {/* TODO: Add an explanatory message */}
+            <div className="parameters_form">
+              <select
+                value={newPreferences.notification_sound}
+                onChange={evt => {
+                  setNewPreferences({
+                    ...newPreferences,
+                    notification_sound: (evt.target as HTMLSelectElement).value,
+                  });
+                }}
+              >
+                <option value="none">{Languages.t('scenes.app.popup.userparameter.pages.notification_sound.none')}</option>
+                <option value="default">{Languages.t('scenes.app.popup.userparameter.pages.notification_sound.defaut')}</option>
+                <option value="belligerent">Belligerent</option>
+              </select>
+            </div>
+          </div>
+        </Attribute>
       </div>
       <div className="group_section">
         <div className="subtitle">

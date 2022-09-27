@@ -17,6 +17,7 @@ import windowState from 'app/features/global/utils/window';
 import RouterService, { ClientStateType } from '../../router/services/router-service';
 import { pushDesktopNotification } from '../services/push-desktop-notification';
 import { RouterState } from 'app/features/router/state/atoms/router';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 
 export let removeBadgesNow: (type: 'company' | 'workspace' | 'channel', id: string) => void = () =>
   undefined;
@@ -139,14 +140,16 @@ export const useNotifications = () => {
     },
     [badges],
   );
-
+  
+  const { user } = useCurrentUser();
+  const soundType = user?.preference?.notifications[0]?.preferences?.notification_sound || 'default';
   const realtimeEvent = useRecoilCallback(
     ({ snapshot }) =>
       async (action: string, resource: any) => {
         const routerState = snapshot.getLoadable(RouterState).valueMaybe() as ClientStateType;
 
         if (action === 'event' && resource._type === 'notification:desktop') {
-          pushDesktopNotification({ ...resource, routerState });
+          pushDesktopNotification({ ...resource, routerState }, soundType);
           userNotificationApiClient.acknowledge(resource);
         }
         if (action === 'saved') addBadges([resource]);

@@ -74,6 +74,7 @@ const openNotification = (
 
 export const pushDesktopNotification = (
   notification: DesktopNotification & { routerState: ClientStateType },
+  soundType: 'default' | 'none' | string
 ) => {
   if (notification) {
     const title = notification.title || '';
