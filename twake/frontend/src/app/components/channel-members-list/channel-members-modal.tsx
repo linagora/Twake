@@ -22,7 +22,7 @@ export const ChannelMembersListModal = (): JSX.Element => {
   const channelId = useRouterChannel();
   const [query, setQuery] = useState<string>('');
 
-  const { addEmailSuggestion, pendingEmailList, channelMembersList, usersList, search } =
+  const { addEmailSuggestion, pendingEmailList, channelMembersList, usersList, search, refresh } =
     useSearchChannelMembersAll({
       channelId,
     });
@@ -32,6 +32,10 @@ export const ChannelMembersListModal = (): JSX.Element => {
       search(query);
     });
   }, [search, query]);
+
+  useEffect(() => {
+    if (channelId) refresh();
+  });
 
   return (
     <div
