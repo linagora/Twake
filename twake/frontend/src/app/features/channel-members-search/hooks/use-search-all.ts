@@ -12,7 +12,9 @@ import { useChannelPendingEmails } from './use-pending-emails';
 
 export const useSearchChannelMembersAll = (params: ParamsChannelMember) => {
   const { channelMembers } = useChannelMembers(params);
-  const { listChannelMembers } = useSearchChannelMembers(params?.channelId || '');
+  const { listChannelMembers, refresh: refreshMembers } = useSearchChannelMembers(
+    params?.channelId || '',
+  );
 
   const [searchState, setSearchState] = useRecoilState(SearchChannelMemberInputState);
 
@@ -23,6 +25,11 @@ export const useSearchChannelMembersAll = (params: ParamsChannelMember) => {
 
   const pendingEmailList = searchState ? filteredPendingEmails : pendingEmails;
   const channelMembersList = searchState ? listChannelMembers : channelMembers;
+
+  const refresh = async () => {
+    await refreshMembers();
+    searchUsers(searchState || '');
+  };
 
   useEffect(() => {
     searchUsers(searchState);
@@ -48,5 +55,6 @@ export const useSearchChannelMembersAll = (params: ParamsChannelMember) => {
     channelMembersList,
     search: setSearchState,
     query: searchState,
+    refresh,
   };
 };

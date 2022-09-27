@@ -54,10 +54,12 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
         user_id: badge.user_id,
         workspace_id: "all",
       });
-      if (!preferences?.preferences?.email_notifications_delay) {
+      let emailNotificationsDelay = preferences?.preferences?.email_notifications_delay;
+      if (emailNotificationsDelay === undefined) emailNotificationsDelay = 15;
+      if (!emailNotificationsDelay) {
         return;
       } else {
-        deliver_at = Date.now() + preferences.preferences.email_notifications_delay * 1000 * 60;
+        deliver_at = Date.now() + emailNotificationsDelay * 1000 * 60;
       }
     }
     await this.repository.save(
