@@ -17,7 +17,6 @@ type DesktopNotification = {
 };
 
 let inAppNotificationKey = 0;
-const newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
 
 const callback = (
   notificationObject: (DesktopNotification & { routerState: ClientStateType }) | null,
@@ -76,6 +75,16 @@ export const pushDesktopNotification = (
   notification: DesktopNotification & { routerState: ClientStateType },
   soundType: 'default' | 'none' | string
 ) => {
+  let notificationAudio = null;
+
+  if(soundType === "default") {
+    notificationAudio = new window.Audio('/public/sounds/newnotification.wav');
+  } else if (soundType === "none") {
+    notificationAudio = null;
+  } else {
+    notificationAudio = new window.Audio(`/public/sounds/${soundType}.wav`);
+  }
+
   if (notification) {
     const title = notification.title || '';
     const message = notification.text || '';
@@ -84,9 +93,9 @@ export const pushDesktopNotification = (
       return;
     }
 
-    if (newNotificationAudio) {
+    if (notificationAudio) {
       try {
-        newNotificationAudio.play();
+        notificationAudio.play();
       } catch (err) {
         console.warn(err);
       }
