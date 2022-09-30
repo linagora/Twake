@@ -8,14 +8,13 @@ import Attribute from 'components/parameters/attribute.js';
 import Switch from 'components/inputs/switch';
 import Radio from 'components/inputs/radio.js';
 
-import {
-  preferencesType,
-} from 'app/features/users/types/notification-preferences-type';
+import { preferencesType } from 'app/features/users/types/notification-preferences-type';
 import { UseNotificationPreferences } from 'app/features/notifications-preferences/hooks/use-notifications-preference-hook';
+import { playNotificationAudio } from 'app/features/users/services/push-desktop-notification';
 
 export default () => {
   const loading = useRef(true);
-  const {save, notifsPreferences} = UseNotificationPreferences();
+  const { save, notifsPreferences } = UseNotificationPreferences();
   const [newPreferences, setNewPreferences] = useState<preferencesType>();
 
   if (loading.current && !!notifsPreferences && notifsPreferences.length) {
@@ -220,10 +219,20 @@ export default () => {
                   });
                 }}
               >
-                <option value="0">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_never')}</option>
-                <option value="15">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_quarter_hour')}</option>
-                <option value="60">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_hour')}</option>
-                <option value="1440">{Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_day')}</option>
+                <option value="0">
+                  {Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_never')}
+                </option>
+                <option value="15">
+                  {Languages.t(
+                    'scenes.app.popup.userparameter.pages.email_notif_delay_quarter_hour',
+                  )}
+                </option>
+                <option value="60">
+                  {Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_hour')}
+                </option>
+                <option value="1440">
+                  {Languages.t('scenes.app.popup.userparameter.pages.email_notif_delay_one_day')}
+                </option>
               </select>
             </div>
           </div>
@@ -239,15 +248,22 @@ export default () => {
               <select
                 value={newPreferences.notification_sound}
                 onChange={evt => {
+                  playNotificationAudio(evt.target.value);
                   setNewPreferences({
                     ...newPreferences,
                     notification_sound: (evt.target as HTMLSelectElement).value,
                   });
                 }}
               >
-                <option value="none">{Languages.t('scenes.app.popup.userparameter.pages.notification_sound.none')}</option>
-                <option value="default">{Languages.t('scenes.app.popup.userparameter.pages.notification_sound.defaut')}</option>
+                <option value="none">
+                  {Languages.t('scenes.app.popup.userparameter.pages.notification_sound.none')}
+                </option>
+                <option value="default">
+                  {Languages.t('scenes.app.popup.userparameter.pages.notification_sound.defaut')}
+                </option>
                 <option value="belligerent">Belligerent</option>
+                <option value="chord">Chord</option>
+                <option value="polite">Polite</option>
               </select>
             </div>
           </div>

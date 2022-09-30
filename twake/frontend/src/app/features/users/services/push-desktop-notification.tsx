@@ -71,20 +71,35 @@ const openNotification = (
   });
 };
 
-export const pushDesktopNotification = (
-  notification: DesktopNotification & { routerState: ClientStateType },
-  soundType: 'default' | 'none' | string
-) => {
+const notificationsSounds: any = {
+  default: new window.Audio('/public/sounds/newnotification.wav'),
+  belligerent: new window.Audio('/public/sounds/belligerent.wav'),
+  chord: new window.Audio('/public/sounds/chord.wav'),
+  polite: new window.Audio('/public/sounds/polite.wav'),
+};
+
+export const playNotificationAudio = (sound: string) => {
   let notificationAudio = null;
 
-  if(soundType === "default") {
-    notificationAudio = new window.Audio('/public/sounds/newnotification.wav');
-  } else if (soundType === "none") {
+  if (sound === 'none') {
     notificationAudio = null;
   } else {
-    notificationAudio = new window.Audio(`/public/sounds/${soundType}.wav`);
+    notificationAudio = notificationsSounds[sound];
   }
 
+  if (notificationAudio) {
+    try {
+      notificationAudio.play();
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+};
+
+export const pushDesktopNotification = (
+  notification: DesktopNotification & { routerState: ClientStateType },
+  soundType: 'default' | 'none' | string,
+) => {
   if (notification) {
     const title = notification.title || '';
     const message = notification.text || '';
@@ -93,13 +108,7 @@ export const pushDesktopNotification = (
       return;
     }
 
-    if (notificationAudio) {
-      try {
-        notificationAudio.play();
-      } catch (err) {
-        console.warn(err);
-      }
-    }
+    playNotificationAudio(soundType);
 
     if (window.document.hasFocus()) {
       openNotification(
