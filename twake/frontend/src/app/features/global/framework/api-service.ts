@@ -127,12 +127,12 @@ export default class Api {
       disableJWTAuthentication?: boolean;
     } = {},
   ): Promise<Response> {
-    return Api.request(route, {}, callback, raw, { ...options, requestType: 'delete' });
+    return Api.request(route, null, callback, raw, { ...options, requestType: 'delete' });
   }
 
   static request<Request extends { _grouped?: unknown }, Response>(
     route: string,
-    data: Request,
+    data: Request | null,
     callback: any = false,
     raw = false,
     options: {
@@ -140,7 +140,7 @@ export default class Api {
       requestType?: 'post' | 'get' | 'put' | 'delete';
     } = {},
   ): Promise<Response> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (data && data._grouped && route === 'core/collections/init') {
         GroupedQueryApiInstance.post(route, data, callback);
         return;
@@ -149,7 +149,7 @@ export default class Api {
       Requests.request(
         options.requestType ? options.requestType : 'post',
         new URL(route, Globals.api_root_url).toString(),
-        JSON.stringify(data),
+        data === null ? '' : JSON.stringify(data),
         (resp: any) => {
           if (raw) {
             resolve(resp);

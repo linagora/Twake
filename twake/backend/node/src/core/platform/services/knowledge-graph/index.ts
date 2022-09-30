@@ -135,12 +135,16 @@ export default class KnowledgeGraphService
     const user = userId ? await gr.services.users.get({ id: userId }) : null;
     const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
     const isCompanyForwarded = !!(companyIds || []).find(v => forwardedCompanies.includes(v));
-    return (!userId || (user && user.preferences.knowledge_graph !== "nothing")) &&
+    if (user?.preferences && !user.preferences.knowledge_graph)
+      user.preferences.knowledge_graph = "metadata";
+    return (!userId || (user && user.preferences?.knowledge_graph !== "nothing")) &&
       (!companyIds ||
         companyIds.length === 0 ||
         isCompanyForwarded ||
         forwardedCompanies.length === 0)
-      ? (user.preferences.knowledge_graph as "all" | "metadata")
+      ? user
+        ? (user.preferences.knowledge_graph as "all" | "metadata")
+        : "all"
       : false;
   }
 
