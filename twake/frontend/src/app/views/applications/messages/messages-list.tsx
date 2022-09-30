@@ -24,6 +24,7 @@ import User from 'app/features/users/services/current-user-service';
 import { useChannelMembersReadSections } from 'app/features/channel-members/hooks/use-channel-members-read-sections';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
+import { usePageVisibility } from "react-page-visibility";
 
 type Props = {
   companyId: string;
@@ -82,13 +83,14 @@ export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
   };
 
   const { refresh: refreshChannels } = useRefreshPublicOrPrivateChannels();
+  const isPageVisible = usePageVisibility();
 
   useEffect(() => {
     if (messages.length === 0) loadMore('history');
   }, []);
 
   useEffect(() => {
-    if (window.reachedEnd && atBottom && messages.length > 0 && !document.hidden) {
+    if (window.reachedEnd && atBottom && messages.length > 0 && isPageVisible) {
       const seenMessages = messages.filter(message => {
         const m = getMessage(message.id || message.threadId);
         const currentUserId = User.getCurrentUserId();
@@ -111,7 +113,7 @@ export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
         });
       }
     }
-  }, [messages, messages.length, window.reachedEnd, document.hidden]);
+  }, [messages, messages.length, window.reachedEnd, isPageVisible]);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
@@ -160,7 +162,7 @@ export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
   }, [messages.length > 0]);
 
   useEffect(() => {
-    if (messages.length && workspaceId === 'direct') {
+    if (messages.length) {
       delayRequest('message-list-load-read-sections', async () => {
         loadReadSections();
       });
