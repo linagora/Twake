@@ -1,16 +1,16 @@
-import {useRecoilState, useSetRecoilState} from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import {ChannelType} from 'app/features/channels/types/channel';
-import {DirectChannelsState} from '../state/channels';
+import { ChannelType } from 'app/features/channels/types/channel';
+import { DirectChannelsState } from '../state/channels';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
-import {useRealtimeRoom} from 'app/features/global/hooks/use-realtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import {LoadingState} from 'app/features/global/state/atoms/Loading';
-import {useGlobalEffect} from 'app/features/global/hooks/use-global-effect';
-import {useSetUserList} from 'app/features/users/hooks/use-user-list';
-import {UserType} from 'app/features/users/types/user';
-import {useSetChannel} from './use-channel';
+import { LoadingState } from 'app/features/global/state/atoms/Loading';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import { useSetUserList } from 'app/features/users/hooks/use-user-list';
+import { UserType } from 'app/features/users/types/user';
+import { getChannel, useSetChannel } from './use-channel';
 import ChannelAPIClient from '../api/channel-api-client';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import RouterService from 'app/features/router/services/router-service';
@@ -50,6 +50,7 @@ export function useDirectChannelsSetup() {
     LoadingState(`channels-direct-did-load-${companyId}`),
   );
   const { refresh } = useRefreshDirectChannels();
+  const { set } = useSetChannel();
 
   useGlobalEffect(
     'useDirectChannels',
@@ -62,12 +63,16 @@ export function useDirectChannelsSetup() {
     [companyId],
   );
 
-  useRealtimeRoom<ChannelType[]>(
+  useRealtimeRoom<ChannelType & { _type: string }>(
     ChannelsMineAPIClient.websockets(companyId, 'direct')[0],
     'useDirectChannels',
-    (_action) => {
+    (_action, event) => {
       //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
+      if (_action === 'updated' && event._type === 'channel_activity') {
+        if (event.id)
+          set({ ...getChannel(event.id), stats: event.stats, last_message: event.last_message });
+      }
     },
   );
 }

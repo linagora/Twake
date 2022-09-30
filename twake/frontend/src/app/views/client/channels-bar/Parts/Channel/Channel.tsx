@@ -117,7 +117,8 @@ export default (props: Props) => {
             </div>
           )}
           {!(props.visibility === 'direct' && props.mentions + props.replies === 0) &&
-            Math.max(props.mentions + props.replies, props.unreadMessages) > 0 && (
+            ((props.unreadMessages > 0 && props.mentions + props.replies === 0) ||
+              props.mentions + props.replies > 1) && (
               <div
                 className={
                   'text-xs font-medium h-5 px-1.5 flex items-center justify-center text-sm rounded-full ml-1' +

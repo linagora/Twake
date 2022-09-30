@@ -390,16 +390,19 @@ export class ChannelServiceImpl {
   ): Promise<UpdateResult<ChannelActivity>> {
     const channelPK = payload.channel;
     const channelActivityMessage = payload.message;
-    const channel = await this.channelRepository.findOne(
+    const channel = (await this.channelRepository.findOne(
       _.pick(channelPK, "company_id", "workspace_id", "id"),
       {},
       context,
-    );
+    )) as ChannelObject & { stats: ChannelObject["stats"] };
+    await gr.services.channels.channels.completeWithStatistics([channel]);
+
     const entity = new ChannelActivity();
     entity.channel_id = channelPK.id;
     entity.company_id = channelPK.company_id;
     entity.workspace_id = channelPK.workspace_id;
     entity.last_activity = payload.date;
+    entity.stats = channel.stats;
     entity.last_message = channelActivityMessage
       ? {
           date: channelActivityMessage.date,
