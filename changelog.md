@@ -1,9 +1,14 @@
-# Twake 2022.Q3.1071
+# Twake 2022.Q3.1120
 
 - Message delivery status 🟢
 - New quote-reply feature ⤴️
 - Notification when someone react to your message 👍
 - New file preview and medias gallery with navigation, caption, and message context 🕶
+- New badge notification system (mention, unread, etc)
+- Digest notifications by email ✉️
+- Ability to customize notification sound
+- Improved user live status indicator
+- See when user was last active on Twake ⏰
 - Big simplification of backend 👩‍💻
 
 # Twake 2022.Q3.1065
