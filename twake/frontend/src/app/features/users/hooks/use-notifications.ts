@@ -140,9 +140,10 @@ export const useNotifications = () => {
     },
     [badges],
   );
-  
+
   const { user } = useCurrentUser();
-  const soundType = user?.preference?.notifications[0]?.preferences?.notification_sound || 'default';
+  const soundType =
+    user?.preference?.notifications?.[0]?.preferences?.notification_sound || 'default';
   const realtimeEvent = useRecoilCallback(
     ({ snapshot }) =>
       async (action: string, resource: any) => {
