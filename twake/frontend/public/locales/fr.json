@@ -397,6 +397,8 @@
     "scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description": "Choisissez une période pendant laquelle vous ne recevez pas de notifications.",
     "scenes.app.popup.userparameter.pages.no_night_disturbing_label": "Ne pas déranger la nuit",
     "scenes.app.popup.userparameter.pages.notif_content_label": "Contenu des notifications",
+    "scenes.app.popup.userparameter.pages.notification_sound.defaut": "Par défaut",
+    "scenes.app.popup.userparameter.pages.notification_sound.none": "Désactivé",
     "scenes.app.mainview.quick_search_placeholder": "Recherche rapide",
     "scenes.app.popup.userparameter.personnal_workspaces_title": "Vos espaces de travail",
     "scenes.app.popup.userparameter.pages.private_message_content.show": "Afficher le contenu des messages privés",

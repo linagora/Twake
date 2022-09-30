@@ -10,6 +10,7 @@ import Radio from 'components/inputs/radio.js';
 
 import { preferencesType } from 'app/features/users/types/notification-preferences-type';
 import { UseNotificationPreferences } from 'app/features/notifications-preferences/hooks/use-notifications-preference-hook';
+import { playNotificationAudio } from 'app/features/users/services/push-desktop-notification';
 
 export default () => {
   const { save, notifsPreferences } = UseNotificationPreferences();
@@ -249,10 +250,36 @@ export default () => {
           </div>
         </Attribute>
         {/* TODO: Add DE and RU traduction and implement the feature */}
-        {/* <Attribute
+        <Attribute
           label={Languages.t('scenes.apps.account.notifications.sound')}
           description={Languages.t('scenes.apps.account.notifications.sound')}
-        ></Attribute> */}
+        >
+          <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
+            {/* TODO: Add an explanatory message */}
+            <div className="parameters_form">
+              <select
+                value={newPreferences.notification_sound}
+                onChange={evt => {
+                  playNotificationAudio(evt.target.value);
+                  setNewPreferences({
+                    ...newPreferences,
+                    notification_sound: (evt.target as HTMLSelectElement).value,
+                  });
+                }}
+              >
+                <option value="none">
+                  {Languages.t('scenes.app.popup.userparameter.pages.notification_sound.none')}
+                </option>
+                <option value="default">
+                  {Languages.t('scenes.app.popup.userparameter.pages.notification_sound.defaut')}
+                </option>
+                <option value="belligerent">Belligerent</option>
+                <option value="chord">Chord</option>
+                <option value="polite">Polite</option>
+              </select>
+            </div>
+          </div>
+        </Attribute>
       </div>
       <div className="group_section">
         <div className="subtitle">

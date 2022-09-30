@@ -413,6 +413,8 @@
     "scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description": "Choose a period during which you do not receive notifications.",
     "scenes.app.popup.userparameter.pages.no_night_disturbing_label": "Do not disturb at night",
     "scenes.app.popup.userparameter.pages.notif_content_label": "Content of notifications",
+    "scenes.app.popup.userparameter.pages.notification_sound.defaut": "Default",
+    "scenes.app.popup.userparameter.pages.notification_sound.none": "None",
     "scenes.app.mainview.quick_search_placeholder": "Quick search",
     "scenes.app.popup.userparameter.personnal_workspaces_title": "Your workspaces",
     "scenes.app.popup.workspaceparameter.admin_current_status": "You are an Administrator.",
