@@ -85,9 +85,6 @@ export const useNotifications = () => {
           'id',
         );
         setBadges(list);
-        list.map(notification => {
-          userNotificationApiClient.acknowledge(notification);
-        });
       },
     [setBadges, badges],
   );
