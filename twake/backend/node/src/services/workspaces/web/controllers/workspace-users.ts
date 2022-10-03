@@ -84,7 +84,7 @@ export class WorkspaceUsersCrudController
         status: user.status_icon,
         last_activity: user.last_activity,
         cache: {
-          companies: user.cache.companies,
+          companies: user.cache?.companies || [],
         },
         companies: userCompanies
           .filter(cu => companiesMap.get(cu.group_id))
