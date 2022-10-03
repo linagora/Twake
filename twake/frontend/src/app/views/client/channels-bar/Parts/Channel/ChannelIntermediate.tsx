@@ -51,7 +51,7 @@ export default (props: Props): JSX.Element => {
       mentions={
         notifications.filter(
           n =>
-            n.mention_type === null ||
+            !n.mention_type ||
             (n.mention_type === 'me' &&
               ['mentions', 'me', 'all'].includes(channel.user_member?.notification_level || '')) ||
             (n.mention_type === 'global' &&
