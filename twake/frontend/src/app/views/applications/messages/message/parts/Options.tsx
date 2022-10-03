@@ -132,7 +132,7 @@ export default (props: Props) => {
         icon: 'corner-down-left',
         text: Languages.t('scenes.apps.messages.message.reply_button', [], 'Reply'),
         onClick: () => {
-          setQuoteReply({ message: message.id, channel: channelId });
+          setQuoteReply({ message: message.thread_id, channel: channelId });
         },
       });
     }
@@ -336,7 +336,7 @@ export default (props: Props) => {
             <div
               className="option"
               onClick={() => {
-                setQuoteReply({ message: message.id, channel: channelId });
+                setQuoteReply({ message: message.thread_id, channel: channelId });
               }}
             >
               <CornerDownLeft size={16} />

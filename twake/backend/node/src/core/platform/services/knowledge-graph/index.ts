@@ -103,9 +103,9 @@ export default class KnowledgeGraphService
 
     if (
       this.kgAPIClient &&
-      (await this.shouldForwardEvent(data.resource.cache.companies, data.resource.id))
+      (await this.shouldForwardEvent(data.resource.cache?.companies || [], data.resource.id))
     ) {
-      for (const companyId of data.resource.cache.companies) {
+      for (const companyId of data.resource.cache?.companies || []) {
         this.kgAPIClient.onUserCreated(companyId, data.resource);
       }
     }
