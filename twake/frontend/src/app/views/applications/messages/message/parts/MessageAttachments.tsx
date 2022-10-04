@@ -37,13 +37,14 @@ export default () => {
             key={file.metadata?.external_id || file.id}
             type={'message'}
             file={file}
+            xlarge={files.length === 1 && (files[0].metadata?.thumbnails?.length || 0) > 0}
             large={
               //If all the documents are images
               files.length <= 6 &&
               files.filter(
                 file =>
                   file.metadata?.source === 'internal' &&
-                  (file.metadata?.thumbnails?.length || 0) > 0
+                  (file.metadata?.thumbnails?.length || 0) > 0,
               ).length === files.length
             }
             onRemove={() => setFiles(files.filter(f => f.id !== file.id))}
