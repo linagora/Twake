@@ -30,6 +30,7 @@ type PropsType = {
   onRemove?: () => void;
   className?: string;
   large?: boolean;
+  xlarge?: boolean;
 };
 
 export default ({
@@ -43,6 +44,7 @@ export default ({
   status,
   onRemove,
   large,
+  xlarge,
 }: PropsType) => {
   const { companyId, workspaceId } = RouterService.getStateFromRoute();
   const [file, setFile] = useState<DataFileType>(_file);
@@ -109,13 +111,34 @@ export default ({
     }
   };
 
-  const computedWidth = file.thumbnail_ratio * 200;
+  let computedHeight = 200;
+  let computedWidth = file.thumbnail_ratio * 200;
   const isMediaFile = ['image', 'video'].includes(file.type);
+
+  if (xlarge) {
+    computedWidth = Math.max(
+      160,
+      Math.min(
+        Math.min(messageFile.metadata?.thumbnails?.[0]?.width || 600, 600),
+        file.thumbnail_ratio * document.body.clientHeight * 0.5,
+      ),
+    );
+    computedHeight = Math.max(
+      200,
+      Math.min(
+        Math.min(
+          messageFile.metadata?.thumbnails?.[0]?.height || 10000,
+          document.body.clientHeight * 0.5,
+        ),
+        computedWidth / file.thumbnail_ratio,
+      ),
+    );
+  }
 
   return (
     <div
       className={classNames(classNameArguments)}
-      style={large ? { width: computedWidth } : {}}
+      style={large ? { width: computedWidth, height: computedHeight } : {}}
       onClick={() => companyId && onClickFile()}
     >
       {large && <LargePreview file={file} />}
