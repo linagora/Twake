@@ -91,30 +91,8 @@ export class UserServiceImpl {
   }
 
   async create(user: User, context?: ExecutionContext): Promise<CreateResult<User>> {
-    this.assignDefaults(user);
-
-    await this.repository.save(user, context);
-    await this.updateExtRepository(user);
-    const result = new CreateResult("user", user);
-
-    if (result) {
-      localEventBus.publish<KnowledgeGraphGenericEventPayload<User>>(
-        KnowledgeGraphEvents.USER_CREATED,
-        {
-          id: result.entity.id,
-          resource: result.entity,
-          links: [
-            {
-              // FIXME: We should provide the company id here
-              id: "",
-              relation: "parent",
-              type: "company",
-            },
-          ],
-        },
-      );
-    }
-    return result;
+    await this.save(user, context);
+    return new CreateResult("user", user);
   }
 
   update(pk: Partial<User>, item: User, context?: ExecutionContext): Promise<UpdateResult<User>> {
@@ -133,6 +111,23 @@ export class UserServiceImpl {
     this.assignDefaults(user);
     await this.repository.save(user, context);
     await this.updateExtRepository(user);
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<User>>(
+      KnowledgeGraphEvents.USER_UPSERT,
+      {
+        id: user.id,
+        resource: user,
+        links: [
+          {
+            // FIXME: We should provide the company id here
+            id: "",
+            relation: "parent",
+            type: "company",
+          },
+        ],
+      },
+    );
+
     return new SaveResult("user", user, OperationType.UPDATE);
   }
 

@@ -194,9 +194,9 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
     await this.onSaved(message, { created: messageCreated }, context);
 
-    if (messageCreated && context.channel) {
+    if (context.channel) {
       localEventBus.publish<KnowledgeGraphGenericEventPayload<Message>>(
-        KnowledgeGraphEvents.MESSAGE_CREATED,
+        KnowledgeGraphEvents.MESSAGE_UPSERT,
         {
           id: message.id,
           resource: message,
