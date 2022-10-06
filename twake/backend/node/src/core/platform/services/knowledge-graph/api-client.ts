@@ -116,7 +116,7 @@ export default class KnowledgeGraphAPIClient {
     }
   }
 
-  public async onMessageCreated(
+  public async onMessageUpsert(
     channelId: string,
     message: Partial<Message>,
     sensitiveData: boolean,
@@ -144,7 +144,7 @@ export default class KnowledgeGraphAPIClient {
     });
 
     if (response.statusText === "OK") {
-      this.logger.info("onMessageCreated %o", response.config.data);
+      this.logger.info("onMessageUpsert %o", response.config.data);
     }
   }
 

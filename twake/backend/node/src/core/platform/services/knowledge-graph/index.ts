@@ -45,12 +45,12 @@ export default class KnowledgeGraphService
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Message>>(
-      KnowledgeGraphEvents.MESSAGE_CREATED,
-      this.onMessageCreated.bind(this),
+      KnowledgeGraphEvents.MESSAGE_UPSERT,
+      this.onMessageUpsert.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<User>>(
-      KnowledgeGraphEvents.USER_CREATED,
+      KnowledgeGraphEvents.USER_UPSERT,
       this.onUserCreated.bind(this),
     );
 
@@ -81,8 +81,8 @@ export default class KnowledgeGraphService
     }
   }
 
-  async onMessageCreated(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
-    this.logger.debug(`${KnowledgeGraphEvents.MESSAGE_CREATED} %o`, data);
+  async onMessageUpsert(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
+    this.logger.debug(`${KnowledgeGraphEvents.MESSAGE_UPSERT} %o`, data);
 
     const allowedToShare = await this.shouldForwardEvent(
       [data.resource.cache.company_id],
@@ -90,7 +90,7 @@ export default class KnowledgeGraphService
     );
 
     if (this.kgAPIClient && allowedToShare) {
-      this.kgAPIClient.onMessageCreated(
+      this.kgAPIClient.onMessageUpsert(
         data.resource.cache.company_id,
         data.resource,
         allowedToShare === "all",
@@ -99,7 +99,7 @@ export default class KnowledgeGraphService
   }
 
   async onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): Promise<void> {
-    this.logger.info(`${KnowledgeGraphEvents.USER_CREATED} %o`, data);
+    this.logger.info(`${KnowledgeGraphEvents.USER_UPSERT} %o`, data);
 
     if (
       this.kgAPIClient &&

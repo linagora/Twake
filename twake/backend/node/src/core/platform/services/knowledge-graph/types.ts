@@ -87,6 +87,6 @@ export enum KnowledgeGraphEvents {
   COMPANY_CREATED = "kg:company:created",
   WORKSPACE_CREATED = "kg:workspace:created",
   CHANNEL_CREATED = "kg:channel:created",
-  MESSAGE_CREATED = "kg:message:created",
-  USER_CREATED = "kg:user:created",
+  MESSAGE_UPSERT = "kg:message:upsert",
+  USER_UPSERT = "kg:user:upsert",
 }
