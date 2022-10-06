@@ -21,7 +21,8 @@ module.exports = {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       borderRadius: {
-        xl: '24px',
+        xxl: '24px',
+        xl: '18px',
         lg: '14px',
         md: '10px',
         sm: '8px',
@@ -47,6 +48,7 @@ module.exports = {
           900: '#18181b',
         },
         blue: {
+          100: '#DEEEFF', //From figma
           500: '#007AFF', //From figma
         },
       },

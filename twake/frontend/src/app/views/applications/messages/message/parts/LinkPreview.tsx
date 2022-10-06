@@ -15,19 +15,23 @@ export default ({ preview }: PropsType): React.ReactElement => {
   const { deleteLinkPreview, message } = useMessage(context);
 
   return (
-    <div className="xs:max-w-xs max-w-md ant-card ant-card-bordered ant-card-small ant-card-type-inner link-preview">
+    <div className="xs:max-w-xs max-w-md link-preview mt-4 pl-2">
       {message.user_id === User.getCurrentUserId() ? (
         <div className="delete-link-preview">
           <X size={16} onClick={() => deleteLinkPreview(preview.url)} />
         </div>
       ) : null}
-      <div className="ant-card-body">
-        <div className="ant-card-meta">
-          <div className="ant-card-meta-detail">
-            <div className="ant-card-meta-avatar">
+      <div className="">
+        <div className="">
+          <div className="">
+            <div className="mb-0">
               {preview.favicon && (
-                <span className="ant-avatar ant-avatar-circle ant-avatar-image">
-                  <img alt={preview.domain} src={preview.favicon} />
+                <span className="">
+                  <img
+                    className="inline-block h-5 w-5 mr-2 rounded-md"
+                    alt={preview.domain}
+                    src={preview.favicon}
+                  />
                 </span>
               )}
               <span className="link-preview-domain">{preview.domain}</span>
@@ -42,7 +46,7 @@ export default ({ preview }: PropsType): React.ReactElement => {
                 {preview.title}
               </a>
             </div>
-            <div className="ant-card-meta-description">{preview.description}</div>
+            <div className="">{preview.description}</div>
           </div>
         </div>
         {preview.img && (

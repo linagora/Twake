@@ -9,6 +9,8 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 
 import './input.scss';
+import { Button } from 'app/atoms/button/button';
+import { ThreadNewIcon } from 'app/atoms/icons-agnostic';
 
 type Props = {
   useButton?: boolean;
@@ -28,23 +30,26 @@ export default (props: Props) => {
   if (!editorIsActive && props.useButton) {
     return (
       <Thread withBlock className="new-thread-button">
-        <ThreadSection
-          noSenderSpace
-          onClick={() => {
-            setVisibleEditor({ location, subLocation });
-          }}
-        >
-          <PlusCircle size={16} className="plus-icon" />{' '}
-          {Languages.t('scenes.apps.messages.new_thread', [], 'Start a new discussion')}
-        </ThreadSection>
+        <div className="p-2">
+          <Button
+            theme="default"
+            className="w-full justify-center"
+            onClick={() => {
+              setVisibleEditor({ location, subLocation });
+            }}
+          >
+            <ThreadNewIcon className="mr-2" />
+            {Languages.t('scenes.apps.messages.new_thread', [], 'Start a new discussion')}
+          </Button>
+        </div>
       </Thread>
     );
   } else {
     return (
       <Thread withBlock className="new-thread">
-        <ThreadSection noSenderSpace>
+        <div className="py-1 px-2">
           <Input channelId={props.channelId} threadId={props.threadId} />
-        </ThreadSection>
+        </div>
       </Thread>
     );
   }

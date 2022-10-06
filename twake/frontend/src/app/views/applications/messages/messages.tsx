@@ -29,7 +29,7 @@ export default (props: Props) => {
   const companyId = props.channel.company_id || '';
   const workspaceId = props.channel.workspace_id || '';
   const channelId = props.channel.id || '';
-  const isDirectChannel = props.channel.visibility !== 'direct';
+  const isDirectChannel = props.channel.visibility === 'direct';
   const threadId = props.options.context?.threadId || '';
   const isChannelMember = useIsChannelMember(channelId);
   const currentUser = UserService.getCurrentUser();
@@ -46,7 +46,7 @@ export default (props: Props) => {
   }
 
   return (
-    <div className="messages-view">
+    <div className={'messages-view ' + (isDirectChannel || threadId ? 'bg-white' : 'bg-zinc-200')}>
       <Suspense fallback={<></>}>
         {!threadId ? (
           <MessagesList
@@ -73,7 +73,7 @@ export default (props: Props) => {
       {isChannelMember && !userIsNotInCompany && (
         <NewThread
           collectionKey=""
-          useButton={isDirectChannel && !threadId}
+          useButton={!isDirectChannel && !threadId}
           channelId={channelId}
           threadId={threadId}
         />

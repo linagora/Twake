@@ -32,7 +32,7 @@ export default (props: Props) => {
         (props.className ? props.className + ' ' : '')
       }
     >
-      <div className="message">
+      <div className="message flex items-end">
         {!props.noSenderSpace && (
           <div className="sender-space">
             {props.withAvatar && (

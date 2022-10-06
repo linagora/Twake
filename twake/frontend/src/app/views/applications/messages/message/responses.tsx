@@ -40,7 +40,7 @@ const Reply = () => {
   const context = React.useContext(MessageContext);
   const { message } = useMessage(context);
   return (
-    <ThreadSection withAvatar alinea small pinned={!!message.pinned_info?.pinned_by}>
+    <ThreadSection className="pt-2" withAvatar pinned={!!message.pinned_info?.pinned_by}>
       <Message />
     </ThreadSection>
   );

@@ -6,6 +6,7 @@ import { UserType } from 'app/features/users/types/user';
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
 import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/features/global/utils/URLUtils';
 import { getUser } from '../hooks/use-user-list';
+import CryptoJS from 'crypto-js';
 
 type SearchQueryType = {
   searching: boolean;
@@ -64,13 +65,20 @@ class User {
     if (user && (user.thumbnail || user.picture)) {
       thumbnail = addApiUrlIfNeeded(user.picture || user.thumbnail || '');
     } else {
-      let output = 0;
-      const string = user?.id || '';
-      for (let i = 0; i < string.length; i++) {
-        output += string[i].charCodeAt(0);
-      }
-      const i = output % 100;
-      thumbnail = getAsFrontUrl(`/public/identicon/${i}.png`);
+      //Generate gradient thumbnail
+      //TODO: move me to backend ?
+      const seed = parseInt(CryptoJS.MD5(user.username).toString().slice(0, 8), 16);
+      const canvas: HTMLCanvasElement = document.createElement('canvas');
+      canvas.width = 254;
+      canvas.height = 254;
+      const ctx = canvas.getContext('2d');
+      const gradient = ctx!.createLinearGradient(254, 254, 0, 0);
+      gradient.addColorStop(0, 'hsl(' + seed + ', 90%, 70%)');
+      gradient.addColorStop(1, 'hsl(' + Math.abs(seed - 60) + ', 90%, 70%)');
+      ctx!.fillStyle = gradient;
+      ctx!.fillRect(0, 0, 254, 254);
+      const b64 = canvas.toDataURL('image/jpeg');
+      thumbnail = b64;
     }
 
     if (user.deleted) {

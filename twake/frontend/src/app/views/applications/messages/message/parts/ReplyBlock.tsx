@@ -9,7 +9,8 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import Input from '../../input/input';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { getChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
-
+import { ThreadReplyIcon } from 'app/atoms/icons-agnostic';
+import { Button } from 'app/atoms/button/button';
 
 export default () => {
   const context = useContext(MessageContext);
@@ -40,30 +41,24 @@ export default () => {
 
   if (editorIsActive) {
     return (
-      <ThreadSection small alinea>
-        <div className="message-content">
-          <Input threadId={message?.id || ''} channelId={channelId} />
-        </div>
-      </ThreadSection>
+      <div className="py-1 px-2">
+        <Input threadId={message?.id || ''} channelId={channelId} />
+      </div>
     );
   }
 
   return (
-    <ThreadSection compact>
-      <div className="message-content">
-        <span
-          className="link"
-          onClick={() =>
-            setVisibleEditor({
-              location,
-              subLocation,
-            })
-          }
-        >
-          <CornerDownRight size={14} className="inline" />{' '}
-          {Languages.t('scenes.apps.messages.message.reply_button')}
-        </span>
-      </div>
-    </ThreadSection>
+    <div className="p-2">
+      <Button
+        theme="default"
+        className="w-full justify-center"
+        onClick={() => {
+          setVisibleEditor({ location, subLocation });
+        }}
+      >
+        <ThreadReplyIcon className="mr-2" />
+        {Languages.t('scenes.apps.messages.message.reply_button')}
+      </Button>
+    </div>
   );
 };

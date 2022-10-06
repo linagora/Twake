@@ -24,6 +24,10 @@ export default (props: Props) => {
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   const application = companyApplications.find(a => a.id === message.application_id);
 
+  if (message.user_id === User.getCurrentUserId()) {
+    return <></>;
+  }
+
   return (
     <>
       {!!user && !message.application_id && (

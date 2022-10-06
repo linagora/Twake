@@ -30,7 +30,7 @@ type Props = {
 export default ({ hidden, highlighted, className, withBlock, children }: Props) => (
   <div className={classNames('thread-container', { hidden, highlighted }, className)}>
     <div className="thread-centerer">
-      <div className={classNames('thread', { 'with-block': withBlock })}>{children}</div>
+      <div className={classNames('thread', { 'rounded-xl bg-white ': withBlock })}>{children}</div>
     </div>
   </div>
 );

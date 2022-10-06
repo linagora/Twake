@@ -18,6 +18,8 @@ import { ReactComponent as Up } from './assets/up.svg';
 import { ReactComponent as X } from './assets/x.svg';
 import { ReactComponent as StatusCheckDouble } from './assets/status-check-double.svg';
 import { ReactComponent as StatusCheck } from './assets/status-check.svg';
+import { ReactComponent as ThreadNew } from './assets/thread-new.svg';
+import { ReactComponent as ThreadReply } from './assets/thread-reply.svg';
 
 export const CopyIcon = (props: ComponentProps<'svg'>) => <CopySvg {...props} />;
 export const DeleteIcon = (props: ComponentProps<'svg'>) => <DeleteSvg {...props} />;
@@ -39,3 +41,5 @@ export const StatusCheckDoubleIcon = (props: ComponentProps<'svg'>) => (
   <StatusCheckDouble {...props} />
 );
 export const StatusCheckIcon = (props: ComponentProps<'svg'>) => <StatusCheck {...props} />;
+export const ThreadNewIcon = (props: ComponentProps<'svg'>) => <ThreadNew {...props} />;
+export const ThreadReplyIcon = (props: ComponentProps<'svg'>) => <ThreadReply {...props} />;
