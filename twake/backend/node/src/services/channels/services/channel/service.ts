@@ -417,6 +417,15 @@ export class ChannelServiceImpl {
 
     logger.info(`Update activity for channel ${entity.channel_id} to ${entity.last_activity}`);
 
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
+      KnowledgeGraphEvents.CHANNEL_UPSERT,
+      {
+        id: channel.id,
+        resource: channel,
+        links: [],
+      },
+    );
+
     await this.activityRepository.save(entity, context);
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }
@@ -832,15 +841,6 @@ export class ChannelServiceImpl {
         channel,
         user: context.user,
       });
-
-      localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
-        KnowledgeGraphEvents.CHANNEL_CREATED,
-        {
-          id: channel.id,
-          resource: channel,
-          links: [],
-        },
-      );
     }
   }
 

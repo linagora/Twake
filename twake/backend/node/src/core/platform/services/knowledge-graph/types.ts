@@ -84,9 +84,9 @@ export type KnowledgeGraphGenericEventPayload<T> = {
 };
 
 export enum KnowledgeGraphEvents {
-  COMPANY_CREATED = "kg:company:created",
-  WORKSPACE_CREATED = "kg:workspace:created",
-  CHANNEL_CREATED = "kg:channel:created",
-  MESSAGE_CREATED = "kg:message:created",
-  USER_CREATED = "kg:user:created",
+  COMPANY_UPSERT = "kg:company:upsert",
+  WORKSPACE_UPSERT = "kg:workspace:upsert",
+  CHANNEL_UPSERT = "kg:channel:upsert",
+  MESSAGE_UPSERT = "kg:message:upsert",
+  USER_UPSERT = "kg:user:upsert",
 }

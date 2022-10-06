@@ -76,9 +76,9 @@ export default class KnowledgeGraphAPIClient {
               user_id: user.id,
               email: user.email_canonical,
               username: user.username_canonical,
-              user_last_activity: user.last_activity.toLocaleString(),
+              user_last_activity: user.last_activity,
               first_name: user.first_name,
-              user_created_at: user.creation_date.toLocaleString(),
+              user_created_at: user.creation_date,
               last_name: user.last_name,
               company_id: companyId,
             },
@@ -116,7 +116,7 @@ export default class KnowledgeGraphAPIClient {
     }
   }
 
-  public async onMessageCreated(
+  public async onMessageUpsert(
     channelId: string,
     message: Partial<Message>,
     sensitiveData: boolean,
@@ -129,10 +129,10 @@ export default class KnowledgeGraphAPIClient {
             id: "Message",
             properties: {
               message_thread_id: message.thread_id,
-              message_created_at: message.created_at.toLocaleString(),
               message_content: sensitiveData ? message.text : "",
               type_message: message.type,
-              message_updated_at: message.updated_at.toLocaleString(),
+              message_created_at: message.created_at,
+              message_updated_at: message.updated_at,
               user_id: message.user_id,
               channel_id: channelId,
               workspace_id: message.cache?.workspace_id,
@@ -144,7 +144,7 @@ export default class KnowledgeGraphAPIClient {
     });
 
     if (response.statusText === "OK") {
-      this.logger.info("onMessageCreated %o", response.config.data);
+      this.logger.info("onMessageUpsert %o", response.config.data);
     }
   }
 
