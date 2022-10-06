@@ -236,16 +236,16 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
           workspace_id: workspace.id,
         },
       });
-
-      localEventBus.publish<KnowledgeGraphGenericEventPayload<Workspace>>(
-        KnowledgeGraphEvents.WORKSPACE_CREATED,
-        {
-          id: workspace.id,
-          resource: workspace,
-          links: [{ relation: "parent", type: "company", id: workspace.company_id }],
-        },
-      );
     }
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Workspace>>(
+      KnowledgeGraphEvents.WORKSPACE_UPSERT,
+      {
+        id: workspace.id,
+        resource: workspace,
+        links: [{ relation: "parent", type: "company", id: workspace.company_id }],
+      },
+    );
 
     return new SaveResult<Workspace>(
       TYPE,
