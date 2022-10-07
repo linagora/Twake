@@ -349,6 +349,12 @@ export default (props: Props) => {
     }
   };
 
+  useEffect(() => {
+    if (isBeingQuoted) {
+      focusEditor();
+    }
+  }, [isBeingQuoted]);
+
   const disabled = isEmpty() || isTooLong;
   return (
     <div className={'message-input w-full'} ref={props.ref} onClick={() => focus()}>
