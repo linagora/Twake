@@ -14,6 +14,7 @@ import Languages from 'app/features/global/services/languages-service';
 import MessageSeenBy from 'app/components/message-seen-by/message-seen-by';
 import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
+import { ForwardMessage } from 'app/components/forward-message';
 
 type Props = {
   channel: ChannelType;
@@ -47,6 +48,8 @@ export default (props: Props) => {
 
   return (
     <div className="messages-view">
+      <ForwardMessage />
+
       <Suspense fallback={<></>}>
         {!threadId ? (
           <MessagesList
