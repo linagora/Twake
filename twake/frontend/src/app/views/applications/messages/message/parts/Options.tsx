@@ -168,6 +168,16 @@ export default (props: Props) => {
         },
       });
 
+    menu.push({
+      type: 'menu',
+      icon: 'envelope-send',
+      text: Languages.t('scenes.apps.messages.message.forward'),
+      className: 'option_button',
+      onClick: () => {
+        //TODO
+      },
+    });
+
     const apps =
       getCompanyApplications(Groups.currentGroupId).filter(
         (app: Application) => app.display?.twake?.chat?.actions?.length,

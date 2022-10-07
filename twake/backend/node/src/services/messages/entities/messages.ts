@@ -72,7 +72,15 @@ export class Message {
   pinned_info: null | MessagePinnedInfo;
 
   @Column("quote_message", "encoded_json")
-  quote_message: null | Partial<MessageWithUsers>;
+  quote_message:
+    | null
+    | (Partial<MessageWithUsers> & {
+        id: string;
+        thread_id: string;
+        channel_id: string | null;
+        workspace_id: string | null;
+        company_id: string | null;
+      });
 
   @Column("reactions", "encoded_json")
   reactions: null | MessageReaction[];

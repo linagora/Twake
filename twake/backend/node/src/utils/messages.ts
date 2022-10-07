@@ -77,7 +77,14 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
           pinned_by: context.user.id,
         }
       : null,
-    quote_message: item.quote_message || null,
+    quote_message: item.quote_message
+      ? {
+          channel_id: context.channel.id,
+          workspace_id: context.workspace.id,
+          company_id: context.company.id,
+          ...item.quote_message,
+        }
+      : null,
     reactions: (context?.user?.server_request ? item.reactions : null) || null, // Reactions cannot be set on creation
     bookmarks: (context?.user?.server_request ? item.bookmarks : null) || null,
     override:

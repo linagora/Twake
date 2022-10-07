@@ -547,6 +547,7 @@
     "scenes.apps.messages.message.new_messages_bar": "New messages",
     "scenes.apps.messages.message.cancel_button": "Cancel",
     "scenes.apps.messages.message.modify_button": "Edit",
+    "scenes.apps.messages.message.forward": "Forward",
     "scenes.apps.messages.message.pin_button": "Pin message",
     "scenes.apps.messages.message.unpin_button": "Unpin message",
     "scenes.apps.messages.message.copy_link": "Copy link to message",
