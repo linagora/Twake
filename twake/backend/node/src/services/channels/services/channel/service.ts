@@ -141,6 +141,7 @@ export class ChannelServiceImpl {
         visibility: !isDirectChannel && (isWorkspaceAdmin || isChannelOwner),
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
+        is_readonly: isWorkspaceAdmin || isChannelOwner,
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects

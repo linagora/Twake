@@ -38,6 +38,9 @@ export class Channel {
   @Column("channel_group", "encoded_string")
   channel_group: string;
 
+  @Column("is_readonly", "boolean")
+  is_readonly = false;
+
   @Column("visibility", "encoded_string")
   visibility: ChannelVisibility;
 
