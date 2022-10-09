@@ -65,6 +65,10 @@ export const useIsChannelMember = (channelId: string) => {
   return !!useChannel(channelId)?.channel?.user_member?.user_id;
 };
 
+export const useIsReadOnlyChannel = (channelId: string) => {
+  return useChannel(channelId)?.channel?.is_readonly;
+};
+
 export function getChannel(channelId: string) {
   return channelsKeeper.find(ch => ch.id === channelId);
 }
