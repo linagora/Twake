@@ -694,6 +694,7 @@
     "components.leftbar.channel.workspaceschannels.menu.option_2": "Rejoindre une chaîne",
     "components.channelworkspacelist.title": "Chaînes",
     "scenes.client.channelbar.workspacechannellist.autocomplete": "Rechercher une chaîne de discussion",
+    "scenes.client.channelbar.readonly_channel.checkbox": "Restreindre l'accès en écriture",
     "scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation": "Créer un onglet",
     "scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition": "Renommer {{$1}}",
     "components.connectorslistmanager.add_connectors": "Ajouter des connecteurs",

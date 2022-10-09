@@ -34,6 +34,7 @@ export type ChannelType = {
     messages: number;
   };
   users?: UserType[];
+  is_readonly?: boolean;
 };
 
 export const createDirectChannelFromUsers = (companyId: string, users: UserType[]): ChannelType => {
