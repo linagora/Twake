@@ -651,13 +651,14 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     companyId: string,
     workspaceId: string,
     userId: string,
+    channels: string[],
     context?: ExecutionContext,
   ): Promise<WorkspaceInviteTokenObject> {
     await this.deleteInviteToken(companyId, workspaceId, userId);
     const token = randomBytes(32).toString("base64");
     const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     await this.workspaceInviteTokensRepository.save(
-      getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),
+      getWorkspaceInviteTokensInstance({ ...pk, invite_token: token, channels }),
       context,
     );
     return {

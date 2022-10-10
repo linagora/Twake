@@ -46,6 +46,7 @@ export interface WorkspaceUsersInvitationItem {
 
 export interface WorkspaceUsersInvitationRequestBody {
   invitations: WorkspaceUsersInvitationItem[];
+  channels?: string[];
 }
 
 export interface WorkspaceUserInvitationResponseItem {
@@ -103,6 +104,10 @@ export interface WorkspaceUserObject {
 
 export interface WorkspaceInviteTokenGetRequest extends WorkspaceBaseRequest {
   workspace_id: uuid;
+}
+
+export interface WorkspaceInviteTokenBody {
+  channels: string[];
 }
 
 export interface WorkspaceInviteTokenDeleteRequest extends WorkspaceBaseRequest {

@@ -241,6 +241,12 @@ export const inviteWorkspaceUserSchema = {
           required: ["email", "role", "company_role"],
         },
       },
+      channels: {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
     },
     required: ["invitations"],
   },
@@ -295,6 +301,18 @@ export const getWorkspaceInviteTokenSchema = {
 };
 
 export const postWorkspaceInviteTokenSchema = {
+  body: {
+    type: "object",
+    properties: {
+      channels: {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+    },
+    required: ["channels"],
+  },
   response: {
     "2xx": {
       type: "object",

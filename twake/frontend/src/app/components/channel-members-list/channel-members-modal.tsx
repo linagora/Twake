@@ -1,19 +1,19 @@
-import { InformationCircleIcon, MailOpenIcon } from '@heroicons/react/outline';
-import { PlusIcon, SearchIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon } from '@heroicons/react/outline';
+import { SearchIcon } from '@heroicons/react/solid';
 import { Alert } from 'app/atoms/alert';
-import { Button } from 'app/atoms/button/button';
-import { ButtonConfirm } from 'app/atoms/button/confirm';
 import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
 import { Input } from 'app/atoms/input/input-text';
-import { Info } from 'app/atoms/text';
-import { usePendingEmail } from 'app/features/channel-members-search/hooks/use-pending-email-hook';
+import Text, { Info } from 'app/atoms/text';
 import { useSearchChannelMembersAll } from 'app/features/channel-members-search/hooks/use-search-all';
 import Languages from 'app/features/global/services/languages-service';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import Strings from 'app/features/global/utils/strings';
+import { useInvitationUsers } from 'app/features/invitation/hooks/use-invitation-users';
+import { invitationState } from 'app/features/invitation/state/invitation';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { useEffect, useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState } from 'recoil';
 import { EmailItem } from './email-item';
 import { MemberItem } from './member-item';
 import { UserItem } from './user-item';
@@ -145,33 +145,30 @@ export const ChannelMembersListModal = (): JSX.Element => {
 };
 
 const EmailSuggestion = ({ email }: { email: string }) => {
-  const { addInvite } = usePendingEmail(email);
+  const [, setInvitationOpen] = useRecoilState(invitationState);
+  const { addInvitation, allowed_guests, allowed_members } = useInvitationUsers();
 
+  const invite = () => {
+    addInvitation(email);
+    setInvitationOpen(true);
+  };
   if (!email || !Strings.verifyMail(email)) {
     return <></>;
   }
 
-  return (
+  return allowed_guests > 0 || allowed_members > 0 ? (
     <div>
       <Info className="px-2 mt-2 mb-2 block items-center flex">
-        <MailOpenIcon className="h-5 w-5 inline mr-2" /> <b>{email}</b>
+        <Text type="base" className="cursor-pointer" onClick={() => invite()}>
+          {Languages.t(
+            'scenes.client.channelbar.channelmemberslist.invite_to_workspace',
+            [email],
+            `Invite ${email} to the workspace ➡`,
+          )}
+        </Text>
       </Info>
-      <Button className="my-2 mx-2" theme="outline" icon={PlusIcon} onClick={() => addInvite()}>
-        {Languages.t('scenes.client.channelbar.channelmemberslist.invite_email_button')}
-      </Button>
-      <br />
-      <ButtonConfirm
-        confirmTitle={Languages.t(
-          'scenes.client.channelbar.channelmemberslist.invite_email_button_workspace_confirm',
-          [email],
-        )}
-        className="my-2 mx-2"
-        theme="outline"
-        icon={PlusIcon}
-        onClick={() => addInvite('member')}
-      >
-        {Languages.t('scenes.client.channelbar.channelmemberslist.invite_email_button_workspace')}
-      </ButtonConfirm>
     </div>
+  ) : (
+    <></>
   );
 };

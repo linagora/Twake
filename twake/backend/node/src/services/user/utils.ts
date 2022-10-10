@@ -40,6 +40,7 @@ export function formatCompany(
     {
       [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000,
       [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: -1,
+      [CompanyLimitsEnum.COMPANY_GUESTS_LIMIT]: -1,
     },
     res.plan?.limits || {},
   );

@@ -8,6 +8,8 @@ import {
   FileTypeSpreadsheetIcon,
   FileTypeUnknownIcon,
   NotFoundIcon,
+  RemoveIcon,
+  SentIcon,
 } from '@atoms/icons-colored/index';
 
 export default {
@@ -49,6 +51,8 @@ const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
       <h1>Component specific</h1>
       <div className="flex flex-wrap mb-2">
         <Icon icon={<NotFoundIcon />} title="NotFound" />
+        <Icon icon={<RemoveIcon />} title="Remove" />
+        <Icon icon={<SentIcon />} title="Remove" />
       </div>
     </>
   );
