@@ -108,6 +108,11 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
       getInstance({ user_id, last_seen, is_connected }),
     );
     await this.onlineRepository.saveAll(onlineUsers);
+
+    //Send websocket event
+    onlineUsers.forEach(u => {
+      gr.services.users.publishUserRealtime(u.user_id);
+    });
   }
 
   async isOnline(userId: string, context?: ExecutionContext): Promise<boolean> {

@@ -36,6 +36,7 @@ import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
 } from "../../../../core/platform/services/knowledge-graph/types";
+import { formatUser } from "../../../../utils/users";
 
 export class UserServiceImpl {
   version: "1";
@@ -103,7 +104,20 @@ export class UserServiceImpl {
     return [
       {
         room: getUserRoom(user.id),
-        resource: {}, // FIX ME we should formatUser here
+        resource: user,
+      },
+    ];
+  })
+  async publishUserRealtime(userId: string): Promise<void> {
+    const user = await this.get({ id: userId });
+    new SaveResult("user", formatUser(user, { includeCompanies: true }), OperationType.UPDATE);
+  }
+
+  @RealtimeSaved<User>((user, _context) => {
+    return [
+      {
+        room: getUserRoom(user.id),
+        resource: formatUser(user), // FIX ME we should formatUser here
       },
     ];
   })
