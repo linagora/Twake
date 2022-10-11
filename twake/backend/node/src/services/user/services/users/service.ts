@@ -29,7 +29,7 @@ import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { isNumber, isString } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
-import { getUserRoom } from "../../realtime";
+import { getPublicUserRoom, getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
 import gr from "../../../global-resolver";
 import {
@@ -103,12 +103,12 @@ export class UserServiceImpl {
   @RealtimeSaved<User>((user, _context) => {
     return [
       {
-        room: getUserRoom(user.id),
+        room: getPublicUserRoom(user.id),
         resource: user,
       },
     ];
   })
-  async publishUserRealtime(userId: string): Promise<void> {
+  async publishPublicUserRealtime(userId: string): Promise<void> {
     const user = await this.get({ id: userId });
     new SaveResult("user", formatUser(user, { includeCompanies: true }), OperationType.UPDATE);
   }
@@ -141,6 +141,8 @@ export class UserServiceImpl {
         ],
       },
     );
+
+    await this.publishPublicUserRealtime(user.id);
 
     return new SaveResult("user", user, OperationType.UPDATE);
   }

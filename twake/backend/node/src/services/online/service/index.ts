@@ -111,7 +111,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
 
     //Send websocket event
     onlineUsers.forEach(u => {
-      gr.services.users.publishUserRealtime(u.user_id);
+      gr.services.users.publishPublicUserRealtime(u.user_id);
     });
   }
 
