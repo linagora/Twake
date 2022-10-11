@@ -551,10 +551,10 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     const messageWithUsers: MessageWithUsers = { ...message, users, application };
 
     if (message.quote_message && (message.quote_message as any).id) {
-      messageWithUsers.quote_message = await this.includeUsersInMessage(
-        message.quote_message as any,
-        context,
-      );
+      messageWithUsers.quote_message = {
+        ...(await this.includeUsersInMessage(message.quote_message as any, context)),
+        ...quoteMessageKeys(message),
+      };
     }
 
     return messageWithUsers;
@@ -716,15 +716,18 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
 
   async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
     if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
-      message.quote_message = await this.includeUsersInMessage(
-        await this.getSingleMessage(
-          {
-            thread_id: (message.quote_message as Message["quote_message"]).thread_id,
-            id: (message.quote_message as Message["quote_message"]).id,
-          },
-          { includeQuoteInMessage: false },
-        ),
-      );
+      message.quote_message = {
+        ...(await this.includeUsersInMessage(
+          await this.getSingleMessage(
+            {
+              thread_id: (message.quote_message as Message["quote_message"]).thread_id,
+              id: (message.quote_message as Message["quote_message"]).id,
+            },
+            { includeQuoteInMessage: false },
+          ),
+        )),
+        ...quoteMessageKeys(message),
+      };
     }
     return message;
   }
@@ -1037,3 +1040,22 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     }
   }
 }
+
+const quoteMessageKeys = (
+  message: Message,
+): { channel_id: string; workspace_id: string; company_id: string } => {
+  return {
+    channel_id:
+      message.quote_message?.channel_id ||
+      message.quote_message?.cache?.channel_id ||
+      message.cache.channel_id,
+    workspace_id:
+      message.quote_message?.workspace_id ||
+      message.quote_message?.cache?.workspace_id ||
+      message.cache.workspace_id,
+    company_id:
+      message.quote_message?.company_id ||
+      message.quote_message?.cache?.company_id ||
+      message.cache.company_id,
+  };
+};

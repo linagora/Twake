@@ -1,29 +1,29 @@
-import React, { useContext, useEffect, useState } from 'react';
-import 'moment-timezone';
-import classNames from 'classnames';
-import Reactions from './Reactions';
-import Options from './Options';
-import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-import MessageEdition from './MessageEdition';
-import DeletedContent from './DeletedContent';
-import RetryButtons from './RetryButtons';
-import { MessageContext } from '../message-with-replies';
-import { useMessage } from 'app/features/messages/hooks/use-message';
-import Blocks from './Blocks';
-import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
-import { ViewContext } from 'app/views/client/main-view/MainContent';
-import MessageAttachments from './MessageAttachments';
-import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
-import LinkPreview from './LinkPreview';
 import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
-import MessageQuote from 'app/molecules/message-quote';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
+import { useMessage } from 'app/features/messages/hooks/use-message';
+import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useUser } from 'app/features/users/hooks/use-user';
 import User from 'app/features/users/services/current-user-service';
-import { gotoMessage } from 'src/utils/messages';
-import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import QuotedContent from 'app/molecules/quoted-content';
+import MessageQuote from 'app/molecules/message-quote';
 import MessageStatus from 'app/molecules/message-status';
+import QuotedContent, { useQuotedMessage } from 'app/molecules/quoted-content';
+import { ViewContext } from 'app/views/client/main-view/MainContent';
+import classNames from 'classnames';
+import 'moment-timezone';
+import { useContext, useEffect, useState } from 'react';
+import { gotoMessage } from 'src/utils/messages';
+import { MessageContext } from '../message-with-replies';
+import Blocks from './Blocks';
+import DeletedContent from './DeletedContent';
+import LinkPreview from './LinkPreview';
+import MessageAttachments from './MessageAttachments';
+import MessageEdition from './MessageEdition';
+import MessageHeader from './MessageHeader';
+import Options from './Options';
+import Reactions from './Reactions';
+import RetryButtons from './RetryButtons';
 
 type Props = {
   linkToThread?: boolean;
@@ -40,11 +40,9 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   const channelId = context.channelId;
   const { message } = useMessage(context);
-  const quotedMessage = useMessage({
-    ...context,
-    threadId: message.quote_message?.thread_id as string,
-    id: message.quote_message?.id as string,
-  }).message;
+
+  // Quoted message logic
+  const quotedMessage = useQuotedMessage(message, context);
 
   const { channel } = useChannel(channelId);
   const showQuotedMessage =
@@ -56,7 +54,7 @@ export default (props: Props) => {
   const deletedQuotedMessage = quotedMessage && quotedMessage.subtype === 'deleted';
 
   if (showQuotedMessage) {
-    const author = useUser(quotedMessage.user_id);
+    const author = useUser(quotedMessage.user_id || '');
     authorName = author ? User.getFullName(author) : 'Anonymous';
   }
 
@@ -125,7 +123,12 @@ export default (props: Props) => {
           closable={false}
           deleted={deletedQuotedMessage}
           goToMessage={() =>
-            gotoMessage(quotedMessage, context.companyId, context.channelId, workspaceId)
+            gotoMessage(
+              quotedMessage,
+              quotedMessage.company_id || context.companyId,
+              quotedMessage.channel_id || context.channelId,
+              quotedMessage.workspace_id || workspaceId,
+            )
           }
         />
       )}
