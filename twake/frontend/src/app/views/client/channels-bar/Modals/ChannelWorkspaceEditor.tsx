@@ -37,6 +37,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
     visibility: 'public',
     company_id: companyId,
     workspace_id: workspaceId,
+    is_readonly: false,
   };
 
   const onChange = (channelEntries: Partial<ChannelType>): ChannelType => {
@@ -50,6 +51,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
           is_default: channelEntries.is_default,
           name: channelEntries.name,
           visibility: channelEntries.visibility,
+          is_readonly: channelEntries.is_readonly,
         },
         {
           channel_group: channel?.channel_group,
@@ -58,6 +60,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
           is_default: channel?.is_default,
           name: channel?.name,
           visibility: channel?.visibility,
+          is_readonly: channel?.is_readonly,
         },
       );
 
