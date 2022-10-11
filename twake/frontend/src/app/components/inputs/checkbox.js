@@ -31,10 +31,12 @@ export default class Checkbox extends React.Component {
     return (
       <div
         className={
-          'checkbox ' +
-          (this.props.value ? 'on' : 'off') +
+          ' flex justify-center items-center w-6 h-6 border-2 rounded-full text-white ' +
+          (this.props.value
+            ? 'border-blue-500 bg-blue-500 hover:border-blue-600 hover:bg-blue-600'
+            : 'border-zinc-300 hover:border-blue-300') +
           ' ' +
-          (this.props.disabled ? 'disabled' : '') +
+          (this.props.disabled ? 'opacity-50' : 'cursor-pointer') +
           ' ' +
           (className || '')
         }

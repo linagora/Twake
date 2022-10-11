@@ -30,6 +30,8 @@ import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-qu
 import { useMessageSeenBy } from 'app/features/messages/hooks/use-message-seen-by';
 import { EmojiSuggestionType } from 'app/components/rich-text-editor/plugins/emoji';
 import { MessagesListContext } from '../../messages-list';
+import { useSetRecoilState } from 'recoil';
+import { ForwardMessageAtom } from 'app/components/forward-message';
 
 type Props = {
   onOpen?: () => void;
@@ -58,6 +60,7 @@ export default (props: Props) => {
   const { set: setVisibleEditor } = useVisibleMessagesEditorLocation(location, subLocation);
 
   const { set: setQuoteReply } = useMessageQuoteReply(channelId);
+  const setForwardMessage = useSetRecoilState(ForwardMessageAtom);
 
   const { openSeenBy } = useMessageSeenBy();
 
@@ -167,6 +170,22 @@ export default (props: Props) => {
           pin(!message.pinned_info?.pinned_at);
         },
       });
+
+    menu.push({
+      type: 'menu',
+      icon: 'envelope-send',
+      text: Languages.t('scenes.apps.messages.message.forward'),
+      className: 'option_button',
+      onClick: () => {
+        setForwardMessage({
+          id: message.id,
+          thread_id: message.thread_id,
+          channel_id: channelId,
+          workspace_id: context.workspaceId,
+          company_id: context.companyId,
+        });
+      },
+    });
 
     const apps =
       getCompanyApplications(Groups.currentGroupId).filter(
