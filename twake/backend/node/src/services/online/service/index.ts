@@ -60,7 +60,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
           this.logger.debug(`Got an online:set request for ${(request.data || []).length} users`);
 
           this.broadcastOnline(event, companies);
-          this.setLastSeenOnline([event.user.id], Date.now(), false);
+          this.setLastSeenOnline([event.user.id], Date.now(), true);
           ack();
         },
       );
