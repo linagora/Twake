@@ -3,7 +3,7 @@ import { BaseSmall } from '../text';
 
 export const Checkbox = (props: {
   label?: string;
-  onChange: (status: boolean) => void;
+  onChange?: (status: boolean) => void;
   value?: boolean;
   className?: string;
   disabled?: boolean;
@@ -23,7 +23,9 @@ export const Checkbox = (props: {
           ' ' +
           (className || '')
         }
-        onClick={() => !props.label && !props.disabled && props.onChange(!props.value)}
+        onClick={() =>
+          !props.label && !props.disabled && props.onChange && props.onChange(!props.value)
+        }
       >
         {props.value && <CheckOutlineIcon className="m-icon-small" />}
       </div>
@@ -36,7 +38,7 @@ export const Checkbox = (props: {
         className={'flex flex-row items-center'}
         onClick={() => {
           if (!props.disabled) {
-            props.onChange(!props.value);
+            props.onChange && props.onChange(!props.value);
           }
         }}
       >
