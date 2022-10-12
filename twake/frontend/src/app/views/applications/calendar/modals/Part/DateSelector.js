@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import DateSelectorInput from 'components/calendar/date-picker.js';
 import TimeSelector from 'components/calendar/time-selector.js';
-import Checkbox from 'components/inputs/checkbox.js';
+import Checkbox from 'app/components/inputs/deprecated_checkbox.js';
 import Icon from 'components/icon/icon.js';
 import './DateSelector.scss';
 import Languages from 'app/features/global/services/languages-service';

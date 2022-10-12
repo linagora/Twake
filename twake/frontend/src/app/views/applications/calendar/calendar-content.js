@@ -24,7 +24,7 @@ import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
-import Checkbox from 'components/inputs/checkbox.js';
+import Checkbox from 'app/components/inputs/deprecated_checkbox.js';
 import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
 import Select from 'components/select/select.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
