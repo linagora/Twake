@@ -7,7 +7,7 @@ import Emojione from 'components/emojione/emojione';
 import StepCounter from 'components/step-counter/step-counter.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Input from 'components/inputs/input.js';
-import Checkbox from 'components/inputs/checkbox.js';
+import Checkbox from 'app/components/inputs/deprecated_checkbox.js';
 import InitService from 'app/features/global/services/init-service';
 export default class Signin extends Component {
   constructor() {

@@ -16,9 +16,9 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import Button from '../buttons/button';
 import Emojione from '../emojione/emojione';
-import Checkbox from '../inputs/checkbox';
 import UsersService from 'app/features/users/services/current-user-service';
 import { ChannelType } from 'app/features/channels/types/channel';
+import { Checkbox } from 'app/atoms/input/input-checkbox';
 
 export const SelectChannelModalAtom = atom<boolean>({
   key: 'SelectChannelModalAtom',
