@@ -50,8 +50,9 @@ export default React.memo((): JSX.Element => {
         <DownloadAppBanner />
         <NewVersionComponent />
         <CompanyStatusComponent />
+        <Layout.Header className="bg-white dark:bg-zinc-700">Some header to do</Layout.Header>
         <FeatureToggles features={activeFeatureNames}>
-          <Layout hasSider>
+          <Layout hasSider className="p-0 sm:p-2 bg-zinc-100 dark:bg-zinc-900">
             <Layout.Sider
               trigger={<Menu size={16} />}
               breakpoint="lg"
