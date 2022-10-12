@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'components/icon/icon.js';
-import Checkbox from 'components/inputs/checkbox.js';
+import Checkbox from 'app/components/inputs/deprecated_checkbox.js';
 import InputEnter from 'components/inputs/input-enter.js';
 import Button from 'components/buttons/button.js';
 import Languages from 'app/features/global/services/languages-service';

@@ -16,9 +16,10 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import Button from '../buttons/button';
 import Emojione from '../emojione/emojione';
-import Checkbox from '../inputs/checkbox';
 import UsersService from 'app/features/users/services/current-user-service';
 import { ChannelType } from 'app/features/channels/types/channel';
+import { Checkbox } from 'app/atoms/input/input-checkbox';
+import Languages from '../../features/global/services/languages-service';
 
 export const SelectChannelModalAtom = atom<boolean>({
   key: 'SelectChannelModalAtom',
@@ -34,7 +35,7 @@ export const ChannelSelectorModal = (props: {
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
-      <ModalContent title="Forward message">
+      <ModalContent title={Languages.t('components.channelselector.title')}>
         <ChannelSelector
           initialChannels={props.initialChannels}
           onChange={channels => {
@@ -48,7 +49,7 @@ export const ChannelSelectorModal = (props: {
             props.onChange(channels);
           }}
         >
-          Select {channels.length} channel(s)
+          {Languages.t('components.channelselector.confirm')}
         </Button>
       </ModalContent>
     </Modal>
@@ -83,7 +84,7 @@ export const ChannelSelector = (props: {
         input={({ className }) => (
           <Input
             className={className}
-            placeholder="Search for channel and discussions"
+            placeholder={Languages.t('components.channelselector.search')}
             onChange={e => setSearch({ query: e.target.value })}
           />
         )}
