@@ -6,6 +6,8 @@ import { UserType } from 'app/features/users/types/user';
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
 import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/features/global/utils/URLUtils';
 import { getUser } from '../hooks/use-user-list';
+import CryptoJS from 'crypto-js';
+import { getGradient } from 'app/atoms/avatar';
 
 type SearchQueryType = {
   searching: boolean;
@@ -64,13 +66,9 @@ class User {
     if (user && (user.thumbnail || user.picture)) {
       thumbnail = addApiUrlIfNeeded(user.picture || user.thumbnail || '');
     } else {
-      let output = 0;
-      const string = user?.id || '';
-      for (let i = 0; i < string.length; i++) {
-        output += string[i].charCodeAt(0);
-      }
-      const i = output % 100;
-      thumbnail = getAsFrontUrl(`/public/identicon/${i}.png`);
+      //Generate gradient thumbnail
+      //TODO: move me to backend ?
+      thumbnail = getGradient(user.username);
     }
 
     if (user.deleted) {
