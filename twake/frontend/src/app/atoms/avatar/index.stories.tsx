@@ -1,4 +1,3 @@
-import { UserIcon } from '@heroicons/react/solid';
 import { ComponentStory } from '@storybook/react';
 import Avatar from '.';
 import { UsersIcon } from '../icons-agnostic';

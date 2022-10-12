@@ -9,7 +9,7 @@ export const Checkbox = (props: {
   disabled?: boolean;
 }) => {
   const renderSwitch = () => {
-    var className = props.className || '';
+    const className = props.className || '';
 
     return (
       <div
