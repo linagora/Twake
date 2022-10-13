@@ -28,10 +28,10 @@ module.exports = {
         sm: '8px',
       },
       fontSize: {
-        lg: '18px',
-        base: '16px',
-        sm: '14px',
-        xs: '12px',
+        lg: '17px',
+        base: '15px',
+        sm: '13px',
+        xs: '11px',
       },
 
       colors: {
@@ -55,6 +55,7 @@ module.exports = {
     },
   },
   safelist: [
+    'max-w-md',
     'cursor-pointer',
     'w-32',
     'h-32',
@@ -76,6 +77,9 @@ module.exports = {
     'border-b-2',
     'border-transparent',
     'zinc-100',
+    'hover:text-blue-700',
+    'active:text-blue-800',
+    'text-blue-500',
     ...shades,
   ],
   plugins: [require('@tailwindcss/forms')],

@@ -196,6 +196,7 @@ export default class MenusBodyLayer extends React.Component {
                 >
                   <MenuComponent
                     withFrame
+                    className={item.menuClassName}
                     menu={item.menu}
                     openAt={item.openAt}
                     level={item.level}

@@ -30,6 +30,7 @@ import UsersSearchModal from 'app/components/channel-members-list/users-search-m
 import './styles.scss';
 import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
 import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
+import { MainHeader } from './header';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -50,9 +51,11 @@ export default React.memo((): JSX.Element => {
         <DownloadAppBanner />
         <NewVersionComponent />
         <CompanyStatusComponent />
-        <Layout.Header className="bg-white dark:bg-zinc-700">Some header to do</Layout.Header>
+        <Layout.Header className="bg-white dark:bg-zinc-700 !p-0 !h-auto">
+          <MainHeader />
+        </Layout.Header>
         <FeatureToggles features={activeFeatureNames}>
-          <Layout hasSider className="p-0 sm:p-2 bg-zinc-100 dark:bg-zinc-900">
+          <Layout hasSider className="p-0 sm:p-2 bg-zinc-200 dark:bg-zinc-900">
             <Layout.Sider
               trigger={<Menu size={16} />}
               breakpoint="lg"
@@ -69,7 +72,7 @@ export default React.memo((): JSX.Element => {
               </Suspense>
             </Layout.Sider>
             <Suspense fallback={<></>}>
-              <MainView className={classNames({ collapsed: menuIsOpen })} />
+              <MainView className={'ml-0 sm:ml-2 ' + classNames({ collapsed: menuIsOpen })} />
             </Suspense>
           </Layout>
         </FeatureToggles>
