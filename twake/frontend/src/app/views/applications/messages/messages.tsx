@@ -18,7 +18,7 @@ import Languages from 'app/features/global/services/languages-service';
 import MessageSeenBy from 'app/components/message-seen-by/message-seen-by';
 import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
-import { ForwardMessage } from 'app/components/forward-message';
+import { ForwardMessageModal } from 'app/components/forward-message';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 type Props = {
@@ -58,7 +58,7 @@ export default (props: Props) => {
 
   return (
     <div className="messages-view">
-      <ForwardMessage />
+      <ForwardMessageModal />
 
       <Suspense fallback={<></>}>
         {!threadId ? (
