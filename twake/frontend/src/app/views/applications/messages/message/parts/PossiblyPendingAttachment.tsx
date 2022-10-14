@@ -11,9 +11,10 @@ type PropsType = {
   onRemove?: () => void;
   type: 'input' | 'message';
   large?: boolean;
+  xlarge?: boolean;
 };
 
-export default ({ file, onRemove, type, large }: PropsType) => {
+export default ({ file, onRemove, type, large, xlarge }: PropsType) => {
   const { getOnePendingFile } = useUpload();
 
   const id =
@@ -68,6 +69,7 @@ export default ({ file, onRemove, type, large }: PropsType) => {
       file={formatedFile}
       messageFile={file}
       large={large}
+      xlarge={xlarge}
       status={status}
       progress={progress}
       onRemove={onRemove}

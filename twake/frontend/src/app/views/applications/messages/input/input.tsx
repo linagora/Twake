@@ -87,7 +87,11 @@ export default (props: Props) => {
     id: props.threadId,
   });
 
-  const { isActive: isBeingQuoted, close } = useMessageQuoteReply(props.channelId || '');
+  const {
+    isActive: isBeingQuoted,
+    close,
+    message: messageBeingQuoted,
+  } = useMessageQuoteReply(props.channelId || '');
 
   const { upload, clear: clearUploads } = useUploadZones(editorId);
   const format = props.format || 'markdown';
@@ -348,6 +352,10 @@ export default (props: Props) => {
       upload([file]);
     }
   };
+
+  useEffect(() => {
+    focusEditor();
+  }, [messageBeingQuoted]);
 
   const disabled = isEmpty() || isTooLong;
   return (

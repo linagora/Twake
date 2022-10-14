@@ -29,13 +29,14 @@ import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { isNumber, isString } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
-import { getUserRoom } from "../../realtime";
+import { getPublicUserRoom, getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
 import gr from "../../../global-resolver";
 import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
 } from "../../../../core/platform/services/knowledge-graph/types";
+import { formatUser } from "../../../../utils/users";
 
 export class UserServiceImpl {
   version: "1";
@@ -91,30 +92,8 @@ export class UserServiceImpl {
   }
 
   async create(user: User, context?: ExecutionContext): Promise<CreateResult<User>> {
-    this.assignDefaults(user);
-
-    await this.repository.save(user, context);
-    await this.updateExtRepository(user);
-    const result = new CreateResult("user", user);
-
-    if (result) {
-      localEventBus.publish<KnowledgeGraphGenericEventPayload<User>>(
-        KnowledgeGraphEvents.USER_CREATED,
-        {
-          id: result.entity.id,
-          resource: result.entity,
-          links: [
-            {
-              // FIXME: We should provide the company id here
-              id: "",
-              relation: "parent",
-              type: "company",
-            },
-          ],
-        },
-      );
-    }
-    return result;
+    await this.save(user, context);
+    return new CreateResult("user", user);
   }
 
   update(pk: Partial<User>, item: User, context?: ExecutionContext): Promise<UpdateResult<User>> {
@@ -124,8 +103,21 @@ export class UserServiceImpl {
   @RealtimeSaved<User>((user, _context) => {
     return [
       {
+        room: getPublicUserRoom(user.id),
+        resource: user,
+      },
+    ];
+  })
+  async publishPublicUserRealtime(userId: string): Promise<void> {
+    const user = await this.get({ id: userId });
+    new SaveResult("user", formatUser(user, { includeCompanies: true }), OperationType.UPDATE);
+  }
+
+  @RealtimeSaved<User>((user, _context) => {
+    return [
+      {
         room: getUserRoom(user.id),
-        resource: {}, // FIX ME we should formatUser here
+        resource: formatUser(user), // FIX ME we should formatUser here
       },
     ];
   })
@@ -133,6 +125,25 @@ export class UserServiceImpl {
     this.assignDefaults(user);
     await this.repository.save(user, context);
     await this.updateExtRepository(user);
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<User>>(
+      KnowledgeGraphEvents.USER_UPSERT,
+      {
+        id: user.id,
+        resource: user,
+        links: [
+          {
+            // FIXME: We should provide the company id here
+            id: "",
+            relation: "parent",
+            type: "company",
+          },
+        ],
+      },
+    );
+
+    await this.publishPublicUserRealtime(user.id);
+
     return new SaveResult("user", user, OperationType.UPDATE);
   }
 

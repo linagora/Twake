@@ -60,7 +60,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
           this.logger.debug(`Got an online:set request for ${(request.data || []).length} users`);
 
           this.broadcastOnline(event, companies);
-          this.setLastSeenOnline([event.user.id], Date.now(), false);
+          this.setLastSeenOnline([event.user.id], Date.now(), true);
           ack();
         },
       );
@@ -108,6 +108,11 @@ export default class OnlineServiceImpl implements TwakeServiceProvider {
       getInstance({ user_id, last_seen, is_connected }),
     );
     await this.onlineRepository.saveAll(onlineUsers);
+
+    //Send websocket event
+    onlineUsers.forEach(u => {
+      gr.services.users.publishPublicUserRealtime(u.user_id);
+    });
   }
 
   async isOnline(userId: string, context?: ExecutionContext): Promise<boolean> {

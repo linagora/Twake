@@ -10,6 +10,6 @@ export default interface KnowledgeGraphAPI extends TwakeServiceProvider {
   onCompanyCreated(data: KnowledgeGraphGenericEventPayload<Company>): void;
   onWorkspaceCreated(data: KnowledgeGraphGenericEventPayload<Workspace>): void;
   onChannelCreated(data: KnowledgeGraphGenericEventPayload<Channel>): void;
-  onMessageCreated(data: KnowledgeGraphGenericEventPayload<Message>): void;
+  onMessageUpsert(data: KnowledgeGraphGenericEventPayload<Message>): void;
   onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): void;
 }

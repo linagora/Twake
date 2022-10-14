@@ -141,6 +141,7 @@ export class ChannelServiceImpl {
         visibility: !isDirectChannel && (isWorkspaceAdmin || isChannelOwner),
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
+        is_readonly: isWorkspaceAdmin || isChannelOwner,
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects
@@ -416,6 +417,15 @@ export class ChannelServiceImpl {
     entity.channel = channel;
 
     logger.info(`Update activity for channel ${entity.channel_id} to ${entity.last_activity}`);
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
+      KnowledgeGraphEvents.CHANNEL_UPSERT,
+      {
+        id: channel.id,
+        resource: channel,
+        links: [],
+      },
+    );
 
     await this.activityRepository.save(entity, context);
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
@@ -832,15 +842,6 @@ export class ChannelServiceImpl {
         channel,
         user: context.user,
       });
-
-      localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
-        KnowledgeGraphEvents.CHANNEL_CREATED,
-        {
-          id: channel.id,
-          resource: channel,
-          links: [],
-        },
-      );
     }
   }
 

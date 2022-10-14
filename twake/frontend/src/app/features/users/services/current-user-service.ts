@@ -7,6 +7,7 @@ import { TwakeService } from 'app/features/global/framework/registry-decorator-s
 import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/features/global/utils/URLUtils';
 import { getUser } from '../hooks/use-user-list';
 import CryptoJS from 'crypto-js';
+import { getGradient } from 'app/atoms/avatar';
 
 type SearchQueryType = {
   searching: boolean;
@@ -66,19 +67,7 @@ class User {
       thumbnail = addApiUrlIfNeeded(user.picture || user.thumbnail || '');
     } else {
       //Generate gradient thumbnail
-      //TODO: move me to backend ?
-      const seed = parseInt(CryptoJS.MD5(user.username).toString().slice(0, 8), 16);
-      const canvas: HTMLCanvasElement = document.createElement('canvas');
-      canvas.width = 254;
-      canvas.height = 254;
-      const ctx = canvas.getContext('2d');
-      const gradient = ctx!.createLinearGradient(254, 254, 0, 0);
-      gradient.addColorStop(0, 'hsl(' + seed + ', 90%, 70%)');
-      gradient.addColorStop(1, 'hsl(' + Math.abs(seed - 60) + ', 90%, 70%)');
-      ctx!.fillStyle = gradient;
-      ctx!.fillRect(0, 0, 254, 254);
-      const b64 = canvas.toDataURL('image/jpeg');
-      thumbnail = b64;
+      thumbnail = getGradient(user.username);
     }
 
     if (user.deleted) {

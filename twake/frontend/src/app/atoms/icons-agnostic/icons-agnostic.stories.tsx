@@ -24,6 +24,8 @@ import {
   BellIcon,
   AppsIcon,
   SettingsIcon,
+  UsersIcon,
+  CheckOutlineIcon,
 } from '@atoms/icons-agnostic/index';
 
 export default {
@@ -59,6 +61,7 @@ const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
         <Icon icon={<InputClearIcon />} title="InputClear" />
         <Icon icon={<UserAddIcon />} title="User" />
         <Icon icon={<CheckIcon />} title="Check" />
+        <Icon icon={<CheckOutlineIcon />} title="CheckOutline" />
         <Icon icon={<ZoomInIcon />} title="ZoomIn" />
         <Icon icon={<ZoomOutIcon />} title="ZoomOut" />
         <Icon icon={<VerticalDotsIcon />} title="VerticalDots" />
@@ -74,6 +77,7 @@ const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
         <Icon icon={<BellIcon />} title="Bell" />
         <Icon icon={<AppsIcon />} title="Apps" />
         <Icon icon={<SettingsIcon />} title="Settings" />
+        <Icon icon={<UsersIcon />} title="Users" />
       </div>
     </>
   );

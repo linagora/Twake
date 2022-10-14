@@ -31,6 +31,7 @@ const ChannelTemplateEditor = ({
     channel?.visibility || defaultVisibility || 'public',
   );
   const [defaultChannel, setDefaultChannel] = useState<boolean>(channel?.is_default || false);
+  const [readonlyChannel, setReadOnlyChannel] = useState<boolean>(channel?.is_readonly || false);
   const [group, setGroup] = useState<string>(channel?.channel_group || '');
   const { workspaceId } = RouterServices.getStateFromRoute();
   const { privateChannels, publicChannels } = usePublicOrPrivateChannels();
@@ -42,6 +43,7 @@ const ChannelTemplateEditor = ({
       visibility,
       channel_group: group,
       is_default: defaultChannel,
+      is_readonly: readonlyChannel
     });
   });
 
@@ -139,6 +141,15 @@ const ChannelTemplateEditor = ({
           {visibility === 'public' && (
             <Checkbox onChange={() => setDefaultChannel(!defaultChannel)} checked={defaultChannel}>
               {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
+            </Checkbox>
+          )}
+        </div>
+      )}
+      {isAbleToEditVisibilityOrDefault() && (
+        <div style={{ height: '32px' }} className="top-margin left-margin">
+          {visibility === 'public' && (
+            <Checkbox onChange={() => setReadOnlyChannel(!readonlyChannel)} checked={readonlyChannel}>
+              {Languages.t('scenes.client.channelbar.readonly_channel.checkbox')}
             </Checkbox>
           )}
         </div>

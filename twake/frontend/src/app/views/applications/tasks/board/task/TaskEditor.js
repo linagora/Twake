@@ -8,7 +8,7 @@ import Menu from 'components/menus/menu.js';
 import Input from 'components/inputs/input.js';
 import DateSelectorInput from 'components/calendar/date-picker.js';
 import TimeSelector from 'components/calendar/time-selector.js';
-import Checkbox from 'components/inputs/checkbox.js';
+import Checkbox from 'app/components/inputs/deprecated_checkbox.js';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Checklist from './parts/Checklist.js';
 import TagPicker from 'components/tag-picker/tag-picker.js';
