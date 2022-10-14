@@ -1,12 +1,14 @@
 import React, { Suspense } from 'react';
 import LoginService from 'app/features/auth/login-service';
 import Languages from 'app/features/global/services/languages-service';
-import CompanySelector, { CurrentCompanyLogo } from '../CompanySelector/index';
+import CompanySelector, {
+  CurrentCompanyLogo,
+} from '../deprecated-workspaces-bar/components/CompanySelector/index';
 import { Button } from 'antd';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import InitService from 'app/features/global/services/init-service';
-import GotALink from './GotALink';
+import GotALink from './got-a-link';
 
 import './styles.scss';
 

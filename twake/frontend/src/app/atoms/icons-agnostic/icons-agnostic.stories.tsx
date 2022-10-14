@@ -21,6 +21,9 @@ import {
   StatusCheckIcon,
   ThreadNewIcon,
   ThreadReplyIcon,
+  BellIcon,
+  AppsIcon,
+  SettingsIcon,
 } from '@atoms/icons-agnostic/index';
 
 export default {
@@ -68,6 +71,9 @@ const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
         <Icon icon={<StatusCheckIcon />} title="StatusCheck" />
         <Icon icon={<ThreadNewIcon />} title="ThreadNew" />
         <Icon icon={<ThreadReplyIcon />} title="ThreadReply" />
+        <Icon icon={<BellIcon />} title="Bell" />
+        <Icon icon={<AppsIcon />} title="Apps" />
+        <Icon icon={<SettingsIcon />} title="Settings" />
       </div>
     </>
   );

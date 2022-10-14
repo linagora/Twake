@@ -31,6 +31,7 @@ import './styles.scss';
 import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
 import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
 import { MainHeader } from './header';
+import { WorkspaceSelector } from './workspace-selector';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -62,11 +63,13 @@ export default React.memo((): JSX.Element => {
               collapsedWidth="0"
               theme="light"
               width={290}
+              className="flex flex-col bg-transparent"
               onCollapse={(collapsed, type) => {
                 if (type === 'responsive') return setMenuIsOpen(false);
                 setMenuIsOpen(!collapsed);
               }}
             >
+              <WorkspaceSelector />
               <Suspense fallback={<LoadingSidebar />}>
                 <SideBars />
               </Suspense>

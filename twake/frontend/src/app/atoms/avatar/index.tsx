@@ -44,7 +44,7 @@ export default function Avatar(props: AvatarProps) {
   const avatarTitle = props.title || '';
   const restProps = _.omit(props, 'size', 'type', 'avatar', 'title', 'className', 'icon');
 
-  let className = `w-${avatarSize} h-${avatarSize} ${
+  let className = `border border-solid border-zinc-200 dark:border-zinc-700 w-${avatarSize} h-${avatarSize} ${
     avatarType === 'circle' ? 'rounded-full' : 'rounded-sm'
   } `;
 

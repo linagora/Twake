@@ -12,8 +12,8 @@ import workspacesUsers from 'app/features/workspace-members/services/workspace-m
 import WindowService from 'app/features/global/utils/window';
 import workspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import RouterServices from 'app/features/router/services/router-service';
-import NoWorkspaces from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoWorkspaces';
-import NoCompanies from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoCompanies';
+import NoWorkspaces from 'app/views/client/no-workspaces/no-workspaces';
+import NoCompanies from 'app/views/client/no-workspaces/no-companies';
 import loginService from 'app/features/auth/login-service';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import JWTStorage from 'app/features/auth/jwt-storage-service';

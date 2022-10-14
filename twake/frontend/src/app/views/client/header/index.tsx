@@ -1,12 +1,6 @@
-import {
-  BellIcon,
-  ChevronDownIcon,
-  CogIcon,
-  SearchIcon,
-  ViewGridIcon,
-} from '@heroicons/react/outline';
+import { ChevronDownIcon, SearchIcon } from '@heroicons/react/outline';
 import Avatar from 'app/atoms/avatar';
-import { CheckIcon } from 'app/atoms/icons-agnostic';
+import { AppsIcon, BellIcon, CheckIcon, SettingsIcon } from 'app/atoms/icons-agnostic';
 import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
 import { Input } from 'app/atoms/input/input-text';
 import A from 'app/atoms/link';
@@ -24,73 +18,20 @@ import Block from 'app/molecules/grouped-rows/base';
 import { useRecoilState } from 'recoil';
 import PopupService from 'app/deprecated/popupManager/popupManager.js';
 import RouterService from 'app/features/router/services/router-service';
+import { Badge } from 'app/atoms/badge';
+import { useNotifications } from 'app/features/users/hooks/use-notifications';
 
 export const MainHeader = () => {
-  const { company } = useCurrentCompany();
-  const { user } = useCurrentUser();
-
   return (
     <div className="flex flex-row items-center px-4 py-3">
       <div className="grow max-w-xs flex items-center" style={{ minWidth: 80 }}>
         <Menu
           options={{ menuClassName: '!w-80' }}
-          menu={
-            <div className="-mb-2">
-              <Title>Companies</Title>
-              <Info>Your active companies</Info>
-              <hr className="-mx-4 mt-3 mb-2" />
-              {user?.companies?.map(c => (
-                <Block
-                  onClick={() => {
-                    PopupService.closeAll();
-                    menusManager.closeMenu();
-                    RouterService.push(
-                      RouterService.generateRouteFromState(
-                        {
-                          companyId: c.company.id,
-                        },
-                        { replace: true },
-                      ),
-                    );
-                  }}
-                  key={c.company.id}
-                  className="w-auto flex cursor-pointer -mx-2 p-2 hover:bg-zinc-100 dark:bg-zinc-800 rounded-md"
-                  avatar={
-                    <Avatar
-                      className="border border-solid border-zinc-200"
-                      avatar={c.company?.logo}
-                      title={c.company?.name}
-                    />
-                  }
-                  title={<span className="sm:inline hidden">{c?.company?.name}</span>}
-                  suffix={
-                    (c.company.id === company.id && (
-                      <div className="text-blue-500">
-                        <CheckIcon fill="currentColor" />
-                      </div>
-                    )) || <></>
-                  }
-                />
-              ))}
-            </div>
-          }
+          menu={<CompanySelector />}
           position="bottom"
           className="inline-flex cursor-pointer"
         >
-          <Block
-            className="inline-flex cursor-pointer"
-            avatar={
-              <Avatar
-                className="border border-solid border-zinc-200"
-                avatar={company?.logo}
-                title={company?.name}
-              />
-            }
-            title={<span className="sm:inline hidden">{company?.name}</span>}
-            title_suffix={
-              <ChevronDownIcon className="h-4 w-4 sm:ml-1 -ml-1 inline-block text-zinc-500" />
-            }
-          />
+          <CurrentCompany />
         </Menu>
       </div>
 
@@ -103,12 +44,94 @@ export const MainHeader = () => {
           <BellIcon className="w-7 h-7" />
         </A>
         <A onClick={() => {}} className="mx-2 inline-block">
-          <ViewGridIcon className="w-7 h-7" />
+          <AppsIcon className="w-7 h-7" />
         </A>
         <A onClick={() => {}} className="mx-2 inline-block">
-          <CogIcon className="w-7 h-7" />
+          <SettingsIcon className="w-7 h-7" />
         </A>
       </div>
+    </div>
+  );
+};
+
+const CurrentCompany = () => {
+  const { company } = useCurrentCompany();
+  const { badges } = useNotifications();
+
+  return (
+    <Block
+      className="inline-flex cursor-pointer"
+      avatar={
+        <>
+          <Avatar avatar={company?.logo} title={company?.name} />
+          {badges.filter(b => b.company_id !== company?.id).length > 0 && (
+            <Badge
+              theme="danger"
+              size="sm"
+              className="border-2 border-white dark:border-zinc-800 absolute top-0 right-0 h-4 w-4 rounded-full -translate-y-0.5 translate-x-0.5"
+            />
+          )}
+        </>
+      }
+      title={<span className="sm:inline hidden">{company?.name}</span>}
+      title_suffix={
+        <ChevronDownIcon className="h-4 w-4 sm:ml-1 -ml-1 inline-block text-zinc-500" />
+      }
+    />
+  );
+};
+
+const CompanySelector = () => {
+  const { company } = useCurrentCompany();
+  const { user } = useCurrentUser();
+  const { badges } = useNotifications();
+
+  return (
+    <div className="-mb-2">
+      <Title>Companies</Title>
+      <Info>Your active companies</Info>
+      <hr className="-mx-4 mt-3 mb-2" />
+      {[...(user?.companies || [])]
+        .sort((a, b) => a.company.name.localeCompare(b.company.name))
+        .map(c => (
+          <Block
+            onClick={() => {
+              PopupService.closeAll();
+              menusManager.closeMenu();
+              RouterService.push(
+                RouterService.generateRouteFromState(
+                  {
+                    companyId: c.company.id,
+                  },
+                  { replace: true },
+                ),
+              );
+            }}
+            key={c.company.id}
+            className="w-auto flex cursor-pointer -mx-2 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md"
+            avatar={
+              <>
+                <Avatar avatar={c.company?.logo} title={c.company?.name} />
+                {badges.filter(b => b.company_id === c.company.id).length > 0 && (
+                  <Badge
+                    theme="danger"
+                    size="sm"
+                    className="border-2 border-white dark:border-zinc-800 absolute top-0 right-0 h-4 w-4 rounded-full -translate-y-0.5 translate-x-0.5"
+                  />
+                )}
+              </>
+            }
+            title={<span className="sm:inline hidden">{c?.company?.name}</span>}
+            subtitle={<Info>{user?.email}</Info>}
+            suffix={
+              (c.company.id === company.id && (
+                <div className="text-blue-500">
+                  <CheckIcon fill="currentColor" />
+                </div>
+              )) || <></>
+            }
+          />
+        ))}
     </div>
   );
 };

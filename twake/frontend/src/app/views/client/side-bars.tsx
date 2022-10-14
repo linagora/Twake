@@ -3,14 +3,14 @@ import React from 'react';
 import { Layout } from 'antd';
 
 import ChannelsBar, { LoadingChannelBar } from './channels-bar/ChannelsBar';
-import WorkspacesBar, { LoadingWorkspaceBar } from './workspaces-bar';
+import WorkspacesBar, { LoadingWorkspaceBar } from './deprecated-workspaces-bar';
 
 import { useWorkspaceLoader } from 'app/features/workspaces/hooks/use-workspaces';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useCurrentCompanyRealtime } from '../../features/companies/hooks/use-companies';
 
-import './workspaces-bar/styles.scss';
+import './deprecated-workspaces-bar/styles.scss';
 import { usePreloadSomeUsers } from 'app/features/users/hooks/use-user-list';
 import { useNotifications } from 'app/features/users/hooks/use-notifications';
 
@@ -30,7 +30,6 @@ export default () => {
 
   return (
     <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>
-      <WorkspacesBar />
       {!!workspaceId && <ChannelsBar />}
       {!workspaceId && <LoadingChannelBar />}
     </Layout>
@@ -40,7 +39,6 @@ export default () => {
 export const LoadingSidebar = () => {
   return (
     <Layout style={{ height: '100%' }}>
-      <LoadingWorkspaceBar />
       <LoadingChannelBar />
     </Layout>
   );

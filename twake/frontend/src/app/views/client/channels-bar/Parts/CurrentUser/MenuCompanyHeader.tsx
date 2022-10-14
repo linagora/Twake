@@ -1,5 +1,5 @@
 import environment from 'app/environment/environment';
-import { CurrentCompanyLogo } from 'app/views/client/workspaces-bar/components/CompanySelector';
+import { CurrentCompanyLogo } from 'app/views/client/deprecated-workspaces-bar/components/CompanySelector';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 import React from 'react';

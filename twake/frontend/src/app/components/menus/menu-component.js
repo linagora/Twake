@@ -59,7 +59,9 @@ export default class MenuComponent extends React.Component {
         className={
           this.props.className +
           ' menu-list ' +
-          (this.props.withFrame ? 'as_frame ' : '') +
+          (this.props.withFrame
+            ? 'as_frame bg-white dark:bg-zinc-700 dark:border dark:border-zinc-900 '
+            : '') +
           this.props.animationClass
         }
       >

@@ -366,7 +366,7 @@ export default class AutoComplete extends Component<Props, State> {
           {!this.props.hideResult && this.state.currentList.length > 0 ? (
             <div
               className={
-                'menu-list as_frame inline ' +
+                'menu-list as_frame bg-white dark:bg-zinc-700 dark:border dark:border-zinc-900 inline ' +
                 (this.state.focused && this.state.currentList.length ? 'fade_in ' : '') +
                 this.state.resultPosition
               }

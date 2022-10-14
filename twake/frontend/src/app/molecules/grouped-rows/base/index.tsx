@@ -17,7 +17,7 @@ export default function Block(props: BlockProps) {
 
   return (
     <div className={'flex ' + className} onClick={props.onClick}>
-      <div className=" flex items-center">{props.avatar}</div>
+      <div className=" flex items-center relative">{props.avatar}</div>
 
       <div className="flex grow flex-col justify-center ml-2 min-w-0 grow">
         <div className="flex flex items-center">
