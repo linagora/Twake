@@ -62,20 +62,28 @@ export default React.memo((): JSX.Element => {
               breakpoint="lg"
               collapsedWidth="0"
               theme="light"
-              width={290}
-              className="flex flex-col bg-transparent"
+              width={320}
+              className="bg-transparent overflow-hidden"
               onCollapse={(collapsed, type) => {
                 if (type === 'responsive') return setMenuIsOpen(false);
                 setMenuIsOpen(!collapsed);
               }}
             >
-              <WorkspaceSelector />
-              <Suspense fallback={<LoadingSidebar />}>
-                <SideBars />
-              </Suspense>
+              <div className="flex flex-col overflow-hidden h-full w-full">
+                <WorkspaceSelector />
+                <div className="grow overflow-hidden bg-white dark:bg-zinc-700 rounded-lg p-3">
+                  <Suspense fallback={<LoadingSidebar />}>
+                    <SideBars />
+                  </Suspense>
+                </div>
+              </div>
             </Layout.Sider>
             <Suspense fallback={<></>}>
-              <MainView className={'ml-0 sm:ml-2 ' + classNames({ collapsed: menuIsOpen })} />
+              <MainView
+                className={
+                  'ml-0 sm:ml-2 overflow-hidden rounded-lg ' + classNames({ collapsed: menuIsOpen })
+                }
+              />
             </Suspense>
           </Layout>
         </FeatureToggles>

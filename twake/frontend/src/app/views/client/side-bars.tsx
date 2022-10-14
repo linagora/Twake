@@ -29,7 +29,7 @@ export default () => {
   }
 
   return (
-    <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>
+    <Layout style={{ height: '100%' }}>
       {!!workspaceId && <ChannelsBar />}
       {!workspaceId && <LoadingChannelBar />}
     </Layout>
