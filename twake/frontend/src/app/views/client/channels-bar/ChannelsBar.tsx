@@ -1,37 +1,36 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { Suspense, useEffect } from 'react';
-import classNames from 'classnames';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout, Skeleton } from 'antd';
+import classNames from 'classnames';
+import { Suspense, useEffect } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import CurrentUser from './Parts/CurrentUser/CurrentUser';
-import { CompanyApplications } from './ChannelsApps/ChannelsApps';
-import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
-import ChannelsUser from './ChannelsUser/ChannelsUser';
-import Footer from './Parts/Footer.js';
+import HiddenNotificationsButton from 'app/components/scroll-hidden-components/hidden-notifications-button';
+import ScrollWithHiddenComponents from 'app/components/scroll-hidden-components/scroll-with-hidden-components';
+import Workspaces from 'app/deprecated/workspaces/workspaces';
+import { useAutoSelectChannel } from 'app/features/channels/hooks/use-autoselect-channel';
+import useChannelWritingActivity from 'app/features/channels/hooks/use-channel-writing-activity';
+import { useChannelsBarLoader } from 'app/features/channels/hooks/use-channels-bar-loader';
+import { useDirectChannelsSetup } from 'app/features/channels/hooks/use-direct-channels';
+import { usePublicOrPrivateChannelsSetup } from 'app/features/channels/hooks/use-public-or-private-channels';
 import Shortcuts, {
   defaultShortcutsMap,
   ShortcutType,
 } from 'app/features/global/services/shortcut-service';
-import AddUserButton from 'components/add-user-button/add-user-button';
-import Workspaces from 'app/deprecated/workspaces/workspaces';
-import ScrollWithHiddenComponents from 'app/components/scroll-hidden-components/scroll-with-hidden-components';
-import HiddenNotificationsButton from 'app/components/scroll-hidden-components/hidden-notifications-button';
-import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
-import useChannelWritingActivity from 'app/features/channels/hooks/use-channel-writing-activity';
-import { useChannelsBarLoader } from 'app/features/channels/hooks/use-channels-bar-loader';
-import { usePublicOrPrivateChannelsSetup } from 'app/features/channels/hooks/use-public-or-private-channels';
-import { useDirectChannelsSetup } from 'app/features/channels/hooks/use-direct-channels';
 import { useSetLastWorkspacePreference } from 'app/features/users/hooks/use-set-last-workspace-preferences';
-import { useAutoSelectChannel } from 'app/features/channels/hooks/use-autoselect-channel';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
+import AddUserButton from 'components/add-user-button/add-user-button';
+import { CompanyApplications } from './ChannelsApps/ChannelsApps';
+import ChannelsUser from './ChannelsUser/ChannelsUser';
+import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
+import Footer from './Parts/Footer';
 
-import './ChannelsBar.scss';
 import { useSearchModal } from 'app/features/search/hooks/use-search';
-import { useSetRecoilState } from 'recoil';
 import { SearchInputState } from 'app/features/search/state/search-input';
+import { useSetRecoilState } from 'recoil';
+import './ChannelsBar.scss';
 
 export default () => {
   const companyId = useRouterCompany();
@@ -74,11 +73,11 @@ export default () => {
   return (
     <Layout.Sider
       theme="light"
-      width={220}
-      className={classNames('channels_view', {})}
+      width={'100%'}
+      className={'bg-transparent ' + classNames('channels_view', {})}
       style={{ height: '100%' }}
     >
-      <CurrentUser />
+      {/*<CurrentUser />*/}
 
       <ScrollWithHiddenComponents
         tag="channel_bar_component"
@@ -95,6 +94,7 @@ export default () => {
             (Workspaces.getCurrentWorkspace()?.stats?.total_members || 0) <= 5 && <AddUserButton />}
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>
+
       <Footer />
     </Layout.Sider>
   );
@@ -105,7 +105,7 @@ export const LoadingChannelBar = () => {
     <Layout.Sider
       theme="light"
       width={220}
-      className={classNames('channels_view_loading channels_view')}
+      className={'bg-transparent ' + classNames('channels_view_loading channels_view')}
       style={{ height: '100%', width: '90%', alignItems: 'center' }}
     >
       <ChannelLoading />

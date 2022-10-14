@@ -41,13 +41,13 @@ export const MainHeader = () => {
 
       <div className="-mr-2 flex flex-row items-center">
         <A onClick={() => {}} className="mx-2 inline-block">
-          <BellIcon className="w-7 h-7" />
+          <BellIcon className="w-6 h-6" />
         </A>
         <A onClick={() => {}} className="mx-2 inline-block">
-          <AppsIcon className="w-7 h-7" />
+          <AppsIcon className="w-6 h-6" />
         </A>
         <A onClick={() => {}} className="mx-2 inline-block">
-          <SettingsIcon className="w-7 h-7" />
+          <SettingsIcon className="w-6 h-6" />
         </A>
       </div>
     </div>

@@ -29,7 +29,7 @@ export default () => {
   }
 
   return (
-    <Layout style={{ height: '100%' }}>
+    <Layout style={{ height: '100%' }} className="bg-transparent">
       {!!workspaceId && <ChannelsBar />}
       {!workspaceId && <LoadingChannelBar />}
     </Layout>
@@ -38,7 +38,7 @@ export default () => {
 
 export const LoadingSidebar = () => {
   return (
-    <Layout style={{ height: '100%' }}>
+    <Layout style={{ height: '100%' }} className="bg-transparent">
       <LoadingChannelBar />
     </Layout>
   );

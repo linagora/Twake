@@ -51,15 +51,10 @@
 
   .help {
     font-size: 12px;
-    color: var(--grey-dark);
     line-height: 22px;
     width: auto;
     float: left;
     cursor: pointer;
-
-    &:hover {
-      color: var(--black);
-    }
   }
 
   .plan {
@@ -78,7 +73,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-left: auto;
-    cursor: pointer;
     display: inline;
 
     &.free {

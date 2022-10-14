@@ -30,6 +30,7 @@ export type ServerInfoType = null | {
   };
   branding?: {
     logo: string;
+    name: string;
   };
   auth: Array<string>;
   configuration: {
