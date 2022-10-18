@@ -2,28 +2,28 @@ import { useState } from 'react';
 
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
-import currentUserService from 'app/deprecated/user/CurrentUser';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
-import LoginService from 'app/features/auth/login-service';
 import ConsoleService from 'app/features/console/services/console-service';
 import InitService from 'app/features/global/services/init-service';
 import Languages from 'app/features/global/services/languages-service';
-import userService from 'app/features/users/services/current-user-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import MenuList from 'components/menus/menu-component.js';
-import CompanyIntegration from './Pages/CompanyIntegrations';
-import WorkspacePartner from './Pages/WorkspacePartner';
+import CompanyIntegration from './WorkspacePages/CompanyIntegrations';
+import WorkspacePartner from './WorkspacePages/WorkspacePartner';
 
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
-import WorkspaceIdentity from './Pages/Workspace/WorkspaceIdentity';
+import Account from './UserPages/Account';
+import Assistant from './UserPages/Assistant';
+import Notifications from './UserPages/Notifications';
+import './UserParameter.scss';
+import WorkspaceIdentity from './WorkspacePages/Workspace/WorkspaceIdentity';
 import './WorkspaceParameter.scss';
 
-export default (props: { initial_page: number; options: any }) => {
-  const { user } = useCurrentUser();
+export default (props: { initial_page?: number; options?: any }) => {
   const { workspace } = useCurrentWorkspace();
 
-  const [page, _setPage] = useState(props.initial_page);
+  const [page, _setPage] = useState(props.initial_page || 11);
   const setPage = (page: number) => {
     popupManager.popupStates['workspace_parameters'] = page;
     _setPage(page);
@@ -54,9 +54,18 @@ export default (props: { initial_page: number; options: any }) => {
         </div>
       );
     }
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && page === 11) {
+      return <Account />;
+    }
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && page === 14) {
+      return <Assistant />;
+    }
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && page === 13) {
+      return <Notifications />;
+    }
   };
 
-  var subText = (
+  const subText = (
     <div>
       {Languages.t(
         'scenes.app.channelsbar.currentuser.workspace_info',
@@ -98,7 +107,7 @@ export default (props: { initial_page: number; options: any }) => {
     </div>
   );
 
-  var menu: any[] = [
+  const menu: any[] = [
     {
       type: 'menu',
       text: Languages.t('scenes.apps.account.title'),
@@ -159,19 +168,21 @@ export default (props: { initial_page: number; options: any }) => {
       },
     });
   }
-  menu.push({
-    type: 'menu',
-    emoji: ':handshake:',
-    text: Languages.t(
-      'scenes.app.popup.workspaceparameter.pages.collaborateurs',
-      [],
-      'Collaborateurs',
-    ),
-    selected: page === 2 ? 'selected' : '',
-    onClick: () => {
-      setPage(2);
-    },
-  });
+  if (!WorkspaceUserRights.isGroupInvite()) {
+    menu.push({
+      type: 'menu',
+      emoji: ':handshake:',
+      text: Languages.t(
+        'scenes.app.popup.workspaceparameter.pages.collaborateurs',
+        [],
+        'Collaborateurs',
+      ),
+      selected: page === 2 ? 'selected' : '',
+      onClick: () => {
+        setPage(2);
+      },
+    });
+  }
 
   if (
     WorkspaceUserRights.hasGroupPrivilege() &&

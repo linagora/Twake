@@ -9,7 +9,7 @@ import { useChannelMember } from 'app/features/channel-members-search/hooks/memb
 import { LogoutIcon } from '@heroicons/react/outline';
 import { Tooltip } from 'antd';
 import { ButtonConfirm } from 'app/atoms/button/confirm';
-import MemberGrade from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/MemberGrade';
+import MemberGrade from 'app/views/client/popup/WorkspaceParameter/WorkspacePages/WorkspacePartnerTabs/MemberGrade';
 
 type IMemberProps = {
   member: ChannelMemberWithUser;

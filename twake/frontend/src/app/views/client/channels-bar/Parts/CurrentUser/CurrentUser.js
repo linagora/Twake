@@ -15,7 +15,7 @@ import ListenUsers from 'app/features/users/services/listen-users-service';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import CompanyHeaderUI from 'app/views/client/channels-bar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
-import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter';
+import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/parameters';
 import CompanyMessagesCounter from 'components/company-messages-counter/company-messages-counter';
 import MenuCompanyHeader from './MenuCompanyHeader';
 import SaveNewStatus from './SaveNewStatus';

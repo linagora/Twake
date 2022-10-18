@@ -27,7 +27,7 @@ import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user
 import Checkbox from 'app/components/inputs/deprecated_checkbox.js';
 import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
 import Select from 'components/select/select.js';
-import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter';
+import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/parameters';
 import UnconfiguredTab from './unconfigured-tab.js';
 import RouterService from 'app/features/router/services/router-service';
 import MainPlus from 'components/main-plus/main-plus.js';

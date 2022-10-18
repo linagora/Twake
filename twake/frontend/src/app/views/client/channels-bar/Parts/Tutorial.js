@@ -12,7 +12,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
-import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter';
+import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/parameters';
 
 import TutorialUI from 'app/views/client/channels-bar/Parts/Tutorial/Tutorial.js';
 

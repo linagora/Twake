@@ -6,7 +6,7 @@ import Menu from 'components/menus/menu.js';
 import { MoreHorizontal, MessageCircle } from 'react-feather';
 import Languages from 'app/features/global/services/languages-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
-import WorkspaceParameter from '../../popup/WorkspaceParameter/WorkspaceParameter';
+import WorkspaceParameter from '../../popup/WorkspaceParameter/parameters';
 import { Application } from 'app/features/applications/types/application';
 import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
 import MainViewService from 'app/features/router/services/main-view-service';

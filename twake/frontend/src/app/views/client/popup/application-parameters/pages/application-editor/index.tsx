@@ -19,7 +19,7 @@ import { useCompanyApplications } from 'app/features/applications/hooks/use-comp
 import ModalManager from 'app/components/modal/modal-manager';
 import { ApplicationHelp } from './components/application-help';
 
-import '../../../WorkspaceParameter/Pages/Applications/ApplicationsStyles.scss';
+import '../../../WorkspaceParameter/WorkspacePages/Applications/ApplicationsStyles.scss';
 
 type PropsType = {
   application: Application;

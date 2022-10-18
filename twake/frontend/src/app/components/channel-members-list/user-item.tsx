@@ -10,7 +10,7 @@ import React from 'react';
 import { Modal, ModalContent } from 'app/atoms/modal';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import ConsoleService from 'app/features/console/services/console-service';
-import MemberGrade from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/MemberGrade';
+import MemberGrade from 'app/views/client/popup/WorkspaceParameter/WorkspacePages/WorkspacePartnerTabs/MemberGrade';
 
 type IUserProps = {
   userId: string;

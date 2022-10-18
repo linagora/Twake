@@ -23,7 +23,7 @@ import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user
 import Block from 'app/molecules/grouped-rows/base';
 import { useEffect } from 'react';
 import CreateWorkspacePage from '../popup/CreateWorkspacePage/CreateWorkspacePage';
-import WorkspaceParameter from '../popup/WorkspaceParameter/WorkspaceParameter';
+import WorkspaceParameter from '../popup/WorkspaceParameter/parameters';
 
 export const WorkspaceSelector = () => {
   const companyId = useRouterCompany();
@@ -34,8 +34,6 @@ export const WorkspaceSelector = () => {
     !WorkspaceUserRights.isGroupInvite() &&
     (AccessRightsService.hasLevel(workspaceId, 'member') ||
       AccessRightsService.hasCompanyLevel(companyId, 'admin'));
-  const showWorkspaceParameters =
-    WorkspaceUserRights.hasWorkspacePrivilege() && !WorkspaceUserRights.isInvite();
 
   useEffect(() => {
     companyId && refresh();
@@ -67,16 +65,14 @@ export const WorkspaceSelector = () => {
           <UsersIcon className="h-5 w-5" />
         </A>
       )}
-      {showWorkspaceParameters && (
-        <A
-          onClick={() => {
-            ModalManagerDepreciated.open(<WorkspaceParameter />, true, 'workspace_parameters');
-          }}
-          className="ml-3 mr-1"
-        >
-          <SettingsIcon className="h-5 w-5" />
-        </A>
-      )}
+      <A
+        onClick={() => {
+          ModalManagerDepreciated.open(<WorkspaceParameter />, true, 'workspace_parameters');
+        }}
+        className="ml-3 mr-1"
+      >
+        <SettingsIcon className="h-5 w-5" />
+      </A>
     </div>
   );
 };

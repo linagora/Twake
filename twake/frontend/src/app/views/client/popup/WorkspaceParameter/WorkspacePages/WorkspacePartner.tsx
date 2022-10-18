@@ -8,8 +8,8 @@ import groupService from 'app/deprecated/workspaces/groups.js';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Switch from 'components/inputs/switch';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
-import Pending from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';
-import Members from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members';
+import Pending from 'app/views/client/popup/WorkspaceParameter/WorkspacePages/WorkspacePartnerTabs/Pending';
+import Members from 'app/views/client/popup/WorkspaceParameter/WorkspacePages/WorkspacePartnerTabs/Members';
 import AddUserByEmail from '../../AddUser/AddUserByEmail';
 import LockedInviteAlert from 'app/components/locked-features-components/locked-invite-alert';
 import FeatureTogglesService, {
