@@ -14,7 +14,7 @@ let shades = [];
 
 module.exports = {
   content: ['./src/**/*.{html,js,ts,tsx}'],
-  darkMode: 'class',
+  //darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -80,6 +80,8 @@ module.exports = {
     'hover:text-blue-700',
     'active:text-blue-800',
     'text-blue-500',
+    'max-w-xs',
+    'sm:max-w-lg',
     ...shades,
   ],
   plugins: [require('@tailwindcss/forms')],

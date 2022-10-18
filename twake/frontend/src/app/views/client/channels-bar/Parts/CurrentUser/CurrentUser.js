@@ -1,34 +1,22 @@
 // eslint-disable-next-line no-use-before-define
-import React, { Component } from 'react';
+import { Component } from 'react';
 
-import Languages from 'app/features/global/services/languages-service';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import UserService from 'app/features/users/services/current-user-service';
-import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import LoginService from 'app/features/auth/login-service';
-import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
-import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
-import ListenUsers from 'app/features/users/services/listen-users-service';
-import UserParameter from 'app/views/client/popup/UserParameter/UserParameter.js';
-import InputWithIcon from 'components/inputs/input-with-icon';
-import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
-import AccountParameter from 'app/views/client/popup/UserParameter/UserParameter';
-import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
-import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
-import CreateWorkspacePage from 'app/views/client/popup/CreateWorkspacePage/CreateWorkspacePage.js';
-import CompanyHeaderUI from 'app/views/client/channels-bar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import ModalManagerDepreciated from 'app/deprecated/popupManager/popupManager';
-import InitService from 'app/features/global/services/init-service';
-import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
+import LoginService from 'app/features/auth/login-service';
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
-import LockedWorkspacePopup from 'app/components/locked-features-components/locked-workspace-popup/locked-workspace-popup';
-import ModalManager from 'app/components/modal/modal-manager';
+import Languages from 'app/features/global/services/languages-service';
+import UserService from 'app/features/users/services/current-user-service';
+import ListenUsers from 'app/features/users/services/listen-users-service';
+import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
+import CompanyHeaderUI from 'app/views/client/channels-bar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
+import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter';
 import CompanyMessagesCounter from 'components/company-messages-counter/company-messages-counter';
-import ConsoleService from 'app/features/console/services/console-service';
 import MenuCompanyHeader from './MenuCompanyHeader';
 import SaveNewStatus from './SaveNewStatus';
 
@@ -166,7 +154,11 @@ export default class CurrentUser extends Component {
         icon: 'user',
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
         onClick: () => {
-          ModalManagerDepreciated.open(<AccountParameter />, true, 'account_parameters');
+          ModalManagerDepreciated.open(
+            <WorkspaceParameter initial_page={11} />,
+            true,
+            'account_parameters',
+          );
         },
       },
       {

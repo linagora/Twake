@@ -1,19 +1,18 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
-import Languages from 'app/features/global/services/languages-service';
-import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
-import Emojione from 'components/emojione/emojione';
-import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import ElectronService from 'app/features/global/framework/electron-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
+import Languages from 'app/features/global/services/languages-service';
+import UserService from 'app/features/users/services/current-user-service';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
+import Emojione from 'components/emojione/emojione';
 
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
-import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
-import UserParameter from 'app/views/client/popup/UserParameter/UserParameter.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
+import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter';
 
 import TutorialUI from 'app/views/client/channels-bar/Parts/Tutorial/Tutorial.js';
 
@@ -126,7 +125,7 @@ export default class Tutorial extends Component {
                 emoji: ':woman_juggling:',
                 done: tutorial_status.has_identity,
                 onClick: () => {
-                  popupManager.open(<UserParameter />);
+                  popupManager.open(<WorkspaceParameter initial_page={11} />);
                 },
               },
               {

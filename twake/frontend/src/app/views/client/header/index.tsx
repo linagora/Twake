@@ -24,7 +24,7 @@ import { useNotifications } from 'app/features/users/hooks/use-notifications';
 export const MainHeader = () => {
   return (
     <div className="flex flex-row items-center px-4 py-3">
-      <div className="grow max-w-xs flex items-center" style={{ minWidth: 80 }}>
+      <div className="sm:ml-0 ml-12 grow max-w-xs flex items-center" style={{ minWidth: 80 }}>
         <Menu
           options={{ menuClassName: '!w-80' }}
           menu={<CompanySelector />}
@@ -121,7 +121,7 @@ const CompanySelector = () => {
                 )}
               </>
             }
-            title={<span className="sm:inline hidden">{c?.company?.name}</span>}
+            title={<span>{c?.company?.name}</span>}
             subtitle={<Info>{user?.email}</Info>}
             suffix={
               (c.company.id === company.id && (
@@ -157,7 +157,7 @@ const SearchBar = () => {
           maxLength={0}
           readOnly
           onClick={() => setOpen()}
-          className={className + 'max-w-xl text-zinc-500'}
+          className={className + 'sm:max-w-xl max-w-xs text-zinc-500'}
           placeholder={Languages.t('scenes.client.main_view.main_header.search_input_global')}
         />
       )}
