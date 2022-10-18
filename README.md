@@ -22,7 +22,7 @@ Twake offers all the features for collaboration :
 - Video call and conferencing
 - Real time document collaboration
 
-<a href="https://twakeapp.com"><img width=800 src="https://github.com/linagora/Twake/raw/main/twake.png"/></a>
+<a href="https://twake.app"><img width=800 src="https://github.com/linagora/Twake/raw/main/twake.png"/></a>
 
 ## Demo
 
