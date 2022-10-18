@@ -5,7 +5,7 @@ import * as Text from '@atoms/text';
 interface BlockProps extends React.InputHTMLAttributes<HTMLInputElement> {
   avatar: JSX.Element;
   title: JSX.Element | string;
-  subtitle: JSX.Element | string;
+  subtitle?: JSX.Element | string;
   title_suffix?: JSX.Element | string;
   subtitle_suffix?: JSX.Element | string;
   suffix?: JSX.Element | string;
@@ -16,11 +16,11 @@ export default function Block(props: BlockProps) {
   const className = props.className || '';
 
   return (
-    <div className={'flex ' + className}>
-      <div className=" flex items-center">{props.avatar}</div>
+    <div className={'flex ' + className} onClick={props.onClick}>
+      <div className=" flex items-center relative">{props.avatar}</div>
 
       <div className="flex grow flex-col justify-center ml-2 min-w-0 grow">
-        <div className="flex">
+        <div className="flex flex items-center">
           <div className="grow truncate leading-tight mr-1">
             <Text.Title className="inline">{props.title}</Text.Title>
           </div>
@@ -28,7 +28,7 @@ export default function Block(props: BlockProps) {
             {props.title_suffix}
           </div>
         </div>
-        <div className="flex">
+        <div className="flex flex items-center">
           <div className="grow truncate leading-normal text-slate-500 mr-1">
             <Text.Base className="text-slate-500 dark:text-slate-400">{props.subtitle}</Text.Base>
           </div>

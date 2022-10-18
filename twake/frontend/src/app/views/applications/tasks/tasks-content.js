@@ -17,7 +17,7 @@ import AlertManager from 'app/features/global/services/alert-manager-service';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
-import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
+import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/parameters';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';

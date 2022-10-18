@@ -67,7 +67,6 @@ class User {
       thumbnail = addApiUrlIfNeeded(user.picture || user.thumbnail || '');
     } else {
       //Generate gradient thumbnail
-      //TODO: move me to backend ?
       thumbnail = getGradient(user.username);
     }
 

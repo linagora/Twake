@@ -19,12 +19,12 @@ input.ant-input {
     background: linear-gradient(263.04deg, #007AFF 2.08%, #C600F9 97.25%);
 }
 
-a {
+a:not(.text-blue-500) {
     color: var(--primary) !important;
 }
 
 .ant-switch-checked {
-    background-color: #004dff !important;
+    background-color: #007AFF !important;
 }
 
 @layer base {

@@ -102,98 +102,104 @@ export default (props: Props) => {
   const showMessageStatus = message.user_id === User.getCurrentUserId();
 
   return (
-    <div
-      className={classNames('message-content', {
-        active,
-        'loading-interaction': loadingAction,
-        'link-to-thread': props.linkToThread,
-      })}
-      onMouseEnter={() => {
-        setDidMouseOver(true);
-      }}
-      onClick={() => setActive(false)}
-      key={`message_container_${message.id}`}
-    >
-      <MessageHeader linkToThread={props.linkToThread} />
-      {showQuotedMessage && !showEdition && (
-        <MessageQuote
-          className="mb-1"
-          author={authorName}
-          message={quotedContent}
-          closable={false}
-          deleted={deletedQuotedMessage}
-          goToMessage={() =>
-            gotoMessage(
-              quotedMessage,
-              quotedMessage.company_id || context.companyId,
-              quotedMessage.channel_id || context.channelId,
-              quotedMessage.workspace_id || workspaceId,
-            )
-          }
-        />
-      )}
-      {!!showEdition && !deleted && (
-        <div className="content-parent pt-1">
-          <MessageEdition />
-        </div>
-      )}
-      {!showEdition && (
-        <div className="content-parent dont-break-out">
-          {deleted === true ? (
-            <div className="deleted-message">
-              <DeletedContent userId={message.user_id || ''} key={`deleted_${message.thread_id}`} />
-            </div>
-          ) : (
-            <>
-              <div
-                className={classNames('content allow_selection', {
-                  message_is_loading: messageIsLoading,
-                  'message-not-sent': messageSaveFailed,
-                })}
-              >
-                {!!props.linkToThread && message.text}
-                {!props.linkToThread && (
-                  <>
-                    <Blocks
-                      blocks={message.blocks}
-                      fallback={PseudoMarkdownCompiler.transformBackChannelsUsers(message.text)}
-                      onAction={(type: string, id: string, context: unknown, passives: unknown) => {
-                        if (isChannelMember) onAction(type, id, context, passives);
-                      }}
-                      allowAdvancedBlocks={message.subtype === 'application'}
-                    />
-                  </>
-                )}
-              </div>
-
-              {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
-              {message?.links &&
-                (message?.links?.length || 0) > 0 &&
-                message.links
-                  .filter(link => link && (link.title || link.description || link.img))
-                  .map((preview, i) => <LinkPreview key={i} preview={preview} />)}
-              {!messageSaveFailed && <Reactions />}
-              {messageSaveFailed && !messageIsLoading && <RetryButtons />}
-            </>
-          )}
-        </div>
-      )}
-      {isChannelMember &&
-        !showEdition &&
-        !deleted &&
-        !messageSaveFailed &&
-        didMouseOver &&
-        !messageIsLoading && (
-          <Options
-            onOpen={() => setActive(true)}
-            onClose={() => setActive(false)}
-            threadHeader={props.threadHeader}
-            key={`options_${message.id}`}
+    <div className="message-content">
+      <div
+        className={classNames('rounded-xl px-3 py-2 w-auto inline-block max-w-full', {
+          active,
+          'loading-interaction': loadingAction,
+          'link-to-thread': props.linkToThread,
+          'bg-blue-100 float-right': message.user_id === User.getCurrentUserId(),
+          'bg-zinc-200': message.user_id !== User.getCurrentUserId(),
+        })}
+        onMouseEnter={() => {
+          setDidMouseOver(true);
+        }}
+        onClick={() => setActive(false)}
+        key={`message_container_${message.id}`}
+      >
+        {showQuotedMessage && !showEdition && (
+          <MessageQuote
+            className="mb-1"
+            author={authorName}
+            message={quotedContent}
+            closable={false}
+            deleted={deletedQuotedMessage}
+            goToMessage={() =>
+              gotoMessage(
+                quotedMessage,
+                quotedMessage.company_id || context.companyId,
+                quotedMessage.channel_id || context.channelId,
+                quotedMessage.workspace_id || workspaceId,
+              )
+            }
           />
         )}
-      {showMessageStatus && !showEdition && (
-        <MessageStatus key={`message_status_${message.id}`} status={message.status} />
-      )}
+        {!showEdition && (
+          <div className="content-parent dont-break-out">
+            {deleted === true ? (
+              <div className="deleted-message">
+                <DeletedContent
+                  userId={message.user_id || ''}
+                  key={`deleted_${message.thread_id}`}
+                />
+              </div>
+            ) : (
+              <>
+                <div
+                  className={classNames('content allow_selection', {
+                    message_is_loading: messageIsLoading,
+                    'message-not-sent': messageSaveFailed,
+                  })}
+                >
+                  {!!props.linkToThread && message.text}
+                  {!props.linkToThread && (
+                    <>
+                      <Blocks
+                        blocks={message.blocks}
+                        fallback={PseudoMarkdownCompiler.transformBackChannelsUsers(message.text)}
+                        onAction={(
+                          type: string,
+                          id: string,
+                          context: unknown,
+                          passives: unknown,
+                        ) => {
+                          if (isChannelMember) onAction(type, id, context, passives);
+                        }}
+                        allowAdvancedBlocks={message.subtype === 'application'}
+                      />
+                    </>
+                  )}
+                </div>
+
+                {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
+                {message?.links &&
+                  (message?.links?.length || 0) > 0 &&
+                  message.links
+                    .filter(link => link && (link.title || link.description || link.img))
+                    .map((preview, i) => <LinkPreview key={i} preview={preview} />)}
+                {!messageSaveFailed && <Reactions />}
+                {messageSaveFailed && !messageIsLoading && <RetryButtons />}
+              </>
+            )}
+          </div>
+        )}
+        {isChannelMember &&
+          !showEdition &&
+          !deleted &&
+          !messageSaveFailed &&
+          didMouseOver &&
+          !messageIsLoading && (
+            <Options
+              onOpen={() => setActive(true)}
+              onClose={() => setActive(false)}
+              threadHeader={props.threadHeader}
+              key={`options_${message.id}`}
+            />
+          )}
+        {showMessageStatus && !showEdition && (
+          <MessageStatus key={`message_status_${message.id}`} status={message.status} />
+        )}
+      </div>
     </div>
   );
 };

@@ -1,14 +1,7 @@
-.electron {
-  .channels_view {
-    padding-top: 24px;
-  }
-}
 
 .channels_view {
   background: var(--grey-background);
-  width: 220px;
-  padding-top: 16px;
-  border-radius: var(--border-radius-base) 0 0 8px;
+  width: 100%;
 
   &.loading {
     .applications_channels,
@@ -90,9 +83,7 @@
 }
 
 .channels_view_loader {
-  background: var(--grey-background);
-  width: 220px;
-  border-radius: var(--border-radius-base) 0 0 8px;
+  width: 100%;
 
   .applications_channels_loader {
     margin-top: 4px;

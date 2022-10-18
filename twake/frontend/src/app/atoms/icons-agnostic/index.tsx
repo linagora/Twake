@@ -19,6 +19,11 @@ import { ReactComponent as Up } from './assets/up.svg';
 import { ReactComponent as X } from './assets/x.svg';
 import { ReactComponent as StatusCheckDouble } from './assets/status-check-double.svg';
 import { ReactComponent as StatusCheck } from './assets/status-check.svg';
+import { ReactComponent as ThreadNew } from './assets/thread-new.svg';
+import { ReactComponent as ThreadReply } from './assets/thread-reply.svg';
+import { ReactComponent as Bell } from './assets/bell.svg';
+import { ReactComponent as Apps } from './assets/apps.svg';
+import { ReactComponent as Settings } from './assets/settings.svg';
 import { ReactComponent as Users } from './assets/users.svg';
 
 export const CopyIcon = (props: ComponentProps<'svg'>) => <CopySvg {...props} />;
@@ -42,4 +47,9 @@ export const StatusCheckDoubleIcon = (props: ComponentProps<'svg'>) => (
   <StatusCheckDouble {...props} />
 );
 export const StatusCheckIcon = (props: ComponentProps<'svg'>) => <StatusCheck {...props} />;
+export const ThreadNewIcon = (props: ComponentProps<'svg'>) => <ThreadNew {...props} />;
+export const ThreadReplyIcon = (props: ComponentProps<'svg'>) => <ThreadReply {...props} />;
+export const BellIcon = (props: ComponentProps<'svg'>) => <Bell {...props} />;
+export const AppsIcon = (props: ComponentProps<'svg'>) => <Apps {...props} />;
+export const SettingsIcon = (props: ComponentProps<'svg'>) => <Settings {...props} />;
 export const UsersIcon = (props: ComponentProps<'svg'>) => <Users {...props} />;

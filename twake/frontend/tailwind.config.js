@@ -14,23 +14,24 @@ let shades = [];
 
 module.exports = {
   content: ['./src/**/*.{html,js,ts,tsx}'],
-  darkMode: 'class',
+  //darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       borderRadius: {
-        xl: '24px',
-        lg: '14px',
+        xxl: '24px',
+        xl: '18px',
+        lg: '16px',
         md: '10px',
         sm: '8px',
       },
       fontSize: {
-        lg: '18px',
-        base: '16px',
-        sm: '14px',
-        xs: '12px',
+        lg: '17px',
+        base: '15px',
+        sm: '13px',
+        xs: '11px',
       },
 
       colors: {
@@ -47,12 +48,14 @@ module.exports = {
           900: '#18181b',
         },
         blue: {
+          100: '#DEEEFF', //From figma
           500: '#007AFF', //From figma
         },
       },
     },
   },
   safelist: [
+    'max-w-md',
     'cursor-pointer',
     'w-32',
     'h-32',
@@ -74,6 +77,11 @@ module.exports = {
     'border-b-2',
     'border-transparent',
     'zinc-100',
+    'hover:text-blue-700',
+    'active:text-blue-800',
+    'text-blue-500',
+    'max-w-xs',
+    'sm:max-w-lg',
     ...shades,
   ],
   plugins: [require('@tailwindcss/forms')],

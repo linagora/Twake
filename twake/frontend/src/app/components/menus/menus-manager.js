@@ -79,6 +79,7 @@ class MenusManager extends Observable {
       level: 0,
       id: Number.unid(),
       allowClickOut: options.allowClickOut !== undefined ? options.allowClickOut : true,
+      menuClassName: options.menuClassName,
     });
     this.last_opened_id = Number.unid();
     this.notify();

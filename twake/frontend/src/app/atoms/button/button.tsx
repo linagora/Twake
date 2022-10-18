@@ -25,7 +25,7 @@ export const Button = (props: ButtonProps) => {
 
   if (props.theme === 'default')
     className =
-      'text-black dark:text-white bg-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 hover:bg-gray-50 active:bg-gray-200 border-gray-300';
+      'text-blue-500 dark:text-white bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 hover:bg-zinc-200 active:bg-gray-300 border-zinc-100';
 
   if (props.theme === 'outline')
     className =

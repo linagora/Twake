@@ -847,6 +847,7 @@
     "scenes.apps.messages.input.attach_file.from_computer": "From computer",
     "scenes.app.popup.workspaceparameter.pages.table_title": "Name",
     "scenes.client.main_view.main_header.search_input": "Search",
+    "scenes.client.main_view.main_header.search_input_global": "Search for messages, people, media, files",
     "scenes.apps.drive.new_link_title": "New link",
     "scenes.apps.drive.default_link_name": "Untitled",
     "components.emoji_picker.input_search_placeholder": "Search",

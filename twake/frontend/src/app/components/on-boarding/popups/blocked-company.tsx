@@ -1,16 +1,17 @@
-import React from 'react';
-import { Button, Row, Typography, Select } from 'antd';
-import ObjectModal from '../../object-modal/object-modal';
-import Languages from 'app/features/global/services/languages-service';
-import LoginService from 'app/features/auth/login-service';
-import { CompanyType } from 'app/features/companies/types/company';
-import { capitalize } from 'lodash';
+import { Button, Row, Select, Typography } from 'antd';
+import menusManager from 'app/components/menus/menus-manager';
 import ModalManager from 'app/components/modal/modal-manager';
-import UserService from 'app/features/users/services/current-user-service';
-import Groups from 'app/deprecated/workspaces/groups.js';
-import { AlertTriangle } from 'react-feather';
+import PopupService from 'app/deprecated/popupManager/popupManager.js';
+import LoginService from 'app/features/auth/login-service';
+import { useCompanies } from 'app/features/companies/hooks/use-companies';
 import consoleService from 'app/features/console/services/console-service';
+import Languages from 'app/features/global/services/languages-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import RouterService from 'app/features/router/services/router-service';
+import UserService from 'app/features/users/services/current-user-service';
+import { capitalize } from 'lodash';
+import { AlertTriangle } from 'react-feather';
+import ObjectModal from '../../object-modal/object-modal';
 
 type SwitchCompanyPropsType = {
   placeholder?: string;
@@ -20,13 +21,20 @@ type SwitchCompanyPropsType = {
 const { Option } = Select;
 const { Text, Title } = Typography;
 const SwitchCompany = ({ placeholder, companiesIds }: SwitchCompanyPropsType): JSX.Element => {
-  const userGroups: { [key: string]: CompanyType } = Groups.user_groups;
-  const companies = companiesIds
-    .map(id => userGroups[id])
-    .filter(company => company.plan?.billing?.status !== 'error');
+  const { companies: _companies } = useCompanies();
+  const companies = _companies.filter(company => company.company.plan?.billing?.status !== 'error');
 
   const onSelect = (companyId: string) => {
-    Groups.select(userGroups[companyId]);
+    PopupService.closeAll();
+    menusManager.closeMenu();
+    RouterService.push(
+      RouterService.generateRouteFromState(
+        {
+          companyId,
+        },
+        { replace: true },
+      ),
+    );
     return ModalManager.close();
   };
 
@@ -40,8 +48,8 @@ const SwitchCompany = ({ placeholder, companiesIds }: SwitchCompanyPropsType): J
         style={{ width: 224 }}
       >
         {companies.map(company => (
-          <Option key={company.id} value={company.id}>
-            {capitalize(company.name)}
+          <Option key={company.company.id} value={company.company.id}>
+            {capitalize(company.company.name)}
           </Option>
         ))}
       </Select>
@@ -60,10 +68,7 @@ const SwitchCompany = ({ placeholder, companiesIds }: SwitchCompanyPropsType): J
 export default (): JSX.Element => {
   const companyId = useRouterCompany();
   const onClickButton = () =>
-    window.open(
-      consoleService.getCompanySubscriptionUrl(companyId),
-      'blank',
-    );
+    window.open(consoleService.getCompanySubscriptionUrl(companyId), 'blank');
 
   return (
     <ObjectModal

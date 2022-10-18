@@ -9,6 +9,7 @@ import { CompanyType } from 'app/features/companies/types/company';
 import BlockedCompany from './popups/blocked-company';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 const CompanyStatusComponent = (): JSX.Element => {
   const companyId = useRouterCompany();
@@ -16,6 +17,7 @@ const CompanyStatusComponent = (): JSX.Element => {
   const user = UserService.getCurrentUser();
   const onboarding: string | null = localStorage.getItem(`onboarding_${companyId}`);
   const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
+  const { company } = useCurrentCompany();
 
   useEffect(() => {
     if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
@@ -55,10 +57,8 @@ const CompanyStatusComponent = (): JSX.Element => {
 
   const isBlockedCompany = () => {
     if (!companyId) return;
-    const userGroups: { [key: string]: CompanyType } = Groups.user_groups;
-    const currentGroup = userGroups[companyId];
 
-    if (currentGroup?.plan?.billing?.status === 'error') {
+    if (company?.plan?.billing?.status === 'error') {
       return ModalManager.open(
         <BlockedCompany />,
         {

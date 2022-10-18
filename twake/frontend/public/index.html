@@ -19,7 +19,10 @@
         width: 100vw;
         height: 100%;
         overflow: hidden;
-        background: #0d0f38;
+      }
+
+      .root-bg {
+        background: #FFFFFF;
       }
 
       #root {
@@ -57,7 +60,7 @@
         color 6s ease-in-out infinite
         ;
         stroke-linecap: round;
-        stroke: #FFFFFF;
+        stroke: #888888;
       }
 
       @keyframes rotate{
@@ -100,7 +103,7 @@
   </head>
   <body id="body" style="margin: 0; padding: 0;">
     <div id="fyfk-widget"></div>
-    <div id="root"></div>
+    <div id="root" class="root-bg bg-zinc-200 dark:bg-zinc-900"></div>
 
     <svg id="app_loader" class="circular" height="50" width="50">
       <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />

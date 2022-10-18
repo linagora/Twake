@@ -48,7 +48,7 @@
   }
 
   padding-top: 8px;
-  padding-bottom: 8px;
+  padding-bottom: 0px;
 
   &.highlighted .thread,
   &.highlighted .thread.with-block {
@@ -76,7 +76,6 @@
 
   .thread {
     font-size: 14px;
-    margin-bottom: 8px;
 
     &.with-block {
       border: 1px solid var(--grey-background);
@@ -108,10 +107,6 @@
       }
     }
 
-    &:not(:last-child):not(.gradient) {
-      border-bottom: 1px solid var(--grey-background);
-    }
-
     &.compact {
       .message {
         padding: 4px 12px !important;
@@ -120,9 +115,10 @@
 
     .message {
       border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-right-color: transparent !important;
       background-color: var(--white);
-      padding: 4px;
-      padding-left: 8px;
+      padding: 0px 4px;
       display: flex;
       border-radius: var(--border-radius-base) 0 0 0;
     }

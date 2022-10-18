@@ -30,12 +30,16 @@ import UsersSearchModal from 'app/components/channel-members-list/users-search-m
 import './styles.scss';
 import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
 import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
+import { MainHeader } from './header';
+import { WorkspaceSelector } from './workspace-selector';
+import ReactDOM from 'react-dom';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const { user } = useCurrentUser();
   useCurrentUserRealtime();
   const { FeatureToggles, activeFeatureNames } = useFeatureToggles();
+  const [collapsed, setCollapsed] = useState(false);
 
   useUsetiful();
 
@@ -46,29 +50,55 @@ export default React.memo((): JSX.Element => {
 
   if (user?.id) {
     page = (
-      <Layout className="appPage fade_in">
+      <Layout className="app_page fade_in">
         <DownloadAppBanner />
         <NewVersionComponent />
         <CompanyStatusComponent />
+        <Layout.Header className="bg-white dark:bg-zinc-700 !p-0 !h-auto">
+          <MainHeader />
+        </Layout.Header>
         <FeatureToggles features={activeFeatureNames}>
-          <Layout hasSider>
+          <Layout hasSider className="p-1 sm:p-2 bg-zinc-200 dark:bg-zinc-900">
             <Layout.Sider
-              trigger={<Menu size={16} />}
-              breakpoint="lg"
+              trigger={ReactDOM.createPortal(
+                <div className="flex items-center justify-center absolute w-16 h-16 left-0 top-0 z-10 bg-white dark:bg-zinc-700 cursor-pointer text-zinc-800 dark:text-white hover:text-blue-500">
+                  <Menu size={16} />
+                </div>,
+                (window as any).document.body,
+              )}
+              breakpoint="md"
               collapsedWidth="0"
               theme="light"
-              width={290}
+              width={320}
+              className="bg-transparent overflow-hidden"
+              collapsed={collapsed}
               onCollapse={(collapsed, type) => {
+                setCollapsed(collapsed);
                 if (type === 'responsive') return setMenuIsOpen(false);
                 setMenuIsOpen(!collapsed);
               }}
             >
-              <Suspense fallback={<LoadingSidebar />}>
-                <SideBars />
-              </Suspense>
+              <div className="flex flex-col overflow-hidden h-full w-full pr-1 sm:pr-2">
+                <WorkspaceSelector />
+                <div className="grow overflow-hidden bg-white dark:bg-zinc-700 rounded-lg p-3">
+                  <Suspense fallback={<LoadingSidebar />}>
+                    <SideBars />
+                  </Suspense>
+                </div>
+              </div>
             </Layout.Sider>
             <Suspense fallback={<></>}>
-              <MainView className={classNames({ collapsed: menuIsOpen })} />
+              <MainView
+                onClick={() => {
+                  if (menuIsOpen) setCollapsed(true);
+                }}
+                className={
+                  ' transition-opacity overflow-hidden rounded-lg ' +
+                  classNames({
+                    'collapsed opacity-50': menuIsOpen,
+                  })
+                }
+              />
             </Suspense>
           </Layout>
         </FeatureToggles>

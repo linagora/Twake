@@ -51,9 +51,12 @@ export default class Menu extends React.Component {
     elementRect.x = elementRect.x || elementRect.left;
     elementRect.y = elementRect.y || elementRect.top;
     this.previous_menus_id = MenusManager.openMenu(
-      this.props.menu,
+      this.props.menu?.length
+        ? this.props.menu
+        : [{ type: 'react-element', reactElement: this.props.menu }],
       elementRect,
       this.props.position,
+      this.props.options,
     );
     if (this.props.onOpen) this.props.onOpen();
   }

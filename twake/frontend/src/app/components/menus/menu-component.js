@@ -37,7 +37,7 @@ export default class MenuComponent extends React.Component {
     }
   }
   clickMenu(dom_element, item, evt) {
-    if(Date.now() - this.props.openAt < 200 ){
+    if (Date.now() - this.props.openAt < 200) {
       // When a menu is open and another one opens above it, you have to block the buttons for a while. Otherwise, the hovered option of the new menu will be clicked
       return;
     }
@@ -57,7 +57,12 @@ export default class MenuComponent extends React.Component {
       <div
         ref={node => (this.original_menu = node)}
         className={
-          'menu-list ' + (this.props.withFrame ? 'as_frame ' : '') + this.props.animationClass
+          this.props.className +
+          ' menu-list ' +
+          (this.props.withFrame
+            ? 'as_frame bg-white dark:bg-zinc-700 dark:border dark:border-zinc-900 '
+            : '') +
+          this.props.animationClass
         }
       >
         {(this.props.menu || [])

@@ -85,7 +85,7 @@ const HeadMessage = () => {
   const context = useContext(MessageContext);
   const { message } = useMessage(context);
   return (
-    <ThreadSection withAvatar head pinned={!!message.pinned_info?.pinned_at}>
+    <ThreadSection className="pt-2" withAvatar pinned={!!message.pinned_info?.pinned_at}>
       <Message />
     </ThreadSection>
   );

@@ -359,10 +359,10 @@ export default (props: Props) => {
 
   const disabled = isEmpty() || isTooLong;
   return (
-    <div className={'message-input w-full'} ref={props.ref} onClick={() => focus()}>
+    <div className="message-input w-full" ref={props.ref} onClick={() => focus()}>
       {isBeingQuoted && <QuotedMessage onClose={() => close()} />}
       <UploadZone
-        className="upload-zone-centerer"
+        className="upload-zone-centerer pt-2"
         ref={setUploadZoneRef}
         disableClick
         parent={''}

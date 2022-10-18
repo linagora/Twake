@@ -4,7 +4,7 @@ import LoginService from 'app/features/auth/login-service';
 import Languages from 'app/features/global/services/languages-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import GotALink from './GotALink';
+import GotALink from './got-a-link';
 
 import './styles.scss';
 
