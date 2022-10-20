@@ -39,7 +39,7 @@ export const EditChannelModal = () => {
 
 const EditChannelForm = () => {
   const [channelModal, setChannelModal] = useRecoilState(EditChannelModalAtom);
-  const [page, setPage] = useState<'information' | 'access' | 'menu'>('menu');
+  const [page, setPage] = useState<'information' | 'access' | 'notifications' | 'menu'>('menu');
 
   const { channel } = useChannel(channelModal.channelId);
 
@@ -66,6 +66,19 @@ const EditChannelForm = () => {
           <ChannelSettingsMenu
             onEditChannel={() => setPage('information')}
             onAccess={() => setPage('access')}
+            onNotifications={() => setPage('notifications')}
+            onLeave={() => {
+              setChannelModal({ open: false, channelId: '' });
+              //TODO
+            }}
+            onMembers={() => {
+              setChannelModal({ open: false, channelId: '' });
+              //TODO
+            }}
+            onMedias={() => {
+              setChannelModal({ open: false, channelId: '' });
+              //TODO
+            }}
             channel={channel}
           />
         </Transition>

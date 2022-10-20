@@ -1,13 +1,25 @@
 import ChannelMembersAPIClient from 'app/features/channel-members-search/api/members-api-client';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ChannelMemberSelector } from '../state/store';
 import { ParamsChannelMember } from '../types/channel-members';
 import { useRefreshChannelMembers } from './members-hook';
+
+export function useChannelMemberCurrentUser(channelId: string) {
+  const { channel } = useChannel(channelId);
+  const { user } = useCurrentUser();
+  return useChannelMember(user?.id || '', {
+    companyId: channel?.company_id || '',
+    workspaceId: channel?.workspace_id || '',
+    channelId: channel?.id || '',
+  });
+}
 
 export function useChannelMember(userId: string, params?: ParamsChannelMember) {
   const channelId = params?.channelId ? params.channelId : useRouterChannel();

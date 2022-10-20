@@ -11,6 +11,10 @@ import Avatar from 'app/atoms/avatar';
 import { UsersIcon } from 'app/atoms/icons-agnostic';
 import A from 'app/atoms/link';
 import { Base, Info } from 'app/atoms/text';
+import {
+  useChannelMember,
+  useChannelMemberCurrentUser,
+} from 'app/features/channel-members-search/hooks/member-hook';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
@@ -30,6 +34,7 @@ export const ChannelSettingsMenu = (props: {
   const name = props.channel?.name || '';
 
   const { user } = useCurrentUser();
+  const { member } = useChannelMemberCurrentUser(props.channel?.id || '');
   const canEdit =
     props.channel?.owner === user || workspaceUserRightsService.hasWorkspacePrivilege();
   const isGuest = workspaceUserRightsService.isInvite();
@@ -105,13 +110,23 @@ export const ChannelSettingsMenu = (props: {
       />
       <hr className="my-2 -mx-4" />
       <Block
-        onClick={() => {
-          props.onFavorite && props.onFavorite();
-        }}
+        onClick={() => {}}
         className="-mx-2 my-1 p-2 rounded-md cursor-pointer hover:bg-blue-50 dark:hover:bg-zinc-800"
-        title={<Base className="font-semibold">Remove from favorite</Base>}
+        title={
+          member?.favorite ? (
+            <Base className="font-semibold">Remove from favorites</Base>
+          ) : (
+            <Base className="font-semibold">Add to favorites</Base>
+          )
+        }
         subtitle={<></>}
-        avatar={<StarIconSolid className="text-yellow-500 w-6 h-6" />}
+        avatar={
+          member?.favorite ? (
+            <StarIconSolid className="text-yellow-500 w-6 h-6" />
+          ) : (
+            <StarIcon className="text-blue-500 w-6 h-6" />
+          )
+        }
       />
       <Block
         onClick={() => {
