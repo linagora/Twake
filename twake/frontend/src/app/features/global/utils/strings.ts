@@ -1,5 +1,17 @@
 import { isString } from 'lodash';
 
+export const getBase64 = (file: File): Promise<string> => {
+  return new Promise((result, fail) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      result(`${reader.result}`);
+    };
+    reader.onerror = function (error) {
+      fail(error);
+    };
+  });
+};
 export default class Strings {
   static verifyMail(email: string) {
     const re =

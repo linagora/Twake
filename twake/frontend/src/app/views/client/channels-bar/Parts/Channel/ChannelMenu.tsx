@@ -1,14 +1,14 @@
 import React from 'react';
 
+import { useOpenChannelModal } from 'app/components/edit-channel';
 import Icon from 'app/components/icon/icon';
-import ModalManager from 'app/components/modal/modal-manager';
 import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
-import { useRefreshDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 import { useRefreshFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
+import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/utils';
 import AlertManager from 'app/features/global/services/alert-manager-service';
@@ -21,10 +21,8 @@ import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 import UserService from 'app/features/users/services/current-user-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 import Menu from 'components/menus/menu';
-import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type PropsType = {
   channel: ChannelType;
@@ -58,6 +56,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
   const channelMember = props.channel.user_member || {};
   const { setOpen: setParticipantsOpen } = useUsersSearchModal();
   const { refresh: refreshChannels } = useRefreshPublicOrPrivateChannels();
+  const openChannelModal = useOpenChannelModal();
 
   Languages.useListener();
 
@@ -131,17 +130,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
   };
 
   const editChannel = () => {
-    ModalManager.open(
-      <ChannelWorkspaceEditor
-        title={Languages.t('scenes.app.channelsbar.modify_channel_menu')}
-        channel={props.channel || {}}
-        currentUserId={currentUser?.id}
-      />,
-      {
-        position: 'center',
-        size: { width: '600px' },
-      },
-    );
+    openChannelModal(props.channel.id || '');
   };
 
   const removeChannel = async () => {
