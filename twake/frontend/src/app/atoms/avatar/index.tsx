@@ -6,14 +6,15 @@ import CryptoJS from 'crypto-js';
 
 interface AvatarProps extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: 'circle' | 'square';
-  size?: 'lg' | 'md' | 'sm' | 'xs';
+  size?: 'xl' | 'lg' | 'md' | 'sm' | 'xs';
   avatar?: string;
-  icon?: JSX.Element;
+  icon?: JSX.Element | false;
   title?: string;
+  noGradient?: boolean;
 }
 
-const sizes = { lg: 14, md: 11, sm: 9, xs: 6 };
-const fontSizes = { lg: '2xl', md: 'lg', sm: 'md', xs: 'sm' };
+const sizes = { xl: 24, lg: 14, md: 11, sm: 9, xs: 6 };
+const fontSizes = { xl: '2xl', lg: '2xl', md: 'lg', sm: 'md', xs: 'sm' };
 
 export const getGradient = (name: string) => {
   const seed = parseInt(CryptoJS.MD5(name).toString().slice(0, 8), 16);
@@ -43,7 +44,8 @@ export default function Avatar(props: AvatarProps) {
   } `;
 
   className +=
-    ' border border-gray flex items-center justify-center bg-gradient-to-r bg-center bg-cover ';
+    ' border border-gray flex items-center justify-center bg-center bg-cover ' +
+    (props.noGradient ? ' bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white ' : '');
 
   const spl_title = avatarTitle.split(' ');
 
@@ -52,9 +54,13 @@ export default function Avatar(props: AvatarProps) {
     letters = spl_title[0].slice(0, 1) + spl_title[1].slice(0, 1);
   }
 
-  const lettersClass = `font-medium bg-gray text-white text-${fontSize}`;
+  const lettersClass =
+    `font-medium bg-gray text-${fontSize}` +
+    (props.noGradient ? ' text-zinc-900 dark:text-white ' : ' text-white');
 
-  const style = { backgroundImage: `url('${getGradient(props.title || '')}')` };
+  const style = props.noGradient
+    ? {}
+    : { backgroundImage: `url('${getGradient(props.title || '')}')` };
 
   if (props.icon) {
     className += ' ';

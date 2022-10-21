@@ -50,6 +50,7 @@ import {
   KnowledgeGraphGenericEventPayload,
 } from "../../../../core/platform/services/knowledge-graph/types";
 import { ChannelUserCounterType } from "../../entities/channel-counters";
+import { Readable } from "stream";
 
 const logger = getLogger("channel.service");
 
@@ -93,6 +94,12 @@ export class ChannelServiceImpl {
     });
 
     return this;
+  }
+
+  async thumbnail(channelId: string, context?: ExecutionContext): Promise<{ file: Readable }> {
+    const logoInternalPath = `/channels/${channelId}/thumbnail.png`;
+    const file = await gr.platformServices.storage.read(logoInternalPath, {}, context);
+    return { file };
   }
 
   @RealtimeSaved<Channel>((channel, context) => [
@@ -156,6 +163,22 @@ export class ChannelServiceImpl {
 
       if (!updatableFields.length) {
         throw CrudException.badRequest("Current user can not update requested fields");
+      }
+
+      if (channelToUpdate.icon && channelToUpdate.icon.startsWith("data:")) {
+        const logoInternalPath = `/channels/${channelToUpdate.id}/thumbnail.png`;
+        const logoPublicPath = `/internal/services/channels/v1/companies/${
+          channelToUpdate.company_id
+        }/workspaces/${channelToUpdate.workspace_id}/${
+          channelToUpdate.id
+        }/thumbnail?t=${new Date().getTime()}`;
+
+        const s = new Readable();
+        s.push(Buffer.from(channel.icon.split(",").pop(), "base64"));
+        s.push(null);
+        await gr.platformServices.storage.write(logoInternalPath, s);
+
+        channel.icon = logoPublicPath;
       }
 
       channelToSave = cloneDeep(channelToUpdate);

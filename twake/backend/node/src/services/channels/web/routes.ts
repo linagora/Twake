@@ -79,6 +79,12 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   });
 
   fastify.route({
+    method: "GET",
+    url: `${channelsUrl}/:id/thumbnail`,
+    handler: channelsController.thumbnail.bind(channelsController),
+  });
+
+  fastify.route({
     method: "POST",
     url: channelsUrl,
     preHandler: accessControl,

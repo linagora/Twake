@@ -13,6 +13,7 @@ import WorkspaceAPIClient, {
 } from 'app/features/workspaces/api/workspace-api-client';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
 import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
+import { getBase64 } from 'app/features/global/utils/strings';
 
 const { Item } = Descriptions;
 const { Text, Title, Link } = Typography;
@@ -78,19 +79,6 @@ const WorkspaceIdentity = () => {
             ),
           );
         }
-
-        const getBase64 = (file: File): Promise<string> => {
-          return new Promise((result, fail) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function () {
-              result(`${reader.result}`);
-            };
-            reader.onerror = function (error) {
-              fail(error);
-            };
-          });
-        };
 
         const res = await onClickUpdateWorkspace({ logo_b64: await getBase64(file) });
         if (!res) {

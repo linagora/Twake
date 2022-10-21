@@ -1,33 +1,31 @@
 import { Button, Col, Row, Typography } from 'antd';
 import { File, Info, Lock, Users } from 'react-feather';
 
+import { useOpenChannelModal } from 'app/components/edit-channel';
 import Emojione from 'app/components/emojione/emojione';
-import ModalManager from 'app/components/modal/modal-manager';
 import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
-import Languages from 'app/features/global/services/languages-service';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import RouterServices from 'app/features/router/services/router-service';
-import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import { useRecoilState } from 'recoil';
 import SearchInput from '../Search';
 import ChannelAvatars from './ChannelAvatars';
 import ChannelUsersHeader from './ChannelUsersHeader';
+import Avatar from 'app/atoms/avatar';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
   const { channel } = useChannel(channelId || '');
   const members = channel?.members || [];
   const [, setChannelAttachmentState] = useRecoilState(channelAttachmentListState);
-  const { user: currentUser } = useCurrentUser();
   const canAccessChannelParameters =
     AccessRightsService.hasLevel(workspaceId, 'member') &&
     AccessRightsService.getCompanyLevel(companyId) !== 'guest';
+  const openChannelModal = useOpenChannelModal();
 
   const { setOpen: setParticipantsOpen } = useUsersSearchModal();
 
@@ -63,9 +61,20 @@ export default (): JSX.Element => {
             className="ml-2 text-overflow channel-name"
             style={{ display: 'flex', alignItems: 'center' }}
           >
-            <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>
-              <Emojione type={channel.icon || ''} />
-            </div>
+            <Avatar
+              size="xs"
+              className="mr-2"
+              noGradient={!!(channel.icon && (channel.icon?.length || 0) < 20)}
+              icon={
+                channel.icon && (channel.icon?.length || 0) < 20 ? (
+                  <Emojione type={channel.icon} />
+                ) : (
+                  false
+                )
+              }
+              avatar={(channel?.icon?.length || 0) > 20 ? channel?.icon : ''}
+              title={channel?.name || ''}
+            />
             <Typography.Text className="small-right-margin" strong>
               {channel.name}
             </Typography.Text>
@@ -102,17 +111,7 @@ export default (): JSX.Element => {
                     type="text"
                     className="px-1"
                     onClick={() => {
-                      ModalManager.open(
-                        <ChannelWorkspaceEditor
-                          title={Languages.t('scenes.app.channelsbar.modify_channel_menu')}
-                          channel={channel || {}}
-                          currentUserId={currentUser?.id}
-                        />,
-                        {
-                          position: 'center',
-                          size: { width: '600px' },
-                        },
-                      );
+                      openChannelModal(channel.id || '');
                     }}
                   >
                     <Info className="h-5" />

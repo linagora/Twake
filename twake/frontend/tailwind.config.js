@@ -54,6 +54,8 @@ module.exports = {
   },
   safelist: [
     'cursor-pointer',
+    'w-24',
+    'h-24',
     'w-32',
     'h-32',
     'w-16',
