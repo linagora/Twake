@@ -51,6 +51,7 @@ import {
 } from "../../../../core/platform/services/knowledge-graph/types";
 import { ChannelUserCounterType } from "../../entities/channel-counters";
 import { Readable } from "stream";
+import sharp from "sharp";
 
 const logger = getLogger("channel.service");
 
@@ -97,7 +98,7 @@ export class ChannelServiceImpl {
   }
 
   async thumbnail(channelId: string, context?: ExecutionContext): Promise<{ file: Readable }> {
-    const logoInternalPath = `/channels/${channelId}/thumbnail.png`;
+    const logoInternalPath = `/channels/${channelId}/thumbnail.jpg`;
     const file = await gr.platformServices.storage.read(logoInternalPath, {}, context);
     return { file };
   }
@@ -169,16 +170,20 @@ export class ChannelServiceImpl {
         const logoInternalPath = `/channels/${channelToUpdate.id}/thumbnail.png`;
         const logoPublicPath = `/internal/services/channels/v1/companies/${
           channelToUpdate.company_id
-        }/workspaces/${channelToUpdate.workspace_id}/${
+        }/workspaces/${channelToUpdate.workspace_id}/channels/${
           channelToUpdate.id
         }/thumbnail?t=${new Date().getTime()}`;
 
+        const image = await sharp(Buffer.from(channel.icon.split(",").pop(), "base64"))
+          .resize(250, 250)
+          .toBuffer();
+
         const s = new Readable();
-        s.push(Buffer.from(channel.icon.split(",").pop(), "base64"));
+        s.push(image);
         s.push(null);
         await gr.platformServices.storage.write(logoInternalPath, s);
 
-        channel.icon = logoPublicPath;
+        channelToUpdate.icon = logoPublicPath;
       }
 
       channelToSave = cloneDeep(channelToUpdate);

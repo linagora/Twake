@@ -154,8 +154,10 @@ export const ChannelInformationForm = (props: {
                 input.accept = 'image/png, image/jpeg, image/gif, image/webp';
                 input.multiple = false;
                 input.onchange = async () => {
-                  if (input.files?.[0])
-                    setIcon(downscaleImage(await getBase64(input.files?.[0]), 250));
+                  if (input.files?.[0]) {
+                    const b64 = await getBase64(input.files?.[0]);
+                    setIcon(b64);
+                  }
                   input.parentElement?.removeChild(input);
                 };
                 document.body.appendChild(input);
