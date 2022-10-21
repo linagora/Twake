@@ -168,11 +168,11 @@ export const ChannelInformationForm = (props: {
       </div>
 
       <InputLabel
-        label={Languages.t('scenes.apps.channels.channel_information.name')}
+        label={Languages.t('scenes.app.channelsbar.channel_information.name')}
         input={
           <Input
             theme="outline"
-            placeholder={Languages.t('scenes.apps.channels.channel_information.name')}
+            placeholder={Languages.t('scenes.app.channelsbar.channel_information.name')}
             value={name}
             onChange={e => setName(e.target.value)}
           />
@@ -181,12 +181,12 @@ export const ChannelInformationForm = (props: {
 
       <InputLabel
         className="mt-4"
-        label={Languages.t('scenes.apps.channels.channel_information.description')}
+        label={Languages.t('scenes.app.channelsbar.channel_information.description')}
         input={
           <Input
             theme="outline"
             placeholder={Languages.t(
-              'scenes.apps.channels.channel_information.description.placeholder',
+              'scenes.app.channelsbar.channel_information.description.placeholder',
             )}
             value={description}
             onChange={e => setDescription(e.target.value)}
@@ -197,7 +197,7 @@ export const ChannelInformationForm = (props: {
 
       <InputLabel
         className="mt-4"
-        label={Languages.t('scenes.apps.channels.channel_information.group')}
+        label={Languages.t('scenes.app.channelsbar.channel_information.group')}
         input={
           <div
             className="cursor-pointer"

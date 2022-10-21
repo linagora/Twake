@@ -8,7 +8,7 @@ interface AvatarProps extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: 'circle' | 'square';
   size?: 'xl' | 'lg' | 'md' | 'sm' | 'xs';
   avatar?: string;
-  icon?: JSX.Element;
+  icon?: JSX.Element | false;
   title?: string;
   noGradient?: boolean;
 }

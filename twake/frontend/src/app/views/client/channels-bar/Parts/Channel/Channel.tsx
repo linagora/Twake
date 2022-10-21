@@ -11,6 +11,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import './Channel.scss';
 import AvatarComponent from 'app/components/avatar/avatar';
 import { AtSymbolIcon, BellIcon } from '@heroicons/react/outline';
+import Avatar from 'app/atoms/avatar';
 
 type Props = {
   app?: Application;
@@ -80,7 +81,19 @@ export default (props: Props) => {
           (props.visibility === 'public' || props.visibility === 'private') &&
           typeof props.icon === 'string' && (
             <div className="icon">
-              <Emojione type={props.icon} />
+              <Avatar
+                size="xs"
+                noGradient={!!(props.icon && (props.icon?.length || 0) < 20)}
+                icon={
+                  props.icon && (props.icon?.length || 0) < 20 ? (
+                    <Emojione type={props.icon} />
+                  ) : (
+                    false
+                  )
+                }
+                avatar={(props.icon?.length || 0) > 20 ? props?.icon : ''}
+                title={props?.name || ''}
+              />
             </div>
           )}
         {!props.app && props.visibility === 'direct' && typeof props.icon === 'object' && (

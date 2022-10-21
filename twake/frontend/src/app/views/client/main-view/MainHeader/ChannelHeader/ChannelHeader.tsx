@@ -15,6 +15,7 @@ import { useRecoilState } from 'recoil';
 import SearchInput from '../Search';
 import ChannelAvatars from './ChannelAvatars';
 import ChannelUsersHeader from './ChannelUsersHeader';
+import Avatar from 'app/atoms/avatar';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
@@ -60,9 +61,20 @@ export default (): JSX.Element => {
             className="ml-2 text-overflow channel-name"
             style={{ display: 'flex', alignItems: 'center' }}
           >
-            <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>
-              <Emojione type={channel.icon || ''} />
-            </div>
+            <Avatar
+              size="xs"
+              className="mr-2"
+              noGradient={!!(channel.icon && (channel.icon?.length || 0) < 20)}
+              icon={
+                channel.icon && (channel.icon?.length || 0) < 20 ? (
+                  <Emojione type={channel.icon} />
+                ) : (
+                  false
+                )
+              }
+              avatar={(channel?.icon?.length || 0) > 20 ? channel?.icon : ''}
+              title={channel?.name || ''}
+            />
             <Typography.Text className="small-right-margin" strong>
               {channel.name}
             </Typography.Text>
