@@ -1,14 +1,24 @@
 import { Transition } from '@headlessui/react';
+import { ChevronLeftIcon } from '@heroicons/react/outline';
+import A from 'app/atoms/link';
 import { Loader } from 'app/atoms/loader';
 import { Modal, ModalContent } from 'app/atoms/modal';
+import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
+import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
+import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
 import { ChannelType } from 'app/features/channels/types/channel';
+import useRouteState from 'app/features/router/hooks/use-route-state';
 import { useEffect, useState } from 'react';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
-import { slideXTransitionReverted, slideXTransition } from 'src/utils/transitions';
+import { slideXTransition, slideXTransitionReverted } from 'src/utils/transitions';
 import { ChannelAccessForm } from './channel-access';
 import { ChannelInformationForm } from './channel-information';
+import { ChannelNotificationsForm } from './channel-notifications';
 import { ChannelSettingsMenu } from './channel-settings-menu';
+import RouterServices from '@features/router/services/router-service';
+import Languages from 'app/features/global/services/languages-service';
 
 const EditChannelModalAtom = atom({
   key: 'EditChannelModalAtom',
@@ -40,11 +50,25 @@ export const EditChannelModal = () => {
 const EditChannelForm = () => {
   const [channelModal, setChannelModal] = useRecoilState(EditChannelModalAtom);
   const [page, setPage] = useState<'information' | 'access' | 'notifications' | 'menu'>('menu');
+  const { setOpen: setParticipantsOpen } = useUsersSearchModal();
+  const [, setChannelAttachmentState] = useRecoilState(channelAttachmentListState);
+  const { refresh } = useFavoriteChannels();
 
   const { channel } = useChannel(channelModal.channelId);
 
   return (
-    <ModalContent title="Channel settings">
+    <ModalContent
+      title={
+        <div className="flex flex-row items-center justify-start">
+          {page !== 'menu' && (
+            <A onClick={() => setPage('menu')}>
+              <ChevronLeftIcon className="w-6 h-6" />
+            </A>
+          )}
+          <span className="ml-2">{Languages.t('scenes.app.channelsbar.modify_channel_menu')}</span>
+        </div>
+      }
+    >
       <hr className="my-1 -mx-4" />
 
       <div
@@ -67,17 +91,16 @@ const EditChannelForm = () => {
             onEditChannel={() => setPage('information')}
             onAccess={() => setPage('access')}
             onNotifications={() => setPage('notifications')}
-            onLeave={() => {
-              setChannelModal({ open: false, channelId: '' });
-              //TODO
+            onClose={() => {
+              setChannelModal({ ...channelModal, open: false });
             }}
             onMembers={() => {
-              setChannelModal({ open: false, channelId: '' });
-              //TODO
+              setChannelModal({ ...channelModal, open: false });
+              setTimeout(() => setParticipantsOpen(true), 500);
             }}
             onMedias={() => {
-              setChannelModal({ open: false, channelId: '' });
-              //TODO
+              setChannelModal({ ...channelModal, open: false });
+              setTimeout(() => setChannelAttachmentState(true), 500);
             }}
             channel={channel}
           />
@@ -91,7 +114,21 @@ const EditChannelForm = () => {
           as="div"
           {...(page === 'menu' ? slideXTransitionReverted : slideXTransition)}
         >
-          <ChannelInformationForm onChange={() => setPage('menu')} channel={channel} />
+          <ChannelInformationForm
+            onChange={async changes => {
+              setPage('menu');
+              await ChannelAPIClient.save(
+                { ...channel, ...changes },
+                {
+                  companyId: channel.company_id!,
+                  workspaceId: channel.workspace_id!,
+                  channelId: channel.id,
+                },
+              );
+              await refresh();
+            }}
+            channel={channel}
+          />
         </Transition>
         <Transition
           style={{
@@ -102,7 +139,32 @@ const EditChannelForm = () => {
           as="div"
           {...(page === 'menu' ? slideXTransitionReverted : slideXTransition)}
         >
-          <ChannelAccessForm onChange={() => setPage('menu')} channel={channel} />
+          <ChannelAccessForm
+            onChange={async changes => {
+              setPage('menu');
+              await ChannelAPIClient.save(
+                { ...channel, ...changes },
+                {
+                  companyId: channel.company_id!,
+                  workspaceId: channel.workspace_id!,
+                  channelId: channel.id,
+                },
+              );
+              await refresh();
+            }}
+            channel={channel}
+          />
+        </Transition>
+        <Transition
+          style={{
+            gridColumn: '1 / 1',
+            gridRow: '1 / 1',
+          }}
+          show={page === 'notifications'}
+          as="div"
+          {...(page === 'menu' ? slideXTransitionReverted : slideXTransition)}
+        >
+          <ChannelNotificationsForm onBack={() => setPage('menu')} channel={channel} />
         </Transition>
       </div>
     </ModalContent>
@@ -111,22 +173,32 @@ const EditChannelForm = () => {
 
 const CreateChannelForm = () => {
   const setChannelModal = useSetRecoilState(EditChannelModalAtom);
+  const { setOpen: setParticipantsOpen } = useUsersSearchModal();
+  const { companyId, workspaceId } = useRouteState();
+  const { refresh } = useFavoriteChannels();
 
   const [step, setStep] = useState(0);
-
   const [channel, setChannel] = useState<Partial<ChannelType>>({});
 
   useEffect(() => {
     if (step === 2) {
-      //TODO: Create the channel
-      //TODO: refresh channel list
-      //TODO: open the channel
-      setChannelModal({ open: false, channelId: '' });
+      (async () => {
+        const created = await ChannelAPIClient.save(channel, {
+          companyId: companyId!,
+          workspaceId: workspaceId!,
+        });
+        await refresh();
+        RouterServices.push(RouterServices.generateRouteFromState({ channelId: created.id }));
+        setChannelModal({ open: false, channelId: '' });
+        setTimeout(() => {
+          setParticipantsOpen(true);
+        }, 500);
+      })();
     }
   }, [step]);
 
   return (
-    <ModalContent title="New channel">
+    <ModalContent title={Languages.t('scenes.app.channelsbar.channelsworkspace.create_channel')}>
       <hr className="my-1 -mx-4" />
 
       <div

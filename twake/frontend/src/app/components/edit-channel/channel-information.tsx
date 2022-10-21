@@ -8,6 +8,7 @@ import A from 'app/atoms/link';
 import { Modal, ModalContent } from 'app/atoms/modal';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import { ChannelType } from 'app/features/channels/types/channel';
+import Languages from 'app/features/global/services/languages-service';
 import { getBase64 } from 'app/features/global/utils/strings';
 import Block from 'app/molecules/grouped-rows/base';
 import _ from 'lodash';
@@ -63,7 +64,7 @@ const ChannelGroupSelector = (props: { group: string; onChange: (str: string) =>
               }}
               value={newGroup}
               className=""
-              placeholder="Create a new group name"
+              placeholder={Languages.t('scenes.app.channelsbar.channel_information.group.new')}
             />
           </div>
         }
@@ -87,8 +88,10 @@ const ChannelGroupSelector = (props: { group: string; onChange: (str: string) =>
         >
           <span className="text-ellipsis overflow-hidden whitespace-nowrap">
             {group
-              ? 'Set channel group to ' + _.capitalize(clean(group))
-              : 'Do not set channel group'}
+              ? Languages.t('scenes.app.channelsbar.channel_information.group.save', [
+                  _.capitalize(clean(group)),
+                ])
+              : Languages.t('scenes.app.channelsbar.channel_information.group.save_none')}
           </span>
         </Button>
       </div>
@@ -138,7 +141,7 @@ export const ChannelInformationForm = (props: {
                 setIcon('');
               }}
             >
-              Remove picture
+              {Languages.t('scenes.app.channelsbar.channel_information.logo.remove')}
             </A>
           )}
           {!icon && (
@@ -158,18 +161,18 @@ export const ChannelInformationForm = (props: {
                 input.click();
               }}
             >
-              Upload picture
+              {Languages.t('scenes.app.channelsbar.channel_information.logo.add')}
             </A>
           )}
         </div>
       </div>
 
       <InputLabel
-        label="Channel name"
+        label={Languages.t('scenes.apps.channels.channel_information.name')}
         input={
           <Input
             theme="outline"
-            placeholder="Super channel name"
+            placeholder={Languages.t('scenes.apps.channels.channel_information.name')}
             value={name}
             onChange={e => setName(e.target.value)}
           />
@@ -178,11 +181,13 @@ export const ChannelInformationForm = (props: {
 
       <InputLabel
         className="mt-4"
-        label="Channel description"
+        label={Languages.t('scenes.apps.channels.channel_information.description')}
         input={
           <Input
             theme="outline"
-            placeholder="Channel description, you can use markdown."
+            placeholder={Languages.t(
+              'scenes.apps.channels.channel_information.description.placeholder',
+            )}
             value={description}
             onChange={e => setDescription(e.target.value)}
             multiline
@@ -192,7 +197,7 @@ export const ChannelInformationForm = (props: {
 
       <InputLabel
         className="mt-4"
-        label="Channel group"
+        label={Languages.t('scenes.apps.channels.channel_information.group')}
         input={
           <div
             className="cursor-pointer"
@@ -205,7 +210,7 @@ export const ChannelInformationForm = (props: {
             <Select className="pointer-events-none" theme="outline">
               {!group && (
                 <option disabled selected>
-                  Not selected
+                  {Languages.t('scenes.app.channelsbar.channel_information.group.none')}
                 </option>
               )}
               {group && <option>{_.capitalize(group)}</option>}
@@ -222,7 +227,7 @@ export const ChannelInformationForm = (props: {
           }}
           disabled={!name.trim()}
         >
-          Save information
+          {Languages.t('scenes.app.channelsbar.channel_information.save')}
         </Button>
       </div>
     </div>

@@ -6,7 +6,7 @@ import {
 } from './use-public-or-private-channels';
 
 export function useRefreshFavoriteChannels(): {
-  refresh: () => void;
+  refresh: () => Promise<void>;
 } {
   const { refresh: refreshPublicOrPrivateChannels } = useRefreshPublicOrPrivateChannels();
   const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
@@ -21,7 +21,7 @@ export function useRefreshFavoriteChannels(): {
 
 export function useFavoriteChannels(): {
   favoriteChannels: ChannelType[];
-  refresh: () => void;
+  refresh: () => Promise<void>;
 } {
   const { publicChannels, privateChannels } = usePublicOrPrivateChannels();
   const { directChannels } = useDirectChannels();

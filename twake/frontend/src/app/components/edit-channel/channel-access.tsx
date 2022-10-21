@@ -2,6 +2,7 @@ import { Button } from 'app/atoms/button/button';
 import { BaseSmall, Info, Subtitle } from 'app/atoms/text';
 import Switch from 'app/components/inputs/switch';
 import { ChannelType } from 'app/features/channels/types/channel';
+import Languages from 'app/features/global/services/languages-service';
 import Block from 'app/molecules/grouped-rows/base';
 import { useState } from 'react';
 
@@ -24,10 +25,10 @@ export const ChannelAccessForm = (props: {
       <Block
         className="my-4"
         avatar={<></>}
-        title={'Public channel'}
+        title={Languages.t('scenes.app.channelsbar.channel_access.visibility')}
         subtitle={
           <BaseSmall className="whitespace-normal leading-3">
-            Anyone except company guests can join.
+            {Languages.t('scenes.app.channelsbar.channel_access.visibility.info')}
           </BaseSmall>
         }
         suffix={
@@ -44,10 +45,10 @@ export const ChannelAccessForm = (props: {
       <Block
         className="my-4"
         avatar={<></>}
-        title={'Default channel'}
+        title={Languages.t('scenes.app.channelsbar.channel_access.default')}
         subtitle={
           <BaseSmall className="whitespace-normal leading-3">
-            New members will be added here automatically.
+            {Languages.t('scenes.app.channelsbar.channel_access.default.info')}
           </BaseSmall>
         }
         suffix={
@@ -64,10 +65,10 @@ export const ChannelAccessForm = (props: {
       <Block
         className="my-4"
         avatar={<></>}
-        title={'Read-only channel'}
+        title={Languages.t('scenes.app.channelsbar.channel_access.readonly')}
         subtitle={
           <BaseSmall className="whitespace-normal leading-3">
-            Restrict write to moderators, admins and owners.
+            {Languages.t('scenes.app.channelsbar.channel_access.readonly.info')}
           </BaseSmall>
         }
         suffix={
@@ -87,7 +88,7 @@ export const ChannelAccessForm = (props: {
             props.onChange({ visibility, is_default: isDefault, is_readonly: isReadOnly });
           }}
         >
-          Save access settings
+          {Languages.t('scenes.app.channelsbar.channel_access.save')}
         </Button>
       </div>
     </div>
