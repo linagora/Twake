@@ -9,7 +9,7 @@ import { Modal, ModalContent } from 'app/atoms/modal';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import { ChannelType } from 'app/features/channels/types/channel';
 import Languages from 'app/features/global/services/languages-service';
-import { getBase64 } from 'app/features/global/utils/strings';
+import { downscaleImage, getBase64 } from 'app/features/global/utils/strings';
 import Block from 'app/molecules/grouped-rows/base';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -154,7 +154,8 @@ export const ChannelInformationForm = (props: {
                 input.accept = 'image/png, image/jpeg, image/gif, image/webp';
                 input.multiple = false;
                 input.onchange = async () => {
-                  if (input.files?.[0]) setIcon(await getBase64(input.files?.[0]));
+                  if (input.files?.[0])
+                    setIcon(downscaleImage(await getBase64(input.files?.[0]), 250));
                   input.parentElement?.removeChild(input);
                 };
                 document.body.appendChild(input);
