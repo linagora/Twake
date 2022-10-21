@@ -1,5 +1,42 @@
 import { isString } from 'lodash';
 
+export const getBase64 = (file: File): Promise<string> => {
+  return new Promise((result, fail) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      result(`${reader.result}`);
+    };
+    reader.onerror = function (error) {
+      fail(error);
+    };
+  });
+};
+
+export function downscaleImage(dataUrl: string, newWidth: number) {
+  // Provide default values
+  const imageType = 'image/jpeg';
+  const imageArguments = 0.7;
+
+  // Create a temporary image so that we can compute the height of the downscaled image.
+  const image = new Image();
+  image.src = dataUrl;
+  const oldWidth = image.width;
+  const oldHeight = image.height;
+  const newHeight = Math.floor((oldHeight / oldWidth) * newWidth);
+
+  // Create a temporary canvas to draw the downscaled image on.
+  const canvas = document.createElement('canvas');
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+
+  // Draw the downscaled image on the canvas and return the new data URL.
+  const ctx = canvas.getContext('2d');
+  ctx!.drawImage(image, 0, 0, newWidth, newHeight);
+  const newDataUrl = canvas.toDataURL(imageType, imageArguments);
+  return newDataUrl;
+}
+
 export default class Strings {
   static verifyMail(email: string) {
     const re =

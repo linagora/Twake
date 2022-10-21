@@ -16,7 +16,7 @@ export default function Block(props: BlockProps) {
   const className = props.className || '';
 
   return (
-    <div className={'flex ' + className}>
+    <div className={'flex ' + className} onClick={props.onClick}>
       <div className=" flex items-center">{props.avatar}</div>
 
       <div className="flex grow flex-col justify-center ml-2 min-w-0 grow">

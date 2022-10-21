@@ -11,7 +11,7 @@ type ChannelMembersSaveRequest = { resource: Partial<ChannelMemberType> };
 type ChannelMembersSaveResponse = { resource: ChannelMemberType };
 
 @TwakeService('ChannelMembersAPIClientService')
-class ChannelMembersAPIClientService {
+class ChannelCurrentMemberAPIClientService {
   private readonly prefix = '/internal/services/channels/v1/companies';
   private realtime: Map<
     { companyId: string; workspaceId: string; channelId: string },
@@ -75,13 +75,15 @@ class ChannelMembersAPIClientService {
 
   /**
    * Get the channel members read sections.
-   * 
+   *
    * @param context - channel members read sections context
    * @returns {Promise<ChannelMemberReadSectionType[]>}
    */
-  async getChannelMembersReadSections(
-    context: { companyId: string; workspaceId: string; channelId: string },
-  ): Promise<ChannelMemberReadSectionType[]> {
+  async getChannelMembersReadSections(context: {
+    companyId: string;
+    workspaceId: string;
+    channelId: string;
+  }): Promise<ChannelMemberReadSectionType[]> {
     return Api.get<{ resources: ChannelMemberReadSectionType[] }>(
       `${this.prefix}/${context.companyId}/workspaces/${context.workspaceId}/channels/${context.channelId}/members/read_sections`,
     ).then(({ resources }) => resources);
@@ -89,18 +91,21 @@ class ChannelMembersAPIClientService {
 
   /**
    * Get the read sections for a specific member.
-   * 
+   *
    * @param context - channel member read sections context
    * @returns {Promise<ChannelMemberReadSectionType>}
    */
-  async getChannelMemberReadSection(
-    context: { companyId: string; workspaceId: string; channelId: string; userId: string },
-  ): Promise<ChannelMemberReadSectionType> {
+  async getChannelMemberReadSection(context: {
+    companyId: string;
+    workspaceId: string;
+    channelId: string;
+    userId: string;
+  }): Promise<ChannelMemberReadSectionType> {
     return Api.get<{ resource: ChannelMemberReadSectionType }>(
       `${this.prefix}/${context.companyId}/workspaces/${context.workspaceId}/channels/${context.channelId}/members/${context.userId}/read_sections`,
     ).then(({ resource }) => resource);
   }
 }
-const ChannelMembersAPIClient = new ChannelMembersAPIClientService();
+const ChannelCurrentMemberAPIClient = new ChannelCurrentMemberAPIClientService();
 
-export default ChannelMembersAPIClient;
+export default ChannelCurrentMemberAPIClient;

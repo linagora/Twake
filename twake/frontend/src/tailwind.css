@@ -19,6 +19,11 @@ input.ant-input {
     background: linear-gradient(263.04deg, #007AFF 2.08%, #C600F9 97.25%);
 }
 
+hr {
+    border-color: #AAA;
+    opacity: 0.2;
+}
+
 a {
     color: var(--primary) !important;
 }

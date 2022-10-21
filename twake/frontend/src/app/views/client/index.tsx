@@ -30,6 +30,7 @@ import UsersSearchModal from 'app/components/channel-members-list/users-search-m
 import './styles.scss';
 import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
 import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
+import { EditChannelModal } from 'app/components/edit-channel';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -93,6 +94,7 @@ export default React.memo((): JSX.Element => {
       <ConnectionIndicator />
       <ChatUploadsViewer />
       <UsersSearchModal />
+      <EditChannelModal />
     </>
   );
 });
