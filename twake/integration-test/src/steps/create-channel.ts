@@ -4,21 +4,13 @@ import config from "../config";
 
 import { signIn } from "./signin";
 
-const popupSelector = "div.ant-modal-wrap.ant-modal-centered";
-const hamburgerIconBtnSelector = "span.ant-layout-sider-zero-width-trigger";
+const popupSelector = "div.int-channel-edit-modal";
 const plusIconBtnSelector =
   "div.workspace_channels div.channel_category div.add";
 const createChannelMenuItemSelector = "div.menu.add-channel";
-const inputChannelNameSelector = 'input[placeholder="Channel name"]';
-const inputChannelDescriptionSelector =
-  'textarea[placeholder="Describe the channel"]';
-const selectChannelVisibilitySelector = ".ant-select-selector";
-const selectChannelVisibilityItemSelector = `.ant-select-item[title="${
-  config.channels_for_create[0].visibility === "public" ? "Public" : "Private"
-}]"`;
-
-const createButtonSelector =
-  "button.ant-btn.ant-btn-primary.ant-btn-block.small";
+const inputChannelNameSelector = ".int-channel-name";
+const inputChannelDescriptionSelector = ".int-channel-description";
+const createButtonSelector = ".int-channel-save-information";
 
 export async function createChannel(
   url: string,

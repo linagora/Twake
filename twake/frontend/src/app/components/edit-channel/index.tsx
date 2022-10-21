@@ -40,6 +40,7 @@ export const EditChannelModal = () => {
     <Modal
       open={channelModal.open}
       onClose={() => setChannelModal({ ...channelModal, open: false })}
+      className="int-channel-edit-modal"
     >
       {!channelModal.channelId && <CreateChannelForm />}
       {!!channelModal.channelId && <EditChannelForm />}

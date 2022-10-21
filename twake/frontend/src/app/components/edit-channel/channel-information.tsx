@@ -172,6 +172,7 @@ export const ChannelInformationForm = (props: {
         label={Languages.t('scenes.app.channelsbar.channel_information.name')}
         input={
           <Input
+            className="int-channel-name"
             theme="outline"
             placeholder={Languages.t('scenes.app.channelsbar.channel_information.name')}
             value={name}
@@ -185,6 +186,7 @@ export const ChannelInformationForm = (props: {
         label={Languages.t('scenes.app.channelsbar.channel_information.description')}
         input={
           <Input
+            className="int-channel-description"
             theme="outline"
             placeholder={Languages.t(
               'scenes.app.channelsbar.channel_information.description.placeholder',
@@ -222,6 +224,7 @@ export const ChannelInformationForm = (props: {
 
       <div className="text-center mt-6">
         <Button
+          className="int-channel-save-information"
           theme="primary"
           onClick={() => {
             props.onChange({ channel_group: group, name, description, icon });
