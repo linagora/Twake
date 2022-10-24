@@ -7,7 +7,6 @@ import { invitationEmailsState, InvitationType, invitationTypeState } from '../s
 export const useInvitationUsers = () => {
   const { company } = useCurrentCompany();
   const [invitedUsers, setInvitedUsers] = useRecoilState(invitationEmailsState);
-
   const [role] = useRecoilState(invitationTypeState);
   const { user: currentUser } = useCurrentUser();
   const currentUserEmailDomain = currentUser?.email.split('@').pop();

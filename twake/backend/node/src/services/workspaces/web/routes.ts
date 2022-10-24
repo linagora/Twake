@@ -183,6 +183,14 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   });
 
   fastify.route({
+    method: "POST",
+    url: `${workspacesUrl}/:id/invite_domain`,
+    preHandler: [companyCheck],
+    preValidation: [fastify.authenticate],
+    handler: workspacesController.setInviteDomain.bind(workspacesController),
+  });
+
+  fastify.route({
     method: "GET",
     url: `${workspaceUsersUrl}`,
     preHandler: [accessControl, companyCheck, checkWorkspace],

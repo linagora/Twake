@@ -1,19 +1,34 @@
 import Switch from 'app/components/inputs/switch';
 import Languages from 'app/features/global/services/languages-service';
+import { ToasterService } from 'app/features/global/services/toaster-service';
 import { useInvitationUsers } from 'app/features/invitation/hooks/use-invitation-users';
-import { allowAnyoneByEmailState } from 'app/features/invitation/state/invitation';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
-import React from 'react';
-import { useRecoilState } from 'recoil';
+import workspaceApiClient from 'app/features/workspaces/api/workspace-api-client';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
+import React, { useState } from 'react';
 
 export default (): React.ReactElement => {
-  const [allow, setAllow] = useRecoilState(allowAnyoneByEmailState);
   const { user } = useCurrentUser();
   const { members_limit_reached } = useInvitationUsers();
-  const email = user?.email.split('@').pop();
+  const { workspace } = useCurrentWorkspace();
+  const [allow, setAllow] = useState<boolean>(!!workspace?.preferences?.invite_domain);
 
-  const handleChange = (value: boolean): void => {
-    setAllow(value);
+  const currentUserDomain = user?.email.split('@').pop();
+
+  const handleChange = async (value: boolean): Promise<void> => {
+    if (value) {
+      try {
+        await workspaceApiClient.setInvitationDomain(
+          workspace?.company_id as string,
+          workspace?.id as string,
+          currentUserDomain as string,
+        );
+        setAllow(true);
+        ToasterService.success('Invitation domain updated');
+      } catch (error) {
+        ToasterService.error('Failed to set invitation domain');
+      }
+    }
   };
 
   return !members_limit_reached ? (
@@ -21,12 +36,18 @@ export default (): React.ReactElement => {
       <div className="flex-1">
         {Languages.t(
           'components.invitation.allow_anyone_by_email.text',
-          [email],
-          `Let anyone with @${email} email join this workspace`,
+          [workspace?.preferences?.invite_domain || currentUserDomain],
+          `Let anyone with @${
+            workspace?.preferences?.invite_domain || currentUserDomain
+          } email join this workspace`,
         )}
       </div>
       <div className="basis-1">
-        <Switch checked={allow} onChange={handleChange} />
+        <Switch
+          checked={allow}
+          onChange={handleChange}
+          disabled={!!workspace?.preferences?.invite_domain}
+        />
       </div>
     </div>
   ) : (

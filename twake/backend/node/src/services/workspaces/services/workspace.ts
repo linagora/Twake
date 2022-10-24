@@ -65,6 +65,11 @@ import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
+import WorkspaceInviteDomain, {
+  TYPE as WorkspaceInviteDomainType,
+  getInstance as getWorkspaceInviteDomainInstance,
+  WorkspaceInviteDomainPrimaryKey,
+} from "../entities/workspace_invite_domain";
 
 export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -73,6 +78,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
   private workspaceCounter: CounterProvider<WorkspaceCounterEntity>;
   private workspaceInviteTokensRepository: Repository<WorkspaceInviteTokens>;
+  private workspaceInviteDomainRepository: Repository<WorkspaceInviteDomain>;
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await gr.database.getRepository<WorkspaceUser>(
@@ -106,6 +112,11 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     this.workspaceInviteTokensRepository = await gr.database.getRepository<WorkspaceInviteTokens>(
       WorkspaceInviteTokensType,
       WorkspaceInviteTokens,
+    );
+
+    this.workspaceInviteDomainRepository = await gr.database.getRepository<WorkspaceInviteDomain>(
+      WorkspaceInviteDomainType,
+      WorkspaceInviteDomain,
     );
 
     //If user deleted from a company, remove it from all workspace
@@ -774,4 +785,56 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
       }
     }
   }
+
+  /**
+   * Sets the invitation domain for the specified workspace
+   *
+   * @param {WorkspaceInviteDomainPrimaryKey} pk - the primary key
+   * @param {String} domain - domain
+   * @param {ExecutionContext} context - the execution context
+   */
+  setInviteDomain = async (
+    pk: WorkspaceInviteDomainPrimaryKey,
+    domain: string,
+    context?: ExecutionContext,
+  ): Promise<void> => {
+    const workspace = await gr.services.workspaces.get(
+      {
+        company_id: pk.company_id,
+        id: pk.workspace_id,
+      },
+      context,
+    );
+
+    if (!workspace) {
+      logger.error("failed to set invitation doamin: workspace not found");
+      throw CrudException.notFound("Workspace entity not found");
+    }
+
+    await this.workspaceRepository.save(
+      merge(workspace, { pereferences: { invite_domain: domain } }),
+    );
+
+    const workspaceInvitationDomainEntry = await this.workspaceInviteDomainRepository.findOne(
+      {
+        ...pk,
+        domain,
+      },
+      {},
+      context,
+    );
+
+    if (!workspaceInvitationDomainEntry) {
+      await this.workspaceInviteDomainRepository.save(
+        getWorkspaceInviteDomainInstance({
+          ...pk,
+          domain,
+        }),
+      );
+    } else {
+      await this.workspaceInviteDomainRepository.save(
+        merge(workspaceInvitationDomainEntry, { preferences: { invite_domain: domain } }),
+      );
+    }
+  };
 }

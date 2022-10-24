@@ -41,11 +41,6 @@ export const invitationChannelListState = atom<ChannelType[]>({
   key: 'invitationChannelListState',
 });
 
-export const allowAnyoneByEmailState = atom<boolean>({
-  default: true,
-  key: 'allowAnyoneByemailState',
-});
-
 export const invitationSentState = atom<boolean>({
   default: false,
   key: 'invitationSentState',

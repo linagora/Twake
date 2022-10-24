@@ -7,6 +7,7 @@ import {
   UserObject,
 } from "../../user/web/types";
 import Company from "../../user/entities/company";
+import { workspacePreference } from "../entities/workspace";
 
 export interface WorkspaceRequest extends WorkspaceBaseRequest {
   id: uuid;
@@ -90,6 +91,8 @@ export interface WorkspaceObject {
   };
 
   role?: WorkspaceUserRole;
+
+  preferences: workspacePreference | null;
 }
 
 export interface WorkspaceUserObject {
@@ -143,4 +146,8 @@ export interface WorkspaceJoinByTokenResponse {
     name: string;
   };
   auth_required: boolean;
+}
+
+export interface WorkspaceInviteDomainBody {
+  domain: string;
 }

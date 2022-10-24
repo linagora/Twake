@@ -13,6 +13,7 @@ export type WorkspaceType = {
     created_at: Date;
     total_members: number;
   };
+  preferences: WorkspaceInviteDomainType | null;
 };
 
 export type WorkspaceUserRole = 'moderator' | 'member';
@@ -29,3 +30,7 @@ export type WorkspacePendingUserType = {
   role: 'member' | 'moderator';
   email: string;
 };
+
+export type WorkspaceInviteDomainType = {
+  invite_domain: string | null;
+}

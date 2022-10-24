@@ -3,6 +3,10 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "workspaces";
 
+export type workspacePreference = {
+  invite_domain: string | null;
+};
+
 @Entity(TYPE, {
   primaryKey: [["company_id"], "id"],
   type: TYPE,
@@ -34,6 +38,9 @@ export default class Workspace {
 
   @Column("date_added", "number")
   dateAdded: number;
+
+  @Column("preferences", "encoded_json")
+  preferences: workspacePreference | null;
 }
 
 export type WorkspacePrimaryKey = Pick<Workspace, "company_id" | "id">;
