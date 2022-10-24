@@ -19,6 +19,8 @@ import './Pages.scss';
 import { useRecoilState } from 'recoil';
 import { invitationState } from 'app/features/invitation/state/invitation';
 import { useInvitationUsers } from 'app/features/invitation/hooks/use-invitation-users';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 type PropsType = {
   col: {
@@ -54,6 +56,7 @@ export default () => {
   const { company } = useCurrentCompany();
   const [, setInvitationState] = useRecoilState(invitationState);
   const { allowed_guests, allowed_members } = useInvitationUsers();
+  const { workspace } = useCurrentWorkspace();
 
   const usersInGroup = [];
   Object.keys(workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
@@ -112,7 +115,7 @@ export default () => {
       )}
 
       <Row className="small-y-margin" justify="space-between" align="middle">
-        {(allowed_guests > 0 || allowed_members > 0) && (
+        { AccessRightsService.hasLevel(workspace?.id, "moderator") && (allowed_guests > 0 || allowed_members > 0) && (
           <Col>
             <Button type="primary" onClick={() => setInvitationState(true)}>
               {Languages.t('scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button')}

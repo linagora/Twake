@@ -17,6 +17,8 @@ import { useRecoilState } from 'recoil';
 import { EmailItem } from './email-item';
 import { MemberItem } from './member-item';
 import { UserItem } from './user-item';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 export const ChannelMembersListModal = (): JSX.Element => {
   const channelId = useRouterChannel();
@@ -147,6 +149,7 @@ export const ChannelMembersListModal = (): JSX.Element => {
 const EmailSuggestion = ({ email }: { email: string }) => {
   const [, setInvitationOpen] = useRecoilState(invitationState);
   const { addInvitation, allowed_guests, allowed_members } = useInvitationUsers();
+  const { workspace } = useCurrentWorkspace();
 
   const invite = () => {
     addInvitation(email);
@@ -156,7 +159,8 @@ const EmailSuggestion = ({ email }: { email: string }) => {
     return <></>;
   }
 
-  return allowed_guests > 0 || allowed_members > 0 ? (
+  return AccessRightsService.hasLevel(workspace?.id, 'moderator') &&
+    (allowed_guests > 0 || allowed_members > 0) ? (
     <div>
       <Info className="px-2 mt-2 mb-2 block items-center flex">
         <Text type="base" className="cursor-pointer" onClick={() => invite()}>
