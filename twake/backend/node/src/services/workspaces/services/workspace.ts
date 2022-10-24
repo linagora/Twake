@@ -68,7 +68,6 @@ import {
 import WorkspaceInviteDomain, {
   TYPE as WorkspaceInviteDomainType,
   getInstance as getWorkspaceInviteDomainInstance,
-  WorkspaceInviteDomainPrimaryKey,
 } from "../entities/workspace_invite_domain";
 
 export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable {
@@ -789,12 +788,12 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
   /**
    * Sets the invitation domain for the specified workspace
    *
-   * @param {WorkspaceInviteDomainPrimaryKey} pk - the primary key
+   * @param {{ company_id: string; workspace_id: string }} pk - the primary key
    * @param {String} domain - domain
    * @param {ExecutionContext} context - the execution context
    */
   setInviteDomain = async (
-    pk: WorkspaceInviteDomainPrimaryKey,
+    pk: { company_id: string; workspace_id: string },
     domain: string,
     context?: ExecutionContext,
   ): Promise<void> => {
@@ -807,13 +806,15 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     );
 
     if (!workspace) {
-      logger.error("failed to set invitation doamin: workspace not found");
+      logger.error("failed to set invitation domain: workspace not found");
       throw CrudException.notFound("Workspace entity not found");
     }
 
-    await this.workspaceRepository.save(
-      merge(workspace, { pereferences: { invite_domain: domain } }),
-    );
+    workspace.preferences = {
+      invite_domain: domain,
+    };
+
+    await this.workspaceRepository.save(workspace);
 
     const workspaceInvitationDomainEntry = await this.workspaceInviteDomainRepository.findOne(
       {
@@ -836,5 +837,25 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
         merge(workspaceInvitationDomainEntry, { preferences: { invite_domain: domain } }),
       );
     }
+  };
+
+  /**
+   * Get the workspaceinvitedomain entries for the specified domain
+   *
+   * @param {String} domain - the desired domain
+   * @param {ExecutionContext} context - the execution context
+   * @returns {Promise<WorkspaceInviteDomain[]>}
+   */
+  getInviteDomainWorkspaces = async (
+    domain: string,
+    context?: ExecutionContext,
+  ): Promise<WorkspaceInviteDomain[]> => {
+    const inviteDomainEntry = this.workspaceInviteDomainRepository.find({ domain }, {}, context);
+
+    if (!inviteDomainEntry) {
+      throw CrudException.notFound("workspace invite domain not found");
+    }
+
+    return (await inviteDomainEntry).getEntities();
   };
 }

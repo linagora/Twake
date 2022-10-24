@@ -4,13 +4,10 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 export const TYPE = "workspace_invite_domain";
 
 @Entity(TYPE, {
-  primaryKey: [["company_id", "workspace_id", "domain"], "id"],
+  primaryKey: [["domain"], "company_id", "workspace_id"],
   type: TYPE,
 })
 export default class WorkspaceInviteDomain {
-  @Column("id", "timeuuid")
-  id: string;
-
   @Column("company_id", "timeuuid")
   company_id: string;
 
@@ -23,7 +20,7 @@ export default class WorkspaceInviteDomain {
 
 export type WorkspaceInviteDomainPrimaryKey = Pick<
   WorkspaceInviteDomain,
-  "company_id" | "workspace_id"
+  "domain" | "company_id" | "workspace_id"
 >;
 
 export function getInstance(

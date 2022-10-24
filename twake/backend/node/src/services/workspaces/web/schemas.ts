@@ -18,6 +18,14 @@ const workspaceObjectSchema = {
       },
     },
     role: { type: "string", enum: ["moderator", "member"] },
+    preferences: {
+      type: ["object", "null"],
+      properties: {
+        invite_domain: {
+          type: ["string", "null"],
+        },
+      },
+    },
   },
 };
 

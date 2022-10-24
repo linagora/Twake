@@ -292,6 +292,53 @@ export class WorkspaceUsersCrudController
           role,
         );
       }
+
+      const user = await gr.services.users.get({
+        id: userId,
+      });
+
+      if (user) {
+        const userEmailDomain = user.email_canonical.split("@").pop();
+        const inviteDomainEntries = await gr.services.workspaces.getInviteDomainWorkspaces(
+          userEmailDomain,
+        );
+
+        inviteDomainEntries.map(async entry => {
+          const workspace = await gr.services.workspaces.get({
+            company_id: entry.company_id,
+            id: entry.workspace_id,
+          });
+
+          if (!workspace) {
+            return;
+          }
+
+          if (
+            !workspace.preferences.invite_domain ||
+            workspace.preferences.invite_domain !== userEmailDomain
+          ) {
+            return;
+          }
+
+          const existingUser = await gr.services.workspaces.getUser({
+            userId,
+            workspaceId: entry.workspace_id,
+          });
+
+          if (existingUser) {
+            return;
+          }
+
+          await gr.services.workspaces.addUser(
+            {
+              company_id: entry.company_id,
+              id: entry.workspace_id,
+            },
+            { id: userId },
+            "member",
+          );
+        });
+      }
     }
 
     const resource = await this.getForOne(userId, context);
