@@ -31,6 +31,7 @@ import { WorkspaceInviteTokensCrudController } from "./controllers/workspace-inv
 import WorkspaceUser from "../entities/workspace_user";
 import { checkUserBelongsToCompany, hasCompanyMemberLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
+import freeEmailDomains from "free-email-domains";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
 const workspacePendingUsersUrl = "/companies/:company_id/workspaces/:workspace_id/pending";
@@ -149,6 +150,10 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
       ) === false
     ) {
       throw fastify.httpErrors.badRequest("invalid domain");
+    }
+
+    if (freeEmailDomains.includes(domain)) {
+      throw fastify.httpErrors.badRequest("invalid email provider");
     }
   };
 

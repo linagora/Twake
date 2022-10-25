@@ -810,6 +810,19 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
       throw CrudException.notFound("Workspace entity not found");
     }
 
+    if (workspace.preferences && workspace.preferences?.invite_domain !== domain) {
+      await this.workspaceInviteDomainRepository.remove({
+        company_id: workspace.company_id,
+        domain: workspace.preferences.invite_domain,
+        workspace_id: workspace.id,
+      });
+    }
+
+    if (workspace.preferences && workspace.preferences?.invite_domain === domain) {
+      logger.warn("invite domain is already set");
+      return;
+    }
+
     workspace.preferences = {
       invite_domain: domain,
     };
@@ -832,10 +845,6 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
           domain,
         }),
       );
-    } else {
-      await this.workspaceInviteDomainRepository.save(
-        merge(workspaceInvitationDomainEntry, { preferences: { invite_domain: domain } }),
-      );
     }
   };
 
@@ -850,12 +859,16 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     domain: string,
     context?: ExecutionContext,
   ): Promise<WorkspaceInviteDomain[]> => {
-    const inviteDomainEntry = this.workspaceInviteDomainRepository.find({ domain }, {}, context);
+    const inviteDomainEntry = await this.workspaceInviteDomainRepository.find(
+      { domain },
+      {},
+      context,
+    );
 
     if (!inviteDomainEntry) {
       throw CrudException.notFound("workspace invite domain not found");
     }
 
-    return (await inviteDomainEntry).getEntities();
+    return inviteDomainEntry.getEntities();
   };
 }
