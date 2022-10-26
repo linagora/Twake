@@ -7,7 +7,6 @@ import {
   UserObject,
 } from "../../user/web/types";
 import Company from "../../user/entities/company";
-
 export interface WorkspaceRequest extends WorkspaceBaseRequest {
   id: uuid;
 }
@@ -46,6 +45,7 @@ export interface WorkspaceUsersInvitationItem {
 
 export interface WorkspaceUsersInvitationRequestBody {
   invitations: WorkspaceUsersInvitationItem[];
+  channels?: string[];
 }
 
 export interface WorkspaceUserInvitationResponseItem {
@@ -89,6 +89,10 @@ export interface WorkspaceObject {
   };
 
   role?: WorkspaceUserRole;
+
+  preferences: null | {
+    invite_domain?: string;
+  };
 }
 
 export interface WorkspaceUserObject {
@@ -103,6 +107,10 @@ export interface WorkspaceUserObject {
 
 export interface WorkspaceInviteTokenGetRequest extends WorkspaceBaseRequest {
   workspace_id: uuid;
+}
+
+export interface WorkspaceInviteTokenBody {
+  channels: string[];
 }
 
 export interface WorkspaceInviteTokenDeleteRequest extends WorkspaceBaseRequest {
@@ -138,4 +146,8 @@ export interface WorkspaceJoinByTokenResponse {
     name: string;
   };
   auth_required: boolean;
+}
+
+export interface WorkspaceInviteDomainBody {
+  domain: string;
 }

@@ -6,6 +6,7 @@ import {
   ResourceListResponse,
 } from "../../../../utils/types";
 import {
+  WorkspaceInviteTokenBody,
   WorkspaceInviteTokenDeleteRequest,
   WorkspaceInviteTokenGetRequest,
   WorkspaceInviteTokenObject,
@@ -52,7 +53,10 @@ export class WorkspaceInviteTokensCrudController
   }
 
   async save(
-    request: FastifyRequest<{ Params: WorkspaceInviteTokenGetRequest }>,
+    request: FastifyRequest<{
+      Params: WorkspaceInviteTokenGetRequest;
+      Body: WorkspaceInviteTokenBody;
+    }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
@@ -61,6 +65,7 @@ export class WorkspaceInviteTokensCrudController
       context.company_id,
       context.workspace_id,
       context.user.id,
+      request.body.channels,
     );
 
     return {
@@ -177,6 +182,47 @@ export class WorkspaceInviteTokensCrudController
           throw CrudException.badRequest("Unable to add user to the company");
         }
 
+        const userEmailDomain = user.email_canonical.split("@").pop();
+        const inviteDomainEntries = await gr.services.workspaces.getInviteDomainWorkspaces(
+          userEmailDomain,
+        );
+
+        inviteDomainEntries.map(async entry => {
+          const workspace = await gr.services.workspaces.get({
+            company_id: entry.company_id,
+            id: entry.workspace_id,
+          });
+
+          if (!workspace) {
+            return;
+          }
+
+          if (
+            !workspace.preferences.invite_domain ||
+            workspace.preferences.invite_domain !== userEmailDomain
+          ) {
+            return;
+          }
+
+          const existingUser = await gr.services.workspaces.getUser({
+            userId,
+            workspaceId: entry.workspace_id,
+          });
+
+          if (existingUser) {
+            return;
+          }
+
+          await gr.services.workspaces.addUser(
+            {
+              company_id: entry.company_id,
+              id: entry.workspace_id,
+            },
+            { id: userId },
+            "member",
+          );
+        });
+
         const workspaceUser = await gr.services.workspaces.getUser({
           workspaceId: workspace.id,
           userId: userId,
@@ -188,6 +234,24 @@ export class WorkspaceInviteTokensCrudController
             "member",
           );
         }
+
+        await gr.services.channelPendingEmail.proccessPendingEmails(
+          {
+            company_id,
+            user_id: userId,
+            workspace_id,
+          },
+          {
+            company_id,
+            workspace_id,
+          },
+          {
+            user: request.currentUser,
+            url: request.url,
+            method: request.routerMethod,
+            transport: "http",
+          },
+        );
         resource.company.id = company.id;
         resource.workspace.id = workspace.id;
       }

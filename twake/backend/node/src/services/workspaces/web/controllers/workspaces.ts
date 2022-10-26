@@ -8,6 +8,7 @@ import {
 import {
   UpdateWorkspaceBody,
   WorkspaceBaseRequest,
+  WorkspaceInviteDomainBody,
   WorkspaceObject,
   WorkspaceRequest,
   WorkspacesListRequest,
@@ -71,6 +72,8 @@ export class WorkspacesCrudController
         created_at: workspace.dateAdded,
         total_members: usersCount,
       },
+
+      preferences: workspace.preferences,
     };
 
     if (userId) {
@@ -231,15 +234,7 @@ export class WorkspacesCrudController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
-    const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
-
-    if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {
-      const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
-      if (companyUserRole !== "admin") {
-        throw CrudException.forbidden("You are not a admin of workspace or company");
-      }
-    }
+    await this.checkWorkspaceModeratorAccess(request, context);
 
     const deleteResult = await gr.services.workspaces.delete({
       id: request.params.id,
@@ -258,6 +253,58 @@ export class WorkspacesCrudController
       status: "error",
     };
   }
+
+  /**
+   * Sets the invitation domain for the workspace.
+   *
+   * @param {FastifyRequest<{ Params: WorkspaceRequest; Body: WorkspaceInviteDomainBody }>} request - the request
+   * @param {FastifyReply} _reply - the reply
+   * @returns {Promise<{ status: string }>}
+   */
+  setInviteDomain = async (
+    request: FastifyRequest<{ Params: WorkspaceRequest; Body: WorkspaceInviteDomainBody }>,
+    _reply: FastifyReply,
+  ): Promise<{ status: string }> => {
+    const context = getExecutionContext(request);
+
+    await this.checkWorkspaceModeratorAccess(request, context);
+
+    try {
+      const { company_id, id } = request.params;
+      await gr.services.workspaces.setInviteDomain(
+        { company_id, workspace_id: id },
+        request.body.domain,
+        context,
+      );
+    } catch (error) {
+      throw CrudException.badRequest("Failed to set invitation domain");
+    }
+
+    return {
+      status: "success",
+    };
+  };
+
+  /**
+   * Checks whether the current user have moderator access level to the workspace.
+   *
+   * @param {FastifyRequest<{ Params: WorkspaceRequest }>} request - the request
+   * @param {WorkspaceExecutionContext} context - the workspace execution context
+   */
+  checkWorkspaceModeratorAccess = async (
+    request: FastifyRequest<{ Params: WorkspaceRequest }>,
+    context: WorkspaceExecutionContext,
+  ): Promise<void> => {
+    const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
+    const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
+
+    if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {
+      const companyUserRole = await this.getCompanyUserRole(context.company_id, context.user.id);
+      if (companyUserRole !== "admin") {
+        throw CrudException.forbidden("You are not a admin of workspace or company");
+      }
+    }
+  };
 
   constructor() {
     this.logger = getLogger("Workspaces controller");
