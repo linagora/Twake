@@ -183,6 +183,7 @@
     "loglevel-plugin-prefix": "^0.8.4",
     "markdown-draft-js": "^2.3.0",
     "markdown-to-jsx": "^7.1.5",
+    "material-ui-chip-input": "^2.0.0-beta.2",
     "mini-css-extract-plugin": "0.12.0",
     "minimongo": "^6.10.0",
     "moment": "^2.29.4",

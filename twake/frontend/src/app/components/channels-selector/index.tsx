@@ -20,6 +20,7 @@ import UsersService from 'app/features/users/services/current-user-service';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { Checkbox } from 'app/atoms/input/input-checkbox';
 import Languages from '../../features/global/services/languages-service';
+import Icon from '../icon/icon';
 
 export const SelectChannelModalAtom = atom<boolean>({
   key: 'SelectChannelModalAtom',
@@ -29,6 +30,7 @@ export const SelectChannelModalAtom = atom<boolean>({
 export const ChannelSelectorModal = (props: {
   initialChannels: ChannelType[];
   onChange: (channels: ChannelType[]) => void;
+  lockDefaultChannels?: boolean;
 }) => {
   const [open, setOpen] = useRecoilState(SelectChannelModalAtom);
   const [channels, setChannels] = useState<ChannelType[]>([]);
@@ -41,6 +43,7 @@ export const ChannelSelectorModal = (props: {
           onChange={channels => {
             setChannels(channels);
           }}
+          lockDefaultChannels={props.lockDefaultChannels}
         />
         <Button
           className="w-full mt-2 text-center justify-center"
@@ -59,11 +62,19 @@ export const ChannelSelectorModal = (props: {
 export const ChannelSelector = (props: {
   initialChannels: ChannelType[];
   onChange: (channels: ChannelType[]) => void;
+  lockDefaultChannels?: boolean;
 }) => {
   const [selectedChannels, setSelectedChannels] = useState<ChannelType[]>(props.initialChannels);
   const setSearch = useSetRecoilState(SearchInputState);
   const { channels } = useSearchChannels();
   const loading = useSearchChannelsLoading();
+
+  const displayedChannels = props.lockDefaultChannels
+    ? [
+        ...channels.filter(channel => channel.is_default),
+        ...channels.filter(channel => !channel.is_default),
+      ]
+    : channels;
 
   useEffect(() => {
     props.onChange(selectedChannels);
@@ -96,7 +107,7 @@ export const ChannelSelector = (props: {
         options={{ suppressScrollX: true, suppressScrollY: false }}
         component="div"
       >
-        {channels.map(channel => {
+        {displayedChannels.map(channel => {
           const name =
             channel.name || channel.users?.map(u => UsersService.getFullName(u)).join(', ');
 
@@ -123,16 +134,24 @@ export const ChannelSelector = (props: {
               }
               suffix={
                 <div className="flex text-center pr-4">
-                  <Checkbox
-                    value={selectedChannels.includes(channel)}
-                    onChange={() => {
-                      if (selectedChannels.includes(channel)) {
-                        setSelectedChannels(selectedChannels.filter(c => c.id !== channel.id));
-                      } else if (channel.id) {
-                        setSelectedChannels([...selectedChannels, channel]);
-                      }
-                    }}
-                  />
+                  {props.lockDefaultChannels &&
+                  props.initialChannels.find(({ id }) => channel.id === id) &&
+                  channel.is_default ? (
+                    <div className="font-medium h-6 flex items-center justify-center text-sm rounded-full text-white bg-blue-500">
+                      <Icon type="lock-alt" className="m-icon-small" />
+                    </div>
+                  ) : (
+                    <Checkbox
+                      value={!!selectedChannels.find(({ id }) => channel.id === id)}
+                      onChange={() => {
+                        if (selectedChannels.includes(channel)) {
+                          setSelectedChannels(selectedChannels.filter(c => c.id !== channel.id));
+                        } else if (channel.id) {
+                          setSelectedChannels([...selectedChannels, channel]);
+                        }
+                      }}
+                    />
+                  )}
                 </div>
               }
               className="py-2"

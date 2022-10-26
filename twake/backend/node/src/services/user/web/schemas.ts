@@ -80,6 +80,7 @@ export const companyObjectSchema = {
           properties: {
             [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: { type: "number" },
             [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: { type: "number" },
+            [CompanyLimitsEnum.COMPANY_GUESTS_LIMIT]: { type: "number" },
           },
         },
         features: {

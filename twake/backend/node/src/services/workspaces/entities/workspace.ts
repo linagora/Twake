@@ -34,6 +34,11 @@ export default class Workspace {
 
   @Column("date_added", "number")
   dateAdded: number;
+
+  @Column("preferences", "encoded_json")
+  preferences: null | {
+    invite_domain?: string;
+  };
 }
 
 export type WorkspacePrimaryKey = Pick<Workspace, "company_id" | "id">;
