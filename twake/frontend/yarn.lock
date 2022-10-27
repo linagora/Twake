@@ -4559,6 +4559,13 @@
   dependencies:
     "@types/react" "^16"
 
+"@types/react-page-visibility@^6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@types/react-page-visibility/-/react-page-visibility-6.4.1.tgz#21c3bc4a3f310d38d188916cadc55f2bde65f27d"
+  integrity sha512-vNlYAqKhB2SU1HmF9ARFTFZN0NSPzWn8HSjBpFqYuQlJhsb/aSYeIZdygeqfSjAg0PZ70id2IFWHGULJwe59Aw==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-redux@^7.1.20", "@types/react-redux@^7.1.7":
   version "7.1.24"
   resolved "https://registry.npmjs.org/@types/react-redux/-/react-redux-7.1.24.tgz"
@@ -14800,19 +14807,14 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-moment-timezone@^0.5.4:
-  version "0.5.34"
-  resolved "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.34.tgz"
-  integrity sha512-3zAEHh2hKUs3EXLESx/wsgw6IQdusOT8Bxm3D9UrHPQR7zlMmzwybC8zHEM1tQ4LJwP7fcxrWr8tuBg05fFCbg==
+moment-timezone@^0.5.38:
+  version "0.5.38"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.38.tgz#9674a5397b8be7c13de820fd387d8afa0f725aad"
+  integrity sha512-nMIrzGah4+oYZPflDvLZUgoVUO4fvAqHstvG3xAUnMolWncuAiLDWNnJZj6EwJGMGfb1ZcuTFE6GI3hNOVWI/Q==
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0", moment@^2.24.0, moment@^2.29.2:
-  version "2.29.3"
-  resolved "https://registry.npmjs.org/moment/-/moment-2.29.3.tgz"
-  integrity sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw==
-
-moment@^2.29.4:
+"moment@>= 2.9.0", moment@^2.24.0, moment@^2.29.2, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
@@ -18243,6 +18245,13 @@ react-outside-click-handler@^1.3.0:
     consolidated-events "^1.1.1 || ^2.0.0"
     document.contains "^1.0.1"
     object.values "^1.1.0"
+    prop-types "^15.7.2"
+
+react-page-visibility@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/react-page-visibility/-/react-page-visibility-7.0.0.tgz#13dfe604790d061e70b900038bad1ca769a36cbc"
+  integrity sha512-d4Kq/8TtJSr8dQc8EJeAZcSKTrGzC5OPTm6UrMur9BnwP0fgTawI9+Nd+ZGB7vwCfn2yZS0qDF9DR3/QYTGazw==
+  dependencies:
     prop-types "^15.7.2"
 
 react-perfect-scrollbar@^1.5.8:
