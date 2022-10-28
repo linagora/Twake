@@ -108,7 +108,7 @@
     "@fastify/formbody": "^6.0.0",
     "@fastify/static": "^5.0.1",
     "@ffprobe-installer/ffprobe": "^1.4.1",
-    "@sentry/node": "^6.15.0",
+    "@sentry/node": "^6.19.7",
     "@sentry/tracing": "^6.15.0",
     "@socket.io/redis-adapter": "^7.1.0",
     "@types/redis": "^4.0.11",
