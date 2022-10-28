@@ -109,7 +109,7 @@
     "@fastify/static": "^5.0.1",
     "@ffprobe-installer/ffprobe": "^1.4.1",
     "@sentry/node": "^6.15.0",
-    "@sentry/tracing": "^6.15.0",
+    "@sentry/tracing": "^6.19.7",
     "@socket.io/redis-adapter": "^7.1.0",
     "@types/redis": "^4.0.11",
     "@types/sharp": "^0.29.5",
