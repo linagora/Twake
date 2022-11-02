@@ -51,7 +51,7 @@ export default (props: Props) => {
     userIsNotInCompany = true;
   }
 
-  let channelIsRestricted =
+  const channelIsRestricted =
     useIsReadOnlyChannel(channelId) &&
     currentUser.id !== props.channel.owner &&
     !AccessRightsService.hasLevel(workspaceId, 'moderator');
