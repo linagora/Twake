@@ -142,7 +142,6 @@ const EditChannelForm = () => {
         >
           <ChannelAccessForm
             onChange={async changes => {
-              setPage('menu');
               await ChannelAPIClient.save(
                 { ...channel, ...changes },
                 {
@@ -152,6 +151,7 @@ const EditChannelForm = () => {
                 },
               );
               await refresh();
+              setPage('menu');
             }}
             channel={channel}
           />
@@ -236,7 +236,7 @@ const CreateChannelForm = () => {
           {...slideXTransition}
         >
           <ChannelAccessForm
-            onChange={changes => {
+            onChange={async changes => {
               setStep(2);
               setChannel({ ...channel, ...changes });
             }}
