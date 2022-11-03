@@ -448,12 +448,13 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
   }
 
   async checkFiles<T extends MessageFile>(files: T[]): Promise<T[]> {
-    return await Promise.all(
-      files.filter(async file => {
+    const results = await Promise.all(
+      files.map(async file => {
         if (file.metadata.source !== "internal") return true;
         const ei = file.metadata.external_id;
         return await gr.services.files.exists(ei.id, ei.company_id);
       }),
     );
+    return files.filter((_v, index) => results[index]);
   }
 }
