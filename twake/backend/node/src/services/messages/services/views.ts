@@ -319,31 +319,29 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
     options: SearchMessageFilesOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<MessageFile>> {
-    return await this.searchFilesRepository
-      .search(
-        {
-          ...(options.isFile ? { is_file: true } : {}),
-          ...(options.isMedia ? { is_media: true } : {}),
+    const temp = await this.searchFilesRepository.search(
+      {
+        ...(options.isFile ? { is_file: true } : {}),
+        ...(options.isMedia ? { is_media: true } : {}),
+      },
+      {
+        pagination,
+        ...(options.companyId ? { $in: [["cache_company_id", [options.companyId]]] } : {}),
+        ...(options.workspaceId ? { $in: [["cache_workspace_id", [options.workspaceId]]] } : {}),
+        ...(options.channelId ? { $in: [["cache_channel_id", [options.channelId]]] } : {}),
+        ...(options.sender ? { $in: [["cache_user_id", [options.sender]]] } : {}),
+        ...(options.extension ? { $in: [["extension", [options.extension]]] } : {}),
+        $text: {
+          $search: options.search,
         },
-        {
-          pagination,
-          ...(options.companyId ? { $in: [["cache_company_id", [options.companyId]]] } : {}),
-          ...(options.workspaceId ? { $in: [["cache_workspace_id", [options.workspaceId]]] } : {}),
-          ...(options.channelId ? { $in: [["cache_channel_id", [options.channelId]]] } : {}),
-          ...(options.sender ? { $in: [["cache_user_id", [options.sender]]] } : {}),
-          ...(options.extension ? { $in: [["extension", [options.extension]]] } : {}),
-          $text: {
-            $search: options.search,
-          },
-          $sort: {
-            created_at: "desc",
-          },
+        $sort: {
+          created_at: "desc",
         },
-        context,
-      )
-      .then(a => {
-        return a;
-      });
+      },
+      context,
+    );
+
+    return new ListResult(temp.type, await this.checkFiles(temp.getEntities()), temp.nextPage);
   }
 
   async listUserMarkedFiles(
@@ -394,7 +392,7 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
       const messageFilePromises: Promise<MessageFile & { context: MessageFileRef }>[] = refs.map(
         async ref => {
           try {
-            return {
+            const res = {
               ...(await this.repositoryMessageFile.findOne(
                 {
                   message_id: ref.message_id,
@@ -405,6 +403,8 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
               )),
               context: ref,
             };
+
+            return res;
           } catch (e) {
             return null;
           }
@@ -442,8 +442,19 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
 
     return new ListResult<FileSearchResult>(
       "file",
-      fileWithUserAndMessage,
+      await this.checkFiles(fileWithUserAndMessage),
       nextPageUploads || nextPageDownloads,
     );
+  }
+
+  async checkFiles<T extends MessageFile>(files: T[]): Promise<T[]> {
+    const results = await Promise.all(
+      files.map(async file => {
+        if (file.metadata.source !== "internal") return true;
+        const ei = file.metadata.external_id;
+        return await gr.services.files.exists(ei.id, ei.company_id);
+      }),
+    );
+    return files.filter((_v, index) => results[index]);
   }
 }
