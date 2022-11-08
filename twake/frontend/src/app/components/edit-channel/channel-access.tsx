@@ -19,6 +19,7 @@ export const ChannelAccessForm = (props: {
   );
   const [isDefault, setIsDefault] = useState(props.channel?.is_default || false);
   const [isReadOnly, setIsReadOnly] = useState(props.channel?.is_readonly || false);
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="w-screen max-w-xs">
@@ -84,8 +85,11 @@ export const ChannelAccessForm = (props: {
       <div className="text-center mt-4">
         <Button
           theme="primary"
+          loading={loading}
           onClick={() => {
+            setLoading(true);
             props.onChange({ visibility, is_default: isDefault, is_readonly: isReadOnly });
+            setLoading(false);
           }}
         >
           {Languages.t('scenes.app.channelsbar.channel_access.save')}

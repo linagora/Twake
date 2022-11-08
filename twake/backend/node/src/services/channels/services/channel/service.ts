@@ -167,7 +167,7 @@ export class ChannelServiceImpl {
       }
 
       if (channelToUpdate.icon && channelToUpdate.icon.startsWith("data:")) {
-        const logoInternalPath = `/channels/${channelToUpdate.id}/thumbnail.png`;
+        const logoInternalPath = `/channels/${channelToUpdate.id}/thumbnail.jpg`;
         const logoPublicPath = `/internal/services/channels/v1/companies/${
           channelToUpdate.company_id
         }/workspaces/${channelToUpdate.workspace_id}/channels/${

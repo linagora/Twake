@@ -66,6 +66,8 @@ export default (props: Props) => {
   const grayBadgeClassName = ' bg-zinc-300 text-zinc-700 dark:bg-zing-800 dark:text-zinc-600';
   const blueBadgeClassName = ' text-white bg-blue-500';
 
+  const counterValue = Math.max(1, Math.max(props.mentions + props.replies, props.unreadMessages));
+
   return (
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
@@ -141,10 +143,7 @@ export default (props: Props) => {
                     : grayBadgeClassName)
                 }
               >
-                {Math.min(
-                  99,
-                  Math.max(1, Math.max(props.mentions + props.replies, props.unreadMessages)),
-                )}
+                {counterValue>99 ? "99+" : counterValue}
               </div>
             )}
           {props.menu}

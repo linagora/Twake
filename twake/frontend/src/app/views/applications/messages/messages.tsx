@@ -51,10 +51,10 @@ export default (props: Props) => {
     userIsNotInCompany = true;
   }
 
-  let channelIsRestricted = false;
-  if (useIsReadOnlyChannel(channelId) && !AccessRightsService.hasLevel(workspaceId, 'moderator')) {
-    channelIsRestricted = true;
-  }
+  const channelIsRestricted =
+    useIsReadOnlyChannel(channelId) &&
+    currentUser.id !== props.channel.owner &&
+    !AccessRightsService.hasLevel(workspaceId, 'moderator');
 
   return (
     <div className="messages-view">
@@ -84,7 +84,7 @@ export default (props: Props) => {
       </Suspense>
       <IsWriting channelId={channelId} threadId={threadId} />
       {isChannelMember && channelIsRestricted && <ChannelIsRestricted />}
-      {isChannelMember && !userIsNotInCompany && (
+      {isChannelMember && !channelIsRestricted && !userIsNotInCompany && (
         <NewThread
           collectionKey=""
           useButton={isDirectChannel && !threadId}
@@ -142,7 +142,7 @@ const UserIsNotInCompany = () => {
 const ChannelIsRestricted = () => {
   return (
     <div className="border-t border-zinc-200 dark:border-zinc-700 p-8 text-center">
-      <Text.Info>{Languages.t('scenes.client.join_private_channel.info')}</Text.Info>
+      <Text.Info>{Languages.t('scenes.client.readonly.info')}</Text.Info>
     </div>
   );
 };

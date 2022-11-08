@@ -67,13 +67,13 @@ export default class Viewer extends Component<PropsType, StateType> {
     Collections.get('drive').removeListener(this);
     DriveService.removeListener(this);
   }
-  openFile(app: AppType) {
-    if (app.url && app.is_url_file) {
-      window.open(app.url);
+  openFile(editor: AppType | { app: AppType }) {
+    if ((editor as AppType).url && (editor as AppType).is_url_file) {
+      window.open((editor as AppType).url);
     }
     DriveService.getFileUrlForEdition(
-      app.display?.twake?.files?.editor?.edition_url,
-      app,
+      editor.app.display?.twake?.files?.editor?.edition_url,
+      editor.app,
       this.viewed_document.id,
       (url: string) => window.open(url),
     );
@@ -142,7 +142,7 @@ export default class Viewer extends Component<PropsType, StateType> {
                   >
                     {Languages.t(
                       'scenes.apps.drive.viewer.edit_with_button',
-                      [editor_candidate[0].name],
+                      [editor_candidate[0]?.app?.identity?.name],
                       'Editer avec $1',
                     )}
                   </Button>
@@ -152,7 +152,7 @@ export default class Viewer extends Component<PropsType, StateType> {
                     menu={editor_candidate.map((editor: { [key: string]: any }) => {
                       return {
                         type: 'menu',
-                        text: editor?.app?.identity?.name || editor?.app?.name || editor.name,
+                        text: editor?.app?.identity?.name,
                         onClick: () => {
                           this.openFile(editor);
                         },
