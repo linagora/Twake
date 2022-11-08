@@ -6,6 +6,7 @@ import LocalStorage from 'app/features/global/framework/local-storage-service';
 import AceModeList from './utils/ace_modelist.js';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
+import _ from 'lodash';
 
 import Globals from 'app/features/global/services/globals-twake-app-service';
 
@@ -512,6 +513,9 @@ class Drive extends Observable {
         is_url_file: true,
         url: (current.hidden_data || {}).editor_url,
         name: (current.hidden_data || {}).editor_name || 'web link',
+        app: {
+          name: (current.hidden_data || {}).editor_name || 'web link',
+        },
       });
     }
 
@@ -529,7 +533,7 @@ class Drive extends Observable {
         ) >= 0
       ) {
         if (app.display?.twake?.files?.editor?.edition_url) {
-          editor_candidate.push(app);
+          editor_candidate.push({ app });
         }
         if (app.display?.twake?.files?.editor?.preview_url) {
           preview_candidate.push({
@@ -588,7 +592,7 @@ class Drive extends Observable {
         ) >= 0
       ) {
         if (app.display?.twake?.files?.editor?.edition_url) {
-          editor_candidate.push(app);
+          editor_candidate.push({ app });
         }
         if (app.display?.twake?.files?.editor?.preview_url) {
           preview_candidate.push({
@@ -600,8 +604,8 @@ class Drive extends Observable {
     });
 
     return {
-      preview_candidate: preview_candidate,
-      editor_candidate: editor_candidate,
+      preview_candidate: _.uniqBy(preview_candidate, a => a.app.id),
+      editor_candidate: _.uniqBy(editor_candidate, a => a.app.id),
     };
   }
 
