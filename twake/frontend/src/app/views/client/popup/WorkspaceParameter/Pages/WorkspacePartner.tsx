@@ -115,13 +115,16 @@ export default () => {
       )}
 
       <Row className="small-y-margin" justify="space-between" align="middle">
-        { AccessRightsService.hasLevel(workspace?.id, "moderator") && (allowed_guests > 0 || allowed_members > 0) && (
-          <Col>
-            <Button type="primary" onClick={() => setInvitationState(true)}>
-              {Languages.t('scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button')}
-            </Button>
-          </Col>
-        )}
+        {AccessRightsService.hasLevel(workspace?.id, 'moderator') &&
+          (allowed_guests > 0 || allowed_members > 0) && (
+            <Col>
+              <Button type="primary" onClick={() => setInvitationState(true)}>
+                {Languages.t(
+                  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
+                )}
+              </Button>
+            </Col>
+          )}
         <Col>
           <Input
             placeholder={Languages.t('components.listmanager.filter')}

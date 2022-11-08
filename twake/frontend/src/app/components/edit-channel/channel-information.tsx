@@ -13,6 +13,7 @@ import { downscaleImage, getBase64 } from 'app/features/global/utils/strings';
 import Block from 'app/molecules/grouped-rows/base';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
+import Emojione from '../emojione/emojione';
 
 const ChannelGroupSelector = (props: { group: string; onChange: (str: string) => void }) => {
   const clean = (str?: string) => str?.toLocaleLowerCase().trim().replace(/ +/, ' ');
@@ -131,7 +132,13 @@ export const ChannelInformationForm = (props: {
 
       <div className="text-center my-4">
         <div className="inline-block overflow-hidden m-0 p-0">
-          <Avatar size="xl" title={name} avatar={icon.length > 20 ? icon : ''} />
+          <Avatar
+            size="xl"
+            noGradient={!!(icon && (icon?.length || 0) < 20)}
+            icon={icon && (icon?.length || 0) < 20 ? <Emojione type={icon} /> : false}
+            avatar={(icon?.length || 0) > 20 ? icon : ''}
+            title={name}
+          />
         </div>
         <div className="mt-2">
           {!!icon && (

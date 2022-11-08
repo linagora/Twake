@@ -182,6 +182,11 @@ export class FileServiceImpl {
     return entity;
   }
 
+  async exists(id: string, companyId: string, context?: CompanyExecutionContext): Promise<boolean> {
+    const entity = await this.getFile({ id, company_id: companyId }, context);
+    return !!entity;
+  }
+
   async download(
     id: string,
     context: CompanyExecutionContext,
@@ -242,7 +247,7 @@ export class FileServiceImpl {
     return this.getFile({ id, company_id: context.company.id }, context);
   }
 
-  async getFile(pk: Pick<File, "company_id" | "id">, context: ExecutionContext): Promise<File> {
+  async getFile(pk: Pick<File, "company_id" | "id">, context?: ExecutionContext): Promise<File> {
     return this.repository.findOne(pk, {}, context);
   }
 
