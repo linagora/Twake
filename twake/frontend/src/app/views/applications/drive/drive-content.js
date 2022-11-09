@@ -642,6 +642,7 @@ export default class Drive extends Component {
     list.push(
       <div className={'drive_app drive_view list'}>
         <UploadZone
+          className="overflow-auto"
           disabled={in_trash || WorkspaceUserRights.isNotConnected()}
           ref={node => (this.upload_zone = node)}
           disableClick
