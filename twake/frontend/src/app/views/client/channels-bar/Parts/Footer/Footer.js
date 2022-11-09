@@ -14,13 +14,17 @@ export default class Footer extends React.Component {
     super();
     this.onpremise = !!((InitService.server_infos || {}).branding || {}).name;
     this.menu = [
-      { type:"text", text: `Twake v${Version.version_detail}` },
-      {
-        type: 'menu',
-        text: Languages.t('general.help.support', [], 'Support'),
-        icon: 'comment',
-        onClick: props.onClickHelp,
-      },
+      { type: 'text', text: `Twake v${Version.version_detail}` },
+      ...(props.onClickHelp
+        ? [
+            {
+              type: 'menu',
+              text: Languages.t('general.help.support', [], 'Support'),
+              icon: 'comment',
+              onClick: props.onClickHelp,
+            },
+          ]
+        : []),
       {
         type: 'menu',
         text: Languages.t('general.help.documentation', [], 'Documentation'),
