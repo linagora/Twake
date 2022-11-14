@@ -1,0 +1,1 @@
+const t={map:'[{},{"get":["0.0"],"hello":["1.0"]},{"started":["0.0"],"twake":["1.0"]},{},{},{},{},{},{}]'},e={"0.0":{t:" get started",p:"",l:"get-started.html",a:" get started"},"1.0":{t:" hello twake",p:"",l:"index.html",a:" hello twake"}},a={wildcard:!1,previewLength:62},l={INDEX_DATA:t,PREVIEW_LOOKUP:e,Options:a};export{l as default};
