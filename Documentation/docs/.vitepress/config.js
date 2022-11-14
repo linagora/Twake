@@ -1,5 +1,5 @@
 export default {
-  base: "linagora/Twake",
+  base: "Twake",
   title: "Twake",
   description: "Public API documentation",
   themeConfig: {
