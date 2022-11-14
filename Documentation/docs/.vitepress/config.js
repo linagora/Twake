@@ -1,5 +1,4 @@
 export default {
-  base: "Twake",
   title: "Twake",
   description: "Public API documentation",
   themeConfig: {
