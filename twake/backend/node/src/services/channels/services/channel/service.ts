@@ -50,6 +50,8 @@ import {
   KnowledgeGraphGenericEventPayload,
 } from "../../../../core/platform/services/knowledge-graph/types";
 import { ChannelUserCounterType } from "../../entities/channel-counters";
+import { Readable } from "stream";
+import sharp from "sharp";
 
 const logger = getLogger("channel.service");
 
@@ -93,6 +95,12 @@ export class ChannelServiceImpl {
     });
 
     return this;
+  }
+
+  async thumbnail(channelId: string, context?: ExecutionContext): Promise<{ file: Readable }> {
+    const logoInternalPath = `/channels/${channelId}/thumbnail.jpg`;
+    const file = await gr.platformServices.storage.read(logoInternalPath, {}, context);
+    return { file };
   }
 
   @RealtimeSaved<Channel>((channel, context) => [
@@ -141,6 +149,7 @@ export class ChannelServiceImpl {
         visibility: !isDirectChannel && (isWorkspaceAdmin || isChannelOwner),
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
+        is_readonly: isWorkspaceAdmin || isChannelOwner,
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects
@@ -155,6 +164,26 @@ export class ChannelServiceImpl {
 
       if (!updatableFields.length) {
         throw CrudException.badRequest("Current user can not update requested fields");
+      }
+
+      if (channelToUpdate.icon && channelToUpdate.icon.startsWith("data:")) {
+        const logoInternalPath = `/channels/${channelToUpdate.id}/thumbnail.jpg`;
+        const logoPublicPath = `/internal/services/channels/v1/companies/${
+          channelToUpdate.company_id
+        }/workspaces/${channelToUpdate.workspace_id}/channels/${
+          channelToUpdate.id
+        }/thumbnail?t=${new Date().getTime()}`;
+
+        const image = await sharp(Buffer.from(channel.icon.split(",").pop(), "base64"))
+          .resize(250, 250)
+          .toBuffer();
+
+        const s = new Readable();
+        s.push(image);
+        s.push(null);
+        await gr.platformServices.storage.write(logoInternalPath, s);
+
+        channelToUpdate.icon = logoPublicPath;
       }
 
       channelToSave = cloneDeep(channelToUpdate);
@@ -416,6 +445,15 @@ export class ChannelServiceImpl {
     entity.channel = channel;
 
     logger.info(`Update activity for channel ${entity.channel_id} to ${entity.last_activity}`);
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
+      KnowledgeGraphEvents.CHANNEL_UPSERT,
+      {
+        id: channel.id,
+        resource: channel,
+        links: [],
+      },
+    );
 
     await this.activityRepository.save(entity, context);
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
@@ -832,15 +870,6 @@ export class ChannelServiceImpl {
         channel,
         user: context.user,
       });
-
-      localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
-        KnowledgeGraphEvents.CHANNEL_CREATED,
-        {
-          id: channel.id,
-          resource: channel,
-          links: [],
-        },
-      );
     }
   }
 

@@ -144,7 +144,7 @@ export const Modal = (props: {
 };
 
 export const ModalContent = (props: {
-  title: string;
+  title: ReactNode | string;
   text?: string;
   textCenter?: boolean;
   buttons?: ReactNode;

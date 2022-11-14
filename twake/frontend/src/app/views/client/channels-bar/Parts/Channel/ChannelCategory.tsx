@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import Icon from 'app/components/icon/icon';
 import './Channel.scss';
 
@@ -9,7 +9,7 @@ type PropsType = {
   sub?: boolean;
   onClick?: () => void;
   onAdd?: () => void;
-  suffix?: string;
+  suffix?: string | ReactNode;
   addIcon?: JSX.Element;
 };
 

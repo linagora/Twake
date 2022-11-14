@@ -1,7 +1,6 @@
-import React from 'react';
 import { ComponentStory } from '@storybook/react';
 import Avatar from '.';
-import { UserIcon } from '@atoms/icons-agnostic/index';
+import { UsersIcon } from '../icons-agnostic';
 
 export default {
   title: '@atoms/avatar',
@@ -20,8 +19,8 @@ const Template: ComponentStory<any> = (args: { title: string }) => {
         'https://images.freeimages.com/images/small-previews/d67/experimenting-with-nature-1547377.jpg',
     },
     {
-      icon: <UserIcon />,
-      className: 'opacity-50',
+      icon: <UsersIcon />,
+      className: '',
     },
   ];
 

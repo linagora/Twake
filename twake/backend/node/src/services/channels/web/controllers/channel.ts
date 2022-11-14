@@ -216,6 +216,19 @@ export class ChannelCrudController
     reply.send(channel);
   }
 
+  async thumbnail(
+    request: FastifyRequest<{ Params: ChannelParameters }>,
+    response: FastifyReply,
+  ): Promise<void> {
+    const data = await gr.services.channels.channels.thumbnail(request.params.id);
+    const filename = "thumbnail.jpg";
+
+    response.header("Content-disposition", `inline; filename="${filename}"`);
+    response.type("image/jpeg");
+
+    response.send(data.file);
+  }
+
   async save(
     request: FastifyRequest<{
       Body: CreateChannelBody;

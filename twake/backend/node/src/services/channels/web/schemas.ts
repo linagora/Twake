@@ -42,6 +42,7 @@ const channelSchema = {
     user_member: {},
     direct_channel_members: { type: "array" },
     stats: {},
+    is_readonly: { type: "boolean" },
   },
 };
 

@@ -65,6 +65,10 @@ import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
+import WorkspaceInviteDomain, {
+  TYPE as WorkspaceInviteDomainType,
+  getInstance as getWorkspaceInviteDomainInstance,
+} from "../entities/workspace_invite_domain";
 
 export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -73,6 +77,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
   private workspaceCounter: CounterProvider<WorkspaceCounterEntity>;
   private workspaceInviteTokensRepository: Repository<WorkspaceInviteTokens>;
+  private workspaceInviteDomainRepository: Repository<WorkspaceInviteDomain>;
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await gr.database.getRepository<WorkspaceUser>(
@@ -106,6 +111,11 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     this.workspaceInviteTokensRepository = await gr.database.getRepository<WorkspaceInviteTokens>(
       WorkspaceInviteTokensType,
       WorkspaceInviteTokens,
+    );
+
+    this.workspaceInviteDomainRepository = await gr.database.getRepository<WorkspaceInviteDomain>(
+      WorkspaceInviteDomainType,
+      WorkspaceInviteDomain,
     );
 
     //If user deleted from a company, remove it from all workspace
@@ -236,16 +246,16 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
           workspace_id: workspace.id,
         },
       });
-
-      localEventBus.publish<KnowledgeGraphGenericEventPayload<Workspace>>(
-        KnowledgeGraphEvents.WORKSPACE_CREATED,
-        {
-          id: workspace.id,
-          resource: workspace,
-          links: [{ relation: "parent", type: "company", id: workspace.company_id }],
-        },
-      );
     }
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Workspace>>(
+      KnowledgeGraphEvents.WORKSPACE_UPSERT,
+      {
+        id: workspace.id,
+        resource: workspace,
+        links: [{ relation: "parent", type: "company", id: workspace.company_id }],
+      },
+    );
 
     return new SaveResult<Workspace>(
       TYPE,
@@ -651,13 +661,14 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     companyId: string,
     workspaceId: string,
     userId: string,
+    channels: string[],
     context?: ExecutionContext,
   ): Promise<WorkspaceInviteTokenObject> {
     await this.deleteInviteToken(companyId, workspaceId, userId);
     const token = randomBytes(32).toString("base64");
     const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     await this.workspaceInviteTokensRepository.save(
-      getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),
+      getWorkspaceInviteTokensInstance({ ...pk, invite_token: token, channels }),
       context,
     );
     return {
@@ -773,4 +784,91 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
       }
     }
   }
+
+  /**
+   * Sets the invitation domain for the specified workspace
+   *
+   * @param {{ company_id: string; workspace_id: string }} pk - the primary key
+   * @param {String} domain - domain
+   * @param {ExecutionContext} context - the execution context
+   */
+  setInviteDomain = async (
+    pk: { company_id: string; workspace_id: string },
+    domain: string,
+    context?: ExecutionContext,
+  ): Promise<void> => {
+    const workspace = await gr.services.workspaces.get(
+      {
+        company_id: pk.company_id,
+        id: pk.workspace_id,
+      },
+      context,
+    );
+
+    if (!workspace) {
+      logger.error("failed to set invitation domain: workspace not found");
+      throw CrudException.notFound("Workspace entity not found");
+    }
+
+    if (workspace.preferences && workspace.preferences?.invite_domain !== domain) {
+      await this.workspaceInviteDomainRepository.remove({
+        company_id: workspace.company_id,
+        domain: workspace.preferences.invite_domain,
+        workspace_id: workspace.id,
+      });
+    }
+
+    if (workspace.preferences && workspace.preferences?.invite_domain === domain) {
+      logger.warn("invite domain is already set");
+      return;
+    }
+
+    workspace.preferences = {
+      invite_domain: domain,
+    };
+
+    await this.workspaceRepository.save(workspace);
+
+    const workspaceInvitationDomainEntry = await this.workspaceInviteDomainRepository.findOne(
+      {
+        ...pk,
+        domain,
+      },
+      {},
+      context,
+    );
+
+    if (!workspaceInvitationDomainEntry) {
+      await this.workspaceInviteDomainRepository.save(
+        getWorkspaceInviteDomainInstance({
+          ...pk,
+          domain,
+        }),
+      );
+    }
+  };
+
+  /**
+   * Get the workspaceinvitedomain entries for the specified domain
+   *
+   * @param {String} domain - the desired domain
+   * @param {ExecutionContext} context - the execution context
+   * @returns {Promise<WorkspaceInviteDomain[]>}
+   */
+  getInviteDomainWorkspaces = async (
+    domain: string,
+    context?: ExecutionContext,
+  ): Promise<WorkspaceInviteDomain[]> => {
+    const inviteDomainEntry = await this.workspaceInviteDomainRepository.find(
+      { domain },
+      {},
+      context,
+    );
+
+    if (!inviteDomainEntry) {
+      throw CrudException.notFound("workspace invite domain not found");
+    }
+
+    return inviteDomainEntry.getEntities();
+  };
 }

@@ -5,7 +5,11 @@ import NewThread from './input/new-thread';
 import MessagesList from './messages-list';
 import ThreadMessagesList from './thread-messages-list';
 import IsWriting from './input/parts/IsWriting';
-import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import {
+  useChannel,
+  useIsChannelMember,
+  useIsReadOnlyChannel,
+} from 'app/features/channels/hooks/use-channel';
 import { Button } from 'app/atoms/button/button';
 import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
 import UserService from 'app/features/users/services/current-user-service';
@@ -14,6 +18,8 @@ import Languages from 'app/features/global/services/languages-service';
 import MessageSeenBy from 'app/components/message-seen-by/message-seen-by';
 import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
+import { ForwardMessageModal } from 'app/components/forward-message';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 type Props = {
   channel: ChannelType;
@@ -45,8 +51,15 @@ export default (props: Props) => {
     userIsNotInCompany = true;
   }
 
+  const channelIsRestricted =
+    useIsReadOnlyChannel(channelId) &&
+    currentUser.id !== props.channel.owner &&
+    !AccessRightsService.hasLevel(workspaceId, 'moderator');
+
   return (
     <div className="messages-view">
+      <ForwardMessageModal />
+
       <Suspense fallback={<></>}>
         {!threadId ? (
           <MessagesList
@@ -70,7 +83,8 @@ export default (props: Props) => {
         <MessageSeenBy />
       </Suspense>
       <IsWriting channelId={channelId} threadId={threadId} />
-      {isChannelMember && !userIsNotInCompany && (
+      {isChannelMember && channelIsRestricted && <ChannelIsRestricted />}
+      {isChannelMember && !channelIsRestricted && !userIsNotInCompany && (
         <NewThread
           collectionKey=""
           useButton={isDirectChannel && !threadId}
@@ -121,6 +135,14 @@ const UserIsNotInCompany = () => {
   return (
     <div className="border-t border-zinc-200 dark:border-zinc-700 p-8 text-center">
       <Text.Info>{Languages.t('scenes.apps.messages.message.user_deactivated')}</Text.Info>
+    </div>
+  );
+};
+
+const ChannelIsRestricted = () => {
+  return (
+    <div className="border-t border-zinc-200 dark:border-zinc-700 p-8 text-center">
+      <Text.Info>{Languages.t('scenes.client.readonly.info')}</Text.Info>
     </div>
   );
 };

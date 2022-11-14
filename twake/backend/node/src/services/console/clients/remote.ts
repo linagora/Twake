@@ -241,6 +241,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company.plan.limits = {
       [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000, // To remove duplicata since we define this in formatCompany function
       [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: limits["members"],
+      [CompanyLimitsEnum.COMPANY_GUESTS_LIMIT]: limits["guests"],
     };
 
     company.stats = coalesce(companyDTO.stats, company.stats);

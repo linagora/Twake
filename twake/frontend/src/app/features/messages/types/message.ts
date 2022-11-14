@@ -229,6 +229,11 @@ export type NodeMessage = {
 
   quote_message?: NodeMessage & {
     users?: UserType[];
+    company_id: string;
+    workspace_id: string;
+    channel_id: string;
+    thread_id: string;
+    id: string;
   };
 
   status?: MessageDeliveryStatusType | null;
@@ -261,4 +266,4 @@ export type MessageSeenType = {
     thread_id: string;
   }[];
   channel_id: string;
-}
+};

@@ -19,6 +19,9 @@ export default class WorkspaceInviteTokens {
 
   @Column("invite_token", "string")
   invite_token: string;
+
+  @Column("channels", "encoded_json")
+  channels: null | string[];
 }
 
 export type WorkspaceInviteTokensPrimaryKey = Pick<

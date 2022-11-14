@@ -100,6 +100,15 @@ export class CompanyServiceImpl {
       await this.externalCompanyRepository.save(extCompany, context);
     }
 
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Company>>(
+      KnowledgeGraphEvents.COMPANY_UPSERT,
+      {
+        id: company.id,
+        resource: company,
+        links: [],
+      },
+    );
+
     return new SaveResult<Company>("company", company, OperationType.UPDATE);
   }
 
@@ -113,14 +122,6 @@ export class CompanyServiceImpl {
 
     const result = await this.updateCompany(companyToCreate);
 
-    localEventBus.publish<KnowledgeGraphGenericEventPayload<Company>>(
-      KnowledgeGraphEvents.COMPANY_CREATED,
-      {
-        id: result.entity.id,
-        resource: result.entity,
-        links: [{ relation: "owner", type: "user", id: result.context?.user.id }],
-      },
-    );
     return result.entity;
   }
 

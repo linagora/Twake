@@ -1,40 +1,35 @@
 import React from 'react';
 import _ from 'lodash';
+import CryptoJS from 'crypto-js';
 
 // @ts-ignore
 
 interface AvatarProps extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: 'circle' | 'square';
-  size?: 'lg' | 'md' | 'sm' | 'xs';
+  size?: 'xl' | 'lg' | 'md' | 'sm' | 'xs';
   avatar?: string;
-  icon?: JSX.Element;
+  icon?: JSX.Element | false;
   title?: string;
+  noGradient?: boolean;
 }
 
-const gradients = [
-  '#9F2EF4 15.98%, #F97D64 50.17%, #F6C533 82.97%',
-  '#0099C0 12.87%, #0099C0 49.65%, #3DD5A8 84.94%',
-  '#D3A6FF 15.1%, #B966B5 50.52%, #7E72C6 85.13%',
-  '#E2EF54 14.56%, #FF5C66 47.57%, #6248D5 83.84%',
-  '#FF5CF1 14.48%, #B38ADE 51.66%, #56CDDF 84.61%',
-  '#75C192 14.48%, #70BDA0 51.66%, #21B59C 84.61%',
-  '#FFA6AF 14.87%, #E62E40 50.07%, #AA0909 84.36%',
-  '#335F50 14.87%, #47888C 50.07%, #08C992 84.36%',
-  '#6CD97E 15.23%, #12B312 56.97%, #117600 84.49%',
-  '#7DF1FA 14.84%, #2BB4D6 49.93%, #008AA2 82.63%',
-  '#FFBF80 13.66%, #E66B2E 51.13%, #A64300 84.79%',
-];
+const sizes = { xl: 24, lg: 14, md: 11, sm: 9, xs: 6 };
+const fontSizes = { xl: '2xl', lg: '2xl', md: 'lg', sm: 'md', xs: 'sm' };
 
-const getGradient = (title = '') => {
-  let output = 0;
-  for (let i = 0; i < title.length; i++) {
-    output += title[i].charCodeAt(0);
-  }
-  return gradients[output % 11];
+export const getGradient = (name: string) => {
+  const seed = parseInt(CryptoJS.MD5(name).toString().slice(0, 8), 16);
+  const canvas: HTMLCanvasElement = document.createElement('canvas');
+  canvas.width = 254;
+  canvas.height = 254;
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx!.createLinearGradient(254, 254, 0, 0);
+  gradient.addColorStop(0, 'hsl(' + seed + ', 90%, 70%)');
+  gradient.addColorStop(1, 'hsl(' + Math.abs(seed - 60) + ', 90%, 70%)');
+  ctx!.fillStyle = gradient;
+  ctx!.fillRect(0, 0, 254, 254);
+  const b64 = canvas.toDataURL('image/jpeg');
+  return b64;
 };
-
-const sizes = { lg: 14, md: 11, sm: 9, xs: 6 };
-const fontSizes = { lg: '2xl', md: 'lg', sm: 'md', xs: 'sm' };
 
 export default function Avatar(props: AvatarProps) {
   const avatarType = props.type || 'circle';
@@ -48,10 +43,37 @@ export default function Avatar(props: AvatarProps) {
     avatarType === 'circle' ? 'rounded-full' : 'rounded-sm'
   } `;
 
+  className +=
+    ' border border-gray flex items-center justify-center bg-center bg-cover ' +
+    (props.noGradient ? ' bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white ' : '');
+
+  const spl_title = avatarTitle.split(' ');
+
+  let letters = avatarTitle.slice(0, 1);
+  if (spl_title.length > 1) {
+    letters = spl_title[0].slice(0, 1) + spl_title[1].slice(0, 1);
+  }
+
+  const lettersClass =
+    `font-medium bg-gray text-${fontSize}` +
+    (props.noGradient ? ' text-zinc-900 dark:text-white ' : ' text-white');
+
+  const style = props.noGradient
+    ? {}
+    : { backgroundImage: `url('${getGradient(props.title || '')}')` };
+
   if (props.icon) {
-    className += ' border border-gray-500 ';
+    className += ' ';
     return (
-      <div {...restProps} className={className + ' overflow-hidden ' + addedClassName}>
+      <div
+        {...restProps}
+        style={style}
+        className={
+          className +
+          ' text-white overflow-hidden flex items-center justify-center ' +
+          addedClassName
+        }
+      >
         {props.icon}
       </div>
     );
@@ -68,19 +90,6 @@ export default function Avatar(props: AvatarProps) {
       </div>
     );
   }
-
-  className += ' border border-gray flex items-center justify-center bg-gradient-to-r ';
-
-  const spl_title = avatarTitle.split(' ');
-
-  let letters = avatarTitle.slice(0, 1);
-  if (spl_title.length > 1) {
-    letters = spl_title[0].slice(0, 1) + spl_title[1].slice(0, 1);
-  }
-
-  const lettersClass = `font-medium bg-gray text-white text-${fontSize}`;
-
-  const style = { background: `linear-gradient(135deg, ${getGradient(props.title)})` };
 
   return (
     <div className={className + ' ' + addedClassName} {...restProps} style={style}>

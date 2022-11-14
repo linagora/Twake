@@ -18,13 +18,20 @@ import {
   updateWorkspaceSchema,
   updateWorkspaceUserSchema,
 } from "./schemas";
-import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
+import {
+  WorkspaceBaseRequest,
+  WorkspaceInviteDomainBody,
+  WorkspaceRequest,
+  WorkspaceUsersBaseRequest,
+  WorkspaceUsersRequest,
+} from "./types";
 import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
 import { hasWorkspaceAdminLevel, hasWorkspaceMemberLevel } from "../../../utils/workspace";
 import { WorkspaceInviteTokensCrudController } from "./controllers/workspace-invite-tokens";
 import WorkspaceUser from "../entities/workspace_user";
 import { checkUserBelongsToCompany, hasCompanyMemberLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
+import freeEmailDomains from "free-email-domains";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
 const workspacePendingUsersUrl = "/companies/:company_id/workspaces/:workspace_id/pending";
@@ -132,6 +139,24 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     }
   };
 
+  const validateDomain = async (
+    request: FastifyRequest<{ Params: WorkspaceRequest; Body: WorkspaceInviteDomainBody }>,
+  ) => {
+    const { domain } = request.body;
+
+    if (
+      /^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$/.test(
+        domain,
+      ) === false
+    ) {
+      throw fastify.httpErrors.badRequest("invalid domain");
+    }
+
+    if (freeEmailDomains.includes(domain)) {
+      throw fastify.httpErrors.badRequest("invalid email provider");
+    }
+  };
+
   fastify.route({
     method: "GET",
     url: `${workspacesUrl}`,
@@ -180,6 +205,14 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     preHandler: [accessControl, companyCheck],
     preValidation: [fastify.authenticate],
     handler: workspacesController.delete.bind(workspacesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${workspacesUrl}/:id/invite_domain`,
+    preHandler: [validateDomain, companyCheck],
+    preValidation: [fastify.authenticate],
+    handler: workspacesController.setInviteDomain.bind(workspacesController),
   });
 
   fastify.route({

@@ -42,7 +42,9 @@ export default (props: { name: string }) => {
             }
           }}
         >
-          {Languages.t('scenes.apps.drive.viewer.edit_with_button', [candidates[0].name])}
+          {Languages.t('scenes.apps.drive.viewer.edit_with_button', [
+            candidates[0].app?.identity.name,
+          ])}
         </Button>
       )}
       {candidates.length > 1 && (
@@ -55,7 +57,7 @@ export default (props: { name: string }) => {
               candidates.map((editor: { [key: string]: any }) => {
                 return {
                   type: 'menu',
-                  text: editor?.app?.identity?.name || editor?.app?.name || editor.name,
+                  text: editor?.app?.identity?.name,
                   onClick: () => {
                     openFile(editor);
                   },

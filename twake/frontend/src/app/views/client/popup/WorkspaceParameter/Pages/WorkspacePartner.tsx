@@ -7,10 +7,8 @@ import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import groupService from 'app/deprecated/workspaces/groups.js';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Switch from 'components/inputs/switch';
-import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import Pending from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';
 import Members from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members';
-import AddUserByEmail from '../../AddUser/AddUserByEmail';
 import LockedInviteAlert from 'app/components/locked-features-components/locked-invite-alert';
 import FeatureTogglesService, {
   FeatureNames,
@@ -18,6 +16,11 @@ import FeatureTogglesService, {
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 import './Pages.scss';
+import { useRecoilState } from 'recoil';
+import { invitationState } from 'app/features/invitation/state/invitation';
+import { useInvitationUsers } from 'app/features/invitation/hooks/use-invitation-users';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 type PropsType = {
   col: {
@@ -51,6 +54,9 @@ export default () => {
   workspacesUsers.useListener();
   Languages.useListener();
   const { company } = useCurrentCompany();
+  const [, setInvitationState] = useRecoilState(invitationState);
+  const { allowed_guests, allowed_members } = useInvitationUsers();
+  const { workspace } = useCurrentWorkspace();
 
   const usersInGroup = [];
   Object.keys(workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
@@ -109,11 +115,16 @@ export default () => {
       )}
 
       <Row className="small-y-margin" justify="space-between" align="middle">
-        <Col>
-          <Button type="primary" onClick={() => popupManager.open(<AddUserByEmail standalone />)}>
-            {Languages.t('scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button')}
-          </Button>
-        </Col>
+        {AccessRightsService.hasLevel(workspace?.id, 'moderator') &&
+          (allowed_guests > 0 || allowed_members > 0) && (
+            <Col>
+              <Button type="primary" onClick={() => setInvitationState(true)}>
+                {Languages.t(
+                  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
+                )}
+              </Button>
+            </Col>
+          )}
         <Col>
           <Input
             placeholder={Languages.t('components.listmanager.filter')}

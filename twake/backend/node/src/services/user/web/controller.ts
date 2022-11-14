@@ -31,7 +31,7 @@ import {
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 import coalesce from "../../../utils/coalesce";
-import { getCompanyRooms, getUserRooms } from "../realtime";
+import { getCompanyRooms, getPublicUserRoom, getUserRooms } from "../realtime";
 import { formatCompany, getCompanyStats } from "../utils";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
@@ -143,7 +143,7 @@ export class UsersCrudController
     // return users;
     return {
       resources: resUsers,
-      websockets: gr.platformServices.realtime.sign([], context.user.id), // empty for now
+      websockets: gr.platformServices.realtime.sign([], context.user.id),
     };
   }
 

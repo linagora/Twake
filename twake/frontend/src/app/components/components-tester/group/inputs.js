@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Checkbox from 'components/inputs/checkbox.js';
+import Checkbox from 'app/components/inputs/deprecated_checkbox.js';
 import Switch from 'components/inputs/switch';
 import Button from 'components/buttons/button.js';
 import Input from 'components/inputs/input.js';
