@@ -1,0 +1,93 @@
+#docsearch {
+    margin-right: 16px;
+}
+
+#docsearch .DocSearch-Button {
+    justify-content: flex-start;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0 10px 0 12px;
+    width: 100%;
+    height: 40px;
+    background-color: var(--vp-c-bg-alt);
+}
+
+#docsearch .DocSearch-Button:hover {
+    border-color: var(--vp-c-brand);
+    background: var(--vp-c-bg-alt);
+}
+
+#docsearch .DocSearch-Button-Placeholder {
+    transition: color 0.2s;   
+}
+
+#docsearch .DocSearch-Button-Keys {
+    display: flex;
+    align-items: center;
+    min-width: auto;
+    pointer-events: auto;
+}
+
+#docsearch .DocSearch-Button .DocSearch-Button-Key+.DocSearch-Button-Key {
+    border-right: 1px solid var(--vp-c-divider);
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+    padding-left: 2px;
+    padding-right: 6px;
+}
+
+#docsearch .DocSearch-Button .DocSearch-Button-Key {
+    display: block;
+    margin: 2px 0 0;
+    border: 1px solid var(--vp-c-divider);
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    padding-left: 6px;
+    min-width: 0;
+    width: auto;
+    height: 22px;
+    line-height: 22px;
+    font-family: var(--vp-font-family-base);
+    font-size: 12px;
+    font-weight: 500;
+    transition: color .5s,border-color .5s;
+}
+
+/* Modal  */
+
+.DocSearch-Modal, .modal {
+    border-radius: 6px;
+    flex-direction: column;
+    margin: 60px auto auto;
+    max-width: 600px;
+    position: relative;
+}
+
+.modal .flex-logo {
+    width: 56px;
+    margin-left: calc(100% - 74px);
+}
+
+.DocSearch-Input {
+    margin-left: 0px;
+    margin-right: 14px;
+    font-size: 16px;
+    padding: 12px;
+}
+
+.modal .search-item {
+    border-radius: 4px;
+    display: flex;
+    padding-bottom: 4px;
+    position: relative;
+
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    height: 56px;
+    padding: 0 16px 0 16px;
+}
+
+.modal .search-item-icon {
+    display: none;
+}
