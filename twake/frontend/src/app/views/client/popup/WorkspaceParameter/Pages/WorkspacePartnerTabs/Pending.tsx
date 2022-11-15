@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import { Divider, Table, Typography } from 'antd';
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import { ColumnsType } from 'antd/lib/table';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';

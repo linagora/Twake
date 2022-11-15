@@ -5,10 +5,10 @@ import HighlightedCode from 'components/highlighted-code/highlighted-code';
 import User from './blocks/user';
 import Chan from './blocks/chan';
 import File from 'components/drive/file';
-import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
+import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.jsx';
 import UserService from 'app/features/users/services/current-user-service';
-import Button from 'components/buttons/button.js';
-import Input from 'components/inputs/input.js';
+import Button from 'components/buttons/button.jsx';
+import Input from 'components/inputs/input.jsx';
 
 export const DynamicComponent = ({
   type,

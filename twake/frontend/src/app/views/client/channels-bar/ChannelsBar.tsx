@@ -8,7 +8,7 @@ import CurrentUser from './Parts/CurrentUser/CurrentUser';
 import { CompanyApplications } from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
 import ChannelsUser from './ChannelsUser/ChannelsUser';
-import Footer from './Parts/Footer.js';
+import Footer from './Parts/Footer.jsx';
 import Shortcuts, {
   defaultShortcutsMap,
   ShortcutType,

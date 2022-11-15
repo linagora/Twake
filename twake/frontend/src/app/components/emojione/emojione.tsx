@@ -9,7 +9,7 @@ import { getEmojiDataFromNative, Emoji } from 'emoji-mart';
 import data from 'emoji-mart/data/all.json';
 
 import emojione from 'emojione';
-import Icon from 'components/icon/icon.js';
+import Icon from 'app/components/icon/icon.jsx';
 
 import './emojione.scss';
 import { getAsFrontUrl } from 'app/features/global/utils/URLUtils';

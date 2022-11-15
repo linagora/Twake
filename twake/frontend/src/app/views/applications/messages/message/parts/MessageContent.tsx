@@ -1,4 +1,4 @@
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import { useMessage } from 'app/features/messages/hooks/use-message';

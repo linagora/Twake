@@ -8,7 +8,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import ChannelCategory from '../Parts/Channel/ChannelCategory';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import RouterServices from 'app/features/router/services/router-service';

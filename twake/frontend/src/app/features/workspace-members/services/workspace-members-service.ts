@@ -4,7 +4,7 @@ import User from 'app/features/users/services/current-user-service';
 import Api from 'app/features/global/framework/api-service';
 import ws from 'app/deprecated/websocket/websocket.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import workspaceService from 'app/deprecated/workspaces/workspaces.js';
+import workspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 import Numbers from 'app/features/global/utils/Numbers';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import CurrentUser from 'app/deprecated/user/CurrentUser';

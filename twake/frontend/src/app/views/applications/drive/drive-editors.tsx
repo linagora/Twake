@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import MenusManager from 'app/components/menus/menus-manager.js';
-import Button from 'components/buttons/button.js';
-import Input from 'components/inputs/input.js';
-import Menu from 'components/menus/menu.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
+import Button from 'components/buttons/button.jsx';
+import Input from 'components/inputs/input.jsx';
+import Menu from 'components/menus/menu.jsx';
 import Languages from 'app/features/global/services/languages-service';
 
 export const NewFolderInput = (props: { value: string; createFolder: (name: string) => void }) => {

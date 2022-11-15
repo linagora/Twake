@@ -4,7 +4,7 @@ import { TwakeService } from '../../global/framework/registry-decorator-service'
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { removeBadgesNow } from 'app/features/users/hooks/use-notifications';
 
-import Workspace from 'deprecated/workspaces/workspaces';
+import Workspace from 'app/deprecated/workspaces/workspaces';
 import Logger from 'features/global/framework/logger-service';
 const PREFIX = '/internal/services/channels/v1/companies';
 

@@ -4,11 +4,11 @@ import CloseIcon from '@material-ui/icons/CloseOutlined';
 import DownloadIcon from '@material-ui/icons/CloudDownloadOutlined';
 import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';
 
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
-import Button from 'components/buttons/button.js';
+import Button from 'components/buttons/button.jsx';
 import ElectronService from 'app/features/global/framework/electron-service';
 import FeatureTogglesService, {
   FeatureNames,

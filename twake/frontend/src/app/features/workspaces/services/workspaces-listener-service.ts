@@ -1,5 +1,5 @@
 import ws from 'app/deprecated/websocket/websocket.js';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import User from 'app/features/users/services/current-user-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import LoginService from 'app/features/auth/login-service';

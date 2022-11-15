@@ -2,7 +2,7 @@ import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Api from 'app/features/global/framework/api-service';
 import ws from 'app/deprecated/websocket/websocket.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import ListenGroups from './listen_groups.js';
 
 import $ from 'jquery';

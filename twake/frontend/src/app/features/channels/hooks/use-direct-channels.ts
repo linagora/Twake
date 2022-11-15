@@ -12,7 +12,7 @@ import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 import { UserType } from 'app/features/users/types/user';
 import { getChannel, useSetChannel } from './use-channel';
 import ChannelAPIClient from '../api/channel-api-client';
-import MenusManager from 'app/components/menus/menus-manager.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
 import RouterService from 'app/features/router/services/router-service';
 
 export function useRefreshDirectChannels(): {

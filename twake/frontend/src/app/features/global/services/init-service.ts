@@ -2,7 +2,7 @@ import Logger from 'app/features/global/framework/logger-service';
 import Observable from 'app/deprecated/Observable/Observable';
 import Api from 'app/features/global/framework/api-service';
 import { getCompany } from 'app/features/companies/state/companies';
-import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 
 export type ConsoleConfiguration = {
   authority: string;

@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import RouterServices from 'app/features/router/services/router-service';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-import Menu from 'components/menus/menu.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
+import Menu from 'components/menus/menu.jsx';
 import { MoreHorizontal, MessageCircle } from 'react-feather';
 import Languages from 'app/features/global/services/languages-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';

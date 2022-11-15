@@ -74,7 +74,8 @@ export function useSetUserList(key: string) {
       const nextListMerged = nextList.map(u =>
         cloneDeep(
           _.merge(
-            currentList.find(cu => cu.id === u.id),
+            {},
+            currentList.find(cu => cu.id === u.id) || {},
             u,
           ),
         ),
