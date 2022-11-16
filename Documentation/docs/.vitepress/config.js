@@ -1,15 +1,34 @@
 export default {
   base: "/Twake/",
-  title: "Twake",
+  title: "Documentation",
   description: "Public API documentation",
   themeConfig: {
     logo: "https://twake.app/images/logo-twake.svg",
     sidebar: [
       {
-        text: "Guide",
+        text: "Getting started",
         items: [
-          { text: "Introduction", link: "/" },
-          { text: "Getting Started", link: "/get-started" },
+          {
+            text: "☀️ Welcome to Twake",
+            link: "index",
+          },
+          {
+            text: "⬇️ Desktop and mobile apps",
+            link: "download",
+          },
+        ],
+      },
+      {
+        text: "On-premise",
+        items: [
+          {
+            text: "🏗 Run On-Premise",
+            link: "/onprem/installation",
+          },
+          {
+            text: "⚙️ Server configuration",
+            link: "/onprem/configuration/index",
+          },
         ],
       },
     ],
