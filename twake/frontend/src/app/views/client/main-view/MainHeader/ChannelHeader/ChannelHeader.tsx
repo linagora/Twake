@@ -64,7 +64,7 @@ export default (): JSX.Element => {
             <Avatar
               size="xs"
               className="mr-2"
-              noGradient={!!(channel.icon && (channel.icon?.length || 0) < 20)}
+              nogradient={!!(channel.icon && (channel.icon?.length || 0) < 20)}
               icon={
                 channel.icon && (channel.icon?.length || 0) < 20 ? (
                   <Emojione type={channel.icon} />

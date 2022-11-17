@@ -58,7 +58,7 @@ export default class VerifyMail extends Component {
             )}
 
             {this.state.status === 'success' && [
-              <div className="subtitle">
+              <div className="subtitle" key='scenes.login.verifymail.success'>
                 <Emojione type=":white_check_mark:" />{' '}
                 {Languages.t(
                   'scenes.login.verifymail.success',
@@ -67,13 +67,13 @@ export default class VerifyMail extends Component {
                 )}
               </div>,
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
-              <a href="#" onClick={() => (document.location = '/')} className="blue_link">
+              <a href="#" onClick={() => (document.location = '/')} className="blue_link" key="scenes.login.verifymail.signin_button">
                 {Languages.t('scenes.login.verifymail.signin_button', [], 'Se connecter')}
               </a>,
             ]}
 
             {this.state.status === 'error' && [
-              <div className="subtitle">
+              <div className="subtitle" key="scenes.login.verifymail.error_message">
                 <Emojione type=":confused:" />{' '}
                 {Languages.t(
                   'scenes.login.verifymail.error_message',
@@ -83,6 +83,7 @@ export default class VerifyMail extends Component {
               </div>,
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
+                key="scenes.login.home.create_account"
                 onClick={() => {
                   LoginService.changeState('signin');
                   document.location.replace('/');
