@@ -1,6 +1,8 @@
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { Application } from 'app/features/applications/types/application';
+import jwtStorageService from 'app/features/auth/jwt-storage-service';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 type EditorType = {
   url?: string;
@@ -13,6 +15,7 @@ export const useEditors = (
   extension: string,
   options?: { preview_url?: string; editor_url?: string; editor_name?: string; url?: string },
 ) => {
+  const { workspace } = useCurrentWorkspace();
   const { applications } = useCompanyApplications();
   const apps = applications.filter(
     app =>
@@ -61,26 +64,20 @@ export const useEditors = (
       return;
     }
     const documentId = ''; //TODO
-    DriveService.getFileUrlForEdition(
-      app.display?.twake?.files?.editor?.edition_url,
-      app,
-      documentId,
-      (url: string) => window.open(url),
-    );
+
+    window.open(getFileUrl(app.display?.twake?.files?.editor?.edition_url, documentId));
   };
 
-  const getPreviewUrl = async (): Promise<string> => {
-    const documentId = ''; //TODO
-    return new Promise(r =>
-      DriveService.getFileUrlForEdition(
-        preview_candidate?.[0]?.url,
-        preview_candidate?.[0],
-        documentId,
-        (url: string) => {
-          r(url);
-        },
-      ),
-    );
+  const getPreviewUrl = (documentId: string): string => {
+    return getFileUrl(preview_candidate?.[0]?.url as string, documentId);
+  };
+
+  const getFileUrl = (url: string, file_id: string): string => {
+    const jwt = jwtStorageService.getJWT();
+
+    return `${url}${url.indexOf('?') > 0 ? '&' : '?'}token=${jwt}&workspace_id=${
+      workspace?.id
+    }&company_id=${workspace?.company_id}&file_id=${file_id}`;
   };
 
   return { candidates: editor_candidate, openFile, getPreviewUrl };
