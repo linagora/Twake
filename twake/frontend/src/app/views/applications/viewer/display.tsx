@@ -7,9 +7,10 @@ import VideoDisplay from './videos/display';
 import PdfDisplay from './pdf/display';
 import CodeDisplay from './code/display';
 import ArchiveDisplay from './archive/display';
+import OtherDisplay from './other/display';
 
 export default () => {
-  const { download, type, name } = useViewerDisplayData();
+  const { download, type, name, id } = useViewerDisplayData();
   const { isOpen } = useFileViewerModal();
 
   if (!download || !isOpen) {
@@ -36,10 +37,10 @@ export default () => {
     return <ArchiveDisplay download={download} name={name} />;
   }
 
-  /* Uncomment after https://github.com/linagora/Twake/issues/2453 is done
+  // /* Uncomment after https://github.com/linagora/Twake/issues/2453 is done
   if (type) {
-    return <OtherDisplay download={download} name={name} />;
-  }*/
+    return <OtherDisplay download={download} name={name} id={id} />;
+  }
 
   return (
     <div className="text-white m-auto w-full text-center block h-full flex items-center">

@@ -109,5 +109,7 @@ export const useViewerDisplayData = () => {
 
   const type = FileUploadApiClient.mimeToType(status?.details?.metadata?.mime || '', extension);
 
-  return { download, type, name };
+  const id = status?.details?.metadata?.external_id?.id;
+
+  return { download, type, name, id };
 };
