@@ -61,13 +61,13 @@ const RenameInput = props => {
 
 const PublicSharing = props => {
   Collections.get('drive').useListener(useState);
-  const element = Collections.get('drive').find(props.id);
+  const element = Collections.get('drive').find(props?.id);
   if (!element) {
     return <div />;
   }
   const sharedUrl = RouterServices.generateRouteFromState({
     workspaceId: element.workspace_id,
-    documentId: element.id,
+    documentId: element?.id,
     appName: 'drive',
     shared: true,
     token: (element.acces_info || {}).token,
@@ -153,7 +153,7 @@ export default class DriveElement extends React.Component {
 
     this.state.element = DriveService.find(
       Workspaces.currentWorkspaceId,
-      this.props.data.id,
+      this.props.data?.id,
       el => {
         this.setState({ element: el });
       },
@@ -164,11 +164,11 @@ export default class DriveElement extends React.Component {
     if (this.node) {
       this.node.addEventListener('drive_selector_over', this.driveSelectorOver);
       this.node.addEventListener('drive_selector_out', this.driveSelectorOut);
-      this.node.setAttribute('drive_selector_unid', this.state.element.id);
+      this.node.setAttribute('drive_selector_unid', this.state.element?.id);
     }
 
-    if (this.props && this.props.data && this.props.data.id) {
-      SelectionsManager.listenOnly(this, [this.props.data.id]);
+    if (this.props && this.props.data && this.props.data?.id) {
+      SelectionsManager.listenOnly(this, [this.props.data?.id]);
     }
   }
   driveSelectorOut() {
@@ -181,7 +181,7 @@ export default class DriveElement extends React.Component {
   dropFile(data, directory) {
     var destination = directory || this.props.data;
 
-    var objects = data.data.id;
+    var objects = data.data?.id;
     if (data.selection_type) {
       var selected = Object.keys(SelectionsManager.selected_per_type[data.selection_type] || {});
       if (selected && selected.length > 1) {
@@ -200,11 +200,11 @@ export default class DriveElement extends React.Component {
     SelectionsManager.setType(this.props.selectionType);
     if (
       !evt.shiftKey &&
-      !SelectionsManager.selected_per_type[this.props.selectionType][this.state.element.id]
+      !SelectionsManager.selected_per_type[this.props.selectionType][this.state.element?.id]
     ) {
       SelectionsManager.unselectAll();
     }
-    SelectionsManager.select(this.state.element.id);
+    SelectionsManager.select(this.state.element?.id);
   }
 
   clickElement(evt, previewonly = false) {
@@ -227,22 +227,22 @@ export default class DriveElement extends React.Component {
         }
 
         var oldStatus =
-          SelectionsManager.selected_per_type[this.props.selectionType][this.state.element.id];
+          SelectionsManager.selected_per_type[this.props.selectionType][this.state.element?.id];
         SelectionsManager.unselectAll();
         if (oldStatus) {
-          SelectionsManager.unselect(this.state.element.id);
+          SelectionsManager.unselect(this.state.element?.id);
         } else {
-          SelectionsManager.select(this.state.element.id);
+          SelectionsManager.select(this.state.element?.id);
         }
       } else {
-        SelectionsManager.toggle(this.state.element.id);
+        SelectionsManager.toggle(this.state.element?.id);
       }
     }
   }
   componentWillUpdate(nextProps, nextState) {
     nextState.element =
-      Collections.get('drive').find(this.props.data.id) ||
-      DriveService.find(Workspaces.currentWorkspaceId, this.props.data.id, el => {
+      Collections.get('drive').find(this.props.data?.id) ||
+      DriveService.find(Workspaces.currentWorkspaceId, this.props.data?.id, el => {
         this.setState({ element: el });
       });
     this.state.element = nextState.element;
@@ -250,11 +250,11 @@ export default class DriveElement extends React.Component {
     if (
       this.state.element &&
       SelectionsManager.selected_per_type[nextProps.selectionType] &&
-      SelectionsManager.selected_per_type[nextProps.selectionType][this.state.element.id] !=
+      SelectionsManager.selected_per_type[nextProps.selectionType][this.state.element?.id] !=
         this.old_selection_state
     ) {
       nextState.selected =
-        SelectionsManager.selected_per_type[nextProps.selectionType][nextProps.data.id];
+        SelectionsManager.selected_per_type[nextProps.selectionType][nextProps.data?.id];
       this.old_selection_state = nextState.selected;
     }
 
@@ -283,7 +283,7 @@ export default class DriveElement extends React.Component {
 
   moveTo(new_parent) {
     DriveService.moveFile(
-      [this.state.element.id],
+      [this.state.element?.id],
       new_parent,
       this.props.driveCollectionKey || this.driveCollectionKey,
     );
@@ -328,7 +328,7 @@ export default class DriveElement extends React.Component {
           type: 'menu',
           text: Languages.t(
             'scenes.apps.drive.viewer.edit_with_button',
-            [editor_candidate[0].app.identity?.name],
+            [editor_candidate[0].app?.identity?.name],
             'Editer avec $1',
           ),
           onClick: () => {
@@ -341,7 +341,7 @@ export default class DriveElement extends React.Component {
               DriveService.getFileUrlForEdition(
                 app.display?.twake?.files?.editor?.edition_url,
                 app,
-                this.state.element.id,
+                this.state.element?.id,
                 url => {
                   window.open(url);
                 },
@@ -461,7 +461,7 @@ export default class DriveElement extends React.Component {
                   type: 'react-element',
                   reactElement: () => (
                     <PublicSharing
-                      id={this.state.element.id}
+                      id={this.state.element?.id}
                       element={this.state.element}
                       driveCollectionKey={this.props.driveCollectionKey || this.driveCollectionKey}
                     />
