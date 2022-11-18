@@ -68,40 +68,34 @@ export default class MainView extends Component {
     );
     const group = this.state.group;
 
-    return [
-      <div className="public_header">
-        <div className="left">
-          <div className={'group_switch image_only'}>
-            <div
-              className={'current_company_logo ' + (group.logo ? 'has_image ' : '')}
-              style={{ backgroundImage: addApiUrlIfNeeded(group.logo, true) }}
-            >
-              {((group.mininame || group.name || '') + '-')[0].toUpperCase()}
-            </div>
+    return (
+      <div className="flex flex-col h-full w-full">
+        <div className="public_header">
+          <div className="left">
+            <span className="companyName">{group.name}</span>
           </div>
-          <span className="companyName">{group.name}</span>
+          <div className="right">
+            <a href="https://twake.app" target="_BLANK" rel="noreferrer" className="!text-white">
+              <span className="nomobile text-white">
+                {Languages.t(
+                  'scenes.app.mainview.create_account',
+                  [],
+                  'Créez votre espace de travail gratuitement sur ',
+                )}
+              </span>
+              Twake &nbsp; 👉
+            </a>
+          </div>
         </div>
-        <div className="right">
-          <a href="https://twake.app" target="_BLANK" rel="noreferrer">
-            <span className="nomobile">
-              {Languages.t(
-                'scenes.app.mainview.create_account',
-                [],
-                'Créez votre espace de travail gratuitement sur ',
-              )}
-            </span>
-            Twake &nbsp; 👉
-          </a>
+        <div className="main-view public ">
+          {(this.routeState.appName === 'drive' && (
+            <Drive key={this.routeState.appName} channel={null} tab={null} options={options} />
+          )) ||
+            noapp}
         </div>
-      </div>,
-      <div className="main-view public">
-        {(this.routeState.appName === 'drive' && (
-          <Drive key={this.routeState.appName} channel={null} tab={null} options={options} />
-        )) ||
-          noapp}
-      </div>,
-      <MenusBodyLayer />,
-      <Viewer />,
-    ];
+        <MenusBodyLayer />
+        <Viewer />
+      </div>
+    );
   }
 }

@@ -604,8 +604,8 @@ class Drive extends Observable {
     });
 
     return {
-      preview_candidate: _.uniqBy(preview_candidate, a => a.app.id),
-      editor_candidate: _.uniqBy(editor_candidate, a => a.app.id),
+      preview_candidate: _.uniqBy(preview_candidate, a => a.app?.id || a.url),
+      editor_candidate: _.uniqBy(editor_candidate, a => a.app?.id || a.url),
     };
   }
 

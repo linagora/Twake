@@ -9,7 +9,7 @@ import { Modal, ModalContent } from 'app/atoms/modal';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import { ChannelType } from 'app/features/channels/types/channel';
 import Languages from 'app/features/global/services/languages-service';
-import { downscaleImage, getBase64 } from 'app/features/global/utils/strings';
+import { getBase64 } from 'app/features/global/utils/strings';
 import Block from 'app/molecules/grouped-rows/base';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -119,7 +119,7 @@ export const ChannelInformationForm = (props: {
   return (
     <div className="w-screen max-w-xs">
       <Modal open={channelGroupModal !== false} onClose={() => setChannelGroupModal(false)}>
-        <ModalContent title="Channels groups">
+        <ModalContent title={Languages.t('scenes.app.channelsbar.channel_information.group.title')}>
           <ChannelGroupSelector
             group={channelGroupModal || ''}
             onChange={group => {

@@ -23,7 +23,40 @@ type PropsType = { [key: string]: any };
 type StateType = { [key: string]: any };
 type AppType = { [key: string]: any };
 
-export default class Viewer extends Component<PropsType, StateType> {
+export default class ViewerContainer extends Component<PropsType, StateType> {
+  viewed_document: any;
+
+  constructor(props: PropsType) {
+    super(props);
+    Collections.get('drive').addListener(this);
+    DriveService.addListener(this);
+  }
+  UNSAFE_componentWillUpdate(nextProps: any, nextState: any) {
+    this.viewed_document = this.props.document || DriveService.viewed_document;
+  }
+  componentWillUnmount() {
+    Collections.get('drive').removeListener(this);
+    DriveService.removeListener(this);
+  }
+
+  render() {
+    if (!this.props.inline) {
+      return (
+        <Modal
+          open={!!this.viewed_document}
+          className="!m-0 !max-w-none !rounded-none"
+          closable={false}
+        >
+          {!!this.viewed_document && <Viewer {...this.props} />}
+        </Modal>
+      );
+    }
+
+    return <Viewer {...this.props} />;
+  }
+}
+
+class Viewer extends Component<PropsType, StateType> {
   viewed_document: any;
   last_viewed_id: any;
 
@@ -111,144 +144,142 @@ export default class Viewer extends Component<PropsType, StateType> {
     const canPreviewWithElectron =
       preview_candidate?.length === 0 && current?.url && ElectronService.isElectron();
 
+    console.log('SFDFQS', current, this.viewed_document);
+
+    if (!current) {
+      return <></>;
+    }
+
     return (
-      <Modal
-        open={!!this.viewed_document}
-        className="!m-0 !max-w-none !rounded-none"
-        closable={false}
+      <div
+        className={
+          'fade_in ' + (this.props.inline ? 'inline w-full h-full flex ' : 'drive_viewer flex ')
+        }
       >
-        {!!this.viewed_document && (
-          <div className={'drive_viewer fade_in ' + (this.props.inline ? 'inline ' : '')}>
-            {!this.props.disableHeader && (
-              <div className="view_header">
-                <div className="title">{current.name}</div>
-                {!DriveService.previewonly && editor_candidate.length === 1 && (
-                  <Button
-                    className="small open-with"
-                    onClick={() => {
-                      if (FeatureTogglesService.isActiveFeatureName(FeatureNames.EDIT_FILES)) {
-                        this.openFile(editor_candidate[0]);
-                      } else {
-                        ModalManager.open(
-                          <LockedOnlyOfficePopup />,
-                          {
-                            position: 'center',
-                            size: { width: '600px' },
-                          },
-                          false,
-                        );
-                      }
-                    }}
-                  >
-                    {Languages.t(
-                      'scenes.apps.drive.viewer.edit_with_button',
-                      [editor_candidate[0]?.app?.identity?.name],
-                      'Editer avec $1',
-                    )}
-                  </Button>
+        {!this.props.disableHeader && (
+          <div className="view_header">
+            <div className="title">{current.name}</div>
+            {!DriveService.previewonly && editor_candidate.length === 1 && (
+              <Button
+                className="small open-with"
+                onClick={() => {
+                  if (FeatureTogglesService.isActiveFeatureName(FeatureNames.EDIT_FILES)) {
+                    this.openFile(editor_candidate[0]);
+                  } else {
+                    ModalManager.open(
+                      <LockedOnlyOfficePopup />,
+                      {
+                        position: 'center',
+                        size: { width: '600px' },
+                      },
+                      false,
+                    );
+                  }
+                }}
+              >
+                {Languages.t(
+                  'scenes.apps.drive.viewer.edit_with_button',
+                  [editor_candidate[0]?.app?.identity?.name],
+                  'Editer avec $1',
                 )}
-                {!DriveService.previewonly && editor_candidate.length > 1 && (
-                  <Menu
-                    menu={editor_candidate.map((editor: { [key: string]: any }) => {
-                      return {
-                        type: 'menu',
-                        text: editor?.app?.identity?.name,
-                        onClick: () => {
-                          this.openFile(editor);
-                        },
-                      };
-                    })}
-                    position="bottom"
-                  >
-                    <Button className="button medium secondary">
-                      {Languages.t(
-                        'scenes.apps.drive.viewer.open_with_button',
-                        [],
-                        'Ouvrir avec...',
-                      )}
-                    </Button>
-                  </Menu>
-                )}
+              </Button>
+            )}
+            {!DriveService.previewonly && editor_candidate.length > 1 && (
+              <Menu
+                menu={editor_candidate.map((editor: { [key: string]: any }) => {
+                  return {
+                    type: 'menu',
+                    text: editor?.app?.identity?.name,
+                    onClick: () => {
+                      this.openFile(editor);
+                    },
+                  };
+                })}
+                position="bottom"
+              >
+                <Button className="button medium secondary">
+                  {Languages.t('scenes.apps.drive.viewer.open_with_button', [], 'Ouvrir avec...')}
+                </Button>
+              </Menu>
+            )}
 
-                {!DriveService.previewonly && (
-                  <div
-                    className="download"
-                    onClick={() => {
-                      const link = DriveService.getLink(current, null, true, null);
-                      window.open(link, current.url ? 'blank' : undefined);
-                    }}
-                  >
-                    {current.url && <OpenInNewIcon className="m-icon-small" />}
-                    {!current.url && <DownloadIcon className="m-icon-small" />}
-                  </div>
-                )}
-
-                <div className="close" onClick={() => DriveService.viewDocument(null)}>
-                  <CloseIcon className="m-icon-small" />
-                </div>
+            {!DriveService.previewonly && (
+              <div
+                className="download"
+                onClick={() => {
+                  const link = DriveService.getLink(current, null, true, null);
+                  window.open(link, current.url ? 'blank' : undefined);
+                }}
+              >
+                {current.url && <OpenInNewIcon className="m-icon-small" />}
+                {!current.url && <DownloadIcon className="m-icon-small" />}
               </div>
             )}
 
-            <div className="view_body">
-              {this.state.did_load_preview && preview_candidate.length > 0 && (
-                <iframe
-                  title={this.state.url_formated}
-                  src={this.state.url_formated || preview_candidate[0].url}
-                />
-              )}
-              {canPreviewWithElectron && <webview src={current.url} />}
-
-              {preview_candidate.length === 0 && !canPreviewWithElectron && (
-                <div className="no_preview_text">
-                  {!current.url && (
-                    <span style={{ opacity: 0.5 }}>
-                      {Languages.t(
-                        'scenes.apps.drive.viewer.no_preview_message',
-                        [],
-                        'Impossible de visualiser ce type de fichier.',
-                      )}
-                    </span>
-                  )}
-
-                  {current.url && (
-                    <div>
-                      <Typography.Link
-                        onClick={() => window.open(current.url, 'blank')}
-                        style={{ fontSize: 14 }}
-                      >
-                        {Languages.t('scenes.apps.drive.open_link', [], 'Open link in new window')}
-                      </Typography.Link>
-                      <br />
-                      <br />
-                      <Typography.Link
-                        onClick={() => window.open('https://twake.app/download', 'blank')}
-                        style={{ fontSize: 12 }}
-                      >
-                        {Languages.t(
-                          'scenes.apps.drive.viewer.download_desktop',
-                          [],
-                          'Download Twake Desktop to preview in app',
-                        )}
-                      </Typography.Link>
-                    </div>
-                  )}
-                </div>
-              )}
-              {this.state.loading_preview && (
-                <div className="loading_preview_text">
-                  <span style={{ opacity: 0.5 }}>
-                    {Languages.t(
-                      'scenes.apps.drive.viewer.loading_preview_message',
-                      [],
-                      'Chargement...',
-                    )}
-                  </span>
-                </div>
-              )}
+            <div className="close" onClick={() => DriveService.viewDocument(null)}>
+              <CloseIcon className="m-icon-small" />
             </div>
           </div>
         )}
-      </Modal>
+
+        <div className="view_body h-full grow flex">
+          {this.state.did_load_preview && preview_candidate.length > 0 && (
+            <iframe
+              className="grow"
+              title={this.state.url_formated}
+              src={this.state.url_formated || preview_candidate[0].url}
+            />
+          )}
+          {canPreviewWithElectron && <webview src={current.url} />}
+          {preview_candidate.length === 0 && !canPreviewWithElectron && (
+            <div className="no_preview_text">
+              {!current.url && (
+                <span style={{ opacity: 0.5 }}>
+                  {Languages.t(
+                    'scenes.apps.drive.viewer.no_preview_message',
+                    [],
+                    'Impossible de visualiser ce type de fichier.',
+                  )}
+                </span>
+              )}
+
+              {current.url && (
+                <div>
+                  <Typography.Link
+                    onClick={() => window.open(current.url, 'blank')}
+                    style={{ fontSize: 14 }}
+                  >
+                    {Languages.t('scenes.apps.drive.open_link', [], 'Open link in new window')}
+                  </Typography.Link>
+                  <br />
+                  <br />
+                  <Typography.Link
+                    onClick={() => window.open('https://twake.app/download', 'blank')}
+                    style={{ fontSize: 12 }}
+                  >
+                    {Languages.t(
+                      'scenes.apps.drive.viewer.download_desktop',
+                      [],
+                      'Download Twake Desktop to preview in app',
+                    )}
+                  </Typography.Link>
+                </div>
+              )}
+            </div>
+          )}
+          {this.state.loading_preview && (
+            <div className="loading_preview_text">
+              <span style={{ opacity: 0.5 }}>
+                {Languages.t(
+                  'scenes.apps.drive.viewer.loading_preview_message',
+                  [],
+                  'Chargement...',
+                )}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 }
