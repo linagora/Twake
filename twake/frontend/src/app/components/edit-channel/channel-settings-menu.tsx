@@ -45,7 +45,7 @@ export const ChannelSettingsMenu = (props: {
 
   const { user } = useCurrentUser();
   const canEdit =
-    props.channel?.owner === user || workspaceUserRightsService.hasWorkspacePrivilege();
+    props.channel?.owner === user?.id || workspaceUserRightsService.hasWorkspacePrivilege();
   const isGuest = workspaceUserRightsService.isInvite();
   const isDirect = isDirectChannel(props.channel?.visibility || '');
   const canLeave = !isGuest || isDirect;
@@ -104,10 +104,10 @@ export const ChannelSettingsMenu = (props: {
               </div>
             }
           />
-          {!isGuest && (
+          {!isGuest && !!props.onMembers && (
             <Block
               onClick={() => {
-                canEdit && props.onMembers && props.onMembers();
+                props.onMembers && props.onMembers();
               }}
               className={
                 '-mx-2 my-1 p-2 rounded-md ' +

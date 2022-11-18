@@ -39,7 +39,25 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
     const notificationPreferences = (user?.preferences?.notifications || []).find(n => {
       return n.company_id === pk.company_id && n.workspace_id === pk.workspace_id;
     });
-    return notificationPreferences;
+    return (
+      notificationPreferences || {
+        company_id: pk.company_id,
+        workspace_id: pk.workspace_id,
+        preferences: {
+          highlight_words: [],
+          night_break: {
+            enable: false,
+            from: 0,
+            to: 0,
+          },
+          private_message_content: false,
+          mobile_notifications: "always",
+          email_notifications_delay: 15,
+          deactivate_notifications_until: 0,
+          notification_sound: "default",
+        },
+      }
+    );
   }
 
   /** We can define preferences for specifically a workspace or for all a company or all Twake

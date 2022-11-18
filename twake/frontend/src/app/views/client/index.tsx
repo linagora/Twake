@@ -32,6 +32,7 @@ import DownloadAppBanner from 'app/components/download-app-banner/download-app-b
 import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
 import { EditChannelModal } from 'app/components/edit-channel';
 import Invitation from 'app/components/invitation/invitation';
+import DesktopRedirect from '../desktop-redirect';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -48,34 +49,36 @@ export default React.memo((): JSX.Element => {
 
   if (user?.id) {
     page = (
-      <Layout className="appPage fade_in">
-        <DownloadAppBanner />
-        <NewVersionComponent />
-        <CompanyStatusComponent />
-        <FeatureToggles features={activeFeatureNames}>
-          <Layout hasSider>
-            <Layout.Sider
-              trigger={<Menu size={16} />}
-              breakpoint="lg"
-              collapsedWidth="0"
-              theme="light"
-              width={290}
-              onCollapse={(collapsed, type) => {
-                if (type === 'responsive') return setMenuIsOpen(false);
-                setMenuIsOpen(!collapsed);
-              }}
-            >
-              <Suspense fallback={<LoadingSidebar />}>
-                <SideBars />
+      <DesktopRedirect>
+        <Layout className="appPage fade_in">
+          <DownloadAppBanner />
+          <NewVersionComponent />
+          <CompanyStatusComponent />
+          <FeatureToggles features={activeFeatureNames}>
+            <Layout hasSider>
+              <Layout.Sider
+                trigger={<Menu size={16} />}
+                breakpoint="lg"
+                collapsedWidth="0"
+                theme="light"
+                width={290}
+                onCollapse={(collapsed, type) => {
+                  if (type === 'responsive') return setMenuIsOpen(false);
+                  setMenuIsOpen(!collapsed);
+                }}
+              >
+                <Suspense fallback={<LoadingSidebar />}>
+                  <SideBars />
+                </Suspense>
+              </Layout.Sider>
+              <Suspense fallback={<></>}>
+                <MainView className={classNames({ collapsed: menuIsOpen })} />
               </Suspense>
-            </Layout.Sider>
-            <Suspense fallback={<></>}>
-              <MainView className={classNames({ collapsed: menuIsOpen })} />
-            </Suspense>
-          </Layout>
-        </FeatureToggles>
-        <UserContext />
-      </Layout>
+            </Layout>
+          </FeatureToggles>
+          <UserContext />
+        </Layout>
+      </DesktopRedirect>
     );
   }
 
