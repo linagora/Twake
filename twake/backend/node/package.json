@@ -141,7 +141,7 @@
     "find-my-way": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "fold-to-ascii": "^5.0.0",
-    "free-email-domains": "^1.0.26",
+    "free-email-domains": "1.0.26",
     "generate-password": "^1.6.0",
     "get-website-favicon": "^0.0.7",
     "html-metadata-parser": "^2.0.4",
