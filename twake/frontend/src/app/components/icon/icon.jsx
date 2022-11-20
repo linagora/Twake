@@ -1,15 +1,16 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import './animation.scss';
 import './unicons.scss';
 
-export default class Icon extends React.Component {
+export default class Icon extends Component {
   /*
       props = {
           type : icon name
       }
   */
-  constructor(props) {
+  constructor() {
     super();
   }
   shouldComponentUpdate(nextProps) {

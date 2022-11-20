@@ -23,5 +23,5 @@ export interface AuthProvider<SignInParameters, SignOutParameters, SignUpParamet
 
   signUp?(params: SignUpParameters): Promise<void>;
 
-  addEventListener?(event: AuthEvent, listener: (args: any) => {}): void;
+  addEventListener?(event: AuthEvent, listener: (args: unknown) => void): void;
 }

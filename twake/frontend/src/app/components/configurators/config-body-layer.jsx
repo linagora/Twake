@@ -1,7 +1,6 @@
 import React from 'react';
 
 import ConfiguratorsManager from 'app/deprecated/Configurators/ConfiguratorsManager.js';
-import Twacode from 'components/twacode/twacode';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import './configurators.scss';
@@ -11,7 +10,7 @@ import Blocks from '../../views/applications/messages/message/parts/Blocks';
   Where the configurators will be displayed, this component should be in app.js (menus should be over all elements of the page)
 */
 export default class ConfigBodyLayer extends React.Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {};
     ConfiguratorsManager.addListener(this);
@@ -43,7 +42,7 @@ export default class ConfigBodyLayer extends React.Component {
         ConfiguratorsManager.configurator_order[ConfiguratorsManager.configurator_order.length - 1]
       ];
   }
-  onAction(type, id, context, passives, evt) {
+  onAction(type, id, context, passives) {
     if (type == 'interactive_action') {
       this.setState({ loading_interaction: true });
       clearTimeout(this.loading_interaction_timeout);

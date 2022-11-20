@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import Archive from '../icons/archive.jsx';
@@ -13,9 +14,9 @@ import Spreadsheet from '../icons/spreadsheet.jsx';
 import Svg from '../icons/svg.jsx';
 import Video from '../icons/video.jsx';
 
-export default class FileType extends React.Component {
+export default class FileType extends Component {
   /* props : type (string) */
-  constructor(props) {
+  constructor() {
     super();
   }
   render() {

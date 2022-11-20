@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import AppsIcon from '@material-ui/icons/Apps';
 import Popover from '@material-ui/core/Popover';
@@ -38,7 +39,6 @@ export default function Apps(props) {
       >
         <div className="integration-apps">
           {props.apps.map(item => (
-            // eslint-disable-next-line react/jsx-no-target-blank
             <a className="app" target="_BLANK" rel="noreferrer" href={item.url} key={item.url}>
               <div className="image" style={{ backgroundImage: 'url(' + item.icon + ')' }} />
               <div className="app-title">{item.name}</div>

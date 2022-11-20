@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-direct-mutation-state */
 import React, { useState } from 'react';
 
@@ -23,7 +24,6 @@ import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
 import ModalManager from 'app/components/modal/modal-manager';
-import InitService from 'app/features/global/services/init-service';
 import LockedOnlyOfficePopup from 'app/components/locked-features-components/locked-only-office-popup/locked-only-office-popup';
 
 const RenameInput = props => {
@@ -122,7 +122,7 @@ const PublicSharing = props => {
 };
 
 export default class DriveElement extends React.Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       selections_manager: SelectionsManager,
@@ -321,7 +321,6 @@ export default class DriveElement extends React.Component {
       ];
 
       var candidates = DriveService.getEditorsCandidates(this.state.element);
-      var preview_candidate = candidates.editor_candidate || [];
       var editor_candidate = candidates.preview_candidate || [];
 
       if (editor_candidate.length > 0 && editor_candidate[0].app) {

@@ -1,6 +1,4 @@
-//@ts-nocheck
-//We need this because of a bug in emoji_mart fallback implementationimport React, { Component } from 'react';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
 
 import 'emoji-mart/css/emoji-mart.css';
@@ -85,7 +83,6 @@ const Emojione = React.memo((props: Props) => {
 
   const uni =
     type_to_uni[props.type] ||
-    //@ts-ignore
     getEmojiDataFromNative(emojione.shortnameToUnicode(props.type), 'apple', data);
   type_to_uni[props.type] = uni;
 
@@ -97,7 +94,7 @@ const Emojione = React.memo((props: Props) => {
             size = 64;
           }
           return getAsFrontUrl(
-            '/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(size, '.png'),
+            '/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(size.toString(), '.png'),
           );
         }}
         emoji={uni || props.type}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Avatar, Col, Typography } from 'antd';
 import UsersService from 'app/features/users/services/current-user-service';

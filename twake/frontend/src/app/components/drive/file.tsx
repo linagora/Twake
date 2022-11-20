@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import Draggable from 'components/draggable/draggable';
 import DriveElement from './drive-element.jsx';
@@ -6,8 +7,6 @@ import UIFile from './ui/file.jsx';
 import Loader from 'components/loader/loader.jsx';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import Languages from 'app/features/global/services/languages-service';
-
-type PropsType = { [key: string]: any };
 
 type StateType = any;
 

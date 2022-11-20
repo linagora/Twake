@@ -43,7 +43,7 @@ export default class ForgotPassword extends Component {
     LoginService.removeListener(this);
     Languages.removeListener(this);
   }
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(_prevProps, prevState) {
     if (prevState.page === this.state.page - 1 || prevState.page === this.state.page + 1) {
       if (this.input) {
         this.input.focus();

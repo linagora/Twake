@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Input } from 'antd';
 import { isEqual } from 'lodash';
 import Languages from 'app/features/global/services/languages-service';
-import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.jsx';
 import Attribute from 'components/parameters/attribute.jsx';
 import Switch from 'components/inputs/switch';

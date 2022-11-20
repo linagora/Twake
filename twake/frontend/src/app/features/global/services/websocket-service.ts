@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import io from 'socket.io-client';
 import { EventEmitter } from 'events';
 import Logger from 'app/features/global/framework/logger-service';

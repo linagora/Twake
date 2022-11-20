@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentStory } from '@storybook/react';
 import { Title } from '@atoms/text';
 import { InputLabel } from '../input-decoration-label';

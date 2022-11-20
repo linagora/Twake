@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React, { Component } from 'react';
 
@@ -208,9 +209,9 @@ export default class Tasks extends Component {
                               submenu: [
                                 {
                                   type: 'react-element',
-                                  reactElement: level => {
+                                  reactElement: () => {
                                     var apps = getCompanyApplications(Groups.currentGroupId).filter(
-                                      app => false,
+                                      () => false,
                                     );
                                     if (apps.length > 0) {
                                       return (

@@ -3,7 +3,7 @@ import { CompanyType } from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { WebsocketRoom } from '../../global/types/websocket-types';
-import _, { result } from 'lodash';
+import _ from 'lodash';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 

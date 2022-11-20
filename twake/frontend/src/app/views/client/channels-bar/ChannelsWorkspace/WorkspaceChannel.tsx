@@ -1,13 +1,9 @@
 import React from 'react';
 
 import { ChannelType } from 'app/features/channels/types/channel';
-
 import Languages from 'app/features/global/services/languages-service';
-import ModalManager from 'app/components/modal/modal-manager';
-
 import ChannelCategory from '../Parts/Channel/ChannelCategory';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
-
 import Menu from 'components/menus/menu.jsx';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';

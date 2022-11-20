@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
 import Languages from 'app/features/global/services/languages-service';
@@ -8,7 +9,7 @@ import InputWithColor from 'components/inputs/input-with-color.jsx';
 import Button from 'components/buttons/button.jsx';
 import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 
-export default class ListEditor extends React.Component {
+export default class ListEditor extends Component {
   constructor() {
     super();
     this.state = {

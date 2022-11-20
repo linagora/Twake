@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import Logger from 'app/features/global/framework/logger-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import WindowState from 'app/features/global/utils/window';
@@ -28,10 +29,11 @@ class Login extends Observable {
   state = '';
   login_loading = false;
   login_error = false;
-  parsed_error_code: any;
-  error_code: any;
+  parsed_error_code: unknown;
+  error_code: unknown;
   cookies: Cookies;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   recoilUpdateUser = (user: UserType | undefined) => {};
 
   constructor() {
@@ -164,7 +166,7 @@ class Login extends Observable {
     });
   }
 
-  login(params: any, hide_load = false) {
+  login(params: unknown, hide_load = false) {
     if (!hide_load) {
       this.login_loading = true;
     }

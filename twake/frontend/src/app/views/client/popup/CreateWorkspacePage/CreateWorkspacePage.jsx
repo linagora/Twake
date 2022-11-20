@@ -9,7 +9,6 @@ import Emojione from 'components/emojione/emojione';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.jsx';
 import Input from 'components/inputs/input.jsx';
 import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';
-import InitService from 'app/features/global/services/init-service';
 import './CreateWorkspacePage.scss';
 
 export default class CreateWorkspacePage extends Component {

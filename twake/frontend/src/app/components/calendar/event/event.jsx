@@ -1,28 +1,22 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import './event.scss';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Icon from 'app/components/icon/icon.jsx';
-import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import Languages from 'app/features/global/services/languages-service';
 import UserListManager from 'components/user-list-manager-depreciated/user-list-manager';
 
 import moment from 'moment';
 
-export default class Event extends React.Component {
+export default class Event extends Component {
   constructor(props) {
     super();
     this.props = props;
   }
   render() {
     var className = '';
-    var hiddenClass = '';
     var icon = '';
-    var date;
-    var icon_location = '';
-    var icon_description = '';
     var event_duration = '';
-    var count = 0;
-    var style;
     var classNameUser = '';
     if (this.props.inEvent) {
       classNameUser = 'inEvent';
@@ -36,11 +30,6 @@ export default class Event extends React.Component {
     var event_end = moment(parseInt(this.props.event.to) * 1000).format('LT');
 
     var location = this.props.event.location || '';
-
-    var description = this.props.event.description;
-
-    if (description) icon_description = 'subject';
-    if (location) icon_location = 'location-point';
 
     if (event_start) event_duration = event_start;
     if (event_end)
@@ -73,8 +62,6 @@ export default class Event extends React.Component {
     } else if (this.props.event.type == 'move') {
       icon = 'car-sideview';
     }
-
-    var readonly = CalendarService.getIsReadonly(this.props.event);
 
     var users = [];
     var emails = [];

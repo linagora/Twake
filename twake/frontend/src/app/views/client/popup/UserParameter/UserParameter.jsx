@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React, { Component } from 'react';
 
@@ -59,6 +60,7 @@ export default class UserParameter extends Component {
     this.fileinput.click();
   }
   changeThumbnail(event) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     var that = this;
     event.preventDefault();
     uploadService.getFilesTree(event, function (tree) {
@@ -117,7 +119,7 @@ export default class UserParameter extends Component {
                         style={{ paddingTop: 16 }}
                       >
                         <div
-                          onClick={event => {
+                          onClick={() => {
                             this.fileinput.click();
                           }}
                         >

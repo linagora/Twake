@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CompanyType } from 'app/features/companies/types/company';
 import { UserPreferencesType, UserType } from 'app/features/users/types/user';
 import Api from '../../global/framework/api-service';

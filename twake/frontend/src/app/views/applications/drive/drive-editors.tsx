@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import MenusManager from 'app/components/menus/menus-manager.jsx';
 import Button from 'components/buttons/button.jsx';

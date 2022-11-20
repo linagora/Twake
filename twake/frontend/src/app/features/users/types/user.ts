@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CompanyRoleType,
   CompanyStatusType,
@@ -14,7 +15,7 @@ export type UserPreferencesType = null | {
   channel_ordering?: 'chronological' | 'alphabetical';
   recent_workspaces?: { company_id: string; workspace_id: string }[];
   knowledge_graph?: 'all' | 'nothing' | 'metadata';
-  notifications: UserNotificationPreferences[];
+  notifications?: UserNotificationPreferences[];
 };
 
 export type UserNotificationPreferences = {

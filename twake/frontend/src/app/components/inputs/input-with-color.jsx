@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import MenusManager from 'app/components/menus/menus-manager.jsx';
@@ -5,11 +6,10 @@ import ColorPicker from 'components/color-picker/color-picker.jsx';
 import Input from 'components/inputs/input.jsx';
 import './inputs.scss';
 
-export default class InputWithColor extends React.Component {
-  constructor(props) {
+export default class InputWithColor extends Component {
+  constructor() {
     super();
   }
-  UNSAFE_componentWillMount() {}
   outsideMenuListener() {
     this.closeColorPicker();
   }
@@ -100,7 +100,7 @@ export default class InputWithColor extends React.Component {
         <div
           className="color"
           ref={node => (this.color_dom = node)}
-          onClick={evt => {
+          onClick={() => {
             this.openColorPicker();
           }}
         >

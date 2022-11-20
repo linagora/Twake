@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { RefObject, useEffect, useState } from 'react';
 
 export default function useOnScreen(ref: RefObject<Element>) {

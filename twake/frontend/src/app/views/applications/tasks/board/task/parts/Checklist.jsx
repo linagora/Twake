@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import Icon from 'app/components/icon/icon.jsx';
 import Checkbox from 'app/components/inputs/deprecated_checkbox.jsx';
 import InputEnter from 'components/inputs/input-enter.jsx';
 import Button from 'components/buttons/button.jsx';
 import Languages from 'app/features/global/services/languages-service';
+
 
 export default class Checklist extends React.Component {
   constructor() {
@@ -38,11 +40,10 @@ export default class Checklist extends React.Component {
         )}
 
         {
-          // eslint-disable-next-line array-callback-return
           (checklist || []).map((item, i) => {
             if (item) {
               return (
-                <div className={'checklist-row ' + (this.state.checklist_edit === i ? 'edit' : '')}>
+                <div key={`checklist-row-${i}`} className={'checklist-row ' + (this.state.checklist_edit === i ? 'edit' : '')}>
                   <div style={{ flex: 1, display: 'flex' }}>
                     <Checkbox
                       readOnly={this.props.readOnly}

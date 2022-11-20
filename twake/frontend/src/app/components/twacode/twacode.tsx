@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useRef } from 'react';
 
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';

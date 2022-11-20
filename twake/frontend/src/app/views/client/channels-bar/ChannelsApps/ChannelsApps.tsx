@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { Component } from 'react';
 
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';

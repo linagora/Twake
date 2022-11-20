@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+/* eslint-disable react/prop-types */
+import React from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Button from 'components/buttons/button.jsx';
@@ -48,7 +49,7 @@ export default class TaskEditor extends React.Component {
   unarchive() {
     TasksService.unarchive(this.props.task, this.props.collectionKey);
   }
-  change(key, value, notify) {
+  change(key, value) {
     this.props.task[key] = value;
     Collections.get('tasks').notify();
   }

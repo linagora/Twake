@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import { Command } from './command';

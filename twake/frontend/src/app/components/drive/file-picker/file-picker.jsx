@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
@@ -13,8 +14,8 @@ import Button from 'components/buttons/button.jsx';
 import Input from 'components/inputs/input.jsx';
 import './file-picker.scss';
 
-export default class FilePicker extends React.Component {
-  constructor(props) {
+export default class FilePicker extends Component {
+  constructor() {
     super();
     this.drive_channel = 'file_picker_' + Workspaces.currentWorkspaceId;
     this.drive_collection_key = this.drive_channel;

@@ -4,14 +4,11 @@ import React, { Component } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import UserService from 'app/features/users/services/current-user-service';
-import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import MenusManager from 'app/components/menus/menus-manager.jsx';
 import LoginService from 'app/features/auth/login-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import ListenUsers from 'app/features/users/services/listen-users-service';
-import UserParameter from 'app/views/client/popup/UserParameter/UserParameter.jsx';
-import InputWithIcon from 'components/inputs/input-with-icon';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.jsx';
 import AccountParameter from 'app/views/client/popup/UserParameter/UserParameter';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
@@ -84,7 +81,7 @@ export default class CurrentUser extends Component {
     this.setState({ new_status } || [new_status[0], '']);
   }
 
-  onClickUser(evt) {
+  onClickUser() {
     this.showMenu();
     this.setState({ showingMenu: !this.state.showingMenu });
   }

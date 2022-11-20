@@ -1,5 +1,5 @@
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
-import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
@@ -45,8 +45,6 @@ export default (props: Props) => {
 
   // Quoted message logic
   const quotedMessage = useQuotedMessage(message, context);
-
-  const { channel } = useChannel(channelId);
   const showQuotedMessage = quotedMessage && quotedMessage.thread_id;
   let authorName = '';
   const currentRouterWorkspace = useRouterWorkspace();

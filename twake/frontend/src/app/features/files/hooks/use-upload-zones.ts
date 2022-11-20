@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import FileUploadService from 'app/features/files/services/file-upload-service';
 import { MessageFileType } from 'app/features/messages/types/message';
 import { useRecoilState } from 'recoil';

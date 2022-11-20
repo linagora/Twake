@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import Icon from 'app/components/icon/icon.jsx';

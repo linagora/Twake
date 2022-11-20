@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import './auto-height.scss';
 
 export default class AutoHeight extends Component {
-  constructor(props) {
+  constructor() {
     super();
     this.change = this.change.bind(this);
   }
@@ -26,7 +27,7 @@ export default class AutoHeight extends Component {
     }
     this.oldHeight = totalHeight;
   }
-  componentDidUpdate(nextProps) {
+  componentDidUpdate() {
     this.change();
   }
   render() {

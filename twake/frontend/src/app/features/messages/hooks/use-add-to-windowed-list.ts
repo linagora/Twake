@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Numbers from 'app/features/global/utils/Numbers';
 import _ from 'lodash';
 import { RecoilState, useRecoilCallback } from 'recoil';

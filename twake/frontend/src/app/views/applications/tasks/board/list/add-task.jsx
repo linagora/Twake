@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
@@ -5,7 +6,7 @@ import Input from 'components/inputs/input.jsx';
 import Button from 'components/buttons/button.jsx';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-export default class AddTask extends React.Component {
+export default class AddTask extends Component {
   constructor(props) {
     super(props);
     this.state = {

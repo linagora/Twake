@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useWebSocket from 'app/features/global/hooks/use-websocket';
 import Logger from 'app/features/global/framework/logger-service';

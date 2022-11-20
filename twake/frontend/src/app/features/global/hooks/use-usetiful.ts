@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react';
 
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';

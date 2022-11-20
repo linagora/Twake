@@ -66,6 +66,7 @@ const completeUserWithWorkspaces = (
 });
 
 // Access from hooks-components
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function useSetUserList(key: string) {
   const set = useRecoilCallback(({ set }) => (nextList: UserType[]) => {
     const currentList = currentUserList;

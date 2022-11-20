@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React, { Component } from 'react';
 import Languages from 'app/features/global/services/languages-service';
@@ -6,7 +7,7 @@ import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import Emojione from 'components/emojione/emojione';
 import Loader from 'components/loader/loader.jsx';
 
-export default class BoardPicker extends React.Component {
+export default class BoardPicker extends Component {
   constructor() {
     super();
     this.state = {
@@ -26,6 +27,7 @@ export default class BoardPicker extends React.Component {
         websockets: [{ uri: 'boards/' + Workspaces.getCurrentUserId, options: { type: 'board' } }],
       },
       this.boards_collection_key,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       () => {},
     );
   }

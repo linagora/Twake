@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Api from 'app/features/global/framework/api-service';
 import InitService from 'app/features/global/services/init-service';
 import Languages from 'app/features/global/services/languages-service';

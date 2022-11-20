@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import Languages from 'app/features/global/services/languages-service';
@@ -97,7 +98,7 @@ export default ({ filter }: { filter: string }) => {
     const workspaceUserRole = `${prefixRoute}/companies/${col.company_id}/workspaces/${col.workspace_id}/users/${col.user_id}`;
 
     setLoading(true);
-    const res: any = await Api.post(workspaceUserRole, {
+    const res = await Api.post<unknown, { resource: unknown }>(workspaceUserRole, {
       resource: {
         role: col.role === 'moderator' ? 'member' : 'moderator',
       },

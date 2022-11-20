@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React from 'react';
 import moment from 'moment';
@@ -13,12 +14,10 @@ import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import '../drive.scss';
 
 export default class File extends React.Component {
-  constructor(props) {
+  constructor() {
     super();
   }
   render() {
-    var mini = this.props.mini;
-
     var date = false;
     if (this.props.data.modified) {
       date = moment(this.props.data.modified * 1000);

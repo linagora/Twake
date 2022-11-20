@@ -1,10 +1,11 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import './inputs.scss';
 import CheckIcon from '@material-ui/icons/CheckOutlined';
 
-export default class Checkbox extends React.Component {
-  constructor(props) {
+export default class Checkbox extends Component {
+  constructor() {
     super();
   }
   renderSwitch() {

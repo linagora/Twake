@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
 import AutoHeight from '../auto-height/auto-height';
 import Input from '../inputs/input';
@@ -265,8 +266,7 @@ export default class AutoComplete extends Component<Props, State> {
     if (this.input && this.state.resultPosition === '' && this.state.currentList.length > 0) {
       const size = this.state.currentList.length * 32 + 5;
       if (
-        //@ts-ignore
-        document.documentElement.clientHeight - window.getBoundingClientRect(this.input).bottom <
+        document.documentElement.clientHeight - (window as any).getBoundingClientRect(this.input).bottom <
           size ||
         this.props.position === 'top'
       ) {

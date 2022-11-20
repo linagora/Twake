@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import Icon from 'app/components/icon/icon.jsx';
 import moment from 'moment';
 import './day-picker.scss';
 
-export default class DayPicker extends React.Component {
+export default class DayPicker extends Component {
   /*
         this.props :{
             onChange(day)
@@ -19,7 +20,6 @@ export default class DayPicker extends React.Component {
     this.openSelected = false;
     window.moment = moment;
   }
-  componentWillUnmount() {}
   componentDidMount() {
     this.setState(this.updateDay());
   }
@@ -86,7 +86,6 @@ export default class DayPicker extends React.Component {
     return false;
   }
   render() {
-    var that = this;
     var last_week = -1;
     return (
       <div
@@ -128,7 +127,7 @@ export default class DayPicker extends React.Component {
               );
             }
           })}
-          {this.state.days.map((day, index) => {
+          {this.state.days.map(day => {
             var list = [];
             if (day.week() != last_week) {
               last_week = day.week();

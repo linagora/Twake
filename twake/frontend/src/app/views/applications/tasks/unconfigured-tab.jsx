@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';

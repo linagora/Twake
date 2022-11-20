@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
@@ -14,7 +15,7 @@ import UserListManager from 'components/user-list-manager/user-list-manager';
 import TagPicker from 'components/tag-picker/tag-picker.jsx';
 import AttachmentPicker from 'components/attachment-picker/attachment-picker.jsx';
 
-export default class Task extends React.Component {
+export default class Task extends Component {
   constructor(props) {
     super(props);
     this.state = {

@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 import DraggableManager from './draggable-manager.js';
 
-export default class DraggableBodyLayer extends React.Component {
-  constructor(props) {
+export default class DraggableBodyLayer extends Component {
+  constructor() {
     super();
     this.state = {
       draggable_manager: DraggableManager,

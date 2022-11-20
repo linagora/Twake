@@ -142,4 +142,4 @@ export default {
   xml: "text/xml",
   xpm: "image/x-xpixmap",
   xwd: "image/x-xwindowdump",
-} as any;
+};

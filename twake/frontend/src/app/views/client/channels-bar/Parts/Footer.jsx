@@ -4,7 +4,6 @@ import Languages from 'app/features/global/services/languages-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import InitService from 'app/features/global/services/init-service';
-import UserService from 'app/features/users/services/current-user-service';
 
 import FooterUI from 'app/views/client/channels-bar/Parts/Footer/Footer.jsx';
 

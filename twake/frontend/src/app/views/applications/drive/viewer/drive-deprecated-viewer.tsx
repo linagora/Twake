@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
 import { Typography } from 'antd';
 import CloseIcon from '@material-ui/icons/CloseOutlined';

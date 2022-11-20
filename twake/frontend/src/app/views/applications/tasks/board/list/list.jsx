@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
@@ -35,7 +36,7 @@ export default class List extends React.Component {
     Collections.get('lists').removeListener(this);
     Collections.get('tasks').removeListener(this);
   }
-  listOptions(evt) {
+  listOptions() {
     var list = this.props.list;
     var menu = [];
     menu = [

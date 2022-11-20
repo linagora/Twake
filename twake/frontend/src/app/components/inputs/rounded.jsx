@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import PlusIcon from '@material-ui/icons/AddOutlined';
 
-export default class Rounded extends React.Component {
-  constructor(props) {
+export default class Rounded extends Component {
+  constructor() {
     super();
   }
   render() {

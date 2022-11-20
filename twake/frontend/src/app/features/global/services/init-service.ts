@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Logger from 'app/features/global/framework/logger-service';
 import Observable from 'app/deprecated/Observable/Observable';
 import Api from 'app/features/global/framework/api-service';

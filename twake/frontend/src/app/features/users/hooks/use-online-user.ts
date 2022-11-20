@@ -4,10 +4,8 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { OnlineUserStateFamily, OnlineUserType } from '../state/atoms/online-users';
 import { OnlineUserRealtimeAPI } from '../api/online-user-realtime-api-client';
 import WebSocketFactory from '../../global/services/websocket-factory-service';
-import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 export const useOnlineUser = (id: string): OnlineUserType => {
-  const companyId = useRouterCompany();
   const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get());
 
   const updateUser = useRecoilCallback(

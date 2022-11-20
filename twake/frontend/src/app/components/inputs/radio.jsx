@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import './inputs.scss';
 
-export default class Radio extends React.Component {
-  constructor(props) {
+export default class Radio extends Component {
+  constructor() {
     super();
   }
   renderSwitch() {

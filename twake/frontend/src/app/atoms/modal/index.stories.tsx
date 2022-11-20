@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { RecoilRoot } from 'recoil';
 import { ComponentStory } from '@storybook/react';
@@ -6,13 +7,12 @@ import { Button } from '../button/button';
 import { ButtonConfirm } from '../button/confirm';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/outline';
 import { Title } from '../text';
-import { Dialog } from '@headlessui/react';
 
 export default {
   title: '@atoms/modal',
 };
 
-const Template: ComponentStory<any> = (props: {}) => {
+const Template: ComponentStory<any> = () => {
   const [openA, setOpenA] = useState(false);
   const [openB, setOpenB] = useState(false);
 
@@ -36,7 +36,7 @@ const Template: ComponentStory<any> = (props: {}) => {
 export const Default = Template.bind({});
 Default.args = {};
 
-const TemplateWithContent: ComponentStory<any> = (props: {}) => {
+const TemplateWithContent: ComponentStory<any> = () => {
   const [openA, setOpenA] = useState(false);
   const [openB, setOpenB] = useState(false);
 

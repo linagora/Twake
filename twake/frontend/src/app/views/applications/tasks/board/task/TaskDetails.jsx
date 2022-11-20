@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
@@ -19,7 +20,7 @@ import AttachmentPicker from 'components/attachment-picker/attachment-picker.jsx
 import moment from 'moment';
 import './Modal.scss';
 
-export default class TaskDetails extends React.Component {
+export default class TaskDetails extends Component {
   constructor() {
     super();
     this.state = {

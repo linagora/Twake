@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import { EditorState } from 'draft-js';
@@ -131,7 +132,6 @@ export default (props: Props) => {
         );
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const disable_app: any = {};
@@ -169,6 +169,7 @@ export default (props: Props) => {
       });
 
       if (!app) {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         AlertManager.alert(() => {}, {
           text: Languages.t('services.apps.messages.no_command_possible', [content, app_name]),
           title: Languages.t('services.apps.messages.no_app'),
@@ -286,7 +287,7 @@ export default (props: Props) => {
     );
   };
 
-  const onUpArrow = (e: any): void => {
+  const onUpArrow = (): void => {
     if (isEmpty()) {
       //TODO
     }
@@ -308,10 +309,6 @@ export default (props: Props) => {
       return;
     }
     setRichTextEditorState(newEditorState);
-  };
-
-  const isEditing = (): boolean => {
-    return !!(props.messageId && props.messageId === messageEditorService.currentEditorMessageId);
   };
 
   const setUploadZoneRef = (node: UploadZone): void =>
@@ -420,7 +417,7 @@ export default (props: Props) => {
               plugins={editorPlugins}
               editorState={editorState}
               onSubmit={() => onSend()}
-              onUpArrow={e => onUpArrow(e)}
+              onUpArrow={() => onUpArrow()}
               onFilePaste={onFilePaste}
               placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
             />

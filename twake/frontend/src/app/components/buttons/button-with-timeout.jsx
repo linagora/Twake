@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import Loader from 'components/loader/loader.jsx';
@@ -16,7 +17,7 @@ export default class ButtonWithTimeout extends React.Component {
             className
         }
     */
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       showLoader: false,
@@ -26,7 +27,8 @@ export default class ButtonWithTimeout extends React.Component {
   componentWillUnmount() {
     clearTimeout(this.timeout);
   }
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     var that = this;
     if (prevProps.loading && !this.props.loading) {
       if (this.state.showLoader) {

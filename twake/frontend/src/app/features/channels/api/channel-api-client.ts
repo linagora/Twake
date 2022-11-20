@@ -19,7 +19,7 @@ class ChannelAPIClientService {
   private logger = Logger.getLogger('ChannelAPIClientService');
 
   async getDirect(companyId: string, membersId: string[]) {
-    return Api.post<{ options: { members: string[] }; resource: any }, { resource: ChannelType }>(
+    return Api.post<{ options: { members: string[] }; resource: unknown }, { resource: ChannelType }>(
       `${PREFIX}/${companyId}/workspaces/direct/channels`,
       { options: { members: membersId }, resource: {} },
     ).then(result => result.resource);

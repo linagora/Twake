@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Application } from 'app/features/applications/types/application';
 import Observable from 'app/deprecated/Observable/Observable';
 import _ from 'lodash';

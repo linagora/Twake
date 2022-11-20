@@ -93,7 +93,7 @@ export const useCurrentCompanyRealtime = () => {
   const { company, refresh } = useCurrentCompany();
 
   const room = CompanyAPIClient.websocket(company?.id || '');
-  useRealtimeRoom<CompanyType>(room, 'useCurrentCompany', (_action, _resource) => {
+  useRealtimeRoom<CompanyType>(room, 'useCurrentCompany', () => {
     refresh();
   });
 };

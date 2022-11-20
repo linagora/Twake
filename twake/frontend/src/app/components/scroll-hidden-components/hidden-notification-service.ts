@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Observable from 'app/deprecated/Observable/Observable';
 
 type NodeType = React.RefObject<HTMLDivElement | ChildNode> | React.MutableRefObject<any> | any;

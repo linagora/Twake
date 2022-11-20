@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentStory } from '@storybook/react';
 import { useState } from 'react';
 import { Checkbox } from '../input-checkbox';

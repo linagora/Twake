@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React, { Component } from 'react';
 import './color-picker.scss';
 import CheckIcon from '@material-ui/icons/CheckOutlined';
 
-export default class ColorPicker extends React.Component {
+export default class ColorPicker extends Component {
   static colors = [
     '#D50000',
     '#E67C73',
@@ -25,7 +26,7 @@ export default class ColorPicker extends React.Component {
             onChange : called when a color is selected
         }
     */
-  constructor(props) {
+  constructor() {
     super();
     this.colors = ColorPicker.colors;
   }

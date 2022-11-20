@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import Languages from 'app/features/global/services/languages-service';
 
@@ -13,7 +14,6 @@ import Menu from 'components/menus/menu.jsx';
 import ListEditor from './list/list-editor.jsx';
 import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import Tabs from 'components/tabs/tabs.jsx';
-import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 import User from 'components/user/user.jsx';
 import MenusManager from 'app/components/menus/menus-manager.jsx';
@@ -87,7 +87,7 @@ export default class Board extends React.Component {
     return true;
   }
 
-  onDragStart = event => {
+  onDragStart = () => {
     TasksService.paused_notify[this.props.board.id] = true;
   };
 
@@ -402,7 +402,7 @@ export default class Board extends React.Component {
             {this.props.mode === 'list' && (
               <Tabs
                 tabs={lists
-                  .map((item, index) => {
+                  .map(item => {
                     return {
                       id: item.front_id || item.id,
                       titleClassName: item.id === 'add_list' ? 'no-selection-border' : '',
@@ -440,7 +440,7 @@ export default class Board extends React.Component {
                       },
                     };
                   })
-                  .reduce((acc, cur, i) => {
+                  .reduce((acc, cur) => {
                     acc[cur.id] = cur;
                     return acc;
                   }, {})}
@@ -455,7 +455,7 @@ export default class Board extends React.Component {
                   type="board"
                   className="droppable_list"
                 >
-                  {(provided, snapshot) => (
+                  {provided => (
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
@@ -467,7 +467,7 @@ export default class Board extends React.Component {
                     >
                       {lists
                         .filter(a => a.id !== 'add_list')
-                        .map((item, index) => {
+                        .map(item => {
                           return (
                             <List
                               showArchived={this.state.archived}

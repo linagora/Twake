@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import AddIcon from '@material-ui/icons/AddOutlined';
 import GearIcon from '@material-ui/icons/BuildOutlined';
@@ -10,7 +10,7 @@ import Languages from 'app/features/global/services/languages-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
-export default class ConnectorsListManager extends React.Component {
+export default class ConnectorsListManager extends Component {
   constructor(props) {
     super();
     this.props = props;

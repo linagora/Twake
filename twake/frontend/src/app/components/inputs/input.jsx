@@ -1,11 +1,12 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import AutoHeight from 'components/auto-height/auto-height.jsx';
 
 import './inputs.scss';
 
-export default class Input extends React.Component {
-  constructor(props) {
+export default class Input extends Component {
+  constructor() {
     super();
   }
   onKeyDown(evt) {

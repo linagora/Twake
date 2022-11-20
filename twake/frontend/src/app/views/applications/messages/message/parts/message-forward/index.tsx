@@ -1,7 +1,7 @@
 import { Info } from 'app/atoms/text';
 import Languages from 'app/features/global/services/languages-service';
 import { XIcon } from '@atoms/icons-agnostic';
-import { NodeMessage } from 'app/features/messages/types/message';
+import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import { UserType } from 'app/features/users/types/user';
 import { MessageBlockContent } from '../MessageContent';
 import { ForwardedFiles } from './files';
@@ -44,6 +44,7 @@ export default ({
         ' ' +
         (clickable ? 'cursor-pointer hover:bg-blue-100 hover:bg-opacity-50' : '')
       }
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       onClick={!closable ? goToMessage : () => {}}
     >
       <div className="w-[3px] rounded-full bg-blue-500 absolute left-0 top-0 h-full"></div>
@@ -55,7 +56,7 @@ export default ({
           ) : (
             <MessageBlockContent
               deleted={false}
-              message={message as any}
+              message={message as unknown as MessageWithReplies}
               onAction={onAction}
               suffix={<>{message.files && <ForwardedFiles files={message.files} />}</>}
             />

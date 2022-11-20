@@ -30,6 +30,7 @@ export default class CompanyIdendity extends Component {
     Languages.removeListener(this);
   }
   changeLogo(event) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     var that = this;
     event.preventDefault();
     uploadService.getFilesTree(event, function (tree) {
@@ -114,7 +115,7 @@ export default class CompanyIdendity extends Component {
             )}
           >
             <div
-              onClick={event => {
+              onClick={() => {
                 this.fileinput.click();
               }}
             >

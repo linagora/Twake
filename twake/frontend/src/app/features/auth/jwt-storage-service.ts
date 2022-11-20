@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 import LoginService from 'app/features/auth/login-service';
 import WindowService from 'app/features/global/utils/window';

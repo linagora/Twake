@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import File from 'components/drive/file';
@@ -73,7 +74,7 @@ export default class AttachmentPicker extends Component {
                 ];
               }
               return (
-                <div className="attachment attachment_file drive_view list">
+                <div className="attachment attachment_file drive_view list" key={`attachment_file-${att.id}`}>
                   <File
                     data={{ id: att.id || '' }}
                     additionalMenu={additionalMenu}

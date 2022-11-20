@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import Tooltip from 'components/tooltip/tooltip.jsx';
 import moment from 'moment';

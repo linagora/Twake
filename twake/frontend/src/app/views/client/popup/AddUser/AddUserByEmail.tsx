@@ -16,7 +16,7 @@ import FeatureTogglesService from 'app/features/global/services/feature-toggles-
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 type PropsType = {
-  [key: string]: any;
+  [key: string]: unknown;
   noMagicLink?: boolean;
   inline?: boolean;
   onChange?: (emails: string[]) => void;

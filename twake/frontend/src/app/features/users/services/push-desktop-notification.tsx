@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { notification as antNotification } from 'antd';
 import RouterService, { ClientStateType } from '../../router/services/router-service';
 import popupManager from 'app/deprecated/popupManager/popupManager';

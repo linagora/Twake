@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
 import Input from 'components/inputs/input.jsx';
@@ -6,7 +7,7 @@ import moment from 'moment';
 import DateTimeUtils from 'app/features/global/utils/datetime.js';
 import Languages from 'app/features/global/services/languages-service';
 
-export default class TimeSelector extends React.Component {
+export default class TimeSelector extends Component {
   constructor(props) {
     super(props);
     this.state = {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Observable from 'app/deprecated/Observable/Observable';
 import MenusManager from 'app/components/menus/menus-manager.jsx';
 

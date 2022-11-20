@@ -137,9 +137,6 @@ class SearchListManager extends Observable {
 
   private filterUsers({ users }: { users: UserType[] }) {
     const usersSearched: GenericChannel[] = users.map(user => {
-      const { name } = getUserParts({
-        usersIds: [user.id || ''],
-      });
 
       return (
         user && {

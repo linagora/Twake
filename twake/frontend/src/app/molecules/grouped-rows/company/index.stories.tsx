@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React from 'react';
 import { ComponentStory } from '@storybook/react';
-import { useArgs } from '@storybook/client-api';
 
 import CompanyBlock from '.';
 import Avatar from '@atoms/avatar';

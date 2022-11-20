@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { Picker } from 'emoji-mart';
 import Emojione from 'components/emojione/emojione';
@@ -33,9 +34,6 @@ export default class EmojiPicker extends React.Component {
     this.currentTitleIndex = 100000;
     this.clickScrollToRow = 0;
   }
-  componentWillUnmount() {}
-  onUpdate(item) {}
-  onRemove(item, ev) {}
   onChange(list) {
     if (list.length > 0) {
       if (this.props.onChange) {

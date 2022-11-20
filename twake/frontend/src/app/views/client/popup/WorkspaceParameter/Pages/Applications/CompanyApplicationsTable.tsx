@@ -133,6 +133,7 @@ export default () => {
       width: 200,
 
       render: (_initialValue, record: ColumnObjectType) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { key, ...application } = record;
         return (
           <div style={{ float: 'right' }}>

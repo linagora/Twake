@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react';
 import _ from 'lodash';
 import CryptoJS from 'crypto-js';

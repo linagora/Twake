@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentStory } from '@storybook/react';
 import { Input } from '../input-text';
 import { Title } from '../../text';

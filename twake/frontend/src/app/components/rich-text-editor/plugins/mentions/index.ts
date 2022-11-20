@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CharacterMetadata, ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import { getSelectedBlock } from 'draftjs-utils';
 

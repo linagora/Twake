@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Modal } from 'antd';
 
 import Languages from 'app/features/global/services/languages-service';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString } from 'lodash';
 
 export const getBase64 = (file: File): Promise<string> => {

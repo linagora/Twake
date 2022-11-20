@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 class Electron {
   isElectron() {
     return (window as any).electron !== undefined;

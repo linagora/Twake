@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React from 'react';
 import './calendar-selector.scss';
@@ -66,9 +67,6 @@ export default class CalendarSelector extends React.Component {
   }
 
   render() {
-    var nb_known_workspaces = 0;
-    var external_workspace = null;
-
     return (
       <div
         className={
@@ -81,17 +79,10 @@ export default class CalendarSelector extends React.Component {
       >
         <div className="selected_calendars_list calendar_selector_part">
           {this.props.value.map(ws_cal_id => {
-            if (ws_cal_id.workspace_id) {
-              if (WorkspacesService.user_workspaces[ws_cal_id.workspace_id]) {
-                external_workspace = Collections.get('workspaces').find(ws_cal_id.workspace_id);
-              }
-            }
-
             var item = Collections.get('calendars').find(ws_cal_id.calendar_id);
             if (!item || item.workspace_id !== WorkspacesService.currentWorkspaceId) {
               return '';
             }
-            nb_known_workspaces++;
             return (
               <div
                 ref={node => (this.node = node)}

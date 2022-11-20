@@ -1,12 +1,11 @@
 import Languages from 'app/features/global/services/languages-service';
-
 import * as Text from '@atoms/text';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import Radio from 'components/inputs/radio.jsx';
 
-export type preferencesType = {};
+export type preferencesType = Record<string, unknown>;
 export type AssistantPreferencesType = {
   user_id: string;
   company_id: string;

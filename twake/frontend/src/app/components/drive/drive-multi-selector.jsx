@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
 
@@ -5,8 +6,8 @@ import './drive-multi-selector.scss';
 import SelectionsManager from 'app/deprecated/SelectionsManager/SelectionsManager.js';
 import './drive.scss';
 
-export default class DriveMultiSelector extends React.Component {
-  constructor(props) {
+export default class DriveMultiSelector extends Component {
+  constructor() {
     super();
     this.state = {
       start_drag: false,
@@ -200,7 +201,6 @@ export default class DriveMultiSelector extends React.Component {
         var element_id = element.getAttribute('drive_selector_unid');
 
         var selected = SelectionsManager.selected_per_type[this.props.selectionType][element_id];
-        var current_selection = this.currentSelection[element_id];
 
         var over = false;
         var elementRect = {};

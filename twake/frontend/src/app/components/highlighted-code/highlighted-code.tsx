@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/railscasts.css'; //monokai-sublime

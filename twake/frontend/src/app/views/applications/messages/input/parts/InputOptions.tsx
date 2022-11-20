@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { EditorState } from 'draft-js';
 import { Smile, Video, MoreHorizontal, Paperclip, Type } from 'react-feather';
@@ -60,7 +61,7 @@ export default (props: Props) => {
             emoji,
             icon,
             text: app.identity?.name,
-            onClick: (evt: any) => {
+            onClick: (evt: unknown) => {
               props.triggerApp && props.triggerApp(app, undefined, evt);
             },
           };
@@ -109,7 +110,7 @@ export default (props: Props) => {
                 type: 'menu',
                 icon: 'desktop',
                 text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
-                onClick: (evt: any) => {
+                onClick: () => {
                   MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
                 },
               },
@@ -159,7 +160,7 @@ export default (props: Props) => {
                 reactElement: () => {
                   return (
                     <EmojiPicker
-                      onChange={(emoji: any) => {
+                      onChange={(emoji: unknown) => {
                         MenusManager.closeMenu();
                         props.onAddEmoji && props.onAddEmoji(emoji);
                       }}
@@ -239,7 +240,7 @@ export default (props: Props) => {
               type="text"
               size="small"
               className="option"
-              onClick={(evt: any) => {
+              onClick={(evt: unknown) => {
                 props.triggerApp && props.triggerApp(app, true, evt);
               }}
             >

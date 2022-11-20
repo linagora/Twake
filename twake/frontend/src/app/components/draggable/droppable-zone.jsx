@@ -1,11 +1,12 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import DraggableManager from './draggable-manager.js';
 import Number from 'app/features/global/utils/Numbers';
 import './draggable.scss';
 
-export default class DroppableZone extends React.Component {
-  constructor(props) {
+export default class DroppableZone extends Component {
+  constructor() {
     super();
     this.unique_drop_key = Number.unid();
     this.longOverTimeout = '';

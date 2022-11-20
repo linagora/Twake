@@ -5,7 +5,6 @@ import { DirectChannelsState } from '../state/channels';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
-import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';

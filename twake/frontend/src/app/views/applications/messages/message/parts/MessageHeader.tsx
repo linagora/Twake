@@ -68,6 +68,7 @@ export default (props: Props) => {
   let userNameRef: ReactNode = null;
   const displayUserCard = () => {
     if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const box = (window as any).getBoundingClientRect(userNameRef);
       MenusManager.openMenu(
         [
@@ -99,7 +100,7 @@ export default (props: Props) => {
       <div className={'message-content-header '}>
         <span
           className="sender-name"
-          ref={node => (userNameRef = node)}
+          ref={node => (userNameRef = node as ReactNode)}
           onClick={() => displayUserCard()}
         >
           {message.override?.title ||

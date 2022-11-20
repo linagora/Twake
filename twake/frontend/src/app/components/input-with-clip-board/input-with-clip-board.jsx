@@ -1,9 +1,8 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
-import Icon from 'app/components/icon/icon.jsx';
 import Tooltip from 'components/tooltip/tooltip.jsx';
-import Input from 'components/inputs/input.jsx';
 import InputWithButton from 'components/inputs/input-with-button.jsx';
 
 export default class InputWithClipBoard extends Component {

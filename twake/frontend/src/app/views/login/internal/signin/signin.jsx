@@ -2,13 +2,10 @@ import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
 import LoginService from 'app/features/auth/login-service';
-import AccountService from 'app/deprecated/login/account';
 import Emojione from 'components/emojione/emojione';
 import StepCounter from 'components/step-counter/step-counter.jsx';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.jsx';
 import Input from 'components/inputs/input.jsx';
-import Checkbox from 'app/components/inputs/deprecated_checkbox.jsx';
-import InitService from 'app/features/global/services/init-service';
 export default class Signin extends Component {
   constructor() {
     super();
@@ -48,7 +45,7 @@ export default class Signin extends Component {
     LoginService.removeListener(this);
     Languages.removeListener(this);
   }
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(_prevProps, prevState) {
     if (
       (prevState.page === 1 && this.state.page === 2) ||
       (prevState.page === 2 && this.state.page === 3 && this.input)

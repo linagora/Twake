@@ -1,15 +1,15 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import Input from './input.jsx';
 import Icon from 'app/components/icon/icon.jsx';
 import './inputs.scss';
 
-export default class InputEnter extends React.Component {
-  constructor(props) {
+export default class InputEnter extends Component {
+  constructor() {
     super();
   }
   render() {
-    var className = this.props.className || '';
     var parentClassName = '';
 
     if (this.props.big) {

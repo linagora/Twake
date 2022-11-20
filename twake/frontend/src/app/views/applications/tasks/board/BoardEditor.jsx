@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
 import Languages from 'app/features/global/services/languages-service';
@@ -8,7 +9,7 @@ import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import InputWithIcon from 'components/inputs/input-with-icon';
 import Button from 'components/buttons/button.jsx';
 
-export default class BoardEditor extends React.Component {
+export default class BoardEditor extends Component {
   constructor() {
     super();
     this.state = {

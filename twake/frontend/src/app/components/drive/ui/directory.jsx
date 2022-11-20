@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React from 'react';
 
@@ -10,7 +11,7 @@ import 'moment-timezone';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
 export default class Directory extends React.Component {
-  constructor(props) {
+  constructor() {
     super();
   }
   render() {
