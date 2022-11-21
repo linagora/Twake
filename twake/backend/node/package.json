@@ -127,7 +127,7 @@
     "emoji-name-map": "^1.2.9",
     "eta": "^1.12.3",
     "fast-proxy": "^2.1.0",
-    "fastify": "^3.27.1",
+    "fastify": "^3.29.4",
     "fastify-cors": "^4.1.0",
     "fastify-formbody": "^5.0.0",
     "fastify-jwt": "^2.2.0",
