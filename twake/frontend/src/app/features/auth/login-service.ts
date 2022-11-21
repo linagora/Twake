@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import Logger from 'app/features/global/framework/logger-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
@@ -22,15 +23,15 @@ class Login extends Observable {
   currentUserId = '';
   emailInit: string;
   server_infos_loaded: boolean;
-  server_infos: { branding: unknown; ready: unknown; auth: unknown; help_url: boolean };
+  server_infos: { branding: any; ready: any; auth: any; help_url: boolean };
   error_secondary_mail_already: boolean;
   addmail_token: string;
   external_login_error: boolean;
   state = '';
   login_loading = false;
   login_error = false;
-  parsed_error_code: unknown;
-  error_code: unknown;
+  parsed_error_code: any;
+  error_code: any;
   cookies: Cookies;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -166,7 +167,7 @@ class Login extends Observable {
     });
   }
 
-  login(params: unknown, hide_load = false) {
+  login(params: any, hide_load = false) {
     if (!hide_load) {
       this.login_loading = true;
     }

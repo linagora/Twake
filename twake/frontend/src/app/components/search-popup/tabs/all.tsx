@@ -108,7 +108,7 @@ export default () => {
             </Text.Subtitle>
           </div>
           <div className="-mx-2">
-            <MessagesResults max={6} />
+            <MessagesResults />
           </div>
         </>
       )}

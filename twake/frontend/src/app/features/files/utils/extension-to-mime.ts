@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default {
   adp: "audio/adpcm",
   aif: "audio/x-aiff",
@@ -142,4 +143,4 @@ export default {
   xml: "text/xml",
   xpm: "image/x-xpixmap",
   xwd: "image/x-xwindowdump",
-};
+} as any;
