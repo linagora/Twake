@@ -40,11 +40,6 @@ export default class MainView extends Component {
       { workspace_id: this.routeState.workspaceId },
       res => {
         if (res && res.data) {
-          // // eslint-disable-next-line react/no-direct-mutation-state
-          // this.state.group = {
-          //   name: res.data.group_name,
-          //   logo: addApiUrlIfNeeded(res.data.group_logo),
-          // };
           this.setState({
             ...this.state,
             group: {

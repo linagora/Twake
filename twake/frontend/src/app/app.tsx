@@ -14,7 +14,6 @@ import ApplicationLoader from './components/loader/application-loader';
 
 import DebugState from './components/debug/debug-state';
 import 'app/styles/index.less';
-import DesktopRedirect from './views/desktop-redirect';
 
 const delayMessage = 5000;
 

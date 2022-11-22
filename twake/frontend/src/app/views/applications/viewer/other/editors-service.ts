@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { Application } from 'app/features/applications/types/application';
 import jwtStorageService from 'app/features/auth/jwt-storage-service';

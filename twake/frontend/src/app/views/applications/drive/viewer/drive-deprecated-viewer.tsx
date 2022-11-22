@@ -33,7 +33,7 @@ export default class ViewerContainer extends Component<PropsType, StateType> {
     Collections.get('drive').addListener(this);
     DriveService.addListener(this);
   }
-  UNSAFE_componentWillUpdate(nextProps: any, nextState: any) {
+  UNSAFE_componentWillUpdate() {
     this.viewed_document = this.props.document || DriveService.viewed_document;
   }
   componentWillUnmount() {
