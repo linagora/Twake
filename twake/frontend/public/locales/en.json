@@ -999,7 +999,7 @@
     "components.invitation.invitation_target.channels_button": "Channels to invite",
     "components.invitation.workspace_link.text": "Workspace invitation link",
     "components.invitation.workspace_link.button": "Copy",
-    "components.invitation.title": "invite people to {{$1}}",
+    "components.invitation.title": "Invite people to {{$1}}",
     "components.invitation.custom_role": "Custom role invitation",
     "components.invitation.bulk_invitation": "Bulk invitation",
     "components.invitation.button": "Send invitations"

@@ -16,6 +16,9 @@ import InvitationChannels from './parts/invitation-channels';
 import InvitationSent from './parts/invitation-sent';
 import { useInvitation } from 'app/features/invitation/hooks/use-invitation';
 import Languages from 'app/features/global/services/languages-service';
+import WorkspaceLink from './parts/workspace-link';
+import InvitationTarget from './parts/invitation-target';
+import AllowAnyoneByEmail from './parts/allow-anyone-by-email';
 
 enum InvitationTabs {
   custom = 0,
@@ -60,12 +63,17 @@ export default (): React.ReactElement => {
             : Languages.t(
                 'components.invitation.title',
                 [workspace.workspace?.name],
-                `invite people to ${workspace.workspace?.name}`,
+                `Invite people to ${workspace.workspace?.name}`,
               )
         }
       >
         {!isInvitationSent ? (
           <>
+            <AllowAnyoneByEmail />
+
+            <hr />
+            <InvitationTarget />
+            <WorkspaceLink />
             <Tab
               tabs={[
                 <div key="custom_role_invitation">
