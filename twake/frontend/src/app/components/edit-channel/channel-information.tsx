@@ -200,7 +200,7 @@ export const ChannelInformationForm = (props: {
             placeholder={Languages.t(
               'scenes.app.channelsbar.channel_information.description.placeholder',
             )}
-            value={description}
+            defaultValue={description}
             onChange={e => setDescription(e.target.value)}
             multiline
           />

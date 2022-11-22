@@ -238,7 +238,9 @@ export const MessageBlockContent = ({
             (message?.links?.length || 0) > 0 &&
             message.links
               .filter(link => link && (link.title || link.description || link.img))
-              .map((preview, i) => <LinkPreview key={i} preview={preview} />)}
+              .map((preview, i) => (
+                <LinkPreview key={`${i}-${preview.url}-${message.thread_id}`} preview={preview} />
+              ))}
 
           {suffix}
         </>

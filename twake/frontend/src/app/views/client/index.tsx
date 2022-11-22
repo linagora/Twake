@@ -63,8 +63,8 @@ export default React.memo((): JSX.Element => {
                 theme="light"
                 width={290}
                 onCollapse={(collapsed, type) => {
-                  if (type === 'responsive') return setMenuIsOpen(false);
-                  setMenuIsOpen(!collapsed);
+                  if (type === 'responsive') return setTimeout(() => setMenuIsOpen(false), 0);
+                  setTimeout(() => setMenuIsOpen(!collapsed), 0);
                 }}
               >
                 <Suspense fallback={<LoadingSidebar />}>

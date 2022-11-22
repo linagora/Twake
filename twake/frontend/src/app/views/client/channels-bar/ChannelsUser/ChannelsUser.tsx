@@ -44,7 +44,7 @@ export default () => {
       </Modal>
 
       <ChannelCategory
-        refAdd={(node: unknown) => {
+        refAdd={(node) => {
           // eslint-disable-next-line no-self-assign, @typescript-eslint/no-unused-vars
           node = node;
         }}
