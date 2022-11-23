@@ -27,13 +27,13 @@ export default (): React.ReactElement => {
   };
 
   return (
-    <div className="flex flex-row mt-4  w-full">
+    <div className="flex flex-row  w-full">
       <InputDecorationIcon
         className="grow  grow w-full"
         input={({ className }) => (
           <Input
             className={className + ' rounded-r-none pointer-events-none'}
-            theme="outline"
+            theme="plain"
             readOnly
             value={Languages.t(
               'components.invitation.workspace_link.text',
@@ -46,7 +46,7 @@ export default (): React.ReactElement => {
       />
       <Button
         className="h-7 2 rounded-l-none -ml-px"
-        theme="default"
+        theme="primary"
         icon={CopyIcon}
         onClick={() => copyLink()}
         loading={loading}

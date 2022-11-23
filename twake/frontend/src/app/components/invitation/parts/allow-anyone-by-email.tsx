@@ -1,3 +1,4 @@
+import { Info, Subtitle } from 'app/atoms/text';
 import Switch from 'app/components/inputs/switch';
 import Languages from 'app/features/global/services/languages-service';
 import { ToasterService } from 'app/features/global/services/toaster-service';
@@ -32,24 +33,29 @@ export default (): React.ReactElement => {
   };
 
   return !members_limit_reached ? (
-    <div className="flex flex-row space-x-2 mt-4 bg-zinc-200 px-3 py-2 mx-2 rounded-md border-transparent w-full h-9">
-      <div className="flex-1">
-        {Languages.t(
-          'components.invitation.allow_anyone_by_email.text',
-          [workspace?.preferences?.invite_domain || currentUserDomain],
-          `Let anyone with @${
-            workspace?.preferences?.invite_domain || currentUserDomain
-          } email join this workspace`,
-        )}
-      </div>
-      <div className="basis-1">
+    <>
+      <Subtitle className="mt-4 block">Automatically invite my business</Subtitle>
+      <Info className="block">
+        If this is enabled, anyone creating a Twake account with your business email will
+        automatically be added to this company and this workspace.
+      </Info>
+      <div className="flex flex-row space-x-2 mt-1 bg-zinc-200 px-3 py-2 rounded-md border-transparent w-full h-9">
+        <div className="flex-1">
+          {Languages.t(
+            'components.invitation.allow_anyone_by_email.text',
+            [workspace?.preferences?.invite_domain || currentUserDomain],
+            `Let anyone with @${
+              workspace?.preferences?.invite_domain || currentUserDomain
+            } email join this workspace`,
+          )}
+        </div>
         <Switch
           checked={allow}
           onChange={handleChange}
           disabled={!!workspace?.preferences?.invite_domain}
         />
       </div>
-    </div>
+    </>
   ) : (
     <></>
   );

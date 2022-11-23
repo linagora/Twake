@@ -19,6 +19,7 @@ import Languages from 'app/features/global/services/languages-service';
 import WorkspaceLink from './parts/workspace-link';
 import InvitationTarget from './parts/invitation-target';
 import AllowAnyoneByEmail from './parts/allow-anyone-by-email';
+import { Info, Subtitle } from 'app/atoms/text';
 
 enum InvitationTabs {
   custom = 0,
@@ -71,20 +72,26 @@ export default (): React.ReactElement => {
           <>
             <AllowAnyoneByEmail />
 
-            <hr />
+            <Subtitle className="mt-6 block">Manual invitation</Subtitle>
+            <Info className="block">
+              You can configure exactly where the user will be invited and what role they will have.
+            </Info>
             <InvitationTarget />
+
+            <Info className="block mt-2 mb-1">
+              Simply send this email to the users you want to invite.
+            </Info>
             <WorkspaceLink />
-            <Tab
+
+            <Info className="block mt-4">Or enter manually the emails here.</Info>
+
+            {/*<Tab
               tabs={[
                 <div key="custom_role_invitation">
-                  {Languages.t(
-                    'components.invitation.custom_role_invitation',
-                    [],
-                    'Custom role invitation',
-                  )}
+                  {Languages.t('components.invitation.custom_role_invitation')}
                 </div>,
                 <div key="bulk_invitation">
-                  {Languages.t('components.invitation.bulk_invitation', [], 'Bulk invitation')}
+                  {Languages.t('components.invitation.bulk_invitation')}
                 </div>,
               ]}
               selected={activeTab}
@@ -93,7 +100,8 @@ export default (): React.ReactElement => {
               parentClassName="basis-1/2 justify-center"
             />
             {activeTab === InvitationTabs.custom && <Custom_role_invitation />}
-            {activeTab === InvitationTabs.bulk && <Bulk_invitation />}
+            {activeTab === InvitationTabs.bulk && <Bulk_invitation />}*/}
+            <Custom_role_invitation />
             <Button
               className="mt-2 justify-center w-full"
               disabled={!invitations.length || sending}
@@ -105,6 +113,7 @@ export default (): React.ReactElement => {
                 {invitations.length}
               </div>
             </Button>
+
             <InvitationChannels />
           </>
         ) : (
