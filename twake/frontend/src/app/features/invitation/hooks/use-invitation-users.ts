@@ -49,7 +49,7 @@ export const useInvitationUsers = () => {
     }
 
     setCanAddInvitations(role === InvitationType.member ? allowedMembers > 0 : allowedGuests > 0);
-  }, [company.plan?.limits, invitedUsers, role]);
+  }, []);
 
   const addInvitation = (email: string): void => {
     if (!emailRegex.test(email)) return;

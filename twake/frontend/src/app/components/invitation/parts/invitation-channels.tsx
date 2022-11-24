@@ -8,8 +8,7 @@ import { uniqBy } from 'lodash';
 import Languages from 'app/features/global/services/languages-service';
 
 export default (): React.ReactElement => {
-  const { selectedChannels, closeSelection, setChannels, open } =
-    useInvitationChannels();
+  const { selectedChannels, closeSelection, setChannels, open } = useInvitationChannels();
 
   const handleSelectionChange = (channels: ChannelType[]) => {
     setChannels(uniqBy(channels, 'id'));
@@ -17,7 +16,7 @@ export default (): React.ReactElement => {
 
   return (
     <Modal open={open} onClose={() => closeSelection()} className="sm:w-[20vw] sm:max-w-xl">
-      <ModalContent textCenter title="channels to invite">
+      <ModalContent textCenter title="Choose channels">
         <ChannelSelector
           initialChannels={selectedChannels}
           onChange={handleSelectionChange}

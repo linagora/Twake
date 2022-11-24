@@ -27,44 +27,22 @@ export default (): React.ReactElement => {
 
   return (
     <div className="flex flex-row space-x-3 rounded-md border-transparent w-full pt-2">
-      <div className=" bg-zinc-200 rounded-md py-2 m-2 px-3 justify-center align-middle">
+      <div className="bg-zinc-200 rounded-md py-2 px-3 flex flex-row justify-center items-center">
         <BaseSmall>
-          {Languages.t(
-            'components.invitation.invitation_target.invite_as_guests',
-            [],
-            'Invite all as guests',
-          )}
+          {Languages.t('components.invitation.invitation_target.invite_as_guests')}
         </BaseSmall>
         <Switch
           checked={invitationType === InvitationType.guest}
           className="ml-2"
-          onChange={() => changeInvitationType(InvitationType.guest)}
+          onChange={e => changeInvitationType(e ? InvitationType.guest : InvitationType.member)}
         />
       </div>
-      <div className=" bg-zinc-200 rounded-md py-2 m-2 px-3 justify-center align-middle">
-        <BaseSmall>
-          {Languages.t(
-            'components.invitation.invitation_target.invite_as_members',
-            [],
-            'Invite all as members',
-          )}
-        </BaseSmall>
-        <Switch
-          checked={invitationType === InvitationType.member}
-          className="ml-2"
-          onChange={() => changeInvitationType(InvitationType.member)}
-        />
-      </div>
-      <div className="flex-grow bg-zinc-200 rounded-md py-2 m-2 px-3 justify-center align-middle">
+      <div className="flex-grow bg-zinc-200 rounded-md py-2 ml-2 px-3 justify-center align-middle">
         <div
           className="cursor-pointer flex relative justify-center border-transparent hover:text-blue-600 transition-colors text-blue-500 font-semibold "
           onClick={() => openSelection()}
         >
-          {Languages.t(
-            'components.invitation.invitation_target.channels_button',
-            [],
-            'Channels to invite',
-          )}
+          {Languages.t('components.invitation.invitation_target.channels_button')}
           <div className="font-medium h-5 px-1.5 flex items-center justify-center text-sm rounded-full ml-1 text-white bg-blue-500">
             {selectedChannels.length}
           </div>

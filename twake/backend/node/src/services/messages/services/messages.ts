@@ -638,6 +638,8 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       }
     }
 
+    message = await this.includeUsersInMessage(message, context);
+
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
     await gr.services.messages.engine.dispatchMessage({
       resource: message,
@@ -645,7 +647,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       created: options.created,
     });
 
-    return new SaveResult<Message>(
+    return new SaveResult<MessageWithUsers>(
       "message",
       message,
       options.created ? OperationType.CREATE : OperationType.UPDATE,
