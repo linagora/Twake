@@ -997,11 +997,12 @@
     "components.invitation.invitation_sent.button": "Send more invitations",
     "components.invitation.invitation_target.invite_as_guests": "Invite all as guests",
     "components.invitation.invitation_target.invite_as_members": "Invite all as members",
-    "components.invitation.invitation_target.channels_button": "Channels to invite",
+    "components.invitation.invitation_target.channels_button": "Select channels",
     "components.invitation.workspace_link.text": "Workspace invitation link",
     "components.invitation.workspace_link.button": "Copy",
-    "components.invitation.title": "invite people to {{$1}}",
-    "components.invitation.custom_role": "Custom role invitation",
-    "components.invitation.bulk_invitation": "Bulk invitation",
+    "components.invitation.title": "Invite people to {{$1}}",
+    "components.invitation.custom_role_invitation": "Classic invitation",
+    "components.invitation.bulk_invitation": "Multiple emails",
+    "components.invitation.link": "Link",
     "components.invitation.button": "Send invitations"
 }
