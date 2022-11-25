@@ -46,7 +46,7 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
     return await this.repository.findOne(pk, {}, context);
   }
 
-  async list<ListOptions>(
+  async list(
     pagination: Pagination,
     options?: { search?: string },
     context?: ExecutionContext,
@@ -81,9 +81,7 @@ export class ApplicationServiceImpl implements TwakeServiceProvider, Initializab
     return entities.getEntities();
   }
 
-  async listDefaults<ListOptions>(
-    context: ExecutionContext,
-  ): Promise<ListResult<PublicApplicationObject>> {
+  async listDefaults(context: ExecutionContext): Promise<ListResult<PublicApplicationObject>> {
     const entities = [];
 
     let page: Pagination = { limitStr: "100" };

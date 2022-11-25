@@ -101,13 +101,13 @@ export class UserNotificationDigestService implements TwakeServiceProvider, Init
 
     const user = await gr.services.users.get({ id: digest.user_id });
     const company = await gr.services.companies.getCompany({ id: digest.company_id });
-    let notifications: {
+    const notifications: {
       channel: Channel;
       workspace: Workspace;
       message: Message & { user: UserObject };
     }[] = [];
-    let workspaces: { [key: string]: Workspace } = {};
-    let channels: { [key: string]: Channel } = {};
+    const workspaces: { [key: string]: Workspace } = {};
+    const channels: { [key: string]: Channel } = {};
 
     for (const badge of badges.getEntities()) {
       if (!badge.thread_id) continue;

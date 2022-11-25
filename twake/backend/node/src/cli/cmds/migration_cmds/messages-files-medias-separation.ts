@@ -11,7 +11,7 @@ import { fileIsMedia } from "../../../services/files/utils";
 import { MessageFile } from "../../../services/messages/entities/message-files";
 import _ from "lodash";
 
-type Options = {};
+type Options = Record<string, unknown>;
 
 class MessageReferenceRepair {
   database: DatabaseServiceAPI;
@@ -20,7 +20,8 @@ class MessageReferenceRepair {
     this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
   }
 
-  public async run(options: Options = {}): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async run(_options: Options = {}): Promise<void> {
     const repository = await gr.database.getRepository<MessageFileRef>(
       "message_file_refs",
       MessageFileRef,
@@ -109,8 +110,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   command: "messages-files-medias-separation",
   describe: "command to separate medias and files in messages-files channels refs",
   builder: {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handler: async argv => {
+  handler: async () => {
     const spinner = ora({ text: "Fixing messages references - " }).start();
     const platform = await twake.run(services);
     await gr.doInit(platform);

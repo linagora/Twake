@@ -1,5 +1,3 @@
-import { FastifyRequest } from "fastify";
-import { WorkspaceBaseRequest } from "../services/workspaces/web/types";
 import gr from "../services/global-resolver";
 import CompanyUser from "../services/user/entities/company_user";
 

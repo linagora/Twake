@@ -21,7 +21,7 @@ export class ThreadMessagesOperationsService {
   constructor(private threadMessagesService: ThreadMessagesService) {}
   repository: Repository<Message>;
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(_context: TwakeContext): Promise<this> {
     this.repository = await gr.database.getRepository<Message>(MessageTableName, Message);
     return this;
   }

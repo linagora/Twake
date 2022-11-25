@@ -1,5 +1,5 @@
 import fs, { promises as fsPromise } from "fs";
-import { logger, TwakeContext } from "../../../../../core/platform/framework";
+import { logger } from "../../../../../core/platform/framework";
 import {
   PreviewMessageQueueCallback,
   PreviewMessageQueueRequest,
@@ -18,7 +18,7 @@ export class PreviewProcessor
 {
   readonly name = "PreviewProcessor";
 
-  init?(context?: TwakeContext): Promise<this> {
+  init?(): Promise<this> {
     throw new Error("Method not implemented.");
   }
 
@@ -84,7 +84,6 @@ export class PreviewProcessor
       localThumbnails = await gr.services.preview.files.generateThumbnails(
         { path: inputPath, mime: message.document.mime, filename: message.document.filename },
         message.output,
-        true,
       );
     } catch (err) {
       logger.error(`${this.name} - Can't generate thumbnails ${err}`);

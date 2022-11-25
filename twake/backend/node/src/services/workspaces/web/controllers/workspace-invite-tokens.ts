@@ -33,7 +33,7 @@ export class WorkspaceInviteTokensCrudController
 {
   async list(
     request: FastifyRequest<{ Params: WorkspaceInviteTokenGetRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
 
@@ -57,7 +57,7 @@ export class WorkspaceInviteTokensCrudController
       Params: WorkspaceInviteTokenGetRequest;
       Body: WorkspaceInviteTokenBody;
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
 
@@ -104,7 +104,7 @@ export class WorkspaceInviteTokensCrudController
 
   async join(
     request: FastifyRequest<{ Body: WorkspaceJoinByTokenRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceJoinByTokenResponse>> {
     const entity = await gr.services.workspaces.getInviteTokenInfo(request.body.token);
 

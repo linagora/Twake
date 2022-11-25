@@ -45,7 +45,7 @@ export function secureOperators<Entity>(
   },
 ): FindOptions {
   const instance = new (entityType as any)();
-  const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
+  const { columnsDefinition } = getEntityDefinition(instance);
 
   Object.keys(findOptions).forEach(key => {
     if (
@@ -79,14 +79,12 @@ export function secureOperators<Entity>(
   return findOptions;
 }
 
-const microCounter = 0; //We do not really use nanotime, our goal is to ensure unicity first.
-
 /**
  * Build uuid from nanotime
  * @param orderable
  * @returns
  */
-export function fromMongoDbOrderable(orderable: string) {
+export function fromMongoDbOrderable(orderable: string): string {
   if (!orderable) {
     return null;
   }

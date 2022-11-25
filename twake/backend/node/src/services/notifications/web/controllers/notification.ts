@@ -7,11 +7,9 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../../utils/types";
-import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";
+import { UserNotificationBadge } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
 import gr from "../../../global-resolver";
-import { getCompanyExecutionContext } from "../../../messages/web/controllers";
-import { BaseChannelsParameters } from "../../../channels/web/types";
 import { WorkspaceExecutionContext } from "../../../channels/types";
 
 export class NotificationController

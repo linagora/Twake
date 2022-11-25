@@ -1,6 +1,5 @@
 import { RequestParams } from "@elastic/elasticsearch";
 import { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
-import _ from "lodash";
 import { logger } from "../../../../../../core/platform/framework/logger";
 import { EntityTarget, FindFilter, FindOptions, getEntityDefinition } from "../../api";
 import { asciiFold } from "../utils";
@@ -11,7 +10,7 @@ export function buildSearchQuery<Entity>(
   options: FindOptions = {},
 ): { esParams: RequestParams.Search; esOptions: TransportRequestOptions } {
   const instance = new (entityType as any)();
-  const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
+  const { entityDefinition } = getEntityDefinition(instance);
   const indexProperties = entityDefinition.options.search.esMapping.properties || {};
 
   const esBody: any = {

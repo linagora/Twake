@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { isBoolean, isInteger, isNull, isString, isUndefined } from "lodash";
+import { isBoolean, isInteger, isNull, isUndefined } from "lodash";
 import { ColumnOptions, ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../../../../../../crypto";
 import { logger } from "../../../../../../../../core/platform/framework";
-import moment from "moment";
 
 export const cassandraType = {
   encoded_string: "TEXT",

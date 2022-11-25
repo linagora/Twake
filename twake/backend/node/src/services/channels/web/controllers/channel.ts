@@ -41,7 +41,6 @@ import {
 import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
-import { ChannelUserCounterType } from "../../entities/channel-counters";
 import gr from "../../../global-resolver";
 import { checkUserBelongsToCompany } from "../../../../utils/company";
 
@@ -66,7 +65,7 @@ export class ChannelCrudController
 
   async get(
     request: FastifyRequest<{ Querystring: ChannelListQueryParameters; Params: ChannelParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelObject>> {
     const context = getExecutionContext(request);
 
@@ -125,7 +124,7 @@ export class ChannelCrudController
       Querystring: ChannelSearchQueryParameters;
       Params: { company_id: string };
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<Channel>> {
     if (request.query?.q?.length === 0) {
       return this.recent(request);
@@ -590,24 +589,6 @@ function getExecutionContext(
     workspace: {
       company_id: request.params.company_id,
       workspace_id: request.params.workspace_id,
-    },
-  };
-}
-
-function getChannelExecutionContext(
-  request: FastifyRequest<{ Params: ChannelParameters }>,
-  channel: Channel,
-): ChannelExecutionContext {
-  return {
-    user: request.currentUser,
-    url: request.url,
-    method: request.routerMethod,
-    reqId: request.id,
-    transport: "http",
-    channel: {
-      id: channel.id,
-      company_id: channel.company_id,
-      workspace_id: channel.workspace_id,
     },
   };
 }

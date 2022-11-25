@@ -23,7 +23,7 @@ export function updateMessageReactions(
   message: Message,
   selectedReactions: string[],
   userId: string,
-) {
+): void {
   const reactions: { [key: string]: MessageReaction } = {};
   for (const reaction of message.reactions || []) {
     reactions[reaction.name] = reaction;
@@ -48,7 +48,10 @@ export function updateMessageReactions(
   message.reactions = Object.values(reactions);
 }
 
-export function getDefaultMessageInstance(item: Partial<Message>, context: ThreadExecutionContext) {
+export function getDefaultMessageInstance(
+  item: Partial<Message>,
+  context: ThreadExecutionContext,
+): Message {
   let instance = getInstance({
     id: undefined,
     ephemeral:

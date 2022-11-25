@@ -16,11 +16,11 @@ class ChannelMemberReadCursorsMigrator {
   readSectionRepository: Repository<ChannelMemberReadCursors>;
   database: DatabaseServiceAPI;
 
-  constructor(readonly platform: TwakePlatform) {
-    this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
+  constructor(readonly _platform: TwakePlatform) {
+    this.database = this._platform.getProvider<DatabaseServiceAPI>("database");
   }
 
-  public async run(options = {}, context?: ExecutionContext): Promise<void> {
+  public async run(_options = {}, context?: ExecutionContext): Promise<void> {
     const companyPagination: Paginable = new Pagination(null, "100");
     const companies = await gr.services.companies.getCompanies(companyPagination);
 

@@ -50,7 +50,7 @@ export class ApplicationsApiController {
 
   async me(
     request: FastifyRequest,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<ApplicationObject>> {
     const context = getExecutionContext(request);
 
@@ -67,7 +67,10 @@ export class ApplicationsApiController {
     return { resource: entity.getApplicationObject() };
   }
 
-  async configure(request: FastifyRequest<{ Body: ConfigureRequest }>, reply: FastifyReply) {
+  async configure(
+    request: FastifyRequest<{ Body: ConfigureRequest }>,
+    _reply: FastifyReply,
+  ): Promise<Record<string, string>> {
     const app_id = request.currentUser.application_id;
     const context = getExecutionContext(request);
     const application = await gr.services.applications.marketplaceApps.get({ id: app_id }, context);
@@ -103,7 +106,7 @@ export class ApplicationsApiController {
     request: FastifyRequest<{ Params: { company_id: string; service: string; version: string } }>,
     reply: FastifyReply,
     fastify: FastifyInstance,
-  ) {
+  ): Promise<void> {
     // Check the application has access to this company
     const company_id = request.params.company_id;
     const companyApplication = gr.services.applications.companyApps.get({
@@ -141,7 +144,7 @@ export class ApplicationsApiController {
     }
 
     //TODO Check application access rights (write, read, remove for each micro services)
-    const access = app.access;
+    const _access = app.access;
 
     //TODO save some statistics about API usage for application and per companies
 

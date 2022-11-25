@@ -3,16 +3,13 @@ import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
 import { CompanyLimitsEnum, UserObject } from "../../../src/services/user/web/types";
-import { Channel } from "../../../src/services/channels/entities";
 import { ChannelVisibility } from "../../../src/services/channels/types";
 import gr from "../../../src/services/global-resolver";
 import { ResourceListResponse, Workspace } from "../../../src/utils/types";
 import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
 import { createMessage, e2e_createThread } from "../messages/utils";
-import { ChannelObject } from "../../../src/services/channels/services/channel/types";
 import { deserialize } from "class-transformer";
-import { ChannelUtils, get as getChannelUtils } from "../channels/utils";
-import { Api } from "../utils.api";
+import { get as getChannelUtils } from "../channels/utils";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";

@@ -109,7 +109,7 @@ export class WorkspacesCrudController
 
   async get(
     request: FastifyRequest<{ Params: WorkspaceRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 

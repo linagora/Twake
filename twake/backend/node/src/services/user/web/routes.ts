@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { UsersCrudController } from "./controller";
 import {
   deleteDeviceSchema,
@@ -15,8 +15,8 @@ const usersUrl = "/users";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
   const usersController = new UsersCrudController();
-  const accessControl = async (request: FastifyRequest) => {
-    // TODO
+  const accessControl = async () => {
+    // TODO: Handle Access Control
     const authorized = true;
 
     if (!authorized) {

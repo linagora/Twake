@@ -24,9 +24,7 @@ import { TestDbService } from "../utils.prepare.db";
 import { ChannelObject } from "../../../src/services/channels/services/channel/types";
 import { Api } from "../utils.api";
 import gr from "../../../src/services/global-resolver";
-import { createMessage, e2e_createMessage, e2e_createThread } from "../messages/utils";
-import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
-import { ParticipantObject, Thread } from "../../../src/services/messages/entities/threads";
+import { createMessage, e2e_createThread } from "../messages/utils";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";

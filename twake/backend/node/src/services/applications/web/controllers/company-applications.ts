@@ -86,7 +86,7 @@ export class CompanyApplicationController
 
   async delete(
     request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
     const resource = await gr.services.applications.companyApps.delete({

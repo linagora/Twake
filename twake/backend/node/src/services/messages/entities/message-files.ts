@@ -1,5 +1,4 @@
 import { Type } from "class-transformer";
-import { merge } from "lodash";
 import { Thumbnail } from "../../files/entities/file";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import search from "./message-files.search";

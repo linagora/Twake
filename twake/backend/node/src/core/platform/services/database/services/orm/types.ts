@@ -1,5 +1,3 @@
-import { Column } from "./decorators";
-
 export type EntityDefinition = {
   name: string;
   type: string;

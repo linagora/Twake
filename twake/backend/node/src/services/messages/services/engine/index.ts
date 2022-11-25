@@ -58,7 +58,7 @@ export class MessagesEngine implements Initializable {
     await this.channelViewProcessor.process(thread, e);
     await this.channelMarkedViewProcessor.process(thread, e);
     await this.userInboxViewProcessor.process(thread, e);
-    await this.userMarkedViewProcessor.process(thread, e);
+    await this.userMarkedViewProcessor.process();
     await this.filesViewProcessor.process(thread, e);
     await this.messageToNotifications.process(thread, e);
     await this.messageToHooks.process(thread, e);

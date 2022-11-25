@@ -95,7 +95,7 @@ const searchFiles = async (
         },
       );
 
-      let resources: FileSearchResult[] = [];
+      const resources: FileSearchResult[] = [];
       for (let flatFile of tmp.getEntities()) {
         flatFile = flatFile as FlatFileFromMessage;
         resources.push({

@@ -1,4 +1,4 @@
-export const reduceUUID4 = function (id: string) {
+export const reduceUUID4 = function (id: string): string {
   if (!id) return undefined;
 
   return id
@@ -7,7 +7,7 @@ export const reduceUUID4 = function (id: string) {
     .replace(/-/g, "g");
 };
 
-export const expandUUID4 = function (id: string) {
+export const expandUUID4 = function (id: string): string {
   if (!id) return undefined;
 
   return (

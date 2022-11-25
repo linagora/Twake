@@ -2,18 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
 import { init, TestPlatform } from "../setup";
-import {
-  ResourceGetResponse,
-  ResourceListResponse,
-  ResourceUpdateResponse,
-  User,
-} from "../../../src/utils/types";
+import { ResourceGetResponse, ResourceListResponse, User } from "../../../src/utils/types";
 import { Channel } from "../../../src/services/channels/entities";
-import {
-  ChannelExecutionContext,
-  ChannelVisibility,
-  WorkspaceExecutionContext,
-} from "../../../src/services/channels/types";
+import { ChannelVisibility, WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { TestDbService } from "../utils.prepare.db";

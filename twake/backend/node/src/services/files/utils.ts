@@ -1,7 +1,7 @@
 import { MessageFile } from "../messages/entities/message-files";
 import { File, PublicFile } from "./entities/file";
 
-const formatPublicFile = (file: Partial<File | PublicFile>): PublicFile => {
+export const formatPublicFile = (file: Partial<File | PublicFile>): PublicFile => {
   if ((file as Partial<File>).getPublicObject) file = (file as Partial<File>).getPublicObject();
   return {
     ...file,

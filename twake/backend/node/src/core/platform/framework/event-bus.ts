@@ -15,7 +15,7 @@ class EventBus {
     this.subjects = new Map<string, Subject<any>>();
   }
 
-  subscribe<T>(name: string, listener: (data: T) => void): this {
+  subscribe<T>(name: string, listener: (_data: T) => void): this {
     if (!this.subjects.has(name)) {
       this.subjects.set(name, new Subject<T>());
     }
@@ -33,7 +33,7 @@ class EventBus {
     return this;
   }
 
-  publish<T>(name: string, data: T, context?: ExecutionContext): boolean {
+  publish<T>(name: string, data: T, _context?: ExecutionContext): boolean {
     if (!this.subjects.has(name)) {
       return false;
     }

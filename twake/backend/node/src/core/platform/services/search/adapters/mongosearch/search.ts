@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { buildSelectQuery } from "../../../database/services/orm/connectors/mongodb/query-builder";
 import { EntityTarget, FindFilter, FindOptions, getEntityDefinition } from "../../api";
 import { asciiFold } from "../utils";

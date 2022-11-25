@@ -44,7 +44,7 @@ export class ChannelTabCrudController
 
   async get(
     request: FastifyRequest<{ Params: ChannelTabParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelTab>> {
     const resource = await gr.services.tab.get(
       this.getPrimaryKey(request),

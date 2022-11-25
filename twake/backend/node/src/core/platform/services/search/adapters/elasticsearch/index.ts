@@ -1,5 +1,4 @@
 import { Client } from "@elastic/elasticsearch";
-import { Readable } from "stream";
 import { logger } from "../../../../framework";
 import _ from "lodash";
 import {
@@ -52,7 +51,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
 
   private async createIndex(
     entity: EntityDefinition,
-    columns: { [name: string]: ColumnDefinition },
+    _columns: { [name: string]: ColumnDefinition },
   ) {
     if (!entity.options?.search) {
       return;
