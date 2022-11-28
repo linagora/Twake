@@ -1,3 +1,12 @@
+# Twake 2022.Q4.1143
+
+- Ability to invite automatically any user with same business email ✉️
+- Workspace invitation improved 🎨
+- Channel menu improved 🎨
+- Fixes on Documents (for SaaS) 📁
+- Forward messages to another channel ⤴️
+- Set a channel as read-only 👀
+
 # Twake 2022.Q4.1120
 
 - Message delivery status 🟢
