@@ -150,7 +150,7 @@
     "match-all": "^1.2.6",
     "minio": "^7.0.18",
     "moment": "^2.29.4",
-    "mongodb": "^4.1.0",
+    "mongodb": "^4.11.0",
     "multistream": "^4.1.0",
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.0",
