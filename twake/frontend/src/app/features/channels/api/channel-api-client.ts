@@ -4,7 +4,7 @@ import { TwakeService } from '../../global/framework/registry-decorator-service'
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { removeBadgesNow } from 'app/features/users/hooks/use-notifications';
 
-import Workspace from 'deprecated/workspaces/workspaces';
+import Workspace from 'app/deprecated/workspaces/workspaces';
 import Logger from 'features/global/framework/logger-service';
 const PREFIX = '/internal/services/channels/v1/companies';
 
@@ -19,7 +19,7 @@ class ChannelAPIClientService {
   private logger = Logger.getLogger('ChannelAPIClientService');
 
   async getDirect(companyId: string, membersId: string[]) {
-    return Api.post<{ options: { members: string[] }; resource: any }, { resource: ChannelType }>(
+    return Api.post<{ options: { members: string[] }; resource: unknown }, { resource: ChannelType }>(
       `${PREFIX}/${companyId}/workspaces/direct/channels`,
       { options: { members: membersId }, resource: {} },
     ).then(result => result.resource);

@@ -6,13 +6,13 @@ import classNames from 'classnames';
 
 import Languages from 'app/features/global/services/languages-service';
 import PopupService from 'app/deprecated/popupManager/popupManager.js';
-import PopupComponent from 'components/popup-component/popup-component.js';
+import PopupComponent from 'components/popup-component/popup-component.jsx';
 import MainView from './main-view/MainView';
-import DraggableBodyLayer from 'components/draggable/draggable-body-layer.js';
-import MenusBodyLayer from 'components/menus/menus-body-layer.js';
-import DriveUploadViewer from 'components/uploads/upload-viewer.js';
+import DraggableBodyLayer from 'components/draggable/draggable-body-layer.jsx';
+import MenusBodyLayer from 'app/components/menus/menus-body-layer.jsx';
+import DriveUploadViewer from 'components/uploads/upload-viewer.jsx';
 import ChatUploadsViewer from 'app/components/file-uploads/uploads-viewer';
-import ConfigBodyLayer from 'components/configurators/config-body-layer.js';
+import ConfigBodyLayer from 'components/configurators/config-body-layer.jsx';
 import DriveViewer from 'app/views/applications/drive/viewer/drive-deprecated-viewer';
 import Viewer from 'app/views/applications/viewer/viewer';
 import ModalComponent from 'app/components/modal/modal-component';
@@ -63,8 +63,8 @@ export default React.memo((): JSX.Element => {
                 theme="light"
                 width={290}
                 onCollapse={(collapsed, type) => {
-                  if (type === 'responsive') return setMenuIsOpen(false);
-                  setMenuIsOpen(!collapsed);
+                  if (type === 'responsive') return setTimeout(() => setMenuIsOpen(false), 0);
+                  setTimeout(() => setMenuIsOpen(!collapsed), 0);
                 }}
               >
                 <Suspense fallback={<LoadingSidebar />}>

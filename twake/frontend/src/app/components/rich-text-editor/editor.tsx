@@ -1,3 +1,6 @@
+/* eslint-disable no-control-regex */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 import React, { createRef, KeyboardEvent } from 'react';
 import classNames from 'classnames';
 import Draft, {
@@ -536,7 +539,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     const currentBlockType = block.getType();
     const blockLength = block.getLength();
     const blockText = block.getText();
-    // @ts-ignore
     const regex = new RegExp('\r|\n', 'gm');
 
     if (currentBlockType.indexOf('atomic') === 0) {

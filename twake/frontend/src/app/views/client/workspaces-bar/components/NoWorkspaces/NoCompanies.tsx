@@ -3,7 +3,7 @@ import Emojione from 'components/emojione/emojione';
 import LoginService from 'app/features/auth/login-service';
 import Languages from 'app/features/global/services/languages-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import GotALink from './GotALink';
 
 import './styles.scss';

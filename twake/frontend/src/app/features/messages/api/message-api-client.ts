@@ -13,7 +13,7 @@ import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 import Numbers from 'app/features/global/utils/Numbers';
 import { MetaDataType } from 'features/files/types/file';
-import Workspace from 'deprecated/workspaces/workspaces';
+import Workspace from 'app/deprecated/workspaces/workspaces';
 import Logger from 'features/global/framework/logger-service';
 import { UserType } from 'features/users/types/user';
 import { AtomMessageKey } from '../state/atoms/messages';

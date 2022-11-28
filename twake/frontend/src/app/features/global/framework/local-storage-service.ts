@@ -1,7 +1,7 @@
 export default class LocalStorage {
   static prefix = 'twake:';
 
-  static setItem(key: string, value: any) {
+  static setItem(key: string, value: unknown) {
     window.localStorage.setItem(`${LocalStorage.prefix}${key}`, JSON.stringify(value));
   }
 

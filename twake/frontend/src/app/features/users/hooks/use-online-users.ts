@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { useCallback, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
@@ -17,8 +20,8 @@ const logger = Logger.getLogger('useOnlineUsers');
 
 const GET_INTERVAL = 30000; //30 seconds
 const SET_INTERVAL = 600000; //10 minutes
-let getIntervalId: any = setTimeout(() => {}, 0);
-let setIntervalId: any = setTimeout(() => {}, 0);
+let getIntervalId = setTimeout(() => {}, 0);
+let setIntervalId = setTimeout(() => {}, 0);
 
 export const useOnlineUsers = (): void => {
   logger.trace('Running online hook');

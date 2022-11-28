@@ -85,7 +85,7 @@ export default (props: Props) => {
             <div className="icon">
               <Avatar
                 size="xs"
-                noGradient={!!(props.icon && (props.icon?.length || 0) < 20)}
+                nogradient={!!(props.icon && (props.icon?.length || 0) < 20)}
                 icon={
                   props.icon && (props.icon?.length || 0) < 20 ? (
                     <Emojione type={props.icon} />
@@ -143,7 +143,7 @@ export default (props: Props) => {
                     : grayBadgeClassName)
                 }
               >
-                {counterValue>99 ? "99+" : counterValue}
+                {counterValue > 99 ? '99+' : counterValue}
               </div>
             )}
           {props.menu}

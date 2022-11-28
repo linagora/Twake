@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import environment from 'environment/environment';
 import version from 'environment/version';
 import * as Sentry from '@sentry/browser';

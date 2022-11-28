@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment';
 
 import Observable from 'app/deprecated/Observable/Observable';

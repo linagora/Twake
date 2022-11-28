@@ -22,7 +22,7 @@ export const UseNotificationPreferences = (): {
   };
 
   const save = async (preferences: preferencesType) => {
-    const _ = await NotificationsPreferencesAPIClientService.save(preferences);
+    await NotificationsPreferencesAPIClientService.save(preferences);
     setLoading(false);
     refresh();
   }

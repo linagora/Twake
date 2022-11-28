@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, CSSProperties, useEffect } from 'react';
 import classNames from 'classnames';
 import { Row, Typography } from 'antd';

@@ -38,7 +38,7 @@ class TabsAPIClient {
   }
 
   async remove({ companyId, workspaceId, channelId }: TabKey, tabId: string) {
-    await Api.delete<any>(
+    await Api.delete(
       `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/${tabId}`,
     );
   }

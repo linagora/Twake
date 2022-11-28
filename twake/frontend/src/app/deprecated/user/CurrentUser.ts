@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import $ from 'jquery';
 import Login from 'app/features/auth/login-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';

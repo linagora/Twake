@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentStory } from '@storybook/react';
 import { SearchIcon } from '@heroicons/react/solid';
 import { Title } from '@atoms/text';
@@ -10,11 +11,7 @@ export default {
   title: '@atoms/input-groups',
 };
 
-const Template: ComponentStory<any> = (props: {
-  text: string;
-  disabled: boolean;
-  loading: boolean;
-}) => {
+const Template: ComponentStory<any> = () => {
   return (
     <>
       <Title>Icons</Title>

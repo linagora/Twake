@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DraftDecorator, EditorState, Entity, RawDraftContentBlock } from 'draft-js';
 import mentionPlugin, { MentionSuggestionType } from './mentions';
 import emojiPlugin, { EmojiSuggestionType } from './emoji';

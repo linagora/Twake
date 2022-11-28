@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react';
-import * as Text from '@atoms/text';
 import BaseBlock from '@molecules/grouped-rows/base';
 
 // @ts-ignore

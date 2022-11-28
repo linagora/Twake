@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';

@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Login from 'app/features/auth/login-service';
 import Collections, { Collection } from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Api from 'app/features/global/framework/api-service';
 import Languages from 'app/features/global/services/languages-service';
 import { UserType } from 'app/features/users/types/user';
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
-import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/features/global/utils/URLUtils';
+import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import { getUser } from '../hooks/use-user-list';
-import CryptoJS from 'crypto-js';
 import { getGradient } from 'app/atoms/avatar';
 
 type SearchQueryType = {

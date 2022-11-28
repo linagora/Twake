@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from 'antd';
 
 import UserService from 'app/features/users/services/current-user-service';
-import Icon from 'app/components/icon/icon.js';
+import Icon from 'app/components/icon/icon.jsx';
 import Emojione from 'components/emojione/emojione';
 import NotificationDelay from '../Notifications/NotificationDelay';
 

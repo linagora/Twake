@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef } from 'react';
 import { Button } from 'antd';
 import { MoreHorizontal, RotateCw, X } from 'react-feather';

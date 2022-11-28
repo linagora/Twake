@@ -8,7 +8,7 @@ import { UserType } from 'app/features/users/types/user';
 import { useCurrentUser } from '../../users/hooks/use-current-user';
 import _ from 'lodash';
 import RouterService from 'app/features/router/services/router-service';
-import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
+import WorkspacesService from 'app/deprecated/workspaces/workspaces.jsx';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import LoginService from 'app/features/auth/login-service';
@@ -93,7 +93,7 @@ export const useCurrentCompanyRealtime = () => {
   const { company, refresh } = useCurrentCompany();
 
   const room = CompanyAPIClient.websocket(company?.id || '');
-  useRealtimeRoom<CompanyType>(room, 'useCurrentCompany', (_action, _resource) => {
+  useRealtimeRoom<CompanyType>(room, 'useCurrentCompany', () => {
     refresh();
   });
 };

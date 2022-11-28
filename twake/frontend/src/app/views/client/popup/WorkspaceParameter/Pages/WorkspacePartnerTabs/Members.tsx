@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import Languages from 'app/features/global/services/languages-service';
 import { Table, Row, Typography } from 'antd';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import { ColumnsType } from 'antd/lib/table';
 import UserService from 'app/features/users/services/current-user-service';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
@@ -13,7 +14,7 @@ import InitService from 'app/features/global/services/init-service';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import Api from 'app/features/global/framework/api-service';
 import ConsoleService from 'app/features/console/services/console-service';
-import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
@@ -97,7 +98,7 @@ export default ({ filter }: { filter: string }) => {
     const workspaceUserRole = `${prefixRoute}/companies/${col.company_id}/workspaces/${col.workspace_id}/users/${col.user_id}`;
 
     setLoading(true);
-    const res: any = await Api.post(workspaceUserRole, {
+    const res = await Api.post<unknown, { resource: unknown }>(workspaceUserRole, {
       resource: {
         role: col.role === 'moderator' ? 'member' : 'moderator',
       },

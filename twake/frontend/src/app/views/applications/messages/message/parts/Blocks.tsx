@@ -7,10 +7,10 @@ import User from 'components/twacode/blocks/user';
 import Chan from 'components/twacode/blocks/chan';
 import { blocksToTwacode, formatData } from 'app/components/twacode/blocksCompiler';
 import environment from 'app/environment/environment';
-import { Block } from '../../../../../../../../backend/node/src/services/messages/blocks-types';
+import { Block } from 'app/components/twacode/types';
 
 type Props = {
-  blocks: any;
+  blocks: unknown[];
   fallback: string | ReactNode;
   onAction: (type: string, id: string, context: unknown, passives: unknown, evt: unknown) => void;
   allowAdvancedBlocks?: boolean;

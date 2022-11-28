@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import _ from 'lodash';
 import React from 'react';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserType } from 'app/features/users/types/user';
 import { FileTypes } from 'features/files/api/file-upload-api-client';
 
@@ -227,14 +228,7 @@ export type NodeMessage = {
 
   links?: MessageLinkType[];
 
-  quote_message?: NodeMessage & {
-    users?: UserType[];
-    company_id: string;
-    workspace_id: string;
-    channel_id: string;
-    thread_id: string;
-    id: string;
-  };
+  quote_message?: QuotedMessageType;
 
   status?: MessageDeliveryStatusType | null;
 };
@@ -266,4 +260,13 @@ export type MessageSeenType = {
     thread_id: string;
   }[];
   channel_id: string;
+};
+
+export type QuotedMessageType = NodeMessage & {
+  users?: UserType[];
+  company_id: string;
+  workspace_id: string;
+  channel_id: string;
+  thread_id: string;
+  id: string;
 };

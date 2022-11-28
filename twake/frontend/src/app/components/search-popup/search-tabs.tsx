@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Tabs from '@molecules/tabs';
 import Languages from 'app/features/global/services/languages-service';
 import { useSearchChannels } from 'app/features/search/hooks/use-search-channels';

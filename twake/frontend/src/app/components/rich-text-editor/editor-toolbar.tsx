@@ -21,7 +21,7 @@ import './editor-toolbar.scss';
 // Todo: Check this https://github.com/sstur/react-rte/blob/master/src/lib/EditorToolbar.js
 // https://dev.to/rose/rich-text-editing-on-the-web-formatting-text-and-keyboard-shortcuts-in-draft-js-4g9f
 
-type ChangeHandler = (state: EditorState) => any;
+type ChangeHandler = (state: EditorState) => unknown;
 
 type EditorToolbarProps = {
   toobarConfig?: ToolbarConfig;

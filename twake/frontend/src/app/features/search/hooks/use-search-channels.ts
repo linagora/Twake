@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import { getAllChannelsCache } from 'app/features/channels/hooks/use-channel';
 import { ChannelType, createDirectChannelFromUsers } from 'app/features/channels/types/channel';

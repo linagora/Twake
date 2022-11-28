@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentStory } from '@storybook/react';
 import Avatar from '.';
 import { UsersIcon } from '../icons-agnostic';

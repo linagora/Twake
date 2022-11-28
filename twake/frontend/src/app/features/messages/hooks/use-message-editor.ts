@@ -1,4 +1,5 @@
-import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MessageWithReplies, NodeMessage, QuotedMessageType } from 'app/features/messages/types/message';
 import MessageAPIClient from 'app/features/messages/api/message-api-client';
 import {} from 'app/features/global/hooks/use-realtime';
 import _ from 'lodash';
@@ -68,7 +69,7 @@ export const useMessageEditor = (key: EditorKey) => {
     } as NodeMessage;
 
     if (isQuoted && quotedMessage) {
-      editedMessage.quote_message = quotedMessage;
+      editedMessage.quote_message = quotedMessage as unknown as QuotedMessageType;
       closeQuoteReply();
     }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 
 import { UserType } from 'app/features/users/types/user';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FC, useEffect, useRef } from 'react';
 import HiddenNotificationService from 'components/scroll-hidden-components/hidden-notification-service';
 import animateScrollTo from 'animated-scroll-to';

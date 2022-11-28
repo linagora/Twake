@@ -64,7 +64,7 @@ export default (): JSX.Element => {
             <Avatar
               size="xs"
               className="mr-2"
-              noGradient={!!(channel.icon && (channel.icon?.length || 0) < 20)}
+              nogradient={!!(channel.icon && (channel.icon?.length || 0) < 20)}
               icon={
                 channel.icon && (channel.icon?.length || 0) < 20 ? (
                   <Emojione type={channel.icon} />
@@ -79,7 +79,7 @@ export default (): JSX.Element => {
               {channel.name}
             </Typography.Text>
             {channel.visibility === 'private' && <Lock size={16} className="small-right-margin" />}
-            <Typography.Text ellipsis className="markdown" style={{ lineHeight: '16px' }}>
+            <Typography.Text ellipsis={true} className="markdown" style={{ lineHeight: '16px' }}>
               {PseudoMarkdownCompiler.compileToHTML(
                 PseudoMarkdownCompiler.compileToJSON(
                   (channel.description || '').replace(/\n/g, ' '),

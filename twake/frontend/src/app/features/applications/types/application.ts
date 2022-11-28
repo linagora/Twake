@@ -2,7 +2,7 @@
  * DEPRECATED
  * We should remove this when we are sure that new application format is implemented everywhere in Twake
  */
-export type AppType = { [key: string]: any };
+export type AppType = { [key: string]: unknown };
 
 export type PluginAction = {
   name: string;

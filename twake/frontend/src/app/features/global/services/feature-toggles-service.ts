@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Define feature names here
 export enum FeatureNames {
   GUESTS = 'chat:guests',

@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Input, Col, Row } from 'antd';
 
 import Emojione from 'components/emojione/emojione';
-import MenusManager from 'app/components/menus/menus-manager.js';
-import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
+import EmojiPicker from 'components/emoji-picker/emoji-picker.jsx';
 
 import './inputs.scss';
 

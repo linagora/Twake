@@ -1,4 +1,5 @@
-import React, { cloneElement, ComponentProps } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { cloneElement } from 'react';
 import { ComponentStory } from '@storybook/react';
 import {
   DismissIcon,
@@ -33,7 +34,7 @@ const Icon = ({ icon, title }: PropsType): JSX.Element => {
 };
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
+const Template: ComponentStory<any> = () => {
   return (
     <>
       <h1>General</h1>

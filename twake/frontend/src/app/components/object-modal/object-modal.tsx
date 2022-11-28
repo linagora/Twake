@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FC } from 'react';
 
 import classNames from 'classnames';
 import { Divider, Layout, Typography, Col, Row } from 'antd';
 
 import ModalManager from 'app/components/modal/modal-manager';
-import Icon from 'components/icon/icon.js';
+import Icon from 'app/components/icon/icon.jsx';
 
 import './object-modal.scss';
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import A from '@atoms/link';
 import { getChannel } from '@features/channels/hooks/use-channel';
 import { UserType } from '@features/users/types/user';

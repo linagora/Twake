@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react';
 import * as Text from '@atoms/text';
 
@@ -19,7 +20,7 @@ export default function Block(props: BlockProps) {
     <div className={'flex ' + className} onClick={props.onClick}>
       <div className=" flex items-center">{props.avatar}</div>
 
-      <div className="flex grow flex-col justify-center ml-2 min-w-0 grow">
+      <div className="flex flex-col justify-center ml-2 min-w-0 grow">
         <div className="flex">
           <div className="grow truncate leading-tight mr-1">
             <Text.Title className="inline">{props.title}</Text.Title>

@@ -3,10 +3,13 @@ import RouterServices from 'app/features/router/services/router-service';
 
 import 'app/styles/ui.less';
 
-export default class ErrorBoundary extends React.Component<unknown, { hasError: boolean }> {
+type PropsType = {
+  children: React.ReactElement
+}
+export default class ErrorBoundary extends React.Component<PropsType, { hasError: boolean }> {
   static lastError: Record<string, Record<string, Error | string>> | null = null;
 
-  constructor(props: unknown) {
+  constructor(props: PropsType) {
     super(props);
     this.state = {
       hasError: false,

@@ -23,7 +23,7 @@ import {
 } from 'app/features/viewer/hooks/use-viewer';
 import { Message } from 'features/messages/types/message';
 import { useEffect, useState } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { fadeTransition, fadeZoomTransition } from 'src/utils/transitions';
 import Controls from './controls';
 import Display from './display';
@@ -211,6 +211,7 @@ const Footer = () => {
                     },
                   },
                 ],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (window as any).getBoundingClientRect(e.target),
                 'top',
                 { margin: 0 },

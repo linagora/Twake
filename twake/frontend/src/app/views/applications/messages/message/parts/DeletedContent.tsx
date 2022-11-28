@@ -27,6 +27,7 @@ export default ({ userId }: PropsType) => {
 
   let user_name_node: HTMLSpanElement | null = null;
   const displayUserCard = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const box = (window as any).getBoundingClientRect(user_name_node);
     const user = await userAsyncGet(userId);
 

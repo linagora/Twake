@@ -3,7 +3,6 @@ import ChannelCurrentMemberAPIClient from 'app/features/channel-members/api/chan
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import {
   useDirectChannels,
-  useRefreshDirectChannels,
 } from 'app/features/channels/hooks/use-direct-channels';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import {

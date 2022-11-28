@@ -1,14 +1,16 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
 import { Typography } from 'antd';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import DownloadIcon from '@material-ui/icons/CloudDownloadOutlined';
 import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';
 
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
-import Button from 'components/buttons/button.js';
+import Button from 'components/buttons/button.jsx';
 import ElectronService from 'app/features/global/framework/electron-service';
 import FeatureTogglesService, {
   FeatureNames,
@@ -31,7 +33,7 @@ export default class ViewerContainer extends Component<PropsType, StateType> {
     Collections.get('drive').addListener(this);
     DriveService.addListener(this);
   }
-  UNSAFE_componentWillUpdate(nextProps: any, nextState: any) {
+  UNSAFE_componentWillUpdate() {
     this.viewed_document = this.props.document || DriveService.viewed_document;
   }
   componentWillUnmount() {
