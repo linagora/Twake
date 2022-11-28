@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CompanyType } from 'app/features/companies/types/company';
 import { UserPreferencesType, UserType } from 'app/features/users/types/user';
 import Api from '../../global/framework/api-service';
@@ -38,7 +39,7 @@ class UserAPIClientService {
   async list(
     users: string[] = [],
     companyIds?: string[],
-    options?: { bufferize?: boolean; callback?: Function },
+    options?: { bufferize?: boolean; callback?: (res: UserType[]) => void },
   ): Promise<UserType[]> {
     if (options?.bufferize) {
       const isFirst = this.listBuffer.length === 0;
@@ -69,7 +70,7 @@ class UserAPIClientService {
         this.list(users, companyIds, {
           bufferize: false,
           callback: (res: UserType[]) => {
-            callbacks.forEach((b: Function) => b && b(res));
+            callbacks.forEach((b: (res: UserType[]) => void) => b && b(res));
           },
         });
       }

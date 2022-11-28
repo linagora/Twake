@@ -1,4 +1,4 @@
-import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
+import { MessageLocalEvent } from "../../../../types";
 import { ParticipantObject, Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { getInstance, MessageChannelRef } from "../../../../entities/message-channel-refs";
@@ -6,18 +6,8 @@ import {
   getInstance as getInstanceReversed,
   MessageChannelRefReversed,
 } from "../../../../entities/message-channel-refs-reversed";
-import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
-import {
-  RealtimeEntityActionType,
-  RealtimeLocalBusEvent,
-  ResourcePath,
-} from "../../../../../../core/platform/services/realtime/types";
-import { Message } from "../../../../entities/messages";
-import {
-  CreateResult,
-  UpdateResult,
-} from "../../../../../../core/platform/framework/api/crud-service";
-import { getThreadMessagePath } from "../../../../web/realtime";
+
+import { ExecutionContext } from "../../../../../../core/platform/framework/api/crud-service";
 import gr from "../../../../../global-resolver";
 import { publishMessageInRealtime } from "../../../utils";
 
@@ -36,7 +26,11 @@ export class ChannelViewProcessor {
     );
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     let participants: ParticipantObject[] = thread?.participants || [];
 
     if (participants.length === 0) {
@@ -63,10 +57,14 @@ export class ChannelViewProcessor {
           };
 
           //If a pointer exists it means the message already exists (it was probably moved and so we need to keep everything in place)
-          const existingPointer = await this.repository.findOne({
-            ...pkPrefix,
-            message_id: message.resource.id,
-          });
+          const existingPointer = await this.repository.findOne(
+            {
+              ...pkPrefix,
+              message_id: message.resource.id,
+            },
+            {},
+            context,
+          );
 
           if (!existingPointer) {
             await this.repository.save(
@@ -75,25 +73,34 @@ export class ChannelViewProcessor {
                 thread_id: thread.id,
                 message_id: message.resource.id,
               }),
+              context,
             );
 
-            const reversed = await this.repositoryReversed.findOne({
-              ...pkPrefix,
-              thread_id: thread.id,
-            });
+            const reversed = await this.repositoryReversed.findOne(
+              {
+                ...pkPrefix,
+                thread_id: thread.id,
+              },
+              {},
+              context,
+            );
 
             if (reversed) {
-              const existingThreadRef = await this.repository.findOne({
-                ...pkPrefix,
-                message_id: reversed.message_id,
-              });
+              const existingThreadRef = await this.repository.findOne(
+                {
+                  ...pkPrefix,
+                  message_id: reversed.message_id,
+                },
+                {},
+                context,
+              );
               if (
                 existingThreadRef &&
                 `${existingThreadRef.thread_id}` === `${message.resource.thread_id}`
               ) {
                 reversed.message_id = message.resource.id;
-                await this.repositoryReversed.save(reversed);
-                await this.repository.remove(existingThreadRef);
+                await this.repositoryReversed.save(reversed, context);
+                await this.repository.remove(existingThreadRef, context);
               }
             } else {
               await this.repositoryReversed.save(
@@ -102,6 +109,7 @@ export class ChannelViewProcessor {
                   thread_id: thread.id,
                   message_id: message.resource.id,
                 }),
+                context,
               );
             }
           }
@@ -114,6 +122,7 @@ export class ChannelViewProcessor {
                 thread_id: thread.id,
                 message_id: message.resource.id,
               }),
+              context,
             );
             await this.repositoryReversed.save(
               getInstanceReversed({
@@ -121,6 +130,7 @@ export class ChannelViewProcessor {
                 thread_id: thread.id,
                 message_id: message.resource.id,
               }),
+              context,
             );
           }
         }

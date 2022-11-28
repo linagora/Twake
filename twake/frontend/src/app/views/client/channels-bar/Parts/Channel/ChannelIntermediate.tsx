@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { getUserParts } from 'app/components/member/user-parts';
-import _ from 'lodash';
 import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
 import useRouterChannelSelected from 'app/features/router/hooks/use-router-channel-selected';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
@@ -30,11 +29,10 @@ export default (props: Props): JSX.Element => {
       })
     : { avatar: '', name: '' };
 
-  const unreadMessages =
-    (channel.last_activity || 0) !== 0 &&
-    (channel.last_activity || 0) > (channel?.user_member?.last_access || 0) &&
-    channel.last_message?.sender !== channel.user_member?.user_id &&
-    !(isDirectChannel && notifications.length === 0);
+  const unreadMessages = Math.max(
+    0,
+    (channel.stats?.messages || 0) - (channel.user_member.last_increment || 0),
+  );
 
   const channelIcon = isDirectChannel ? avatar : channel.icon || '';
   const channelName = isDirectChannel ? name : channel.name || '';
@@ -43,12 +41,23 @@ export default (props: Props): JSX.Element => {
     <ChannelUI
       name={channelName}
       icon={channelIcon}
-      muted={channel.user_member?.notification_level === 'none'}
       favorite={channel.user_member?.favorite || false}
-      unreadMessages={unreadMessages}
       writingActivity={writingActivity.length > 0}
       visibility={channel.visibility || 'public'}
-      notifications={notifications.length || 0}
+      notificationLevel={channel.user_member?.notification_level || 'mentions'}
+      unreadMessages={unreadMessages}
+      replies={notifications.filter(n => n.mention_type === 'reply').length || 0}
+      unread={notifications.filter(n => n.mention_type === 'unread').length || 0}
+      mentions={
+        notifications.filter(
+          n =>
+            !n.mention_type ||
+            (n.mention_type === 'me' &&
+              ['mentions', 'me', 'all'].includes(channel.user_member?.notification_level || '')) ||
+            (n.mention_type === 'global' &&
+              ['mentions', 'all'].includes(channel.user_member?.notification_level || '')),
+        ).length || 0
+      }
       selected={selected}
       menu={
         <ChannelMenu

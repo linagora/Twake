@@ -17,6 +17,10 @@ export function getUserRoom(userId: string): string {
   return `/me/${userId}`;
 }
 
+export function getPublicUserRoom(userId: string): string {
+  return `/users/${userId}`;
+}
+
 export function getUserName(userId: string): string {
   return `user-room-${userId}`;
 }

@@ -2,7 +2,7 @@ import Segment from "./adapters/segment";
 import { Analytics } from "./adapters/types";
 import { Consumes, TwakeService, logger } from "../../framework";
 import TrackerAPI from "./provider";
-import { localEventBus } from "../../framework/pubsub";
+import { localEventBus } from "../../framework/event-bus";
 import { IdentifyObjectType, TrackedEventType, TrackerConfiguration } from "./types";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { md5 } from "../../../../core/crypto";

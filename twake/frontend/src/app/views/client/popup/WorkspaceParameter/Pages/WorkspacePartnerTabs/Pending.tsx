@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import { Divider, Table, Typography } from 'antd';
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import { ColumnsType } from 'antd/lib/table';
-import Api from 'app/features/global/framework/api-service';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
@@ -22,24 +21,20 @@ type ColumnObjectType = { key: number } & PendingEmailResourceType;
 export default (props: { filter: string }) => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const prefixRoute = '/internal/services/workspaces/v1';
   const DEFAULT_PAGE_SIZE = 5;
 
   const [loading, setLoading] = useState<boolean>(false);
   const [data, _setData] = useState<ColumnObjectType[]>([]);
   const [filteredData, setFilteredData] = useState<ColumnObjectType[] | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { xs, sm, md, lg, xl } = useBreakpoint();
+  const { xs, sm } = useBreakpoint();
 
   useEffect(() => {
     refreshPendingEmails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     onSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.filter, data]);
 
   const refreshPendingEmails = async () => {
@@ -59,9 +54,11 @@ export default (props: { filter: string }) => {
     setLoading(false);
   };
 
-  const setData = (resources: any) => {
+  const setData = (resources: PendingEmailResourceType[]) => {
     if (resources) {
-      _setData(resources.map((o: any, key: any) => ({ key: key + 1, ...o })));
+      _setData(
+        resources.map((o: PendingEmailResourceType, key: number) => ({ key: key + 1, ...o })),
+      );
     }
   };
 
@@ -87,7 +84,7 @@ export default (props: { filter: string }) => {
       title: '',
       dataIndex: 'menu',
       width: 50,
-      render: (text, col, index) => {
+      render: (_text, col) => {
         if (!AccessRightsService.hasLevel(workspaceId, 'member')) {
           return;
         }

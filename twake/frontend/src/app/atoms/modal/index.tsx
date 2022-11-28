@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, ReactNode, useCallback, useEffect, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
@@ -17,11 +18,11 @@ export const Modal = (props: {
   children?: React.ReactNode;
   closable?: boolean;
   className?: string;
-  style?: any;
+  style?: React.CSSProperties;
   positioned?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
-  const [modalsCountState, setModalsCountState] = useRecoilState(ModalsCountState);
+  const [, setModalsCountState] = useRecoilState(ModalsCountState);
   const [level, setLevel] = useState(0);
   const [didOpenOnce, setDidOpenOnce] = useState(false);
 
@@ -90,7 +91,11 @@ export const Modal = (props: {
               : '')
           }
         >
-          <div className={'flex items-end justify-center min-h-screen text-center sm:block '}>
+          <div
+            className={
+              'flex items-end justify-center min-h-screen webkit-h-full text-center sm:block '
+            }
+          >
             {
               /* This element is to trick the browser into centering the modal contents. */
               !props.positioned && (
@@ -113,7 +118,7 @@ export const Modal = (props: {
             >
               <Dialog.Panel
                 className={
-                  'relative inline-block align-bottom bg-white dark:bg-zinc-900 rounded-tr-xl rounded-tl-xl sm:rounded-md px-4 pt-5 pb-4 text-left w-full sm:w-auto overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-4 ' +
+                  'relative inline-block align-bottom bg-white dark:bg-zinc-900 rounded-tr-xl rounded-tl-xl sm:rounded-md px-4 pt-5 pb-4 text-left w-full overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-4 ' +
                   (props.className || '')
                 }
                 style={props.style || {}}
@@ -140,7 +145,7 @@ export const Modal = (props: {
 };
 
 export const ModalContent = (props: {
-  title: string;
+  title: ReactNode | string;
   text?: string;
   textCenter?: boolean;
   buttons?: ReactNode;

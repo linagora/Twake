@@ -12,11 +12,13 @@ export type CompanyBillingObjectType = {
 export enum CompanyLimitsEnum {
   CHAT_MESSAGE_HISTORY_LIMIT = 'chat:message_history_limit',
   COMPANY_MEMBERS_LIMIT = 'company:members_limit', // 100
+  COMPANY_GUESTS_LIMIT = 'company:guests_limit'
 }
 
 export type CompanyLimitsObjectType = {
   [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: number;
   [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: number;
+  [CompanyLimitsEnum.COMPANY_GUESTS_LIMIT]: number;
 };
 
 export type CompanyStatsObjectType = {

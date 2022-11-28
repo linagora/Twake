@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
@@ -15,11 +16,27 @@ import { NotificationType } from '../types/notification-types';
 import ElectronService from 'app/features/global/framework/electron-service';
 import windowState from 'app/features/global/utils/window';
 import RouterService, { ClientStateType } from '../../router/services/router-service';
-import { useCallback } from 'react';
 import { pushDesktopNotification } from '../services/push-desktop-notification';
 import { RouterState } from 'app/features/router/state/atoms/router';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 
-export let removeBadgesNow = (type: 'channel' | 'workspace' | 'company', id: string) => {};
+export let removeBadgesNow: (type: 'company' | 'workspace' | 'channel', id: string) => void = () =>
+  undefined;
+
+const executeRequest = () => {
+  if ('Notification' in window && window.Notification.requestPermission) {
+    const request = window.Notification.requestPermission();
+    if (request && request.then) {
+      request
+        .then(() => undefined)
+        .finally(() => {
+          window.removeEventListener('click', executeRequest);
+        });
+    }
+  }
+};
+window.addEventListener('click', executeRequest);
+executeRequest();
 
 export const useNotifications = () => {
   const [badges, setBadges] = useRecoilState(NotificationsBadgesState);
@@ -122,13 +139,17 @@ export const useNotifications = () => {
     [badges],
   );
 
+  const { user } = useCurrentUser();
+  const soundType =
+    user?.preference?.notifications?.[0]?.preferences?.notification_sound || 'default';
   const realtimeEvent = useRecoilCallback(
     ({ snapshot }) =>
       async (action: string, resource: any) => {
         const routerState = snapshot.getLoadable(RouterState).valueMaybe() as ClientStateType;
 
         if (action === 'event' && resource._type === 'notification:desktop') {
-          pushDesktopNotification({ ...resource, routerState });
+          pushDesktopNotification({ ...resource, routerState }, soundType);
+          userNotificationApiClient.acknowledge(resource);
         }
         if (action === 'saved') addBadges([resource]);
         if (action === 'deleted') removeBadges([resource]);

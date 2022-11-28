@@ -29,6 +29,7 @@ export async function formatUser(
     deleted: Boolean(user.deleted),
     status: user.status_icon,
     last_activity: user.last_activity,
+    cache: { companies: user.cache?.companies || [] },
   } as UserObject;
 
   const userOnline = await gr.services.online.get({ user_id: user.id });
@@ -39,6 +40,7 @@ export async function formatUser(
       ...resUser,
       last_seen,
       is_connected,
+      last_activity: last_seen,
     };
   }
 

@@ -8,14 +8,14 @@ import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/us
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import Input from '../../input/input';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
-import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import { getChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 
-type Props = {};
 
-export default (props: Props) => {
+export default () => {
   const context = useContext(MessageContext);
   const channelId = useRouterChannel();
   const { message } = useMessage(context);
+  const channel = getChannel(channelId);
 
   const location = `thread-${message.thread_id}`;
   const subLocation = useContext(ViewContext).type;
@@ -31,6 +31,10 @@ export default (props: Props) => {
   }
 
   if (message.subtype === 'deleted' || message.thread_id != message.id) {
+    return <></>;
+  }
+
+  if (channel?.visibility === 'direct') {
     return <></>;
   }
 

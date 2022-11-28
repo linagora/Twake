@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { notification as antNotification } from 'antd';
 import RouterService, { ClientStateType } from '../../router/services/router-service';
 import popupManager from 'app/deprecated/popupManager/popupManager';
@@ -16,9 +17,7 @@ type DesktopNotification = {
   text: string;
 };
 
-let firstTime = false;
 let inAppNotificationKey = 0;
-const newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
 
 const callback = (
   notificationObject: (DesktopNotification & { routerState: ClientStateType }) | null,
@@ -73,20 +72,35 @@ const openNotification = (
   });
 };
 
-export const pushDesktopNotification = (
-  notification: DesktopNotification & { routerState: ClientStateType },
-) => {
-  //Init notification on the browser
-  if (firstTime) {
-    if ('Notification' in window && window.Notification.requestPermission) {
-      const request = window.Notification.requestPermission();
-      if (request && request.then) {
-        request.then(function (result) {});
-      }
-    }
-    firstTime = false;
+const notificationsSounds: any = {
+  default: new window.Audio('/public/sounds/newnotification.wav'),
+  belligerent: new window.Audio('/public/sounds/belligerent.wav'),
+  chord: new window.Audio('/public/sounds/chord.wav'),
+  polite: new window.Audio('/public/sounds/polite.wav'),
+};
+
+export const playNotificationAudio = (sound: string) => {
+  let notificationAudio = null;
+
+  if (sound === 'none') {
+    notificationAudio = null;
+  } else {
+    notificationAudio = notificationsSounds[sound];
   }
 
+  if (notificationAudio) {
+    try {
+      notificationAudio.play();
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+};
+
+export const pushDesktopNotification = (
+  notification: DesktopNotification & { routerState: ClientStateType },
+  soundType: 'default' | 'none' | string,
+) => {
   if (notification) {
     const title = notification.title || '';
     const message = notification.text || '';
@@ -95,13 +109,7 @@ export const pushDesktopNotification = (
       return;
     }
 
-    if (newNotificationAudio) {
-      try {
-        newNotificationAudio.play();
-      } catch (err) {
-        console.warn(err);
-      }
-    }
+    playNotificationAudio(soundType);
 
     if (window.document.hasFocus()) {
       openNotification(

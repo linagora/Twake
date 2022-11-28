@@ -79,6 +79,12 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   });
 
   fastify.route({
+    method: "GET",
+    url: `${channelsUrl}/:id/thumbnail`,
+    handler: channelsController.thumbnail.bind(channelsController),
+  });
+
+  fastify.route({
     method: "POST",
     url: channelsUrl,
     preHandler: accessControl,
@@ -124,7 +130,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     url: "/companies/:company_id/channels/recent",
     preHandler: accessControlCompanyOnly,
     preValidation: [fastify.authenticate],
-    handler: channelsController.recent.bind(tabsController),
+    handler: channelsController.recent.bind(channelsController),
   });
 
   // members
@@ -170,6 +176,22 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     handler: membersController.delete.bind(membersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${membersUrl}/read_sections`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: membersController.getAllChannelMembersReadSections.bind(membersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${membersUrl}/:member_id/read_sections`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: membersController.getChannelMemberReadSections.bind(membersController),
   });
 
   // pending_emails

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from 'react';
 import LoginService from 'app/features/auth/login-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';

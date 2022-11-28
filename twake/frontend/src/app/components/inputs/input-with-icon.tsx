@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Input, Col, Row } from 'antd';
 
 import Emojione from 'components/emojione/emojione';
-import MenusManager from 'app/components/menus/menus-manager.js';
-import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
+import EmojiPicker from 'components/emoji-picker/emoji-picker.jsx';
 
 import './inputs.scss';
 
@@ -11,7 +13,7 @@ type PropsType = { [key: string]: any };
 type StateType = { [key: string]: any };
 
 export default class InputWithIcon extends React.Component<PropsType, StateType> {
-  outsideClickListener: (event: any) => void = () => {};
+  outsideClickListener: (event: any) => void = () => undefined;
   input: any;
   emojiPickerIsOpen: any;
   emojipicker_dom: any;
@@ -166,7 +168,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
             <div
               className="emoji"
               ref={node => (this.emoji_dom = node)}
-              onClick={evt => {
+              onClick={() => {
                 this.openEmojiPicker();
               }}
             >

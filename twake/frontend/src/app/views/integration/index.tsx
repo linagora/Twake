@@ -1,7 +1,7 @@
 import React from 'react';
 
 import InitService from 'app/features/global/services/init-service';
-import Apps from './components/apps.js';
+import Apps from './components/apps.jsx';
 
 import './styles.scss';
 

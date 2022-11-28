@@ -17,7 +17,6 @@ import MainViewService from 'app/features/router/services/main-view-service';
 import WindowState from 'app/features/global/utils/window';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
-import app from '../app';
 import ContentRestricted from './ContentRestricted';
 
 type PropsType = {

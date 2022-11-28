@@ -3,6 +3,7 @@ import { CompanyType } from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { WebsocketRoom } from '../../global/types/websocket-types';
+import _ from 'lodash';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 
@@ -11,6 +12,14 @@ export type WorkspaceUpdateResource = Partial<WorkspaceType & { logo_b64?: strin
 export type UpdateWorkspaceBody = {
   resource: WorkspaceUpdateResource;
 };
+
+export type UpdateWorkspaceInviteDomainBody = {
+  domain: string;
+}
+
+type UpdateWorkspaceInviteDomainResponse = {
+  status: string;
+}
 
 @TwakeService('WorkspaceAPIClientService')
 class WorkspaceAPIClient {
@@ -91,7 +100,7 @@ class WorkspaceAPIClient {
       UpdateWorkspaceBody & { options?: { logo_b64?: string } },
       { resource: WorkspaceType }
     >(`${PREFIX}/${companyId}/workspaces/${workspaceId}`, {
-      resource: workspace,
+      resource: _.omit(workspace, 'logo_b64'),
       options: { logo_b64: workspace?.logo_b64 },
     }).then(result => result.resource);
   }
@@ -106,6 +115,16 @@ class WorkspaceAPIClient {
     return Api.get<{ resources: CompanyType[] }>(
       `/internal/services/users/v1/users/${userId}/companies`,
     ).then(result => result.resources);
+  }
+
+  setInvitationDomain =  async (companyId: string, workspaceId: string, domain: string): Promise<void> => {
+    const response = await Api.post<UpdateWorkspaceInviteDomainBody, UpdateWorkspaceInviteDomainResponse>(
+      `${PREFIX}/${companyId}/workspaces/${workspaceId}/invite_domain`, { domain }
+    );
+
+    if(response.status !== "success") {
+      throw Error("failed to set invitation domain")
+    }
   }
 }
 

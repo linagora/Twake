@@ -1,12 +1,11 @@
 import sharp from "sharp";
 import { cleanFiles, getTmpFile } from "../../../utils";
-import { PreviewPubsubRequest, ThumbnailResult } from "../../../types";
+import { PreviewMessageQueueRequest, ThumbnailResult } from "../../../types";
 import { logger } from "../../../../../core/platform/framework/logger";
 
 export async function generatePreview(
   inputPaths: string[],
-  options: PreviewPubsubRequest["output"],
-  deleteInputFile: boolean,
+  options: PreviewMessageQueueRequest["output"],
 ): Promise<{
   output: ThumbnailResult[];
   done: boolean;
@@ -44,10 +43,10 @@ export async function generatePreview(
 
 function computeNewFormat(
   inputMetadata: sharp.Metadata,
-  options?: PreviewPubsubRequest["output"],
+  options?: PreviewMessageQueueRequest["output"],
 ): { width: number; height: number } {
-  const maxOutputWidth = options?.width || 300;
-  const maxOutputHeight = options?.height || 200;
+  const maxOutputWidth = options?.width || 600;
+  const maxOutputHeight = options?.height || 400;
   const inputWidth = inputMetadata.width;
   const inputHeight = inputMetadata.height;
   const scale = Math.max(inputWidth / maxOutputWidth, inputHeight / maxOutputHeight);

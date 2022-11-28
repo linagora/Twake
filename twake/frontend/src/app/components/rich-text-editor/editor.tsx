@@ -1,3 +1,6 @@
+/* eslint-disable no-control-regex */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 import React, { createRef, KeyboardEvent } from 'react';
 import classNames from 'classnames';
 import Draft, {
@@ -536,7 +539,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     const currentBlockType = block.getType();
     const blockLength = block.getLength();
     const blockText = block.getText();
-    // @ts-ignore
     const regex = new RegExp('\r|\n', 'gm');
 
     if (currentBlockType.indexOf('atomic') === 0) {
@@ -655,7 +657,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       <>
         <OnScreenElement onScreen={this.updateVisible} />
         <div
-          className={classNames('editor', {
+          className={classNames('bg-zinc-50 border border-zinc-200 rounded-lg py-1 px-3 editor', {
             'scrollable-editor': this.shouldScroll(),
             'editor-hide-placeholder': this.shouldHidePlaceHolder(),
           })}

@@ -6,10 +6,9 @@ import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
 import { UserType } from 'app/features/users/types/user';
 import UserService from 'app/features/users/services/current-user-service';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import UsersService from 'app/features/users/services/current-user-service';
 import UserIcon from 'components/user/user';
-import { getUser, useUserList } from 'app/features/users/hooks/use-user-list';
+import { getUser } from 'app/features/users/hooks/use-user-list';
 
 export type UserPartsType = {
   avatar: JSX.Element;

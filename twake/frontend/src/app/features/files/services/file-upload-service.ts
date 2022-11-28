@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 import { v1 as uuid } from 'uuid';
 
 import { FileType, PendingFileType } from 'app/features/files/types/file';
@@ -19,7 +21,7 @@ const logger = Logger.getLogger('Services/FileUploadService');
 class FileUploadService {
   private pendingFiles: PendingFileType[] = [];
   public currentTaskId = '';
-  private recoilHandler: Function = () => {};
+  private recoilHandler: Function = () => undefined;
 
   setRecoilHandler(handler: Function) {
     this.recoilHandler = handler;
@@ -96,11 +98,11 @@ class FileUploadService {
 
       pendingFile.resumable.addFile(file);
 
-      pendingFile.resumable.on('fileAdded', (f: any, message: any) =>
+      pendingFile.resumable.on('fileAdded', () =>
         pendingFile.resumable.upload(),
       );
 
-      pendingFile.resumable.on('fileProgress', (f: any, ratio: number) => {
+      pendingFile.resumable.on('fileProgress', (f: any) => {
         const bytesDelta = (f.progress() - pendingFile.progress) * pendingFile.originalFile.size;
         const timeDelta = new Date().getTime() - pendingFile.lastProgress;
 
@@ -115,7 +117,7 @@ class FileUploadService {
         this.notify();
       });
 
-      pendingFile.resumable.on('fileSuccess', (f: any, message: string) => {
+      pendingFile.resumable.on('fileSuccess', (_f: any, message: string) => {
         try {
           pendingFile.backendFile = JSON.parse(message).resource;
           pendingFile.status = 'success';
@@ -125,7 +127,7 @@ class FileUploadService {
         }
       });
 
-      pendingFile.resumable.on('fileError', (f: any, message: any) => {
+      pendingFile.resumable.on('fileError', () => {
         pendingFile.status = 'error';
         pendingFile.resumable.cancel();
         this.notify();

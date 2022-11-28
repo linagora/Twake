@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import UserService from 'app/features/users/services/current-user-service';
-import MenusManager from 'app/components/menus/menus-manager.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
 import UserCard from 'app/components/user-card/user-card';
 import { UserType } from 'app/features/users/types/user';
 import { useUser, useUserByUsername } from 'app/features/users/hooks/use-user';

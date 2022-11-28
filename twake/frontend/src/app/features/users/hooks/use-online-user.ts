@@ -4,22 +4,17 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { OnlineUserStateFamily, OnlineUserType } from '../state/atoms/online-users';
 import { OnlineUserRealtimeAPI } from '../api/online-user-realtime-api-client';
 import WebSocketFactory from '../../global/services/websocket-factory-service';
-import Logger from 'app/features/global/framework/logger-service';
-import useRouterCompany from 'app/features/router/hooks/use-router-company';
-
-const logger = Logger.getLogger('useOnlineUser');
-
 
 export const useOnlineUser = (id: string): OnlineUserType => {
-  const companyId = useRouterCompany();
-  const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get(), companyId);
+  const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get());
 
   const updateUser = useRecoilCallback(
-    ({ set }) =>
+    ({ set, snapshot }) =>
       (status: { id: string; connected: boolean }) => {
+        const current = snapshot.getLoadable(OnlineUserStateFamily(status.id)).contents;
         set(OnlineUserStateFamily(status.id), {
           ...status,
-          lastSeen: Date.now(),
+          lastSeen: status.connected ? Date.now() : current.lastSeen,
           initialized: true,
         });
       },
@@ -34,8 +29,6 @@ export const useOnlineUser = (id: string): OnlineUserType => {
         updateUser({ id: status[0], connected: status[1] });
       });
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, id]);
 
   return state;

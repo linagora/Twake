@@ -20,7 +20,7 @@ describe("The Messages User Bookmarks feature", () => {
         "files",
         "storage",
         "applications",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",
@@ -66,25 +66,32 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      const list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
+      const context = getContext(platform);
+
+      const list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(1);
 
       done();
     });
 
     it("should prevent duplicated bookmark", async done => {
-      const uuid = uuidv4();
+      // const uuid = uuidv4();
 
-      await gr.services.messages.userBookmarks.save(
+      const context = getContext(platform);
+
+      const data = await gr.services.messages.userBookmarks.save(
         {
-          id: uuid,
           company_id: platform.workspace.company_id,
           user_id: platform.currentUser.id,
           name: "mybookmark",
+          test: "123",
         },
-        {},
-        getContext(platform),
+        context,
       );
+      const uuid = data.entity.id;
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -112,7 +119,10 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      const list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
+      const list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(1);
 
       done();
@@ -120,6 +130,7 @@ describe("The Messages User Bookmarks feature", () => {
 
     it("should remove bookmark", async done => {
       const id = uuidv4();
+      const context = getContext(platform);
 
       await gr.services.messages.userBookmarks.save(
         {
@@ -128,11 +139,13 @@ describe("The Messages User Bookmarks feature", () => {
           user_id: platform.currentUser.id,
           name: "mybookmark",
         },
-        {},
-        getContext(platform),
+        context,
       );
 
-      let list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
+      let list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(1);
 
       const jwtToken = await platform.auth.getJWTToken();
@@ -146,13 +159,18 @@ describe("The Messages User Bookmarks feature", () => {
 
       expect(response.statusCode).toBe(200);
 
-      list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
+      list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(0);
 
       done();
     });
 
     it("should list bookmarks", async done => {
+      const context = getContext(platform);
+
       await gr.services.messages.userBookmarks.save(
         {
           id: uuidv4(),
@@ -160,9 +178,14 @@ describe("The Messages User Bookmarks feature", () => {
           user_id: platform.currentUser.id,
           name: "mybookmark",
         },
-        {},
-        getContext(platform),
+        context,
       );
+
+      const list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
+      expect(list.getEntities().length).toBe(1);
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({

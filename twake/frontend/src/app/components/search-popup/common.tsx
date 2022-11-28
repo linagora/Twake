@@ -1,6 +1,5 @@
 import Strings from 'features/global/utils/strings';
-import { FileSearchResult, Message, MessageFileType } from 'features/messages/types/message';
-import DriveService from 'deprecated/Apps/Drive/Drive';
+import { Message, MessageFileType } from 'features/messages/types/message';
 import FileUploadService from 'features/files/services/file-upload-service';
 import routerService from 'app/features/router/services/router-service';
 import { ChannelType } from 'app/features/channels/types/channel';
@@ -24,19 +23,6 @@ export const getFileMessageDownloadRoute = (file: MessageFileType): string => {
       fileId: file.metadata?.external_id?.id,
     });
   return '';
-};
-
-export const onFilePreviewClick = (file: MessageFileType) => {
-  if (file?.metadata?.source === 'internal')
-    DriveService.viewDocument(
-      {
-        id: file.metadata?.external_id?.id,
-        name: file.metadata?.name,
-        url: getFileMessageDownloadRoute(file),
-        extension: (file.metadata?.name || '').split('.').pop(),
-      },
-      true,
-    );
 };
 
 export const onFileDownloadClick = (file: MessageFileType) => {

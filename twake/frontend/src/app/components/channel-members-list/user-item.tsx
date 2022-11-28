@@ -45,8 +45,8 @@ export const UserItem = (props: IUserProps): JSX.Element => {
       <Modal open={confirmWorkspaceInvitation} onClose={() => setConfirmWorkspaceInvitation(false)}>
         <ModalContent
           theme="warning"
-          title="Remove workspace invitation ?"
-          text="Do you want to cancel also the workspace invitation?"
+          title="Also invite to the workspace?"
+          text="This user is not in the current workspace, he will be invited."
           buttons={[
             <Button key="no" theme="default" onClick={() => setConfirmWorkspaceInvitation(false)}>
               {Languages.t('general.no')}

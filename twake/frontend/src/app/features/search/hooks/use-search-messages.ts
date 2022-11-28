@@ -1,5 +1,4 @@
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { SearchInputState } from '../state/search-input';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';

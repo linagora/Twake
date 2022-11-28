@@ -309,7 +309,7 @@ export class CassandraConnector extends AbstractConnector<
     return result;
   }
 
-  async upsert(entities: any[], options: UpsertOptions = {}): Promise<boolean[]> {
+  async upsert(entities: any[], _options: UpsertOptions = {}): Promise<boolean[]> {
     return new Promise(resolve => {
       const promises: Promise<boolean>[] = [];
 

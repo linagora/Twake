@@ -32,7 +32,7 @@ export const TagPicker = ({
           <Tag
             key={scope}
             color={activeTags.includes(scope) ? 'var(--success)' : 'var(--grey-dark)'}
-            onClick={_e => handleOnClickTag(scope)}
+            onClick={() => handleOnClickTag(scope)}
             style={{ cursor: 'pointer' }}
           >
             {scope}

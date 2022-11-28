@@ -1,6 +1,6 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
-import { HookType } from "../applicationsapi/types";
+import { HookType } from "../applications-api/types";
 import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
 import { MessageFileRef } from "./entities/message-file-refs";
@@ -8,7 +8,7 @@ import { MessageFile } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 
-export type specialMention = "all" | "here" | "everyone" | "channel";
+export type SpecialMention = "all" | "here" | "everyone" | "channel";
 
 export type MessageNotification = {
   company_id: uuid;
@@ -21,7 +21,7 @@ export type MessageNotification = {
   mentions?: {
     users?: uuid[];
     teams?: uuid[];
-    specials?: specialMention[];
+    specials?: SpecialMention[];
   };
 
   sender_name?: string;
@@ -171,3 +171,18 @@ export interface DeleteLinkOperation {
   thread_id: string;
   link: string;
 }
+
+export type UpdateDeliveryStatusOperation = {
+  status: "delivered" | "read";
+  self_message?: boolean;
+} & MessageIdentifier;
+
+export type MessageReadType = {
+  messages: MessageIdentifier[];
+  channel_id: string;
+};
+
+export type MessageIdentifier = {
+  message_id: string;
+  thread_id: string;
+};

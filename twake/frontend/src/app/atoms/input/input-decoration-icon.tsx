@@ -1,4 +1,4 @@
-import _ from 'lodash';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from 'react';
 
 interface InputLabelProps {

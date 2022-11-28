@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import FileUploadService from 'app/features/files/services/file-upload-service';
 import Observable from 'app/deprecated/CollectionsV1/observable';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
@@ -28,7 +29,7 @@ export class MessageEditorService extends Observable {
   filesAttachements: { [threadId: string]: string[] } = {};
   editorsUploadZones: { [threadId: string]: any } = {};
 
-  setInputNode(threadId: string, messageId: string, context: string, node: any) {}
+  setInputNode = () => undefined;
 
   /**
    * Set the message to cache for the given thread/message

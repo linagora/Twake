@@ -8,7 +8,6 @@ import './messages.scss';
 
 type Props = {
   channel: ChannelType;
-  tab?: any;
   options: ViewConfiguration;
 };
 

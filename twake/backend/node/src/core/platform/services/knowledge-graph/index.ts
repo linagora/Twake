@@ -1,5 +1,5 @@
 import { Configuration, Consumes, getLogger, TwakeLogger, TwakeService } from "../../framework";
-import { localEventBus } from "../../framework/pubsub";
+import { localEventBus } from "../../framework/event-bus";
 import KnowledgeGraphAPI from "./provider";
 import Workspace from "../../../../services/workspaces/entities/workspace";
 import Company from "../../../../services/user/entities/company";
@@ -8,6 +8,7 @@ import { Channel } from "../../../../services/channels/entities";
 import { Message } from "../../../../services/messages/entities/messages";
 import { KnowledgeGraphGenericEventPayload, KnowledgeGraphEvents } from "./types";
 import KnowledgeGraphAPIClient from "./api-client";
+import gr from "../../../../services/global-resolver";
 
 @Consumes([])
 export default class KnowledgeGraphService
@@ -29,27 +30,27 @@ export default class KnowledgeGraphService
     }
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Company>>(
-      KnowledgeGraphEvents.COMPANY_CREATED,
+      KnowledgeGraphEvents.COMPANY_UPSERT,
       this.onCompanyCreated.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Workspace>>(
-      KnowledgeGraphEvents.WORKSPACE_CREATED,
+      KnowledgeGraphEvents.WORKSPACE_UPSERT,
       this.onWorkspaceCreated.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Channel>>(
-      KnowledgeGraphEvents.CHANNEL_CREATED,
+      KnowledgeGraphEvents.CHANNEL_UPSERT,
       this.onChannelCreated.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Message>>(
-      KnowledgeGraphEvents.MESSAGE_CREATED,
-      this.onMessageCreated.bind(this),
+      KnowledgeGraphEvents.MESSAGE_UPSERT,
+      this.onMessageUpsert.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<User>>(
-      KnowledgeGraphEvents.USER_CREATED,
+      KnowledgeGraphEvents.USER_UPSERT,
       this.onUserCreated.bind(this),
     );
 
@@ -57,68 +58,56 @@ export default class KnowledgeGraphService
   }
 
   async onCompanyCreated(data: KnowledgeGraphGenericEventPayload<Company>): Promise<void> {
-    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
-    this.logger.info(`${KnowledgeGraphEvents.COMPANY_CREATED} %o`, data);
+    this.logger.info(`${KnowledgeGraphEvents.COMPANY_UPSERT} %o`, data);
 
-    if (
-      this.kgAPIClient &&
-      (forwardedCompanies.includes(data.resource.id) || forwardedCompanies.length === 0)
-    ) {
+    if (this.kgAPIClient && (await this.shouldForwardEvent([data.resource.id]))) {
       this.kgAPIClient.onCompanyCreated(data.resource);
     }
   }
 
   async onWorkspaceCreated(data: KnowledgeGraphGenericEventPayload<Workspace>): Promise<void> {
-    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
-    this.logger.info(`${KnowledgeGraphEvents.WORKSPACE_CREATED} %o`, data);
+    this.logger.info(`${KnowledgeGraphEvents.WORKSPACE_UPSERT} %o`, data);
 
-    if (
-      this.kgAPIClient &&
-      (forwardedCompanies.includes(data.resource.company_id) || forwardedCompanies.length === 0)
-    ) {
+    if (this.kgAPIClient && (await this.shouldForwardEvent([data.resource.company_id]))) {
       this.kgAPIClient.onWorkspaceCreated(data.resource);
     }
   }
 
   async onChannelCreated(data: KnowledgeGraphGenericEventPayload<Channel>): Promise<void> {
-    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
-    this.logger.info(`${KnowledgeGraphEvents.CHANNEL_CREATED} %o`, data);
+    this.logger.info(`${KnowledgeGraphEvents.CHANNEL_UPSERT} %o`, data);
 
-    if (
-      this.kgAPIClient &&
-      (forwardedCompanies.includes(data.resource.company_id) || forwardedCompanies.length === 0)
-    ) {
+    if (this.kgAPIClient && (await this.shouldForwardEvent([data.resource.company_id]))) {
       this.kgAPIClient.onChannelCreated(data.resource);
     }
   }
 
-  async onMessageCreated(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
-    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
-    const sensitiveData = this.getConfigurationEntry<boolean>("sensitive_data");
+  async onMessageUpsert(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
+    this.logger.debug(`${KnowledgeGraphEvents.MESSAGE_UPSERT} %o`, data);
 
-    this.logger.debug(`${KnowledgeGraphEvents.MESSAGE_CREATED} %o`, data);
+    const allowedToShare = await this.shouldForwardEvent(
+      [data.resource.cache.company_id],
+      data.resource.user_id,
+    );
 
-    if (
-      this.kgAPIClient &&
-      (forwardedCompanies.includes(data.resource.cache.company_id) ||
-        forwardedCompanies.length === 0)
-    ) {
-      this.kgAPIClient.onMessageCreated(
+    if (this.kgAPIClient && allowedToShare) {
+      this.kgAPIClient.onMessageUpsert(
         data.resource.cache.company_id,
         data.resource,
-        sensitiveData,
+        allowedToShare === "all",
       );
     }
   }
 
   async onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): Promise<void> {
-    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
-    this.logger.info(`${KnowledgeGraphEvents.USER_CREATED} %o`, data);
+    this.logger.info(`${KnowledgeGraphEvents.USER_UPSERT} %o`, data);
 
-    const companyId = data.resource.cache.companies.find(v => forwardedCompanies.includes(v));
-
-    if (this.kgAPIClient && (companyId || forwardedCompanies.length === 0)) {
-      this.kgAPIClient.onUserCreated(companyId, data.resource);
+    if (
+      this.kgAPIClient &&
+      (await this.shouldForwardEvent(data.resource.cache?.companies || [], data.resource.id))
+    ) {
+      for (const companyId of data.resource.cache?.companies || []) {
+        this.kgAPIClient.onUserCreated(companyId, data.resource);
+      }
     }
   }
 
@@ -137,6 +126,26 @@ export default class KnowledgeGraphService
     }
 
     return this.kgAPIClient;
+  }
+
+  async shouldForwardEvent(
+    companyIds: string[] | null,
+    userId?: string,
+  ): Promise<false | "all" | "metadata"> {
+    const user = userId ? await gr.services.users.get({ id: userId }) : null;
+    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
+    const isCompanyForwarded = !!(companyIds || []).find(v => forwardedCompanies.includes(v));
+    if (user?.preferences && !user.preferences.knowledge_graph)
+      user.preferences.knowledge_graph = "metadata";
+    return (!userId || (user && user.preferences?.knowledge_graph !== "nothing")) &&
+      (!companyIds ||
+        companyIds.length === 0 ||
+        isCompanyForwarded ||
+        forwardedCompanies.length === 0)
+      ? user
+        ? (user.preferences.knowledge_graph as "all" | "metadata")
+        : "all"
+      : false;
   }
 
   api(): KnowledgeGraphAPI {

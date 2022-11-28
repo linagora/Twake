@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Message from './message';
 import Responses from './responses';
 import ReplyBlock from './parts/ReplyBlock';
@@ -74,7 +74,7 @@ const MessageType = () => {
             threadId={context.threadId}
             firstMessageId={firstMessageId}
           />
-          <ReplyBlock />
+          {!listContext.readonly && <ReplyBlock />}
         </>
       )}
     </Thread>

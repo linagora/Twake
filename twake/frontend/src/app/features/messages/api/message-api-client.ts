@@ -1,9 +1,9 @@
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import {
-  FileSearchResult,
   Message,
   MessageExtended,
   MessageFileType,
+  MessageSeenType,
   MessageWithReplies,
   NodeMessage,
 } from 'app/features/messages/types/message';
@@ -12,12 +12,11 @@ import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 import Numbers from 'app/features/global/utils/Numbers';
-import { FileType, MetaDataType } from 'features/files/types/file';
-import Workspace from 'deprecated/workspaces/workspaces';
+import { MetaDataType } from 'features/files/types/file';
+import Workspace from 'app/deprecated/workspaces/workspaces';
 import Logger from 'features/global/framework/logger-service';
 import { UserType } from 'features/users/types/user';
-import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
-import assert from 'assert';
+import { AtomMessageKey } from '../state/atoms/messages';
 
 /**
  * This service is to get, update, create, list messages in a thread
@@ -110,7 +109,7 @@ class MessageAPIClient {
   }
 
   async delete(companyId: string, threadId: string, messageId: string) {
-    const response = await Api.post<{}, { resource: NodeMessage }>(
+    const response = await Api.post<unknown, { resource: NodeMessage }>(
       `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/delete`,
       {},
     );
@@ -203,6 +202,60 @@ class MessageAPIClient {
     } catch (e) {
       return { resources: [], next_page_token: null };
     }
+  }
+
+  /**
+   * Mark messages as seen
+   *
+   * @param {String} companyId - The company id
+   * @param {String} channelId - The channel
+   * @param {String} workspaceId - the workspace
+   * @param {AtomMessageKey[]} messages - the messages to mark as seen
+   * @returns {Promise<boolean>} - true if the messages were marked as seen
+   */
+  async read(
+    companyId: string,
+    channelId: string,
+    workspaceId: string,
+    messages: AtomMessageKey[],
+  ): Promise<boolean> {
+    if (!messages || !messages.length) {
+      return true;
+    }
+
+    const body = {
+      messages: messages.map(message => ({
+        thread_id: message.threadId,
+        message_id: message.id || message.threadId,
+      })),
+      channel_id: channelId,
+    };
+
+    return await Api.post<MessageSeenType, boolean>(
+      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/threads/read`,
+      body,
+    );
+  }
+
+  /**
+   * List the users who've seen the message
+   *
+   * @param {String} messageId - the message id
+   * @param {String} companyId - the company id
+   * @param {String} workspaceId - the workspace id
+   * @returns {Promise<UserType[]>} - the users list
+   */
+  async seenBy(
+    messageId: string,
+    threadId: string,
+    companyId: string,
+    workspaceId: string,
+  ): Promise<UserType[]> {
+    const { resources } = await Api.get<{ resources: UserType[] }>(
+      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/threads/${threadId}/messages/${messageId}/seen`,
+    );
+
+    return resources;
   }
 }
 

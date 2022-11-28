@@ -1,13 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 
-import {
-  KnowledgeGraphCreateBodyRequest,
-  KnowledgeGraphCreateCompanyObjectData,
-  KnowledgeGraphCreateWorkspaceObjectData,
-  KnowledgeGraphCreateUserObjectData,
-  KnowledgeGraphCreateChannelObjectData,
-  KnowledgeGraphCreateMessageObjectData,
-} from "./types";
+import { KnowledgeGraphCreateBodyRequest, KnowledgeGraphCreateMessageObjectData } from "./types";
 
 import Workspace from "../../../../services/workspaces/entities/workspace";
 import Company from "../../../../services/user/entities/company";
@@ -27,9 +20,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public onCompanyCreated(company: Partial<Company>): void {
-    this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateCompanyObjectData[]>
-    >(`${this.apiUrl}/graph/create/company`, {
+    this.send({
       records: [
         {
           key: "null",
@@ -46,9 +37,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public async onWorkspaceCreated(workspace: Partial<Workspace>): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateWorkspaceObjectData[]>
-    >(`${this.apiUrl}/graph/create/workspace`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -70,9 +59,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public async onUserCreated(companyId: string, user: Partial<User>): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateUserObjectData[]>
-    >(`${this.apiUrl}/graph/create/user`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -82,9 +69,9 @@ export default class KnowledgeGraphAPIClient {
               user_id: user.id,
               email: user.email_canonical,
               username: user.username_canonical,
-              user_last_activity: user.last_activity.toLocaleString(),
+              user_last_activity: user.last_activity,
               first_name: user.first_name,
-              user_created_at: user.creation_date.toLocaleString(),
+              user_created_at: user.creation_date,
               last_name: user.last_name,
               company_id: companyId,
             },
@@ -99,9 +86,7 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public async onChannelCreated(channel: Partial<Channel>): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateChannelObjectData[]>
-    >(`${this.apiUrl}/graph/create/channel`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -112,6 +97,7 @@ export default class KnowledgeGraphAPIClient {
               channel_name: channel.name,
               channel_owner: channel.owner,
               workspace_id: channel.workspace_id,
+              company_id: channel.company_id,
             },
           },
         },
@@ -123,14 +109,12 @@ export default class KnowledgeGraphAPIClient {
     }
   }
 
-  public async onMessageCreated(
+  public async onMessageUpsert(
     channelId: string,
     message: Partial<Message>,
     sensitiveData: boolean,
   ): Promise<void> {
-    const response = await this.axiosInstance.post<
-      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateMessageObjectData[]>
-    >(`${this.apiUrl}/graph/create/message`, {
+    const response = await this.send({
       records: [
         {
           key: "null",
@@ -138,12 +122,14 @@ export default class KnowledgeGraphAPIClient {
             id: "Message",
             properties: {
               message_thread_id: message.thread_id,
-              message_created_at: message.created_at.toLocaleString(),
-              message_content: sensitiveData ? message.text : "secret",
+              message_content: sensitiveData ? message.text : "",
               type_message: message.type,
-              message_updated_at: message.updated_at.toLocaleString(),
+              message_created_at: message.created_at,
+              message_updated_at: message.updated_at,
               user_id: message.user_id,
               channel_id: channelId,
+              workspace_id: message.cache?.workspace_id,
+              company_id: message.cache?.company_id,
             },
           },
         },
@@ -151,7 +137,18 @@ export default class KnowledgeGraphAPIClient {
     });
 
     if (response.statusText === "OK") {
-      this.logger.info("onMessageCreated %o", response.config.data);
+      this.logger.info("onMessageUpsert %o", response.config.data);
     }
+  }
+
+  private async send(data: any) {
+    return await this.axiosInstance.post<
+      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateMessageObjectData[]>
+    >(`${this.apiUrl}/topics/twake`, data, {
+      headers: {
+        "Content-Type": "application/vnd.kafka.json.v2+json",
+        Accept: "application/vnd.kafka.v2+json",
+      },
+    });
   }
 }

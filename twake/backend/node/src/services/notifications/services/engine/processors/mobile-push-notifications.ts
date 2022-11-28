@@ -1,13 +1,17 @@
-import { NotificationPubsubHandler } from "../../../api";
 import { logger } from "../../../../../core/platform/framework";
-import { PushNotificationMessage, PushNotificationMessageResult } from "../../../types";
+import {
+  NotificationMessageQueueHandler,
+  PushNotificationMessage,
+  PushNotificationMessageResult,
+} from "../../../types";
 import gr from "../../../../global-resolver";
 
 /**
  * Push new message notification to a set of users
  */
 export class PushNotificationMessageProcessor
-  implements NotificationPubsubHandler<PushNotificationMessage, PushNotificationMessageResult>
+  implements
+    NotificationMessageQueueHandler<PushNotificationMessage, PushNotificationMessageResult>
 {
   readonly topics = {
     in: "notification:push:mobile",

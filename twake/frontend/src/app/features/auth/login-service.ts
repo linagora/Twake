@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import Logger from 'app/features/global/framework/logger-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import WindowState from 'app/features/global/utils/window';
@@ -8,7 +10,6 @@ import AuthService from 'app/features/auth/auth-service';
 import Application from '../applications/services/application-service';
 import { UserType } from 'app/features/users/types/user';
 import { Cookies } from 'react-cookie';
-import UserAPIClient from '../users/api/user-api-client';
 import InitService from '../global/services/init-service';
 
 class Login extends Observable {
@@ -22,7 +23,7 @@ class Login extends Observable {
   currentUserId = '';
   emailInit: string;
   server_infos_loaded: boolean;
-  server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean };
+  server_infos: { branding: any; ready: any; auth: any; help_url: boolean };
   error_secondary_mail_already: boolean;
   addmail_token: string;
   external_login_error: boolean;
@@ -33,6 +34,7 @@ class Login extends Observable {
   error_code: any;
   cookies: Cookies;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   recoilUpdateUser = (user: UserType | undefined) => {};
 
   constructor() {

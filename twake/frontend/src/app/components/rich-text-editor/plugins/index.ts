@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DraftDecorator, EditorState, Entity, RawDraftContentBlock } from 'draft-js';
 import mentionPlugin, { MentionSuggestionType } from './mentions';
 import emojiPlugin, { EmojiSuggestionType } from './emoji';
-import channelPlugin, { ChannelSuggestionType } from './channel';
+import { ChannelSuggestionType } from './channel';
 import commandPlugin, { CommandSuggestionType } from './commands';
 
 export type SupportedSuggestionTypes =

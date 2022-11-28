@@ -15,7 +15,6 @@ import {
 } from "../types";
 
 import User, { getInstance } from "../../user/entities/user";
-import { ConsoleServiceAPI } from "../api";
 import Company, {
   CompanySearchKey,
   getInstance as getCompanyInstance,
@@ -23,9 +22,9 @@ import Company, {
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
-import _, { gt } from "lodash";
 import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
 import gr from "../../global-resolver";
+import { ConsoleServiceImpl } from "../service";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -33,7 +32,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
   private infos: ConsoleOptions;
 
-  constructor(consoleInstance: ConsoleServiceAPI, private dryRun: boolean) {
+  constructor(consoleInstance: ConsoleServiceImpl, private dryRun: boolean) {
     this.infos = consoleInstance.consoleOptions;
     this.client = axios.create({ baseURL: this.infos.url });
   }
@@ -241,6 +240,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company.plan.limits = {
       [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000, // To remove duplicata since we define this in formatCompany function
       [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: limits["members"],
+      [CompanyLimitsEnum.COMPANY_GUESTS_LIMIT]: limits["guests"],
     };
 
     company.stats = coalesce(companyDTO.stats, company.stats);
@@ -382,7 +382,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       }
     }
 
-    await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
+    await gr.services.users.save(user, { user: { id: user.id, server_request: true } });
 
     return user;
   }

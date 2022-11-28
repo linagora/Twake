@@ -8,7 +8,6 @@ import { useWorkspaces } from 'app/features/workspaces/hooks/use-workspaces';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { LoadingWorkspaceIcon } from './components/Workspace/WorkspaceIcon';
 import CompanySelector from './components/CompanySelector';
-import { useCurrentCompanyRealtime } from '../../../features/companies/hooks/use-companies';
 
 import './styles.scss';
 

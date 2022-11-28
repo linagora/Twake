@@ -31,6 +31,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     handler: notificationPreferencesController.save.bind(notificationPreferencesController),
   });
 
+  fastify.route({
+    method: "POST",
+    url: `${badgesUrl}/:company_id/acknowledge`,
+    preValidation: [fastify.authenticate],
+    handler: notificationController.acknowledge.bind(notificationController),
+  });
+
   next();
 };
 

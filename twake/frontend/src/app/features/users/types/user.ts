@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CompanyRoleType,
   CompanyStatusType,
@@ -13,6 +14,26 @@ export type UserPreferencesType = null | {
   tutorial_done?: boolean;
   channel_ordering?: 'chronological' | 'alphabetical';
   recent_workspaces?: { company_id: string; workspace_id: string }[];
+  knowledge_graph?: 'all' | 'nothing' | 'metadata';
+  notifications?: UserNotificationPreferences[];
+};
+
+export type UserNotificationPreferences = {
+  company_id: string | 'all';
+  workspace_id: string | 'all';
+  preferences: {
+    highlight_words?: string[];
+    night_break?: {
+      enable: boolean;
+      from: number;
+      to: number;
+    };
+    private_message_content?: boolean;
+    mobile_notifications?: 'never' | 'when_inactive' | 'always';
+    email_notifications_delay?: number; //0: never send email, 1 and more in minutes from first unread notification
+    deactivate_notifications_until?: number;
+    notification_sound?: 'default' | 'none' | string;
+  };
 };
 
 export type UserCompanyType = {
@@ -34,6 +55,8 @@ export type UserType = {
   provider_id?: string;
   provider?: string;
   last_activity?: number;
+  last_seen?: number;
+  is_connected?: boolean;
   isNew?: boolean;
   isRobot?: boolean;
   language?: string;
@@ -50,6 +73,7 @@ export type UserType = {
   timezone_offset?: string;
   tutorial_status?: any;
   username: string;
+  cache: { companies: string[] };
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
   preference?: UserPreferencesType;

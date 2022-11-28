@@ -5,7 +5,7 @@ import {
   ListResult,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import { uniq, orderBy } from "lodash";
+import { uniq } from "lodash";
 
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import {
@@ -36,7 +36,6 @@ import { formatCompany, getCompanyStats } from "../utils";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { UserChannel, UsersIncludedChannel } from "../../channels/entities";
-import { ChannelObject } from "../../channels/services/channel/types";
 
 export class UsersCrudController
   implements
@@ -49,7 +48,7 @@ export class UsersCrudController
 {
   async get(
     request: FastifyRequest<{ Params: UserParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<UserObject>> {
     const context = getExecutionContext(request);
 
@@ -58,7 +57,7 @@ export class UsersCrudController
       id = context.user.id;
     }
 
-    const user = await gr.services.users.get({ id: id }, getExecutionContext(request));
+    const user = await gr.services.users.get({ id: id });
 
     if (!user) {
       throw CrudException.notFound(`User ${id} not found`);
@@ -82,7 +81,7 @@ export class UsersCrudController
   ): Promise<ResourceCreateResponse<UserObject>> {
     const context = getExecutionContext(request);
 
-    const user = await gr.services.users.get({ id: context.user.id }, getExecutionContext(request));
+    const user = await gr.services.users.get({ id: context.user.id });
     if (!user) {
       reply.notFound(`User ${context.user.id} not found`);
       return;
@@ -90,7 +89,7 @@ export class UsersCrudController
 
     user.status_icon = coalesce(request.body.resource, user.status_icon);
 
-    await gr.services.users.save(user, {}, context);
+    await gr.services.users.save(user, context);
 
     return {
       resource: await formatUser(user),
@@ -143,17 +142,17 @@ export class UsersCrudController
     // return users;
     return {
       resources: resUsers,
-      websockets: gr.platformServices.realtime.sign([], context.user.id), // empty for now
+      websockets: gr.platformServices.realtime.sign([], context.user.id),
     };
   }
 
   async getUserCompanies(
     request: FastifyRequest<{ Params: UserParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<CompanyObject>> {
     const context = getExecutionContext(request);
 
-    const user = await gr.services.users.get({ id: request.params.id }, context);
+    const user = await gr.services.users.get({ id: request.params.id });
 
     if (!user) {
       throw CrudException.notFound(`User ${request.params.id} not found`);
@@ -196,7 +195,7 @@ export class UsersCrudController
 
   async getCompany(
     request: FastifyRequest<{ Params: CompanyParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await gr.services.companies.getCompany({ id: request.params.id });
     const context = getExecutionContext(request);
@@ -231,7 +230,7 @@ export class UsersCrudController
 
   async registerUserDevice(
     request: FastifyRequest<{ Body: RegisterDeviceBody }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<RegisterDeviceParams>> {
     const resource = request.body.resource;
     if (resource.type !== "FCM") {
@@ -253,7 +252,7 @@ export class UsersCrudController
 
   async getRegisteredDevices(
     request: FastifyRequest<{ Params: UserParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<RegisterDeviceParams>> {
     const context = getExecutionContext(request);
 
@@ -284,14 +283,14 @@ export class UsersCrudController
 
   async recent(
     request: FastifyRequest<{ Params: CompanyParameters; Querystring: { limit: 100 } }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<UserObject>> {
     const context = getExecutionContext(request);
     const userId = context.user.id;
     const companyId = request.params.id;
 
     let channels: UserChannel[] = await gr.services.channels.channels
-      .getChannelsForUsersInWorkspace(companyId, "direct", userId)
+      .getChannelsForUsersInWorkspace(companyId, "direct", userId, undefined, context)
       .then(list => list.getEntities());
 
     channels = channels.sort((a, b) => b.last_activity - a.last_activity);

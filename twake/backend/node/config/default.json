@@ -2,7 +2,7 @@
   "general": {
     "help_url": false,
     "pricing_plan_url": "",
-    "app_download_url": "https://twake.app/fr/download/",
+    "app_download_url": "https://twake.app/download",
     "mobile": {
       "mobile_redirect": "mobile.twake.app",
       "mobile_appstore": "https://apps.apple.com/fr/app/twake/id1588764852?l=en",
@@ -15,11 +15,11 @@
         "disable_account_creation": false
       },
       "console": {
-        "account_management_url": "http://web.twake-console.local/profile",
+        "account_management_url": "http://web.twake-console.local/profile?company-code={company_id}",
         "authority": "http://auth.example.com/",
         "client_id": "twakeweb",
-        "collaborators_management_url": "http://web.twake-console.local/compaies/{company_id}/users",
-        "company_management_url": "http://web.twake-console.local/companies"
+        "collaborators_management_url": "http://web.twake-console.local/compaies/{company_id}/users?company-code={company_id}",
+        "company_management_url": "http://web.twake-console.local/companies?company-code={company_id}"
       }
     }
   },
@@ -105,7 +105,7 @@
       "delay": 200
     }
   },
-  "pubsub": {
+  "message-queue": {
     "// possible 'type' values are": "'amqp' or 'local'",
     "type": "amqp",
     "amqp": {
@@ -146,8 +146,12 @@
   "knowledge-graph": {
     "endpoint": "http://host-gateway:8888",
     "use": false,
-    "sensitive_data": false,
     "forwarded_companies": []
+  },
+  "email-pusher": {
+    "endpoint": "https://api.smtp2go.com/v3/email/send",
+    "api_key": "secret",
+    "sender": "noreply@twake.app"
   },
   "services": [
     "auth",
@@ -158,13 +162,13 @@
     "database",
     "cron",
     "search",
-    "pubsub",
+    "message-queue",
     "realtime",
     "phpnode",
     "tracker",
     "general",
     "user",
-    "applicationsapi",
+    "applications-api",
     "applications",
     "channels",
     "notifications",
@@ -177,6 +181,7 @@
     "statistics",
     "cron",
     "online",
-    "knowledge-graph"
+    "knowledge-graph",
+    "email-pusher"
   ]
 }

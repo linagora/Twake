@@ -140,11 +140,14 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
         const workspaces = await gr.services.workspaces.getAllForCompany(request.params.company_id);
 
         for (const w of workspaces) {
-          const channel = await gr.services.channels.channels.get({
-            company_id: request.params.company_id,
-            workspace_id: w.id,
-            id: request.params.id,
-          });
+          const channel = await gr.services.channels.channels.get(
+            {
+              company_id: request.params.company_id,
+              workspace_id: w.id,
+              id: request.params.id,
+            },
+            undefined,
+          );
           if (channel) {
             reply.send(channel);
             return;

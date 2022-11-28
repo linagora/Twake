@@ -1,3 +1,5 @@
+import { Button } from 'app/atoms/button/button';
+import { DownloadIcon } from 'app/atoms/icons-agnostic';
 import {
   FileTypeArchiveIcon,
   FileTypeDocumentIcon,
@@ -5,22 +7,20 @@ import {
   FileTypeSpreadsheetIcon,
   FileTypeUnknownIcon,
 } from 'app/atoms/icons-colored';
+import { Base, Info } from 'app/atoms/text';
 import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
 import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
-import { Message, MessageFileType } from 'app/features/messages/types/message';
-import { UserType } from 'app/features/users/types/user';
-import Media from 'app/molecules/media';
-import React from 'react';
-import { useRecoilState } from 'recoil';
-import DriveService from 'deprecated/Apps/Drive/Drive';
 import fileUploadService from 'app/features/files/services/file-upload-service';
-import { Base, Info } from 'app/atoms/text';
 import { formatDate } from 'app/features/global/utils/format-date';
 import { formatSize } from 'app/features/global/utils/format-file-size';
-import { Button } from 'app/atoms/button/button';
-import { DownloadIcon } from 'app/atoms/icons-agnostic';
+import { Message, MessageFileType } from 'app/features/messages/types/message';
 import routerService from 'app/features/router/services/router-service';
+import { UserType } from 'app/features/users/types/user';
+import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
+import Media from 'app/molecules/media';
+import React from 'react';
 import { ArrowRight } from 'react-feather';
+import { useRecoilState } from 'recoil';
 
 type FileMessageType = {
   message?: Message;
@@ -49,6 +49,7 @@ const ChannelFile = ({ file }: FilePreviewType): React.ReactElement => {
   const extension = name?.split('.').pop();
   const previewUrl = fileUploadApiClient.getFileThumbnailUrlFromMessageFile(file);
   const fileType = fileUploadApiClient.mimeToType(file?.metadata?.mime || '');
+  const { open: openViewer } = useFileViewerModal();
 
   const iconClassName = previewUrl
     ? 'absolute left-0 top-0 bottom-0 right-0 m-auto w-8 h-8'
@@ -57,7 +58,7 @@ const ChannelFile = ({ file }: FilePreviewType): React.ReactElement => {
   return (
     <div
       className="flex items-center p-2 hover:bg-zinc-50 rounded-md cursor-pointer"
-      onClick={() => previewFile(file)}
+      onClick={() => openViewer(file)}
     >
       <div className="relative flex bg-zinc-200 rounded-md w-16 h-16 mr-3">
         <Media size="md" url={previewUrl} duration={fileType === 'video' ? extension : undefined} />
@@ -119,11 +120,12 @@ const ChannelFile = ({ file }: FilePreviewType): React.ReactElement => {
 const ChannelMedia = ({ file }: FilePreviewType): React.ReactElement => {
   const previewUrl = fileUploadApiClient.getFileThumbnailUrlFromMessageFile(file);
   const type = fileUploadApiClient.mimeToType(file?.metadata?.mime || '');
+  const { open: openViewer } = useFileViewerModal();
 
   return (
     <div
       className="cursor-pointer hover:opacity-75 inline-block m-2"
-      onClick={() => previewFile(file)}
+      onClick={() => openViewer(file)}
     >
       <Media
         key={file.id}
@@ -146,24 +148,8 @@ const getFileDownloadRoute = (file: MessageFileType): string => {
 
   return fileUploadService.getDownloadRoute({
     companyId: file.metadata?.external_id?.company_id,
-    fileId: file.metadata?.external_id?.file_id,
+    fileId: file.metadata?.external_id?.id,
   });
-};
-
-const previewFile = (file: MessageFileType): void => {
-  if (file?.metadata?.source !== 'internal') {
-    return;
-  }
-
-  DriveService.viewDocument(
-    {
-      id: file.metadata?.external_id?.id,
-      name: file.metadata?.name,
-      url: getFileDownloadRoute(file),
-      extension: (file.metadata?.name || '').split('.').pop(),
-    },
-    true,
-  );
 };
 
 const downloadFile = (file: MessageFileType): void => {

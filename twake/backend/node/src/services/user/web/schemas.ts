@@ -20,6 +20,14 @@ export const userObjectSchema = {
     status: { type: "string" },
     last_activity: { type: "number" },
 
+    // cache: { type: ["object", "null"] },
+    cache: {
+      type: "object",
+      properties: {
+        companies: { type: ["array", "null"] },
+      },
+    },
+
     //Below is only if this is myself
     preferences: {
       type: "object",
@@ -27,6 +35,7 @@ export const userObjectSchema = {
         tutorial_done: { type: ["boolean", "null"] },
         channel_ordering: { type: ["string", "null"] },
         recent_workspaces: { type: ["array", "null"] },
+        knowledge_graph: { type: ["string", "null"] },
         locale: { type: ["string", "null"] },
         timezone: { type: ["number", "null"] },
         language: { type: ["string", "null"] },
@@ -71,6 +80,7 @@ export const companyObjectSchema = {
           properties: {
             [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: { type: "number" },
             [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: { type: "number" },
+            [CompanyLimitsEnum.COMPANY_GUESTS_LIMIT]: { type: "number" },
           },
         },
         features: {
@@ -125,6 +135,7 @@ export const setUserPreferencesSchema = {
       tutorial_done: { type: ["boolean", "null"] },
       channel_ordering: { type: ["string", "null"] },
       recent_workspaces: { type: ["array", "null"] },
+      knowledge_graph: { type: ["string", "null"] },
       locale: { type: ["string", "null"] },
       timezone: { type: ["number", "null"] },
       language: { type: ["string", "null"] },

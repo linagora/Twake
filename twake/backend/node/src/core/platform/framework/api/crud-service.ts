@@ -162,6 +162,10 @@ export class Pagination implements Paginable {
   constructor(readonly page_token?: string, readonly limitStr = "100", reversed = false) {
     this.reversed = reversed;
   }
+
+  public static fromPaginable(p: Paginable) {
+    return new Pagination(p.page_token, p.limitStr, p.reversed);
+  }
 }
 
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {

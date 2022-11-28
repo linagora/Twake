@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserType } from 'app/features/users/types/user';
 import { FileTypes } from 'features/files/api/file-upload-api-client';
 
@@ -80,6 +81,7 @@ export type Message = {
     | 'system';
   files?: MessageFileType[];
   text?: string;
+  status?: MessageDeliveryStatusType;
 };
 
 export interface MessageExtended extends Message {
@@ -225,6 +227,10 @@ export type NodeMessage = {
   _previous_message?: NodeMessage;
 
   links?: MessageLinkType[];
+
+  quote_message?: QuotedMessageType;
+
+  status?: MessageDeliveryStatusType | null;
 };
 
 export type MessageWithReplies = NodeMessage & {
@@ -244,4 +250,23 @@ export type MessageLinkType = {
   img_width: number | undefined;
   img_height: number | undefined;
   url: string;
+};
+
+export type MessageDeliveryStatusType = 'sending' | 'sent' | 'delivered' | 'read' | 'error';
+
+export type MessageSeenType = {
+  messages: {
+    message_id: string;
+    thread_id: string;
+  }[];
+  channel_id: string;
+};
+
+export type QuotedMessageType = NodeMessage & {
+  users?: UserType[];
+  company_id: string;
+  workspace_id: string;
+  channel_id: string;
+  thread_id: string;
+  id: string;
 };

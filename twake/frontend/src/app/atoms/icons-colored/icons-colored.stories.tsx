@@ -1,4 +1,5 @@
-import React, { cloneElement, ComponentProps } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { cloneElement } from 'react';
 import { ComponentStory } from '@storybook/react';
 import {
   DismissIcon,
@@ -8,6 +9,8 @@ import {
   FileTypeSpreadsheetIcon,
   FileTypeUnknownIcon,
   NotFoundIcon,
+  RemoveIcon,
+  SentIcon,
 } from '@atoms/icons-colored/index';
 
 export default {
@@ -31,7 +34,7 @@ const Icon = ({ icon, title }: PropsType): JSX.Element => {
 };
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
+const Template: ComponentStory<any> = () => {
   return (
     <>
       <h1>General</h1>
@@ -49,6 +52,8 @@ const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
       <h1>Component specific</h1>
       <div className="flex flex-wrap mb-2">
         <Icon icon={<NotFoundIcon />} title="NotFound" />
+        <Icon icon={<RemoveIcon />} title="Remove" />
+        <Icon icon={<SentIcon />} title="Remove" />
       </div>
     </>
   );

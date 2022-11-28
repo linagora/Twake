@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';

@@ -27,6 +27,9 @@ export async function convertFromPdf(
         );
       }
     } catch (err) {
+      if (!pages.length) {
+        throw err;
+      }
       //Just no more page to convert
     }
   } catch (error) {

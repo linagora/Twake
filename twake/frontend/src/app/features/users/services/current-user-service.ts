@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Login from 'app/features/auth/login-service';
 import Collections, { Collection } from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Api from 'app/features/global/framework/api-service';
 import Languages from 'app/features/global/services/languages-service';
 import { UserType } from 'app/features/users/types/user';
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
-import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/features/global/utils/URLUtils';
+import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import { getUser } from '../hooks/use-user-list';
+import { getGradient } from 'app/atoms/avatar';
 
 type SearchQueryType = {
   searching: boolean;
@@ -64,13 +67,9 @@ class User {
     if (user && (user.thumbnail || user.picture)) {
       thumbnail = addApiUrlIfNeeded(user.picture || user.thumbnail || '');
     } else {
-      let output = 0;
-      const string = user?.id || '';
-      for (let i = 0; i < string.length; i++) {
-        output += string[i].charCodeAt(0);
-      }
-      const i = output % 100;
-      thumbnail = getAsFrontUrl(`/public/identicon/${i}.png`);
+      //Generate gradient thumbnail
+      //TODO: move me to backend ?
+      thumbnail = getGradient(user.username);
     }
 
     if (user.deleted) {
@@ -185,6 +184,10 @@ class User {
     )[0];
 
     return currentUserCompany?.role || 'unknown';
+  }
+
+  isInCompany(user: UserType, companyId?: string) {
+    return user.cache?.companies?.find(company => company == companyId) !== undefined;
   }
 }
 

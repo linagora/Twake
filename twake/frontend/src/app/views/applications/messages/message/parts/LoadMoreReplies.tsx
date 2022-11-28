@@ -4,8 +4,9 @@ import React, { useContext } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import ThreadSection from '../../parts/thread-section';
 import { MessageContext } from '../message-with-replies';
+import { NodeMessage } from 'app/features/messages/types/message';
 
-export default (props: { firstMessageId: string; onFirstMessageChanged: Function }) => {
+export default (props: { firstMessageId: string; onFirstMessageChanged: (item: NodeMessage) => void }) => {
   const context = useContext(MessageContext);
   const { message } = useMessage(context);
   const { messages, window, loadMore } = useThreadMessages({

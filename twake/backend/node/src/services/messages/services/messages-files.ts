@@ -8,16 +8,13 @@ import gr from "../../../services/global-resolver";
 import { MessageFileRef, TYPE as TYPERef } from "../entities/message-file-refs";
 import { MessageFile, TYPE } from "../entities/message-files";
 import { Message } from "../entities/messages";
-import _ from "lodash";
 
 export class MessagesFilesService implements Initializable {
   version: "1";
   msgFilesRepository: Repository<MessageFile>;
   msgFilesRefRepository: Repository<MessageFileRef>;
 
-  constructor() {}
-
-  async init() {
+  async init(): Promise<this> {
     this.msgFilesRepository = await gr.database.getRepository(TYPE, MessageFile);
     this.msgFilesRefRepository = await gr.database.getRepository(TYPERef, MessageFileRef);
     return this;
@@ -30,7 +27,7 @@ export class MessagesFilesService implements Initializable {
    * @param user_id
    * @returns
    */
-  async deleteMessageFile(message_id: string, id: string, user_id: string) {
+  async deleteMessageFile(message_id: string, id: string, user_id: string): Promise<MessageFile> {
     const msgFile = await this.getMessageFile(message_id, id);
     if (!msgFile) return null;
 
@@ -143,7 +140,7 @@ export class MessagesFilesService implements Initializable {
     ];
     const offsetRef = list.find(a => a.message_file_id === id) || null;
 
-    let next = (
+    const next = (
       await this.msgFilesRefRepository.find(navigationPk, {
         pagination: {
           page_token: null,
@@ -155,7 +152,7 @@ export class MessagesFilesService implements Initializable {
     )
       .getEntities()
       .filter(a => a.message_file_id !== id)?.[0];
-    let previous = (
+    const previous = (
       await this.msgFilesRefRepository.find(navigationPk, {
         pagination: {
           page_token: null,

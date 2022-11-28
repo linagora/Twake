@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import Requests from 'app/features/global/framework/requests-api-service';
 
@@ -24,18 +26,13 @@ class GroupedQueryApi {
       queries.forEach((query: any) => {
         request.push(query.data);
       });
-      Api.post(
-        queries[0].route,
-        { multiple: request },
-        (res: any) => {
-          if (res.data && res.data.length) {
-            res.data.forEach((result: any, i: string | number) => {
-              queries[i] && queries[i].callback && queries[i].callback(result);
-            });
-          }
-        },
-        false,
-      );
+      Api.GroupedQueryApiPost(queries[0].route, { multiple: request }, (res: any) => {
+        if (res.data && res.data.length) {
+          res.data.forEach((result: any, i: string | number) => {
+            queries[i] && queries[i].callback && queries[i].callback(result);
+          });
+        }
+      });
     }, 50);
   }
 }
@@ -119,6 +116,20 @@ export default class Api {
     });
   }
 
+  static GroupedQueryApiPost<
+    Request extends { _grouped?: unknown; multiple?: unknown[] },
+    Response,
+  >(route: string, data: Request, callback?: (result: Response) => void): Promise<void> {
+    return new Promise(resolve => {
+      if (data && data._grouped && route === 'core/collections/init') {
+        GroupedQueryApiInstance.post(route, data, callback);
+        return;
+      }
+
+      resolve();
+    });
+  }
+
   static delete<Response>(
     route: string,
     callback?: (result: Response) => void,
@@ -127,12 +138,12 @@ export default class Api {
       disableJWTAuthentication?: boolean;
     } = {},
   ): Promise<Response> {
-    return Api.request(route, {}, callback, raw, { ...options, requestType: 'delete' });
+    return Api.request(route, null, callback, raw, { ...options, requestType: 'delete' });
   }
 
-  static request<Request extends { _grouped?: unknown }, Response>(
+  static request<Request, Response>(
     route: string,
-    data: Request,
+    data: Request | null,
     callback: any = false,
     raw = false,
     options: {
@@ -140,16 +151,11 @@ export default class Api {
       requestType?: 'post' | 'get' | 'put' | 'delete';
     } = {},
   ): Promise<Response> {
-    return new Promise((resolve, reject) => {
-      if (data && data._grouped && route === 'core/collections/init') {
-        GroupedQueryApiInstance.post(route, data, callback);
-        return;
-      }
-
+    return new Promise(resolve => {
       Requests.request(
         options.requestType ? options.requestType : 'post',
         new URL(route, Globals.api_root_url).toString(),
-        JSON.stringify(data),
+        data === null ? '' : JSON.stringify(data),
         (resp: any) => {
           if (raw) {
             resolve(resp);

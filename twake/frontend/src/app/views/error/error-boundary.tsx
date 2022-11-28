@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { ErrorInfo } from 'react';
 import RouterServices from 'app/features/router/services/router-service';
 
 import 'app/styles/ui.less';
 
-export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
-  static lastError: any = null;
+type PropsType = {
+  children: React.ReactElement
+}
+export default class ErrorBoundary extends React.Component<PropsType, { hasError: boolean }> {
+  static lastError: Record<string, Record<string, Error | string>> | null = null;
 
-  constructor(props: {}) {
+  constructor(props: PropsType) {
     super(props);
     this.state = {
       hasError: false,
@@ -19,7 +22,7 @@ export default class ErrorBoundary extends React.Component<{}, { hasError: boole
     };
   }
 
-  componentDidCatch(error: any, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     ErrorBoundary.lastError = {
       error: {
         name: error,

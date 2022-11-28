@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react';
-import { useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { ChannelType } from 'app/features/channels/types/channel';
 import { MineChannelsState } from '../state/channels';
@@ -10,7 +9,7 @@ import { isPrivateChannel, isPublicChannel } from 'app/features/channels/utils/u
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
-import { useSetChannel } from './use-channel';
+import { getChannel, useSetChannel } from './use-channel';
 
 export function useRefreshPublicOrPrivateChannels(): {
   refresh: () => Promise<void>;
@@ -37,6 +36,7 @@ export function usePublicOrPrivateChannelsSetup() {
     LoadingState(`channels-did-load-${companyId}-${workspaceId}`),
   );
   const { refresh } = useRefreshPublicOrPrivateChannels();
+  const { set } = useSetChannel();
 
   useGlobalEffect(
     'usePublicOrPrivateChannels',
@@ -50,22 +50,30 @@ export function usePublicOrPrivateChannelsSetup() {
   );
 
   //Public channels
-  useRealtimeRoom<ChannelType[]>(
+  useRealtimeRoom<ChannelType & { _type: string }>(
     ChannelsMineAPIClient.websockets(companyId, workspaceId)[0],
     'usePublicOrPrivateChannelsPublic',
-    (_action, _resource) => {
+    (_action, event) => {
       //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
+      if (_action === 'updated' && event._type === 'channel_activity') {
+        if (event.id)
+          set({ ...getChannel(event.id), stats: event.stats, last_message: event.last_message });
+      }
     },
   );
 
   //Private channels
-  useRealtimeRoom<ChannelType[]>(
+  useRealtimeRoom<ChannelType & { _type: string }>(
     ChannelsMineAPIClient.websockets(companyId, workspaceId)[1],
     'usePublicOrPrivateChannelsPrivate',
-    (_action, _resource) => {
+    (_action, event) => {
       //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
+      if (_action === 'updated' && event._type === 'channel_activity') {
+        if (event.id)
+          set({ ...getChannel(event.id), stats: event.stats, last_message: event.last_message });
+      }
     },
   );
 }
@@ -77,7 +85,7 @@ export function usePublicOrPrivateChannels(): {
 } {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [mineChannels, _setMineChannels] = useRecoilState(
+  const [mineChannels] = useRecoilState(
     MineChannelsState({ companyId, workspaceId }),
   );
 

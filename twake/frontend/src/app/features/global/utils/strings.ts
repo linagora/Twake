@@ -1,4 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString } from 'lodash';
+
+export const getBase64 = (file: File): Promise<string> => {
+  return new Promise((result, fail) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      result(`${reader.result}`);
+    };
+    reader.onerror = function (error) {
+      fail(error);
+    };
+  });
+};
 
 export default class Strings {
   static verifyMail(email: string) {
@@ -158,8 +172,6 @@ export const distanceFromQuery = (
     candidateSanitized.replace(/ /gm, '').length
   )
     score *= 1.1;
-
-  if (score > 6.4) console.log('candidate', query, candidates.join(' '), score);
 
   return 0 - score;
 };

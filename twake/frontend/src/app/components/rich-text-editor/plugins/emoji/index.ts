@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import { Emoji } from './emoji';
 import EmojiService from 'app/components/rich-text-editor/emojis-service';

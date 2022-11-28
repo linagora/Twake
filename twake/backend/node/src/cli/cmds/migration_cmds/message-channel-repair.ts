@@ -20,7 +20,8 @@ class MessageReferenceRepair {
     this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
   }
 
-  public async run(options: Options = {}): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async run(_options: Options = {}): Promise<void> {
     //TODO repair messages
   }
 }
@@ -34,7 +35,7 @@ const services = [
   "channels",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "messages",
 ];
 
@@ -68,7 +69,6 @@ const command: yargs.CommandModule<unknown, unknown> = {
       description: "Do not save anything and show missing references",
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handler: async argv => {
     const spinner = ora({ text: "Fixing messages references - " }).start();
     const platform = await twake.run(services);

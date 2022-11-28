@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
-import { Button, Input, InputRef } from 'antd';
+import { Button, InputRef } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'app/features/global/services/languages-service';

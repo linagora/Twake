@@ -1,9 +1,8 @@
-import { WorkspaceType } from 'app/features/workspaces/types/workspace';
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
-import CurrentUser from 'app/deprecated/user/CurrentUser';
-import UserAPIClient from 'app/features/users/api/user-api-client';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import {
   ChannelWritingActivityState,
   ChannelWritingActivityType,
@@ -74,9 +73,9 @@ export default function useChannelWritingActivity() {
         if (event.is_writing) {
           receivedWritingTimeout.set(
             event.user_id,
-            setTimeout(() => {
+            window.setTimeout(() => {
               setChannelWritingActivityState({ ...event, is_writing: false });
-            }, MAX_DELAY_AFTER_LAST_WRITE_EVENT) as any,
+            }, MAX_DELAY_AFTER_LAST_WRITE_EVENT),
           );
         }
       },
@@ -103,7 +102,7 @@ export function useChannelWritingActivityEmit(
   const { send } = useRealtimeRoom<WritingEvent>(
     WorkspaceAPIClient.websockets(companyId)[0],
     'useChannelWritingActivityEmit',
-    (action, resource) => {},
+    () => undefined,
   );
   (window as any).send = send;
 
@@ -144,7 +143,7 @@ export const useWritingDetector = () => {
     writeTimeout = setTimeout(() => {
       emit(false);
       lastEmit.current = 0;
-    }, MAX_DELAY_BETWEEN_KEYDOWN) as any;
+    }, MAX_DELAY_BETWEEN_KEYDOWN);
   }, []);
 
   return { onKeydown };

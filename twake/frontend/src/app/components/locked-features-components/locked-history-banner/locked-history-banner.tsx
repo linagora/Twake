@@ -4,7 +4,6 @@ import Banner from 'app/components/banner/banner';
 import Emojione from 'app/components/emojione/emojione';
 import Languages from 'app/features/global/services/languages-service';
 import './locked-history-banner.scss';
-import InitService from 'app/features/global/services/init-service';
 import consoleService from 'app/features/console/services/console-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 

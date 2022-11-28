@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { atomFamily, selectorFamily, useSetRecoilState } from 'recoil';
 
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';

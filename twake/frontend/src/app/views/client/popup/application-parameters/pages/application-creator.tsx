@@ -9,7 +9,6 @@ import {
   buildDefaultApplicationPayload,
   getApplicationIdentityCode,
 } from 'app/features/applications/utils/application';
-import CompanyApplicationPopup from '../../WorkspaceParameter/Pages/Applications/CompanyApplicationPopup';
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'app/components/object-modal/object-modal';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
@@ -182,7 +181,7 @@ const ApplicationCreator = () => {
             <Checkbox
               className="small-right-margin"
               checked={checked}
-              onChange={_e => setChecked(!checked)}
+              onChange={() => setChecked(!checked)}
             >
               {Languages.t('scenes.app.popup.appsparameters.pages.application_creator.checkbox')}
             </Checkbox>

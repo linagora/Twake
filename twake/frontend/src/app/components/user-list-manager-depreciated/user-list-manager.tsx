@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable react/prop-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useRef } from 'react';
 import { Avatar, Button, Col, Row, Typography } from 'antd';
 import classNames from 'classnames';
@@ -6,7 +10,6 @@ import TrashIcon from '@material-ui/icons/DeleteOutlined';
 import Strings from 'app/features/global/utils/strings';
 import Languages from 'app/features/global/services/languages-service';
 import Icon from '../icon/icon';
-import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import AutoCompleteExtended from 'components/auto-complete-extended/auto-complete-extended';
 import { UserType } from 'app/features/users/types/user';
 import UsersService from 'app/features/users/services/current-user-service';
@@ -66,16 +69,14 @@ const useSearchUsers = ({
 
 const UserListManager = (props: PropsType) => {
   const { result, search } = useSearchUsers({ scope: props.scope || 'company' });
-  const { workspaceId } = RouterServices.getStateFromRoute();
   const [input, setInput] = useState<string>('');
   const [editing, setEditing] = useState<boolean>(props.autoFocus ? props.autoFocus : false);
   const [usersIds, setUsersIds] = useState<string[]>([...props.users]);
-  const callback = useRef<Function>(() => {});
+  const callback = useRef<(Function)>(() => {});
   let savedUserProps: string;
 
   useEffect(() => {
     updateStateFromProps(props, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

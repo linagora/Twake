@@ -1,23 +1,21 @@
-import React, { FC, useState } from 'react';
+import { useState } from 'react';
 
-import Languages from 'app/features/global/services/languages-service';
-import MediumPopupComponent from 'app/components/modal/modal-manager';
-import ObjectModal from 'components/object-modal/object-modal';
-import ModalManager from 'app/components/modal/modal-manager';
+import { Button } from '@atoms/button/button';
 import { Typography } from 'antd';
-import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
+import { ModalContent } from 'app/atoms/modal';
+import { useOpenChannelModal } from 'app/components/edit-channel';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import Languages from 'app/features/global/services/languages-service';
 import SelectUsers from './select-users';
 import './style.scss';
-import { Button } from '@atoms/button/button';
-import { ModalContent } from 'app/atoms/modal';
 
 export default (props: { onClose: () => void }) => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { openDiscussion } = useDirectChannels();
+  const openChannelModal = useOpenChannelModal();
 
-  const upsertDirectMessage = async (): Promise<any> => {
+  const upsertDirectMessage = async (): Promise<void> => {
     setLoading(true);
     await openDiscussion(newUserDiscussion);
     props.onClose();
@@ -25,16 +23,7 @@ export default (props: { onClose: () => void }) => {
 
   const onClickLink = () => {
     props.onClose();
-    return ModalManager.open(
-      <ChannelWorkspaceEditor
-        title={'scenes.app.channelsbar.channelsworkspace.create_channel'}
-        defaultVisibility="private"
-      />,
-      {
-        position: 'center',
-        size: { width: '600px' },
-      },
-    );
+    openChannelModal('');
   };
 
   const max = 10;

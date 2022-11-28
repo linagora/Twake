@@ -1,29 +1,28 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/prop-types */
 import React, {
   forwardRef,
   ReactNode,
-  Suspense,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
-import { ItemContent, LogLevel, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
+import { ItemContent, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import _ from 'lodash';
-import { getMessage } from 'app/features/messages/hooks/use-message';
 
-export type ListBuilderHandle = VirtuosoHandle & {};
+export type ListBuilderHandle = VirtuosoHandle & unknown;
 
 type Props = {
   items: any[];
   followOutput: false | 'smooth' | 'auto';
-  loadMore: (direction: 'history' | 'future', limit: number, offset?: any) => Promise<any[]>;
+  loadMore: (direction: 'history' | 'future', limit: number, offset?: any) => Promise<unknown[]>;
   itemContent: ItemContent<any, any>;
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
-  onScroll: Function;
-  style?: any;
+  onScroll: (e: React.UIEvent<'div', UIEvent>) => void;
+  style?: React.CSSProperties;
   atBottomStateChange?: (atBottom: boolean) => void;
   //Will be called just before to finish append messages for a final filtering
   filterOnAppend?: (item: any[]) => any[];

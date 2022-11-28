@@ -1,10 +1,32 @@
+# Twake 2022.Q4.1143
+
+- Ability to invite automatically any user with same business email ✉️
+- Workspace invitation improved 🎨
+- Channel menu improved 🎨
+- Fixes on Documents (for SaaS) 📁
+- Forward messages to another channel ⤴️
+- Set a channel as read-only 👀
+
+# Twake 2022.Q4.1120
+
+- Message delivery status 🟢
+- New quote-reply feature ⤴️
+- Notification when someone react to your message 👍
+- New file preview and medias gallery with navigation, caption, and message context 🕶
+- New badge notification system (mention, unread, etc)
+- Digest notifications by email ✉️
+- Ability to customize notification sound
+- Improved user live status indicator
+- See when user was last active on Twake ⏰
+- Big simplification of backend 👩‍💻
+
 # Twake 2022.Q3.1065
 
+- File and medias channel gallery view 🎞
 - New channel members invitation and management modal ⚙️
-- New file preview and medias gallery with navigation, caption, and message context 🕶
 - Fixed connection status of users 🟢
-- Notification when someone react to your message 👍
-- Backend simplification for faster development 👩‍💻
+- New messages search feature on mobile 🔎
+- Fixed bugs and translation #2425 #2424 #2420 #2442 #2436 #2435
 
 # Twake 2022.Q3.1050
 

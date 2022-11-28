@@ -63,6 +63,9 @@ export class UserNotificationBadge {
   @Type(() => String)
   @Column("id", "uuid")
   id: string = uuidv4();
+
+  @Column("mention_type", "string")
+  mention_type: "reply" | "global" | "me" | "unread" | null = "me";
 }
 
 export type UserNotificationBadgePrimaryKey = Pick<

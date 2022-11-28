@@ -13,27 +13,41 @@ import {
   withNonMessagesComponents,
 } from '../../../features/messages/hooks/with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
-import { VirtuosoHandle } from 'react-virtuoso';
 import SideViewService from 'app/features/router/services/side-view-service';
 import { Application } from 'app/features/applications/types/application';
-import RouterServices from 'app/features/router/services/router-service';
 import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
 import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
 import { getMessage } from 'app/features/messages/hooks/use-message';
+import messageApiClient from 'app/features/messages/api/message-api-client';
+import User from 'app/features/users/services/current-user-service';
+import { useChannelMembersReadSections } from 'app/features/channel-members/hooks/use-channel-members-read-sections';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
+import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
+import { usePageVisibility } from "react-page-visibility";
 
 type Props = {
   companyId: string;
   workspaceId?: string;
   channelId?: string;
   threadId?: string;
+  readonly?: boolean;
 };
 
-export const MessagesListContext = React.createContext({ hideReplies: false, withBlock: false });
+export const MessagesListContext = React.createContext({
+  hideReplies: false,
+  withBlock: false,
+  readonly: false,
+});
 
-export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
+export default ({ channelId, companyId, workspaceId, readonly }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
+  const { seen, refresh: loadReadSections } = useChannelMembersReadSections(
+    companyId,
+    workspaceId || 'direct',
+    channelId || '',
+  );
 
   const {
     messages: _messages,
@@ -68,9 +82,38 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     );
   };
 
+  const { refresh: refreshChannels } = useRefreshPublicOrPrivateChannels();
+  const isPageVisible = usePageVisibility();
+
   useEffect(() => {
     if (messages.length === 0) loadMore('history');
   }, []);
+
+  useEffect(() => {
+    if (window.reachedEnd && atBottom && messages.length > 0 && isPageVisible) {
+      const seenMessages = messages.filter(message => {
+        const m = getMessage(message.id || message.threadId);
+        const currentUserId = User.getCurrentUserId();
+
+        if (m.user_id === currentUserId) {
+          return false;
+        }
+
+        return m.status === 'delivered' || (m.status === 'read' && !seen(currentUserId, m.id));
+      });
+      if (seenMessages.length > 0) {
+        delayRequest('message-list-read-request', async () => {
+          await messageApiClient.read(
+            companyId,
+            channelId || '',
+            workspaceId || 'direct',
+            seenMessages,
+          );
+          await loadReadSections();
+        });
+      }
+    }
+  }, [messages, messages.length, window.reachedEnd, isPageVisible]);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
@@ -109,9 +152,22 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   }, [highlight, messages.length]);
 
   useEffect(() => {
-    if (messages.length)
-      ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+    if (messages.length) {
+      ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true }).then(
+        () => {
+          refreshChannels();
+        },
+      );
+    }
   }, [messages.length > 0]);
+
+  useEffect(() => {
+    if (messages.length) {
+      delayRequest('message-list-load-read-sections', async () => {
+        loadReadSections();
+      });
+    }
+  }, [companyId, workspaceId, channelId, messages.length > 0]);
 
   const row = React.useMemo(
     () => (_: number, m: MessagesAndComponentsType) => {
@@ -166,15 +222,20 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const virtuosoLoading = highlight && !highlight?.reachedThread;
 
   return (
-    <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
+    <MessagesListContext.Provider
+      value={{ hideReplies: false, withBlock: true, readonly: !!readonly }}
+    >
       {(!window.loaded || virtuosoLoading) && <MessagesPlaceholder />}
       {!window.loaded && <div style={{ flex: 1 }}></div>}
       {window.loaded && (
         <ListBuilder
           ref={listBuilderRef}
           style={virtuosoLoading ? { opacity: 0 } : {}}
-          onScroll={(e: any) => {
-            const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+          onScroll={(e: React.UIEvent<'div', UIEvent>) => {
+            const scrollBottom =
+              (e.target as HTMLElement).scrollHeight -
+              (e.target as HTMLElement).scrollTop -
+              (e.target as HTMLElement).clientHeight;
             const closeToBottom = scrollBottom < 500;
             if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
             cancelHighlight();
@@ -188,12 +249,13 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           itemContent={row}
           followOutput={!!window.reachedEnd && 'smooth'}
           loadMore={loadMoreMessages}
-          atBottomStateChange={(atBottom: boolean) => {
+          atBottomStateChange={async (atBottom: boolean) => {
             if (atBottom && window.reachedEnd) {
               setAtBottom(true);
-              ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
+              await ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
                 status: true,
               });
+              refreshChannels();
             }
           }}
         />

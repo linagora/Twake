@@ -5,12 +5,12 @@ import Globals from 'app/features/global/services/globals-twake-app-service';
 import Languages from 'app/features/global/services/languages-service';
 import InitService from 'app/features/global/services/init-service';
 import LoginService from 'app/features/auth/login-service';
-import Icon from 'app/components/icon/icon.js';
+import Icon from 'app/components/icon/icon.jsx';
 
-import LoginView from './login-view/login-view.js';
-import Signin from './signin/signin.js';
-import VerifyMail from './verify-mail/verify-mail.js';
-import ForgotPassword from './forgot-password/index.js';
+import LoginView from './login-view/login-view.jsx';
+import Signin from './signin/signin.jsx';
+import VerifyMail from './verify-mail/verify-mail.jsx';
+import ForgotPassword from './forgot-password/index.jsx';
 import Error from './error';
 
 import './login.scss';

@@ -9,7 +9,6 @@ type PropsType = {
   companySubscriptionUrl: string;
 };
 
-const { Text } = Typography;
 const LockedGuestsPopup = ({ companySubscriptionUrl }: PropsType): JSX.Element => {
   const onClickLearnMore = () => window.open(companySubscriptionUrl, 'blank');
   const onClickSkipForNow = () => ModalManager.close();

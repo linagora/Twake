@@ -6,14 +6,15 @@ import classNames from 'classnames';
 
 import Languages from 'app/features/global/services/languages-service';
 import PopupService from 'app/deprecated/popupManager/popupManager.js';
-import PopupComponent from 'components/popup-component/popup-component.js';
+import PopupComponent from 'components/popup-component/popup-component.jsx';
 import MainView from './main-view/MainView';
-import DraggableBodyLayer from 'components/draggable/draggable-body-layer.js';
-import MenusBodyLayer from 'components/menus/menus-body-layer.js';
-import DriveUploadViewer from 'components/uploads/upload-viewer.js';
+import DraggableBodyLayer from 'components/draggable/draggable-body-layer.jsx';
+import MenusBodyLayer from 'app/components/menus/menus-body-layer.jsx';
+import DriveUploadViewer from 'components/uploads/upload-viewer.jsx';
 import ChatUploadsViewer from 'app/components/file-uploads/uploads-viewer';
-import ConfigBodyLayer from 'components/configurators/config-body-layer.js';
-import Viewer from 'app/views/applications/drive/viewer/viewer';
+import ConfigBodyLayer from 'components/configurators/config-body-layer.jsx';
+import DriveViewer from 'app/views/applications/drive/viewer/drive-deprecated-viewer';
+import Viewer from 'app/views/applications/viewer/viewer';
 import ModalComponent from 'app/components/modal/modal-component';
 import ConnectionIndicator from 'components/connection-indicator/connection-indicator';
 import SearchPopup from 'components/search-popup/search-popup';
@@ -29,6 +30,9 @@ import UsersSearchModal from 'app/components/channel-members-list/users-search-m
 import './styles.scss';
 import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
 import ChannelAttachementList from 'app/components/channel-attachement-list/channel-attachement-list';
+import { EditChannelModal } from 'app/components/edit-channel';
+import Invitation from 'app/components/invitation/invitation';
+import DesktopRedirect from '../desktop-redirect';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -45,34 +49,36 @@ export default React.memo((): JSX.Element => {
 
   if (user?.id) {
     page = (
-      <Layout className="appPage fade_in">
-        <DownloadAppBanner />
-        <NewVersionComponent />
-        <CompanyStatusComponent />
-        <FeatureToggles features={activeFeatureNames}>
-          <Layout hasSider>
-            <Layout.Sider
-              trigger={<Menu size={16} />}
-              breakpoint="lg"
-              collapsedWidth="0"
-              theme="light"
-              width={290}
-              onCollapse={(collapsed, type) => {
-                if (type === 'responsive') return setMenuIsOpen(false);
-                setMenuIsOpen(!collapsed);
-              }}
-            >
-              <Suspense fallback={<LoadingSidebar />}>
-                <SideBars />
+      <DesktopRedirect>
+        <Layout className="appPage fade_in">
+          <DownloadAppBanner />
+          <NewVersionComponent />
+          <CompanyStatusComponent />
+          <FeatureToggles features={activeFeatureNames}>
+            <Layout hasSider>
+              <Layout.Sider
+                trigger={<Menu size={16} />}
+                breakpoint="lg"
+                collapsedWidth="0"
+                theme="light"
+                width={290}
+                onCollapse={(collapsed, type) => {
+                  if (type === 'responsive') return setTimeout(() => setMenuIsOpen(false), 0);
+                  setTimeout(() => setMenuIsOpen(!collapsed), 0);
+                }}
+              >
+                <Suspense fallback={<LoadingSidebar />}>
+                  <SideBars />
+                </Suspense>
+              </Layout.Sider>
+              <Suspense fallback={<></>}>
+                <MainView className={classNames({ collapsed: menuIsOpen })} />
               </Suspense>
-            </Layout.Sider>
-            <Suspense fallback={<></>}>
-              <MainView className={classNames({ collapsed: menuIsOpen })} />
-            </Suspense>
-          </Layout>
-        </FeatureToggles>
-        <UserContext />
-      </Layout>
+            </Layout>
+          </FeatureToggles>
+          <UserContext />
+        </Layout>
+      </DesktopRedirect>
     );
   }
 
@@ -85,12 +91,15 @@ export default React.memo((): JSX.Element => {
       <DriveUploadViewer />
       <ConfigBodyLayer />
       <Viewer />
+      <DriveViewer />
       <ModalComponent />
       <SearchPopup />
       <ChannelAttachementList />
       <ConnectionIndicator />
       <ChatUploadsViewer />
       <UsersSearchModal />
+      <EditChannelModal />
+      <Invitation />
     </>
   );
 });

@@ -6,7 +6,7 @@ import { getEntityDefinition, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { logger } from "../../../../framework";
 import { DatabaseEntitiesRemovedEvent, DatabaseEntitiesSavedEvent } from "./types";
-import { localEventBus } from "../../../../framework/pubsub";
+import { localEventBus } from "../../../../framework/event-bus";
 
 export default class EntityManager<EntityType extends Record<string, any>> {
   private toPersist: EntityType[] = [];

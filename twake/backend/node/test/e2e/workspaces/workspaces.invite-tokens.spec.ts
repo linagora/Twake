@@ -19,7 +19,7 @@ describe("The /workspaces API (invite tokens)", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "user",
         "search",
@@ -36,7 +36,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
     companyId = platform.workspace.company_id;
 
-    authServiceApi = await platform.platform.getProvider<AuthService>("auth");
+    await platform.platform.getProvider<AuthService>("auth");
     testDbService = new TestDbService(platform);
     await resetDatabase();
   };
@@ -173,7 +173,9 @@ describe("The /workspaces API (invite tokens)", () => {
         method: "POST",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens`,
         headers: { authorization: `Bearer ${jwtToken}` },
-        payload: {},
+        payload: {
+          channels: ["test"],
+        },
       });
       expect(response.statusCode).toBe(403);
 
@@ -184,6 +186,7 @@ describe("The /workspaces API (invite tokens)", () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
+      const channel = await testDbService.createChannel(userId);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -199,6 +202,9 @@ describe("The /workspaces API (invite tokens)", () => {
         method: "POST",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens`,
         headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          channels: [channel.id],
+        },
       });
 
       expect(response.statusCode).toBe(200);
@@ -238,6 +244,7 @@ describe("The /workspaces API (invite tokens)", () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
+      const channel = await testDbService.createChannel(userId);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -261,6 +268,9 @@ describe("The /workspaces API (invite tokens)", () => {
         method: "POST",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens`,
         headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          channels: [channel.id],
+        },
       });
 
       expect(response.statusCode).toBe(200);

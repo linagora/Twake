@@ -1,8 +1,7 @@
 import { FastifyRequest } from "fastify";
 import { Pagination } from "../../../../../core/platform/framework/api/crud-service";
-import { PaginationQueryParameters, ResourceListResponse } from "../../../../../utils/types";
+import { ResourceListResponse } from "../../../../../utils/types";
 import gr from "../../../../global-resolver";
-import { PublicFile } from "../../../../../services/files/entities/file";
 import { getCompanyExecutionContext } from "../views";
 import { FileSearchResult } from "./search-files";
 

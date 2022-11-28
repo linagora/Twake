@@ -30,7 +30,7 @@ services:
     image: twaketech/twake-node
     container_name: node
     ports:
-      - 3000:3000
+      - 4000:3000
       - 8000:3000
       - 9229:9229
     environment:

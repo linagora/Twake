@@ -12,7 +12,7 @@ export default (props: {
   label?: string;
   checked?: boolean;
   disabled?: boolean;
-  onChange: Function;
+  onChange: (value: boolean) => void;
 }) => {
   const renderSwitch = () => {
     let className = props.className || '';

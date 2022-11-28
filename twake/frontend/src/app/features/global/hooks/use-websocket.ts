@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import WebSocketFactory, { WebsocketEvents } from 'app/features/global/types/websocket-types';
 import WebSocketService from 'app/features/global/services/websocket-service';
-import Logger from 'app/features/global/framework/logger-service';
-
-const logger = Logger.getLogger('useWebSocket');
 
 const useWebSocket = () => {
   const wsRef = useRef<WebSocketService>();
@@ -17,15 +14,15 @@ const useWebSocket = () => {
       setConnected(() => true);
     }
 
-    wsRef.current.on(WebsocketEvents.Connected, (data: { url: string }) => {
+    wsRef.current.on(WebsocketEvents.Connected, () => {
       setConnected(() => true);
     });
 
-    wsRef.current.on(WebsocketEvents.Disconnected, (data: { url: string }) => {
+    wsRef.current.on(WebsocketEvents.Disconnected, () => {
       setConnected(() => false);
     });
 
-    return () => {};
+    return () => undefined;
   }, []);
 
   return {

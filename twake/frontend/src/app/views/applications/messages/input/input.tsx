@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
-import { Send } from 'react-feather';
 import { EditorState } from 'draft-js';
 import { Tooltip } from 'antd';
 
@@ -8,7 +8,7 @@ import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 import InputOptions from './parts/InputOptions';
 import EphemeralMessages from './parts/EphemeralMessages';
 import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
-import MenusManager from 'app/components/menus/menus-manager.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
 import PendingAttachments from './parts/PendingAttachments';
 import RichTextEditorStateService from 'app/components/rich-text-editor/editor-state-service';
 import { EditorView } from 'app/components/rich-text-editor';
@@ -31,7 +31,7 @@ import {
   getCompanyApplications,
 } from 'app/features/applications/state/company-applications';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 
 import './input.scss';
@@ -40,6 +40,9 @@ import MessageExternalFilePicker from './parts/MessageExternalFilePicker';
 import FilePicker from 'app/components/drive/file-picker/file-picker';
 import { MessageFileType } from 'app/features/messages/types/message';
 import { ChannelType } from 'app/features/channels/types/channel';
+import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
+import QuotedMessage from 'app/components/quoted-message/quoted-message';
+import { UpIcon, PlusIcon } from 'app/atoms/icons-agnostic';
 
 type Props = {
   messageId?: string;
@@ -85,6 +88,12 @@ export default (props: Props) => {
     id: props.threadId,
   });
 
+  const {
+    isActive: isBeingQuoted,
+    close,
+    message: messageBeingQuoted,
+  } = useMessageQuoteReply(props.channelId || '');
+
   const { upload, clear: clearUploads } = useUploadZones(editorId);
   const format = props.format || 'markdown';
   const editorRef = useRef<EditorView>(null);
@@ -97,6 +106,7 @@ export default (props: Props) => {
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
   );
   const [isTooLong, setTooLong] = useState(false);
+  const [inPlus, setInPlus] = useState(false);
 
   const { iAmWriting } = useChannelWritingActivityEmit(props.channelId || '', props.threadId);
 
@@ -122,7 +132,6 @@ export default (props: Props) => {
         );
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const disable_app: any = {};
@@ -160,6 +169,7 @@ export default (props: Props) => {
       });
 
       if (!app) {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         AlertManager.alert(() => {}, {
           text: Languages.t('services.apps.messages.no_command_possible', [content, app_name]),
           title: Languages.t('services.apps.messages.no_app'),
@@ -277,7 +287,7 @@ export default (props: Props) => {
     );
   };
 
-  const onUpArrow = (e: any): void => {
+  const onUpArrow = (): void => {
     if (isEmpty()) {
       //TODO
     }
@@ -299,10 +309,6 @@ export default (props: Props) => {
       return;
     }
     setRichTextEditorState(newEditorState);
-  };
-
-  const isEditing = (): boolean => {
-    return !!(props.messageId && props.messageId === messageEditorService.currentEditorMessageId);
   };
 
   const setUploadZoneRef = (node: UploadZone): void =>
@@ -344,9 +350,14 @@ export default (props: Props) => {
     }
   };
 
+  useEffect(() => {
+    focusEditor();
+  }, [messageBeingQuoted]);
+
   const disabled = isEmpty() || isTooLong;
   return (
-    <div className={'message-input'} ref={props.ref} onClick={() => focus()}>
+    <div className={'message-input w-full'} ref={props.ref} onClick={() => focus()}>
+      {isBeingQuoted && <QuotedMessage onClose={() => close()} />}
       <UploadZone
         className="upload-zone-centerer"
         ref={setUploadZoneRef}
@@ -377,14 +388,25 @@ export default (props: Props) => {
           }}
         />
 
-        <PendingAttachments
-          zoneId={editorId}
-          initialValue={editor.files || []}
-          onChange={list => setFiles(list)}
-        />
-
         {!hasEphemeralMessage && (
-          <div className="editorview-submit">
+          <div className="editorview-submit flex flex-row items-center px-1 relative">
+            <div className="absolute -bottom-2 right-8">
+              <TextCount editorState={editorState} displayOnlyAfterThresold={true} />
+            </div>
+
+            {!props.messageId && (
+              <div className="mr-2 self-start mt-[6px]">
+                <PlusIcon
+                  onClick={() => {
+                    setInPlus(!inPlus);
+                  }}
+                  className={
+                    'cursor-pointer text-blue-500 hover:text-blue-600 w-5 h-5 transition-transform ' +
+                    (inPlus ? ' rotate-45 ' : '')
+                  }
+                />
+              </div>
+            )}
             <EditorView
               ref={editorRef}
               onChange={editorState => {
@@ -395,20 +417,20 @@ export default (props: Props) => {
               plugins={editorPlugins}
               editorState={editorState}
               onSubmit={() => onSend()}
-              onUpArrow={e => onUpArrow(e)}
+              onUpArrow={() => onUpArrow()}
               onFilePaste={onFilePaste}
               placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
             />
-            {!isEditing() && (
+            {!props.messageId && (
               <Tooltip
                 title={Languages.t('scenes.apps.messages.input.send_message')}
                 placement="top"
               >
                 <div
                   ref={submitRef}
-                  className={classNames('submit-button', {
+                  className={classNames('ml-2 submit-button self-start mt-0.5', {
                     disabled: disabled,
-                    skew_in_right: !disabled,
+                    scale: !disabled,
                   })}
                   onClick={() => {
                     if (!isEmpty() && !isTooLong) {
@@ -416,29 +438,33 @@ export default (props: Props) => {
                     }
                   }}
                 >
-                  <Send className="send-icon" size={20} />
+                  <UpIcon className="text-blue-500 hover:text-blue-600 w-7 h-7" />
                 </div>
               </Tooltip>
             )}
           </div>
         )}
 
-        <div className="counter-right">
-          <TextCount editorState={editorState} displayOnlyAfterThresold={true} />
-        </div>
-
         {!hasEphemeralMessage && !props.messageId && (
-          <InputOptions
-            isEmpty={isEmpty()}
-            channelId={props.channelId || ''}
-            threadId={props.threadId}
-            onSend={() => onSend()}
-            triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
-            onAddEmoji={emoji => editorRef.current?.insertCommand('EMOJI', emoji)}
-            richTextEditorState={editorState}
-            onRichTextChange={editorState => setRichTextEditorState(editorState)}
-          />
+          <div className={'transition-all ' + (inPlus ? 'h-8 opacity-1' : 'h-0 opacity-0')}>
+            <InputOptions
+              isEmpty={isEmpty()}
+              channelId={props.channelId || ''}
+              threadId={props.threadId}
+              onSend={() => onSend()}
+              triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
+              onAddEmoji={emoji => editorRef.current?.insertCommand('EMOJI', emoji)}
+              richTextEditorState={editorState}
+              onRichTextChange={editorState => setRichTextEditorState(editorState)}
+            />
+          </div>
         )}
+
+        <PendingAttachments
+          zoneId={editorId}
+          initialValue={editor.files || []}
+          onChange={list => setFiles(list)}
+        />
       </UploadZone>
     </div>
   );

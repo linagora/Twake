@@ -5,7 +5,10 @@ import { Channel } from "../../../../../channels/entities";
 import { isDirectChannel } from "../../../../../channels/utils";
 import { ChannelActivityNotification } from "../../../../../channels/types";
 import { getMentions } from "../../../utils";
-import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
+import {
+  ExecutionContext,
+  Pagination,
+} from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../../../services/messages/entities/messages";
 import gr from "../../../../../global-resolver";
 
@@ -16,7 +19,11 @@ export class MessageToNotificationsProcessor {
     //
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     logger.debug(`${this.name} - Share message with notification microservice`);
 
     if (message.resource.ephemeral) {
@@ -38,13 +45,7 @@ export class MessageToNotificationsProcessor {
             company_id: participant.company_id,
             workspace_id: participant.workspace_id,
           },
-          {
-            user: { server_request: true, id: null },
-            workspace: {
-              company_id: participant.company_id,
-              workspace_id: participant.workspace_id,
-            },
-          },
+          context,
         );
 
         if (!channel) {
@@ -121,7 +122,7 @@ export class MessageToNotificationsProcessor {
             message.created ||
             (await this.isLastActivityMessageDeleted(participant, messageResource, message))
           ) {
-            await gr.platformServices.pubsub.publish<ChannelActivityNotification>(
+            await gr.platformServices.messageQueue.publish<ChannelActivityNotification>(
               "channel:activity",
               {
                 data: channelEvent,
@@ -129,7 +130,7 @@ export class MessageToNotificationsProcessor {
             );
           }
 
-          await gr.platformServices.pubsub.publish<MessageNotification>(
+          await gr.platformServices.messageQueue.publish<MessageNotification>(
             message.created ? "message:created" : "message:updated",
             {
               data: messageEvent,

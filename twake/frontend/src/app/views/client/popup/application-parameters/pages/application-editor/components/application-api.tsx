@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Descriptions, Input, Row, Typography } from 'antd';
+import { Input, Row, Typography } from 'antd';
 
 import { Application } from 'app/features/applications/types/application';
 import Languages from 'app/features/global/services/languages-service';
 
-const { Item } = Descriptions;
 const { Text, Link, Title } = Typography;
 export const ApplicationAPI = ({
   application,

@@ -1,4 +1,4 @@
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { Initializable } from "../../../../core/platform/framework";
 import { MessageFileDownloadEvent, MessageLocalEvent } from "../../types";
 import { ChannelViewProcessor } from "./processors/channel-view";
@@ -17,6 +17,7 @@ import { MessageToHooksProcessor } from "./processors/message-to-hooks";
 import gr from "../../../global-resolver";
 import { MessageLinksPreviewFinishedProcessor } from "./processors/links";
 import { Message } from "../../entities/messages";
+import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -40,10 +41,14 @@ export class MessagesEngine implements Initializable {
     this.messageToHooks = new MessageToHooksProcessor();
   }
 
-  async dispatchMessage(e: MessageLocalEvent) {
-    const thread = await this.threadRepository.findOne({
-      id: e.resource.thread_id,
-    });
+  async dispatchMessage(e: MessageLocalEvent, context?: ExecutionContext) {
+    const thread = await this.threadRepository.findOne(
+      {
+        id: e.resource.thread_id,
+      },
+      {},
+      context,
+    );
 
     if (e.resource.ephemeral) {
       await this.channelViewProcessor.process(thread || null, e);
@@ -53,7 +58,7 @@ export class MessagesEngine implements Initializable {
     await this.channelViewProcessor.process(thread, e);
     await this.channelMarkedViewProcessor.process(thread, e);
     await this.userInboxViewProcessor.process(thread, e);
-    await this.userMarkedViewProcessor.process(thread, e);
+    await this.userMarkedViewProcessor.process();
     await this.filesViewProcessor.process(thread, e);
     await this.messageToNotifications.process(thread, e);
     await this.messageToHooks.process(thread, e);
@@ -84,9 +89,11 @@ export class MessagesEngine implements Initializable {
     await this.userMarkedViewProcessor.init();
     await this.filesViewProcessor.init();
 
-    gr.platformServices.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(new StatisticsMessageProcessor());
-    gr.platformServices.pubsub.processor.addHandler(
+    gr.platformServices.messageQueue.processor.addHandler(
+      new ChannelSystemActivityMessageProcessor(),
+    );
+    gr.platformServices.messageQueue.processor.addHandler(new StatisticsMessageProcessor());
+    gr.platformServices.messageQueue.processor.addHandler(
       new MessageLinksPreviewFinishedProcessor(this.messageRepository, this.threadRepository),
     );
 

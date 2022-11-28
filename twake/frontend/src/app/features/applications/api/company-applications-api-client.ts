@@ -48,7 +48,7 @@ class CompanyApplicationsAPIClient {
    * @returns
    */
   async add(companyId: string, applicationId: string): Promise<Application> {
-    return Api.post<{}, { resource: Application }>(
+    return Api.post<unknown, { resource: Application }>(
       `${PREFIX}/${companyId}/applications/${applicationId}`,
       {},
       undefined,

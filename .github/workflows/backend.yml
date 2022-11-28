@@ -8,6 +8,14 @@ on:
       - "twake/backend/node/**"
 
 jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prettier code style check
+        run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run lint:prettier
+      - name: Lint
+        run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run lint
   test:
     runs-on: ubuntu-20.04
     steps:

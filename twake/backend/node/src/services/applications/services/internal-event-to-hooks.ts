@@ -1,10 +1,11 @@
 import { logger } from "../../../core/platform/framework";
-import { HookType } from "../../applicationsapi/types";
-import { PubsubHandler } from "../../../core/platform/services/pubsub/api";
+import { HookType } from "../../applications-api/types";
+import { MessageQueueHandler } from "../../../core/platform/services/message-queue/api";
 import { MessageHook } from "../../messages/types";
 import gr from "../../global-resolver";
+import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 
-export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void> {
+export class InternalToHooksProcessor implements MessageQueueHandler<MessageHook, void> {
   readonly topics = {
     in: "application:hook:message",
   };
@@ -21,21 +22,25 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
     return true;
   }
 
-  async process(message: HookType): Promise<void> {
+  async process(message: HookType, context?: ExecutionContext): Promise<void> {
     logger.debug(`${this.name} - Receive hook of type ${message.type}`);
 
-    const application = await gr.services.applications.marketplaceApps.get({
-      id: message.application_id,
-    });
+    const application = await gr.services.applications.marketplaceApps.get(
+      {
+        id: message.application_id,
+      },
+      context,
+    );
 
     //TODO Check application access rights (hooks)
-    const access = application.access;
+    const _access = application.access;
 
     // Check application still exists in the company
     if (
       !(await gr.services.applications.companyApps.get({
         company_id: message.company_id,
         application_id: message.application_id,
+        id: undefined,
       }))
     ) {
       logger.error(
@@ -53,6 +58,7 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
       { message },
       null,
       null,
+      context,
     );
   }
 }

@@ -1,32 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import Languages from 'app/features/global/services/languages-service';
-import { Table, Row, Col, Typography, Divider } from 'antd';
+import { Table, Row, Typography } from 'antd';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import { ColumnsType } from 'antd/lib/table';
 import UserService from 'app/features/users/services/current-user-service';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
 import InitService from 'app/features/global/services/init-service';
-import { ChevronUp, ChevronsUp } from 'react-feather';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import Api from 'app/features/global/framework/api-service';
 import ConsoleService from 'app/features/console/services/console-service';
-import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import Icon from 'app/components/icon/icon';
-import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';
-import {
-  searchBackend,
-  searchFrontend,
-  useSearchUsers,
-} from 'app/features/users/hooks/use-search-user-list';
+import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import MemberGrade from './MemberGrade';
 
 type ColumnObjectType = { [key: string]: any };
@@ -47,12 +42,10 @@ export default ({ filter }: { filter: string }) => {
   const workspaceUsersRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/users`;
 
   const { set: setUserList } = useSetUserList('Members');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { xs, sm, md, lg, xl } = useBreakpoint();
+  const { xs, sm } = useBreakpoint();
 
   useEffect(() => {
     requestWorkspaceUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -101,11 +94,11 @@ export default ({ filter }: { filter: string }) => {
     setServerSearchedData(updater(serverSearchedData));
   };
 
-  const updateWorkspaceUserRole = async (col: { [key: string]: any }) => {
+  const updateWorkspaceUserRole = async (col: WorkspaceUserType & { company_id: string }) => {
     const workspaceUserRole = `${prefixRoute}/companies/${col.company_id}/workspaces/${col.workspace_id}/users/${col.user_id}`;
 
     setLoading(true);
-    const res: any = await Api.post(workspaceUserRole, {
+    const res = await Api.post<unknown, { resource: unknown }>(workspaceUserRole, {
       resource: {
         role: col.role === 'moderator' ? 'member' : 'moderator',
       },
@@ -125,18 +118,18 @@ export default ({ filter }: { filter: string }) => {
       const deleteWorkspaceUser = `${prefixRoute}/companies/${col.company_id}/workspaces/${col.workspace_id}/users/${col.user_id}`;
 
       setLoading(true);
-      Api.delete(deleteWorkspaceUser, (res: any) => {
+      Api.delete(deleteWorkspaceUser, () => {
         updateData(data => data.filter(d => d.user_id !== col.user_id));
         setLoading(false);
       });
     });
 
-  const leaveWorkspace = (col: any) => {
+  const leaveWorkspace = () => {
     workspacesUsers.leaveWorkspace();
   };
 
-  const buildMenu = (col: any) => {
-    const menu: any[] = [];
+  const buildMenu = (col: WorkspaceUserType & { company_id: string }) => {
+    const menu: (Record<string, string | (() => void)> | boolean)[] = [];
 
     if (
       workspaceUserRightsService.hasGroupPrivilege() &&
@@ -159,7 +152,7 @@ export default ({ filter }: { filter: string }) => {
         text: Languages.t('scenes.app.popup.workspaceparameter.pages.quit_workspace_menu'),
         className: 'error',
         onClick: () => {
-          leaveWorkspace(col);
+          leaveWorkspace();
         },
       });
     } else if (workspaceUserRightsService.hasWorkspacePrivilege()) {
@@ -193,7 +186,7 @@ export default ({ filter }: { filter: string }) => {
     {
       title: Languages.t('scenes.app.popup.workspaceparameter.pages.table_title'),
       dataIndex: 'name',
-      render: (text, col, index) => {
+      render: (_text, col) => {
         const fullName = UserService.getFullName(col.user);
         return (
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -216,7 +209,7 @@ export default ({ filter }: { filter: string }) => {
         'scenes.app.popup.workspaceparameter.pages.workspace_partner_tabs.members.table.tags',
       ),
       dataIndex: 'tags',
-      render: (text, col, index) => (
+      render: (_text, col) => (
         <Text type="secondary">
           <MemberGrade
             companyRole={UserService.getUserRole(col.user, companyId)}
@@ -229,8 +222,10 @@ export default ({ filter }: { filter: string }) => {
       title: '',
       dataIndex: 'menu',
       width: 50,
-      render: (text, col, index) =>
-        false && workspaceUserRightsService.hasWorkspacePrivilege() && buildMenu(col),
+      render: (_text, col) =>
+        false &&
+        workspaceUserRightsService.hasWorkspacePrivilege() &&
+        buildMenu(col as WorkspaceUserType & { company_id: string }),
     },
   ];
 

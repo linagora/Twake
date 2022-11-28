@@ -8,8 +8,8 @@ import { TabType } from 'app/features/tabs/types/tab';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
-import { v1 } from 'uuid';
 import { MessageWithReplies } from 'app/features/messages/types/message';
+import { Application } from 'app/features/applications/types/application';
 
 enum ChannelActivityEnum {
   CHANNEL_MEMBER_CREATED = 'channel:activity:member:created',
@@ -47,20 +47,20 @@ export type ActivityType = {
 };
 
 type PropsType = {
-  refDom?: ((node: any) => any) | undefined;
+  refDom?: React.Ref<HTMLDivElement>;
   activity: ActivityType;
   message: MessageWithReplies;
 };
 
 // i18n but with react nodes as replacements
 // TODO: maybe there is betters ways to do it with lodash
-const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
+const translateUsingReactNode = (key: string, replacements: JSX.Element[]): JSX.Element[] => {
   let temp =
     Languages.t(
       key,
       replacements.map((_, i) => `{${i}}`),
     ) || '';
-  const list: any[] = [];
+  const list: JSX.Element[] = [];
   replacements.forEach((replacement, i) => {
     const split = temp.split(`{${i}}`);
     list.push(
@@ -169,7 +169,7 @@ export default (props: PropsType): JSX.Element => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as TabType;
       const connector = getCompanyApplications(Groups.currentGroupId).filter(
-        (app: any) => app.id === resource.application_id,
+        (app: Application) => app.id === resource.application_id,
       );
 
       if (activity.context.type === 'add') {
@@ -211,7 +211,7 @@ export default (props: PropsType): JSX.Element => {
   const channelConnectorCreatedOrDeleted = (activity: ActivityType) => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as ChannelType;
-      const connector = getCompanyApplications(Groups.currentGroupId).filter((app: any) =>
+      const connector = getCompanyApplications(Groups.currentGroupId).filter((app: Application) =>
         resource.connectors?.includes(app.id),
       );
 
@@ -247,8 +247,11 @@ export default (props: PropsType): JSX.Element => {
     }
   };
 
-  const compute = (): string | any[] => {
-    const process = new Map<ChannelActivityEnum, (activity: ActivityType) => any[] | undefined>();
+  const compute = (): string | JSX.Element[] => {
+    const process = new Map<
+      ChannelActivityEnum,
+      (activity: ActivityType) => JSX.Element[] | undefined
+    >();
     process
       .set(ChannelActivityEnum.CHANNEL_MEMBER_CREATED, memberJoinedOrInvited)
       .set(ChannelActivityEnum.CHANNEL_MEMBER_DELETED, memberLeftOrRemoved)
@@ -258,7 +261,7 @@ export default (props: PropsType): JSX.Element => {
       .set(ChannelActivityEnum.CHANNEL_CONNECTOR_CREATED, channelConnectorCreatedOrDeleted)
       .set(ChannelActivityEnum.CHANNEL_CONNECTOR_DELETED, channelConnectorCreatedOrDeleted);
 
-    const method = process.get(props.activity?.type) || (() => {});
+    const method = process.get(props.activity?.type) || (() => undefined);
     return method(props.activity) || '';
   };
 

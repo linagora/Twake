@@ -55,6 +55,7 @@ export interface UserObject {
   last_activity: number;
   last_seen?: number;
   is_connected?: boolean;
+  cache: { companies: string[] };
 
   //Below is only if this is myself
   preferences?: User["preferences"];
@@ -67,6 +68,7 @@ export interface UserObject {
 export enum CompanyLimitsEnum {
   CHAT_MESSAGE_HISTORY_LIMIT = "chat:message_history_limit",
   COMPANY_MEMBERS_LIMIT = "company:members_limit", // 100
+  COMPANY_GUESTS_LIMIT = "company:guests_limit",
 }
 
 export enum CompanyFeaturesEnum {
@@ -90,6 +92,7 @@ export type CompanyFeaturesObject = {
 export type CompanyLimitsObject = {
   [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]?: number;
   [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]?: number;
+  [CompanyLimitsEnum.COMPANY_GUESTS_LIMIT]?: number;
 };
 
 export interface CompanyPlanObject {

@@ -1,19 +1,6 @@
-import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
 import { MessageLocalEvent } from "../messages/types";
 
-export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
-  generateThumbnails(
-    document: Pick<PreviewPubsubRequest["document"], "filename" | "mime" | "path">,
-    options: PreviewPubsubRequest["output"],
-    deleteTmpFile: boolean,
-  ): Promise<ThumbnailResult[]>;
-}
-
-export interface LinkPreviewServiceAPI extends TwakeServiceProvider, Initializable {
-  generatePreviews(links: LinkPreviewPubsubRequest["links"]): Promise<LinkPreview[]>;
-}
-
-export type PreviewPubsubRequest = {
+export type PreviewMessageQueueRequest = {
   document: {
     id: string;
     provider: string;
@@ -35,7 +22,7 @@ export type PreviewPubsubRequest = {
   };
 };
 
-export type PreviewClearPubsubRequest = {
+export type PreviewClearMessageQueueRequest = {
   document: {
     id: string;
     provider: string;
@@ -44,7 +31,7 @@ export type PreviewClearPubsubRequest = {
   };
 };
 
-export type PreviewPubsubCallback = {
+export type PreviewMessageQueueCallback = {
   document: {
     id: string;
     path: string;
@@ -86,12 +73,12 @@ export type LinkPreview = {
   url: string;
 };
 
-export type LinkPreviewPubsubRequest = {
+export type LinkPreviewMessageQueueRequest = {
   links: string[];
   message: MessageLocalEvent;
 };
 
-export type LinkPreviewPubsubCallback = {
+export type LinkPreviewMessageQueueCallback = {
   message: MessageLocalEvent;
   previews: LinkPreview[];
 };

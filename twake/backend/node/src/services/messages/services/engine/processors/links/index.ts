@@ -1,13 +1,14 @@
-import { logger, TwakeContext } from "../../../../../../core/platform/framework";
-import { PubsubHandler } from "../../../../../../core/platform/services/pubsub/api";
+import { logger } from "../../../../../../core/platform/framework";
+import { MessageQueueHandler } from "../../../../../../core/platform/services/message-queue/api";
 import { Message } from "../../../../entities/messages";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
-import { LinkPreviewPubsubCallback } from "../../../../../previews/types";
+import { LinkPreviewMessageQueueCallback } from "../../../../../previews/types";
 import { Thread } from "../../../../entities/threads";
 import { publishMessageInRealtime } from "../../../utils";
+import { ExecutionContext } from "../../../../../../core/platform/framework/api/crud-service";
 
 export class MessageLinksPreviewFinishedProcessor
-  implements PubsubHandler<LinkPreviewPubsubCallback, string>
+  implements MessageQueueHandler<LinkPreviewMessageQueueCallback, string>
 {
   constructor(
     private MessageRepository: Repository<Message>,
@@ -23,23 +24,30 @@ export class MessageLinksPreviewFinishedProcessor
     ack: true,
   };
 
-  init?(context?: TwakeContext): Promise<this> {
+  init?(): Promise<this> {
     throw new Error("Method not implemented.");
   }
 
-  validate(message: LinkPreviewPubsubCallback): boolean {
+  validate(message: LinkPreviewMessageQueueCallback): boolean {
     return !!(message && message.previews && message.previews.length);
   }
 
-  async process(localMessage: LinkPreviewPubsubCallback): Promise<string> {
+  async process(
+    localMessage: LinkPreviewMessageQueueCallback,
+    context?: ExecutionContext,
+  ): Promise<string> {
     logger.info(
       `${this.name} - updating message links with generated previews: ${localMessage.previews.length}`,
     );
 
-    const entity = await this.MessageRepository.findOne({
-      thread_id: localMessage.message.resource.thread_id,
-      id: localMessage.message.resource.id,
-    });
+    const entity = await this.MessageRepository.findOne(
+      {
+        thread_id: localMessage.message.resource.thread_id,
+        id: localMessage.message.resource.id,
+      },
+      {},
+      context,
+    );
 
     if (!entity) {
       logger.error(`${this.name} - message not found`);
@@ -48,11 +56,15 @@ export class MessageLinksPreviewFinishedProcessor
 
     entity.links = localMessage.previews;
 
-    await this.MessageRepository.save(entity);
+    await this.MessageRepository.save(entity, context);
 
-    const thread: Thread = await this.ThreadRepository.findOne({
-      id: localMessage.message.resource.thread_id,
-    });
+    const thread: Thread = await this.ThreadRepository.findOne(
+      {
+        id: localMessage.message.resource.thread_id,
+      },
+      {},
+      context,
+    );
 
     if (!thread) {
       logger.error(`${this.name} - thread not found`);

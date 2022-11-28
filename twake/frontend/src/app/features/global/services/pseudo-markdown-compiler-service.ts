@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import PseudoMarkdownDictionary from 'components/twacode/pseudo-markdown-dictionary';
@@ -66,7 +69,7 @@ class PseudoMarkdownCompiler {
       disable_recursion: true,
       after_end: ' |$|[^a-zA-Z0-9]',
       object: PseudoMarkdownDictionary.render_block.user.object,
-      simple_object: (child: any, obj: any) => '@' + (obj.content || '').split(':')[0] + ' ',
+      simple_object: (_child: any, obj: any) => '@' + (obj.content || '').split(':')[0] + ' ',
       text_transform: (PseudoMarkdownDictionary.render_block.user as any).text_transform,
     },
     '#': {
@@ -76,7 +79,7 @@ class PseudoMarkdownCompiler {
       disable_recursion: true,
       after_end: ' |$[^a-zA-Z0-9]',
       object: PseudoMarkdownDictionary.render_block.channel.object,
-      simple_object: (child: any, obj: any) => '#' + (obj.content || '').split(':')[0] + ' ',
+      simple_object: (_child: any, obj: any) => '#' + (obj.content || '').split(':')[0] + ' ',
       text_transform: (PseudoMarkdownDictionary.render_block.channel as any).text_transform,
     },
     '```': {
@@ -88,7 +91,7 @@ class PseudoMarkdownCompiler {
       disable_recursion: true,
       object: PseudoMarkdownDictionary.render_block.mcode.object,
       text_transform: (PseudoMarkdownDictionary.render_block.mcode as any).text_transform,
-      simple_object: (child: any, obj: any) => {
+      simple_object: (_child: any, obj: any) => {
         const str = (obj.content || '').trim();
         return str.length > 40 ? str.substr(0, 37) + '...' : str;
       },
@@ -149,7 +152,7 @@ class PseudoMarkdownCompiler {
       end: false,
       allowed_chars: '(.|\n)',
       object: PseudoMarkdownDictionary.render_block.mquote.object,
-      simple_object: (child: any) => '',
+      simple_object: () => '',
       text_transform: (PseudoMarkdownDictionary.render_block.mquote as any).text_transform,
     },
     '>': {
@@ -158,7 +161,7 @@ class PseudoMarkdownCompiler {
       allowed_char_before: '^',
       after_end: '$|\n',
       object: PseudoMarkdownDictionary.render_block.quote.object,
-      simple_object: (child: any) => '',
+      simple_object: () => '',
       text_transform: (PseudoMarkdownDictionary.render_block.quote as any).text_transform,
     },
   };
@@ -186,21 +189,21 @@ class PseudoMarkdownCompiler {
     file: {
       view: true,
       object: PseudoMarkdownDictionary.render_block.file.object,
-      simple_object: (child: any) => '',
+      simple_object: () => '',
       text_transform: (PseudoMarkdownDictionary.render_block.file as any).text_transform,
     },
     iframe: {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.iframe.object,
-      simple_object: (child: any) => '',
+      simple_object: () => '',
       text_transform: (PseudoMarkdownDictionary.render_block.iframe as any).text_transform,
     },
     image: {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.image.object,
-      simple_object: (child: any) => '',
+      simple_object: () => '',
       text_transform: (PseudoMarkdownDictionary.render_block.image as any).text_transform,
     },
     icon: {
@@ -212,42 +215,42 @@ class PseudoMarkdownCompiler {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.progress_bar.object,
-      simple_object: (child: any, object: any) => (object.progress || 0) + '%',
+      simple_object: (_child: any, object: any) => (object.progress || 0) + '%',
       text_transform: (PseudoMarkdownDictionary.render_block.progress_bar as any).text_transform,
     },
     attachment: {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.attachment.object,
-      simple_object: (child: any, object: any) => child,
+      simple_object: (child: any) => child,
       text_transform: (PseudoMarkdownDictionary.render_block.attachment as any).text_transform,
     },
     button: {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.button.object,
-      simple_object: (child: any) => '',
+      simple_object: (_child: any) => '',
       text_transform: (PseudoMarkdownDictionary.render_block.button as any).text_transform,
     },
     copiable: {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.copiable.object,
-      simple_object: (child: any) => '',
+      simple_object: (_child: any) => '',
       text_transform: (PseudoMarkdownDictionary.render_block.copiable as any).text_transform,
     },
     input: {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.input.object,
-      simple_object: (child: any) => '',
+      simple_object: (_child: any) => '',
       text_transform: (PseudoMarkdownDictionary.render_block.input as any).text_transform,
     },
     select: {
       view: true,
       apps_only: true,
       object: PseudoMarkdownDictionary.render_block.select.object,
-      simple_object: (child: any) => '',
+      simple_object: (_child: any) => '',
       text_transform: (PseudoMarkdownDictionary.render_block.select as any).text_transform,
     },
   };
@@ -706,7 +709,7 @@ class PseudoMarkdownCompiler {
     return result;
   }
 
-  compileToText(json: any, no_antislash?: any) {
+  compileToText(json: any) {
     if (!json) {
       return '';
     }
@@ -749,9 +752,7 @@ class PseudoMarkdownCompiler {
           result += this.compileToText(item);
         } else {
           result += item.start || '';
-          const no_antislash =
-            (this.pseudo_markdown[item.start] || {}).disable_recursion || item.type; //no recursion was set or is a type (link actually)
-          result += this.compileToText(item.content, no_antislash);
+          result += this.compileToText(item.content);
           result += item.end || '';
         }
       });

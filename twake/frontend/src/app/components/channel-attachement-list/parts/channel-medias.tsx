@@ -1,6 +1,6 @@
 import { useChannelMediaList } from 'app/features/channels/hooks/use-channel-media-files';
 import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ChannelAttachment from './channel-attachment';
 import { LoadingAttachements, NoAttachements } from './commun';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -10,7 +10,11 @@ type PropsType = {
 };
 
 export default ({ maxItems }: PropsType): React.ReactElement => {
-  const { loading, result, loadMore } = useChannelMediaList();
+  const { loading, result, loadMore, loadItems } = useChannelMediaList();
+
+  useEffect(() => {
+    loadItems();
+  }, []);
 
   return (
     <>

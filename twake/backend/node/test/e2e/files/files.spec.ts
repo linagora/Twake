@@ -8,16 +8,14 @@ import fs from "fs";
 import { File } from "../../../src/services/files/entities/file";
 import { deserialize } from "class-transformer";
 import formAutoContent from "form-auto-content";
-import { MessageFile } from "../../../src/services/messages/entities/message-files";
-import { createMessage, e2e_createThread } from "../messages/utils";
 
-describe("The Files feature", () => {
+describe.skip("The Files feature", () => {
   const url = "/internal/services/files/v1";
   let platform: TestPlatform;
 
   beforeAll(async () => {
     platform = await init({
-      services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
+      services: ["webserver", "database", "storage", "message-queue", "files", "previews"],
     });
   });
 

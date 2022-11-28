@@ -23,7 +23,7 @@ export function updateMessageReactions(
   message: Message,
   selectedReactions: string[],
   userId: string,
-) {
+): void {
   const reactions: { [key: string]: MessageReaction } = {};
   for (const reaction of message.reactions || []) {
     reactions[reaction.name] = reaction;
@@ -48,7 +48,10 @@ export function updateMessageReactions(
   message.reactions = Object.values(reactions);
 }
 
-export function getDefaultMessageInstance(item: Partial<Message>, context: ThreadExecutionContext) {
+export function getDefaultMessageInstance(
+  item: Partial<Message>,
+  context: ThreadExecutionContext,
+): Message {
   let instance = getInstance({
     id: undefined,
     ephemeral:
@@ -77,7 +80,14 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
           pinned_by: context.user.id,
         }
       : null,
-    quote_message: item.quote_message || null,
+    quote_message: item.quote_message
+      ? {
+          channel_id: context.channel.id,
+          workspace_id: context.workspace.id,
+          company_id: context.company.id,
+          ...item.quote_message,
+        }
+      : null,
     reactions: (context?.user?.server_request ? item.reactions : null) || null, // Reactions cannot be set on creation
     bookmarks: (context?.user?.server_request ? item.bookmarks : null) || null,
     override:
@@ -87,6 +97,7 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
             picture: item.override.picture,
           }
         : null, // Only apps and server can set an override on a message
+    status: item.status || "sent",
   });
 
   if (context.user.server_request) {

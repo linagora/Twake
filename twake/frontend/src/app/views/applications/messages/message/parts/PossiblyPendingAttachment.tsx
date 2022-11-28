@@ -3,20 +3,18 @@ import { useUpload } from 'app/features/files/hooks/use-upload';
 import FileComponent from 'app/components/file/file-component';
 import { DataFileType } from 'app/components/file/types';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
-import _ from 'lodash';
 import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 import { MessageFileType } from 'app/features/messages/types/message';
-import consoleLogin from 'app/views/login/console/console-login';
-import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 type PropsType = {
   file: MessageFileType;
-  onRemove?: Function;
+  onRemove?: () => void;
   type: 'input' | 'message';
   large?: boolean;
+  xlarge?: boolean;
 };
 
-export default ({ file, onRemove, type, large }: PropsType) => {
+export default ({ file, onRemove, type, large, xlarge }: PropsType) => {
   const { getOnePendingFile } = useUpload();
 
   const id =
@@ -71,6 +69,7 @@ export default ({ file, onRemove, type, large }: PropsType) => {
       file={formatedFile}
       messageFile={file}
       large={large}
+      xlarge={xlarge}
       status={status}
       progress={progress}
       onRemove={onRemove}

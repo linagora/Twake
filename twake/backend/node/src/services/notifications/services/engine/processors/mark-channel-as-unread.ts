@@ -1,12 +1,12 @@
 import _ from "lodash";
 import { UserNotificationBadge } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
-import { NotificationPubsubHandler } from "../../../api";
-import { ChannelUnreadMessage } from "../../../types";
+import { ChannelUnreadMessage, NotificationMessageQueueHandler } from "../../../types";
 import gr from "../../../../global-resolver";
+import { ExecutionContext } from "../../../../../core/platform/framework/api/crud-service";
 
 export class MarkChannelAsUnreadMessageProcessor
-  implements NotificationPubsubHandler<ChannelUnreadMessage, void>
+  implements NotificationMessageQueueHandler<ChannelUnreadMessage, void>
 {
   readonly topics = {
     in: "channel:unread",
@@ -31,15 +31,15 @@ export class MarkChannelAsUnreadMessageProcessor
     );
   }
 
-  async process(message: ChannelUnreadMessage): Promise<void> {
+  async process(message: ChannelUnreadMessage, context?: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Processing message for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
 
-    await this.addBadge(message);
+    await this.addBadge(message, context);
   }
 
-  async addBadge(message: ChannelUnreadMessage): Promise<void> {
+  async addBadge(message: ChannelUnreadMessage, context: ExecutionContext): Promise<void> {
     logger.info(
       `${this.name} - Creating a badge for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
@@ -51,8 +51,9 @@ export class MarkChannelAsUnreadMessageProcessor
         company_id: message.channel.company_id,
         channel_id: message.channel.id,
         user_id: message.member.user_id,
+        mention_type: "unread",
       });
-      gr.services.notifications.badges.save(badgeEntity);
+      gr.services.notifications.badges.save(badgeEntity, context);
 
       logger.info(
         `${this.name} - Created new badge for user ${message.member.user_id} in channel ${message.channel.id}`,

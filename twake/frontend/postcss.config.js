@@ -1,7 +1,6 @@
 // postcss.config.js
 module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
+  plugins: [
+    require('postcss-100vh-fix')
+  ],
 };

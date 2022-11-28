@@ -6,7 +6,6 @@ import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { UserType } from 'app/features/users/types/user';
 import UserAPIClient from '../api/user-api-client';
 import { UserSelector, UserByUsernameSelector } from '../state/selectors/user-selector';
-import { useSetUserList } from './use-user-list';
 
 export const useUserByUsername = (username: string): UserType | undefined => {
   const userId = useRecoilValue(UserByUsernameSelector(username));
@@ -14,7 +13,6 @@ export const useUserByUsername = (username: string): UserType | undefined => {
 };
 
 export const useUser = (userId: string): UserType | undefined => {
-  const { set: setUserList } = useSetUserList('useUser');
   const user = useRecoilValue(UserSelector(userId));
   const [, setLoading] = useRecoilState(LoadingState(`user-${userId}`));
 
@@ -37,7 +35,7 @@ export const useUser = (userId: string): UserType | undefined => {
   );
 
   const room = UserAPIClient.websocket(userId);
-  useRealtimeRoom<UserType>(room, 'useUser', (_action, _event) => {
+  useRealtimeRoom<UserType>(room, 'useUser', () => {
     refresh();
   });
 

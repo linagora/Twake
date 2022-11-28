@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { Component } from 'react';
 
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Languages from 'app/features/global/services/languages-service';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import ChannelUI from 'app/views/client/channels-bar/Parts/Channel/Channel';
 import {
   useCompanyApplications,
@@ -12,8 +13,8 @@ import {
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
 // This should be deleted
-export default class ChannelsApps extends Component {
-  constructor(props: any) {
+export default class ChannelsApps extends Component<unknown> {
+  constructor(props: unknown) {
     super(props);
 
     this.state = {
@@ -77,11 +78,13 @@ export default class ChannelsApps extends Component {
                 name={name}
                 icon={icon}
                 id={app.id}
-                muted={false}
                 favorite={false}
                 visibility={'public'}
-                unreadMessages={false}
-                notifications={0}
+                unreadMessages={0}
+                notificationLevel={'all'}
+                mentions={0}
+                replies={0}
+                unread={0}
               />
             );
           }
@@ -115,11 +118,13 @@ export const CompanyApplications = ({ companyId }: PropsType) => {
             app={app}
             name={app.identity.name}
             icon={app.identity.icon || <></>}
-            muted={false}
             favorite={false}
             visibility={'public'}
-            unreadMessages={false}
-            notifications={0}
+            notificationLevel={'all'}
+            unreadMessages={0}
+            mentions={0}
+            replies={0}
+            unread={0}
           />
         ))}
     </div>

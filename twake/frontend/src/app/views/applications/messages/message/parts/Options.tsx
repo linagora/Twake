@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import 'moment-timezone';
-import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
+import { MoreHorizontal, Smile, ArrowUpRight, Trash2, CornerDownLeft } from 'react-feather';
 
-import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
-import Menu from 'components/menus/menu.js';
-import MenusManager from 'app/components/menus/menus-manager.js';
+import EmojiPicker from 'components/emoji-picker/emoji-picker.jsx';
+import Menu from 'components/menus/menu.jsx';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
 import Languages from 'app/features/global/services/languages-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import User from 'app/features/users/services/current-user-service';
 import RouterServices from 'app/features/router/services/router-service';
@@ -18,16 +18,20 @@ import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
-import _ from 'lodash';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import SideViewService from 'app/features/router/services/side-view-service';
-import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { addUrlTryDesktop } from 'app/views/desktop-redirect';
+import { useMessageQuoteReply } from 'app/features/messages/hooks/use-message-quote-reply';
+import { useMessageSeenBy } from 'app/features/messages/hooks/use-message-seen-by';
+import { EmojiSuggestionType } from 'app/components/rich-text-editor/plugins/emoji';
+import { MessagesListContext } from '../../messages-list';
+import { useSetRecoilState } from 'recoil';
+import { ForwardMessageAtom } from 'app/components/forward-message';
 
 type Props = {
   onOpen?: () => void;
@@ -39,6 +43,7 @@ export default (props: Props) => {
   const channelId = useRouterChannel();
   const workspaceId = useRouterWorkspace();
   const context = useContext(MessageContext);
+  const listContext = useContext(MessagesListContext);
   const { message, react, remove, pin } = useMessage(context);
   const { channel } = useChannel(channelId);
   const { message: thread } = useMessage({
@@ -52,14 +57,16 @@ export default (props: Props) => {
   });
   const location = `message-${message.id}`;
   const subLocation = useContext(ViewContext).type;
-  const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
-    location,
-    subLocation,
-  );
+  const { set: setVisibleEditor } = useVisibleMessagesEditorLocation(location, subLocation);
 
-  const menu: any[] = [];
+  const { set: setQuoteReply } = useMessageQuoteReply(channelId);
+  const setForwardMessage = useSetRecoilState(ForwardMessageAtom);
 
-  const triggerApp = (app: any) => {
+  const { openSeenBy } = useMessageSeenBy();
+
+  const menu: Record<string, string | (() => void)>[] = [];
+
+  const triggerApp = (app: Application) => {
     const data = {
       channel: channel,
       thread: thread.id && thread.id !== message.id ? thread : null,
@@ -68,9 +75,12 @@ export default (props: Props) => {
     WorkspacesApps.notifyApp(app.id, 'action', 'action', data);
   };
 
-  const onOpen = (evt: any) => {
+  const onOpen = (evt: Event) => {
     props.onOpen && props.onOpen();
-    evt && evt.preventDefault() && evt.stopPropagation();
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
   };
 
   if (message.ephemeral) {
@@ -84,20 +94,22 @@ export default (props: Props) => {
       },
     });
   } else {
-    menu.push({
-      type: 'menu',
-      icon: 'arrow-up-right',
-      text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
-      onClick: () => {
-        SideViewService.select(channel?.id || '', {
-          app: { identity: { code: 'messages' } } as Application,
-          context: {
-            viewType: 'channel_thread',
-            threadId: message.thread_id,
-          },
-        });
-      },
-    });
+    if (channel && channel.visibility !== 'direct') {
+      menu.push({
+        type: 'menu',
+        icon: 'arrow-up-right',
+        text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
+        onClick: () => {
+          SideViewService.select(channel?.id || '', {
+            app: { identity: { code: 'messages' } } as Application,
+            context: {
+              viewType: 'channel_thread',
+              threadId: message.thread_id,
+            },
+          });
+        },
+      });
+    }
 
     menu.push({
       type: 'menu',
@@ -117,7 +129,32 @@ export default (props: Props) => {
       },
     });
 
-    if (!message.context?.disable_pin)
+    if (channel && channel.visibility === 'direct' && !listContext.readonly) {
+      menu.push({
+        type: 'menu',
+        icon: 'corner-down-left',
+        text: Languages.t('scenes.apps.messages.message.reply_button', [], 'Reply'),
+        onClick: () => {
+          setQuoteReply({ message: message.thread_id, channel: channelId });
+        },
+      });
+    }
+
+    menu.push({
+      type: 'menu',
+      icon: 'comment-info',
+      text: Languages.t('components.message_seen_by.btn', [], 'Information'),
+      onClick: () => {
+        openSeenBy({
+          message_id: message.id,
+          company_id: context.companyId,
+          thread_id: message.thread_id,
+          workspace_id: context.workspaceId,
+        });
+      },
+    });
+
+    if (!message.context?.disable_pin && !listContext.readonly)
       menu.push({
         type: 'menu',
         icon: 'map-pin',
@@ -134,17 +171,33 @@ export default (props: Props) => {
         },
       });
 
+    menu.push({
+      type: 'menu',
+      icon: 'envelope-send',
+      text: Languages.t('scenes.apps.messages.message.forward'),
+      className: 'option_button',
+      onClick: () => {
+        setForwardMessage({
+          id: message.id,
+          thread_id: message.thread_id,
+          channel_id: channelId,
+          workspace_id: context.workspaceId,
+          company_id: context.companyId,
+        });
+      },
+    });
+
     const apps =
       getCompanyApplications(Groups.currentGroupId).filter(
         (app: Application) => app.display?.twake?.chat?.actions?.length,
       ) || [];
 
-    if (apps.length > 0) {
+    if (apps.length > 0 && !listContext.readonly) {
       menu.push({ type: 'separator' });
       menu.push({
         type: 'react-element',
-        reactElement: (level: any) => {
-          return apps.map((app: any) => {
+        reactElement: () => {
+          return apps.map((app: Application) => {
             return (
               <div
                 key={app.id}
@@ -158,7 +211,7 @@ export default (props: Props) => {
                     className="menu-app-icon"
                     style={{ backgroundImage: 'url(' + app.identity?.icon + ')' }}
                   />
-                  {app.display.twake.chat.actions[0].description || app.identity?.name}
+                  {app?.display?.twake?.chat?.actions?.[0].description || app.identity?.name}
                 </div>
               </div>
             );
@@ -168,11 +221,12 @@ export default (props: Props) => {
     }
 
     if (
-      message.user_id === User.getCurrentUserId() ||
-      (message.application_id && message.context?.allow_delete === 'everyone') ||
-      (message.application_id &&
-        WorkspaceUserRights.hasWorkspacePrivilege() &&
-        message.context?.allow_delete === 'administrators')
+      (message.user_id === User.getCurrentUserId() ||
+        (message.application_id && message.context?.allow_delete === 'everyone') ||
+        (message.application_id &&
+          WorkspaceUserRights.hasWorkspacePrivilege() &&
+          message.context?.allow_delete === 'administrators')) &&
+      !listContext.readonly
     ) {
       if (menu.length > 0 && (!message.application_id || !message?.stats?.replies)) {
         menu.push({ type: 'separator' });
@@ -230,49 +284,53 @@ export default (props: Props) => {
         </div>
       )*/}
       <div className="message-options right" key="options">
-        {[':heart:', ':+1:', ':eyes:', ':tada:'].map(emoji => (
+        {!listContext.readonly && (
           <>
-            <div
-              key={emoji}
-              className={
-                'option ' + (userReactions.map(m => m.name).includes(emoji) ? 'active' : '')
-              }
-              onClick={() => react([emoji], 'toggle')}
+            {[':heart:', ':+1:', ':eyes:', ':tada:'].map(emoji => (
+              <>
+                <div
+                  key={emoji}
+                  className={
+                    'option ' + (userReactions.map(m => m.name).includes(emoji) ? 'active' : '')
+                  }
+                  onClick={() => react([emoji], 'toggle')}
+                >
+                  <Emojione type={emoji} />
+                </div>
+                <div className="separator"></div>
+              </>
+            ))}
+
+            <Menu
+              className="option"
+              onOpen={(evt: Event) => onOpen(evt)}
+              menu={[
+                {
+                  type: 'react-element',
+                  className: 'menu-cancel-margin',
+                  reactElement: () => {
+                    return (
+                      <EmojiPicker
+                        selected={userReactions.map(e => e.name) || []}
+                        onChange={(emoji: EmojiSuggestionType) => {
+                          MenusManager.closeMenu();
+                          props.onClose && props.onClose();
+                          react([emoji.colons], 'toggle');
+                        }}
+                      />
+                    );
+                  },
+                },
+              ]}
+              position="top"
             >
-              <Emojione type={emoji} />
-            </div>
+              <Smile size={16} />
+            </Menu>
             <div className="separator"></div>
           </>
-        ))}
+        )}
 
-        <Menu
-          className="option"
-          onOpen={(evt: any) => onOpen(evt)}
-          menu={[
-            {
-              type: 'react-element',
-              className: 'menu-cancel-margin',
-              reactElement: () => {
-                return (
-                  <EmojiPicker
-                    selected={userReactions.map(e => e.name) || []}
-                    onChange={(emoji: any) => {
-                      MenusManager.closeMenu();
-                      props.onClose && props.onClose();
-                      react([emoji.colons], 'toggle');
-                    }}
-                  />
-                );
-              },
-            },
-          ]}
-          position="top"
-        >
-          <Smile size={16} />
-        </Menu>
-        <div className="separator"></div>
-
-        {!props.threadHeader && (
+        {!props.threadHeader && channel && channel.visibility !== 'direct' && (
           <>
             <div
               className="option"
@@ -292,9 +350,23 @@ export default (props: Props) => {
           </>
         )}
 
+        {channel && channel.visibility === 'direct' && !listContext.readonly && (
+          <>
+            <div
+              className="option"
+              onClick={() => {
+                setQuoteReply({ message: message.thread_id, channel: channelId });
+              }}
+            >
+              <CornerDownLeft size={16} />
+            </div>
+            <div className="separator"></div>
+          </>
+        )}
+
         <Menu
           className="option"
-          onOpen={(evt: any) => onOpen(evt)}
+          onOpen={(evt: Event) => onOpen(evt)}
           onClose={() => props.onClose && props.onClose()}
           menu={menu}
           position={'left'}

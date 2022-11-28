@@ -1,28 +1,39 @@
 import React, { useState } from 'react';
 import { Search } from 'react-feather';
 import { Row, Col, Button, Input, Typography, Divider } from 'antd';
-
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 import groupService from 'app/deprecated/workspaces/groups.js';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Switch from 'components/inputs/switch';
-import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import Pending from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';
 import Members from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members';
-import AddUserByEmail from '../../AddUser/AddUserByEmail';
 import LockedInviteAlert from 'app/components/locked-features-components/locked-invite-alert';
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
-import ConsoleService from 'app/features/console/services/console-service';
 
 import './Pages.scss';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { invitationState } from 'app/features/invitation/state/invitation';
+import { useInvitationUsers } from 'app/features/invitation/hooks/use-invitation-users';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
-export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: any }) => {
-  workspacesUsers.useListener(useState as any);
+type PropsType = {
+  col: {
+    user: Record<string, string>;
+    level: string;
+  };
+  adminLevelId: string;
+  onChange: () => void;
+};
+
+export const AdminSwitch = (props: PropsType) => {
+  workspacesUsers.useListener(useState as unknown as undefined);
   const loading = workspacesUsers.updateLevelUserLoading[props.col.user.id];
   const checked = props.col.level === props.adminLevelId;
   return (
@@ -44,6 +55,9 @@ export default () => {
   workspacesUsers.useListener();
   Languages.useListener();
   const { company } = useCurrentCompany();
+  const workspaceId = useRouterWorkspace();
+  const setInvitationState = useSetRecoilState(invitationState);
+  const { allowed_guests, allowed_members } = useInvitationUsers();
 
   const usersInGroup = [];
   Object.keys(workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
@@ -102,11 +116,16 @@ export default () => {
       )}
 
       <Row className="small-y-margin" justify="space-between" align="middle">
-        <Col>
-          <Button type="primary" onClick={() => popupManager.open(<AddUserByEmail standalone />)}>
-            {Languages.t('scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button')}
-          </Button>
-        </Col>
+        {AccessRightsService.hasLevel(workspaceId, 'moderator') &&
+          (allowed_guests > 0 || allowed_members > 0) && (
+            <Col>
+              <Button type="primary" onClick={() => setInvitationState(true)}>
+                {Languages.t(
+                  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
+                )}
+              </Button>
+            </Col>
+          )}
         <Col>
           <Input
             placeholder={Languages.t('components.listmanager.filter')}

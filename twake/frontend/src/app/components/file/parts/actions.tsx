@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef } from 'react';
 import { Button } from 'antd';
 import { MoreHorizontal, RotateCw, X } from 'react-feather';
@@ -15,6 +16,8 @@ import { DataFileType } from '../types';
 import MenuManager from 'app/components/menus/menus-manager';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
+import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
+import { useEditors } from 'app/views/applications/viewer/other/editors-service';
 
 type PropsType = {
   file: DataFileType;
@@ -22,7 +25,7 @@ type PropsType = {
   status?: PendingFileRecoilType['status'];
   deletable?: boolean;
   actionMenu?: boolean;
-  onRemove?: Function;
+  onRemove?: () => void;
   source?: string;
 };
 
@@ -33,33 +36,52 @@ export const FileActions = ({
   deletable,
   actionMenu,
   onRemove,
-  source,
 }: PropsType): JSX.Element => {
   const { cancelUpload, deleteOneFile, downloadOneFile, retryUpload } = useUpload();
   const menuRef = useRef<HTMLElement>();
+  const { open: openPreview } = useFileViewerModal();
+  const { candidates } = useEditors(file.name.split(".").pop() || "")
 
   const onClickDownload = async () => {
     file.company_id &&
       (await downloadOneFile({
         companyId: file.company_id,
         fileId: file.id,
-        fileName: file.name,
         messageFile,
       }));
   };
 
+  const onClickOpen = async () => {
+    openPreview(messageFile);
+  }
+
   const buildMenu = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
 
+    const menu = [
+      {
+        type: 'menu',
+        text: Languages.t('scenes.apps.drive.download_button'),
+        onClick: onClickDownload,
+      },
+    ];
+
+    if(candidates.length > 0) {
+      const openerName = candidates[0].name || candidates[0].app?.identity.name;
+
+      menu.push({
+        type: 'menu',
+        text: Languages.t(
+          'scenes.apps.drive.viewer.edit_with_button',
+          [openerName],
+          `Edit with ${openerName}`,
+        ),
+        onClick: onClickOpen,
+      });
+    }
+
     MenuManager.openMenu(
-      [
-        {
-          type: 'menu',
-          // TODO add translation
-          text: Languages.t('scenes.apps.drive.download_button'),
-          onClick: onClickDownload,
-        },
-      ],
+      menu,
       (window as any).getBoundingClientRect(menuRef.current),
       null,
       { margin: 0 },

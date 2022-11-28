@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { ComponentStory } from '@storybook/react';
 import { Button } from './button';
 import { PlusIcon, SearchIcon } from '@heroicons/react/solid';
 import { TrashIcon } from '@heroicons/react/outline';
-import Avatar from '@atoms/avatar';
 import { UserAddIcon } from '@atoms/icons-agnostic/index';
 
 export default {

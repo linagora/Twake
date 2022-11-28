@@ -5,13 +5,13 @@ import {
   UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { Message } from "../entities/messages";
-import { MessageLocalEvent, specialMention, ThreadExecutionContext } from "../types";
+import { MessageLocalEvent, SpecialMention, ThreadExecutionContext } from "../types";
 import User from "../../../services/user/entities/user";
 import { RealtimeEntityActionType } from "../../../core/platform/services/realtime/types";
 import { getThreadMessagePath } from "../web/realtime";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import { RealtimeLocalBusEvent } from "../../../core/platform/services/realtime/types";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 import { ParticipantObject } from "../entities/threads";
 
 export const buildMessageListPagination = (
@@ -55,7 +55,7 @@ export const getMentions = async (
       ...(usersOutput || []).map(u => (u || "").trim().split(":").pop()),
       ...idsFromUsernames,
     ],
-    specials: (globalOutput || []).map(g => (g || "").trim().split("@").pop()) as specialMention[],
+    specials: (globalOutput || []).map(g => (g || "").trim().split("@").pop()) as SpecialMention[],
   };
 };
 

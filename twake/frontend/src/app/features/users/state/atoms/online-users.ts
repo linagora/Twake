@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 
 import { UserType } from 'app/features/users/types/user';
@@ -38,7 +39,7 @@ export const OnlineUserStateFamily = selectorFamily<OnlineUserType, string>({
         get(OnlineUsersState).find(u => u.id === userId) || {
           id: userId,
           connected: false,
-          lastSeen: Date.now(),
+          lastSeen: 0,
           initialized: false,
         }
       );

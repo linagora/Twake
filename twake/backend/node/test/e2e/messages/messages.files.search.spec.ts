@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { createMessage, createParticipant, e2e_createThread } from "./utils";
 import { MessageFile } from "../../../src/services/messages/entities/message-files";
@@ -9,7 +9,7 @@ import fs from "fs";
 import formAutoContent from "form-auto-content";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import uuid, { v1 } from "node-uuid";
+import uuid from "node-uuid";
 import { ChannelUtils, get as getChannelUtils } from "../channels/utils";
 import gr from "../../../src/services/global-resolver";
 import User from "../../../src/services/user/entities/user";
@@ -23,7 +23,7 @@ describe("Search files", () => {
 
   beforeAll(async () => {
     platform = await init({
-      services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
+      services: ["webserver", "database", "storage", "message-queue", "files", "previews"],
     });
     await platform.database.getConnector().drop();
     channelUtils = getChannelUtils(platform);

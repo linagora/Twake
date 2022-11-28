@@ -3,21 +3,21 @@ import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
 import { cleanFiles, isFileType } from "../../../utils";
 import { imageExtensions, officeExtensions, pdfExtensions, videoExtensions } from "./mime";
-import { PreviewPubsubRequest, PreviewServiceAPI, ThumbnailResult } from "../../../types";
+import { PreviewMessageQueueRequest, ThumbnailResult } from "../../../types";
 import { generateVideoPreview } from "./video";
+import { Initializable, TwakeServiceProvider } from "../../../../../core/platform/framework";
 
-export class PreviewProcessService implements PreviewServiceAPI {
+export class PreviewProcessService implements TwakeServiceProvider, Initializable {
   name: "PreviewProcessService";
   version: "1";
 
-  async init() {
+  async init(): Promise<this> {
     return this;
   }
 
   async generateThumbnails(
-    document: Pick<PreviewPubsubRequest["document"], "filename" | "mime" | "path">,
-    options: PreviewPubsubRequest["output"],
-    deleteTmpFile: boolean,
+    document: Pick<PreviewMessageQueueRequest["document"], "filename" | "mime" | "path">,
+    options: PreviewMessageQueueRequest["output"],
   ): Promise<ThumbnailResult[]> {
     if (isFileType(document.mime, document.filename, officeExtensions)) {
       const pdfPath = await convertFromOffice(document.path, {
@@ -28,8 +28,7 @@ export class PreviewProcessService implements PreviewServiceAPI {
         numberOfPages: options.pages,
       });
       await cleanFiles([pdfPath.output]);
-      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
-        .output;
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options)).output;
       await cleanFiles(thumbnailPath.output);
       return images;
     }
@@ -39,14 +38,13 @@ export class PreviewProcessService implements PreviewServiceAPI {
         numberOfPages: options.pages,
       });
       await cleanFiles([document.path]);
-      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
-        .output;
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options)).output;
       await cleanFiles(thumbnailPath.output);
       return images;
     }
 
     if (isFileType(document.mime, document.filename, imageExtensions)) {
-      const images = (await thumbnailsFromImages([document.path], options, deleteTmpFile)).output;
+      const images = (await thumbnailsFromImages([document.path], options)).output;
       await cleanFiles([document.path]);
       return images;
     }

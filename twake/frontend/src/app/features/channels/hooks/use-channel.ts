@@ -26,7 +26,7 @@ export function useChannel(
 
   const save = async (channel: ChannelType) => {
     setLoading(true);
-    const _ = await ChannelAPIClient.save(channel, {
+    await ChannelAPIClient.save(channel, {
       companyId: channel.company_id || '',
       workspaceId: channel.workspace_id || '',
       channelId: channel.id,
@@ -65,6 +65,10 @@ export const useIsChannelMember = (channelId: string) => {
   return !!useChannel(channelId)?.channel?.user_member?.user_id;
 };
 
+export const useIsReadOnlyChannel = (channelId: string) => {
+  return useChannel(channelId)?.channel?.is_readonly;
+};
+
 export function getChannel(channelId: string) {
   return channelsKeeper.find(ch => ch.id === channelId);
 }
@@ -74,7 +78,7 @@ export function getAllChannelsCache() {
 }
 
 export function useSetChannel() {
-  const set = useRecoilCallback(({ set, snapshot }) => (channel: ChannelType) => {
+  const set = useRecoilCallback(({ set }) => (channel: ChannelType) => {
     if (channel.id) {
       channelsKeeper = channelsKeeper.filter(c => c.id !== channel.id);
       channelsKeeper.push(channel);

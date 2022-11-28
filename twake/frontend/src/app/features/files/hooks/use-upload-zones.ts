@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import FileUploadService from 'app/features/files/services/file-upload-service';
 import { MessageFileType } from 'app/features/messages/types/message';
 import { useRecoilState } from 'recoil';
@@ -7,7 +7,7 @@ import { useUpload } from './use-upload';
 import { PendingFileType } from 'app/features/files/types/file';
 
 export const useUploadZones = (zoneId: string) => {
-  const { pendingFilesListState, currentTask, getOnePendingFile } = useUpload();
+  const { currentTask, getOnePendingFile } = useUpload();
   const [files, setFiles] = useRecoilState(PendingUploadZonesListState(zoneId));
 
   useEffect(() => {

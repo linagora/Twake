@@ -3,6 +3,7 @@ import { FileType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
 import extensionToMime from '../utils/extension-to-mime';
 import { fileTypeMimes } from '../utils/type-mimes';
+import AceModeList from '@features/global/utils/ace_modelist.js';
 
 type ResponseFileType = { resource: FileType };
 type ResponseDeleteFileType = { status: 'success' | 'error' };
@@ -19,7 +20,7 @@ export type FileTypes =
   | 'image'
   | 'pdf'
   | 'slides'
-  | 'sound'
+  | 'audio'
   | 'spreadsheet'
   | 'video'
   | 'archive'
@@ -103,17 +104,21 @@ class FileUploadAPIClient {
     return this.getRoute({ companyId, fileId, download: true, fullApiRouteUrl: true });
   }
 
-  public mimeToType(mime: string): FileTypes {
-    const { archives, images, pdf, slides, sound, spreadsheets, videos, documents } = fileTypeMimes;
+  public mimeToType(mime: string, extension?: string): FileTypes {
+    const { archives, images, pdf, slides, audio, spreadsheets, videos, documents } = fileTypeMimes;
 
     if (images.includes(mime)) return 'image';
     if (videos.includes(mime)) return 'video';
-    if (sound.includes(mime)) return 'sound';
+    if (audio.includes(mime)) return 'audio';
     if (pdf.includes(mime)) return 'pdf';
     if (slides.includes(mime)) return 'slides';
     if (archives.includes(mime)) return 'archive';
     if (spreadsheets.includes(mime)) return 'spreadsheet';
     if (documents.includes(mime)) return 'document';
+
+    if (extension && AceModeList.getMode(extension) !== 'text') {
+      return 'code';
+    }
 
     return 'other';
   }

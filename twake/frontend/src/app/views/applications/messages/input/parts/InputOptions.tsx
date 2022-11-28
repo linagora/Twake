@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { EditorState } from 'draft-js';
 import { Smile, Video, MoreHorizontal, Paperclip, Type } from 'react-feather';
@@ -11,7 +12,6 @@ import MessageEditorsManager from 'app/features/messages/services/message-editor
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';
 import { Application } from 'app/features/applications/types/application';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
-import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 type Props = {
   channelId: string;
@@ -34,8 +34,8 @@ type MenuItem = {
 
 export default (props: Props) => {
   const [displayRichTextOptions, setDisplayRichTextOptions] = useState(false);
-  const [displayFileMenu, setDisplayFileMenu] = useState(false);
-  const [displayEmojiMenu, setDisplayEmojiMenu] = useState(false);
+  const [, setDisplayFileMenu] = useState(false);
+  const [, setDisplayEmojiMenu] = useState(false);
   const addon_menu: MenuItem[] = [];
   const addon_right_icon: any[] = [];
   const addon_files: any[] = [];
@@ -61,7 +61,7 @@ export default (props: Props) => {
             emoji,
             icon,
             text: app.identity?.name,
-            onClick: (evt: any) => {
+            onClick: (evt: unknown) => {
               props.triggerApp && props.triggerApp(app, undefined, evt);
             },
           };
@@ -110,7 +110,7 @@ export default (props: Props) => {
                 type: 'menu',
                 icon: 'desktop',
                 text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
-                onClick: (evt: any) => {
+                onClick: () => {
                   MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
                 },
               },
@@ -160,7 +160,7 @@ export default (props: Props) => {
                 reactElement: () => {
                   return (
                     <EmojiPicker
-                      onChange={(emoji: any) => {
+                      onChange={(emoji: unknown) => {
                         MenusManager.closeMenu();
                         props.onAddEmoji && props.onAddEmoji(emoji);
                       }}
@@ -240,7 +240,7 @@ export default (props: Props) => {
               type="text"
               size="small"
               className="option"
-              onClick={(evt: any) => {
+              onClick={(evt: unknown) => {
                 props.triggerApp && props.triggerApp(app, true, evt);
               }}
             >

@@ -1,7 +1,6 @@
 import React, { ReactNode, useContext, useState } from 'react';
 
 import 'moment-timezone';
-import moment from 'moment';
 import Moment from 'react-moment';
 import { Typography } from 'antd';
 import classNames from 'classnames';
@@ -9,13 +8,13 @@ import { AlertTriangle } from 'react-feather';
 import { useRecoilState } from 'recoil';
 
 import User from 'app/features/users/services/current-user-service';
-import MenusManager from 'app/components/menus/menus-manager.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
 import UserCard from 'app/components/user-card/user-card';
 import Emojione from 'components/emojione/emojione';
 import RouterServices from 'app/features/router/services/router-service';
 import { NodeMessage } from 'app/features/messages/types/message';
 import Languages from 'app/features/global/services/languages-service';
-import Loader from 'components/loader/loader.js';
+import Loader from 'components/loader/loader.jsx';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { MessageContext } from '../message-with-replies';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
@@ -69,6 +68,7 @@ export default (props: Props) => {
   let userNameRef: ReactNode = null;
   const displayUserCard = () => {
     if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const box = (window as any).getBoundingClientRect(userNameRef);
       MenusManager.openMenu(
         [
@@ -100,7 +100,7 @@ export default (props: Props) => {
       <div className={'message-content-header '}>
         <span
           className="sender-name"
-          ref={node => (userNameRef = node)}
+          ref={node => (userNameRef = node as ReactNode)}
           onClick={() => displayUserCard()}
         >
           {message.override?.title ||

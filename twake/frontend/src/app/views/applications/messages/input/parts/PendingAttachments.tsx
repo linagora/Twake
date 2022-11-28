@@ -24,7 +24,7 @@ export default ({ zoneId, onChange, initialValue }: PropsType) => {
   }, [files]);
 
   return files.length > 0 ? (
-    <Row className="attached-files-container" justify="start">
+    <Row className="attached-files-container mt-2 -mb-1" justify="start">
       {files.map((file, index) => {
         return (
           <Col key={index}>

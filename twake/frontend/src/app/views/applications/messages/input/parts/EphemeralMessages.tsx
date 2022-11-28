@@ -18,7 +18,7 @@ export default (props: Props) => {
   const companyId = useRouterCompany();
   const workspaceId = props.workspaceId;
   const channelId = props.channelId;
-  const { lastEphemeral, remove } = useEphemeralMessages({
+  const { lastEphemeral } = useEphemeralMessages({
     companyId,
     channelId: props.channelId,
   });

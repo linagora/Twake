@@ -41,7 +41,7 @@ export default class SecuredConnection {
       options: this.options,
       _grouped: true,
     };
-    Api.post('/ajax/core/collections/init', data, res => {
+    Api.GroupedQueryApiPost('/ajax/core/collections/init', data, res => {
       var did_get = false;
 
       if (res.data) {

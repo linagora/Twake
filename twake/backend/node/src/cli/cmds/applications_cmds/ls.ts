@@ -13,7 +13,7 @@ type CLIArgs = Record<string, unknown>;
 const services = [
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "platform-services",
   "applications",
   "auth",
@@ -30,18 +30,18 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
   command: "ls",
   describe: "command that allow you to list applications (unpublished only)",
 
-  handler: async argv => {
+  handler: async _argv => {
     const spinner = ora({ text: "Retrieving applications" }).start();
     const platform = await twake.run(services);
     await gr.doInit(platform);
     //
-    const unpublished = await gr.services.applications.marketplaceApps.listUnpublished();
+    const unpublished = await gr.services.applications.marketplaceApps.listUnpublished(undefined);
     //
     const table = new Table({
       head: ["ID", "Name", "Description"],
       colWidths: [40, 20, 40],
     });
-    unpublished.forEach(app => {
+    unpublished.forEach((app: any) => {
       table.push([app.id, app.identity.name, app.identity.description]);
     });
     spinner.stop();

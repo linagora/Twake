@@ -1,22 +1,17 @@
 import React from 'react';
 
 import { ChannelType } from 'app/features/channels/types/channel';
-
 import Languages from 'app/features/global/services/languages-service';
-import ModalManager from 'app/components/modal/modal-manager';
-
 import ChannelCategory from '../Parts/Channel/ChannelCategory';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
-
-import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-
-import Menu from 'components/menus/menu.js';
+import Menu from 'components/menus/menu.jsx';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import RouterServices from 'app/features/router/services/router-service';
 import { useSearchModal } from 'app/features/search/hooks/use-search';
 import { SearchInputState, SearchTabsState } from 'app/features/search/state/search-input';
 import { useSetRecoilState } from 'recoil';
+import { useOpenChannelModal } from 'app/components/edit-channel';
 
 type Props = {
   sectionTitle: string;
@@ -27,15 +22,10 @@ type Props = {
 
 export default (props: Props) => {
   const { workspaceId, companyId } = RouterServices.getStateFromRoute();
+  const openChannelModal = useOpenChannelModal();
 
   const addChannel = () => {
-    return ModalManager.open(
-      <ChannelWorkspaceEditor title={'scenes.app.channelsbar.channelsworkspace.create_channel'} />,
-      {
-        position: 'center',
-        size: { width: '600px' },
-      },
-    );
+    openChannelModal('');
   };
 
   const { setOpen: setSearchopen } = useSearchModal();

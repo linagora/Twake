@@ -13,7 +13,11 @@ import {
   toArray,
 } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
-import { Paginable } from "../../../core/platform/framework/api/crud-service";
+import {
+  ExecutionContext,
+  Paginable,
+  Pagination,
+} from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
 import User from "../../user/entities/user";
 import {
@@ -167,7 +171,10 @@ export class MergeProcess {
     return progress$;
   }
 
-  private getStreams(concurrent: number = 1): {
+  private getStreams(
+    concurrent: number = 1,
+    context?: ExecutionContext,
+  ): {
     // hot companies observable
     companies$: Observable<CompanyCreatedStreamObject>;
     // hot users observable
@@ -190,7 +197,7 @@ export class MergeProcess {
         ),
       ),
       mergeMap(
-        userInCompany => this.createUser(userInCompany.company.source, userInCompany.user),
+        userInCompany => this.createUser(userInCompany.company.source, userInCompany.user, context),
         concurrent,
       ),
       // make it hot
@@ -204,7 +211,13 @@ export class MergeProcess {
   }
 
   private getUserIds(company: Company, paginable?: Paginable): Observable<CompanyUser> {
-    return from(gr.services.companies.getUsers({ group_id: company.id }, paginable)).pipe(
+    const pagination = new Pagination(
+      paginable?.page_token,
+      paginable?.limitStr,
+      paginable?.reversed,
+    );
+
+    return from(gr.services.companies.getUsers({ group_id: company.id }, pagination)).pipe(
       mergeMap(companyUsers => {
         const items$ = from(companyUsers.getEntities());
         const next$ = companyUsers?.nextPage?.page_token
@@ -266,6 +279,7 @@ export class MergeProcess {
   private async createUser(
     company: Company,
     companyUser: CompanyUser,
+    context: ExecutionContext,
   ): Promise<UserCreatedStreamObject> {
     logger.debug("Creating user in console %o", companyUser.user_id);
     let error: Error;
@@ -328,7 +342,7 @@ export class MergeProcess {
         CompanyUser,
       );
       companyUser.role = role;
-      await companyUserRepository.save(companyUser);
+      await companyUserRepository.save(companyUser, context);
 
       if (this.linkExternal) {
         await this.createUserLink(user, result, this.consoleId);

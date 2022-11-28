@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-this-alias */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Languages from 'app/features/global/services/languages-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import User from 'app/features/users/services/current-user-service';
 import Api from 'app/features/global/framework/api-service';
 import ws from 'app/deprecated/websocket/websocket.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import workspaceService from 'app/deprecated/workspaces/workspaces.js';
+import workspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 import Numbers from 'app/features/global/utils/Numbers';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
@@ -172,7 +176,6 @@ class WorkspacesUsers extends Observable {
       loadMembers(options.members || []);
     }
 
-    // eslint-disable-next-line no-unused-vars
     const loadGroupUsers = (data: any) => {
       data.users.forEach((item: any) => {
         if (
@@ -229,7 +232,7 @@ class WorkspacesUsers extends Observable {
     return false;
   }
 
-  searchUserInWorkspace(query: any, cb: Function) {
+  searchUserInWorkspace(query: any, cb: (args: any) => void) {
     User.search(
       query,
       {

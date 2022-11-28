@@ -1,9 +1,9 @@
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import { ChannelPendingEmailService, ChannelPrimaryKey } from "../../../provider";
 import {
   CreateResult,
   CrudException,
   DeleteResult,
+  ExecutionContext,
   ListResult,
   Pagination,
   SaveResult,
@@ -12,8 +12,10 @@ import {
 import { ChannelExecutionContext } from "../../../types";
 import { getLogger } from "../../../../../core/platform/framework";
 import {
+  Channel,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
+  ChannelPrimaryKey,
   getChannelPendingEmailsInstance,
 } from "../../../entities";
 import { ChannelPendingEmailsListQueryParameters } from "../../../web/types";
@@ -23,7 +25,7 @@ import gr from "../../../../global-resolver";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const logger = getLogger("channel.pending_emails");
 
-export default class ChannelPendingEmailServiceImpl implements ChannelPendingEmailService {
+export default class ChannelPendingEmailServiceImpl {
   version: "1";
   repository: Repository<ChannelPendingEmails>;
 
@@ -36,16 +38,22 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
     return this;
   }
 
-  async create(pendingEmail: ChannelPendingEmails): Promise<CreateResult<ChannelPendingEmails>> {
-    await this.repository.save(pendingEmail);
+  async create(
+    pendingEmail: ChannelPendingEmails,
+    context: ExecutionContext,
+  ): Promise<CreateResult<ChannelPendingEmails>> {
+    await this.repository.save(pendingEmail, context);
 
     // Once a channel pending email has been successfully created, we have to add him to all channels of the company that he was invited
     //this.onCreated(pendingEmail);
     return new CreateResult<ChannelPendingEmails>("channel_pending_emails", pendingEmail);
   }
 
-  get(pk: ChannelPendingEmailsPrimaryKey): Promise<ChannelPendingEmails> {
-    return this.repository.findOne(pk);
+  get(
+    pk: ChannelPendingEmailsPrimaryKey,
+    context: ExecutionContext,
+  ): Promise<ChannelPendingEmails> {
+    return this.repository.findOne(pk, {}, context);
   }
 
   update(
@@ -70,14 +78,17 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
     throw new Error("Method not implemented.");
   }
 
-  async delete(pk: ChannelPendingEmailsPrimaryKey): Promise<DeleteResult<ChannelPendingEmails>> {
-    const pendingEmail = await this.get(pk);
+  async delete(
+    pk: ChannelPendingEmailsPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<DeleteResult<ChannelPendingEmails>> {
+    const pendingEmail = await this.get(pk, context);
 
     if (!pendingEmail) {
       throw CrudException.notFound("Channel pendingEmail has not been found");
     }
 
-    await this.repository.remove(pendingEmail);
+    await this.repository.remove(pendingEmail, context);
 
     return new DeleteResult("channel_pending_emails", pendingEmail, true);
   }
@@ -96,7 +107,7 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
       channel_id: context.channel.id,
     };
 
-    const result = await this.repository.find(pk, { pagination });
+    const result = await this.repository.find(pk, { pagination }, context);
 
     return new ListResult<ChannelPendingEmails>(
       "channel_pending_emails",
@@ -111,13 +122,15 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
 
   findPendingEmails(
     pk: ChannelPendingEmailsListQueryParameters,
+    context: ExecutionContext,
   ): Promise<ListResult<ChannelPendingEmails>> {
-    return this.repository.find(pk);
+    return this.repository.find(pk, {}, context);
   }
 
   async proccessPendingEmails(
     user: NewUserInWorkspaceNotification,
     workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
+    context: ExecutionContext,
   ): Promise<void> {
     // Get user object
     const userObj = await gr.services.users.get({
@@ -125,7 +138,7 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
     });
 
     // All pending emails in workspace
-    const allPendingEmailsInWorkspace = await this.repository.find(workspace);
+    const allPendingEmailsInWorkspace = await this.repository.find(workspace, {}, context);
 
     // Filter pending emails in workspace with user object email
     allPendingEmailsInWorkspace.filterEntities(({ email }) => email === userObj.email_canonical);
@@ -140,7 +153,7 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
             workspace_id,
             company_id,
             id: channel_id,
-          },
+          } as Channel,
         ]);
 
         // If added to channel, delete pending email

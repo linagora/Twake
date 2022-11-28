@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentState, EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { markdownToDraft, DraftToMarkdownOptions } from 'markdown-draft-js';
 import draftToMarkdown from './markdown/draft-to-markdown';
@@ -60,7 +62,7 @@ export default class EditorDataParser {
   fromString(markup: string, format: EditorTextFormat): ContentState {
     switch (format) {
       case 'markdown': {
-        return convertFromRaw(markdownToDraft(markup));
+        return convertFromRaw(markdownToDraft(markup, { preserveNewlines: true }));
       }
       case 'raw': {
         return convertFromRaw(JSON.parse(markup));

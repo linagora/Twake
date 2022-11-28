@@ -1,6 +1,11 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelMember, ChannelMemberPrimaryKey, ChannelMemberWithUser } from "../../entities";
+import {
+  ChannelMember,
+  ChannelMemberPrimaryKey,
+  ChannelMemberReadCursors,
+  ChannelMemberWithUser,
+} from "../../entities";
 import {
   ChannelMemberParameters,
   ChannelParameters,
@@ -46,16 +51,13 @@ export class ChannelMemberCrudController
 
   async get(
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelMember>> {
     if (!isCurrentUser(request.params.member_id, request.currentUser)) {
       throw CrudException.badRequest("User does not have enough rights to get member");
     }
-
-    const resource = await gr.services.channels.members.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    const context = getExecutionContext(request);
+    const resource = await gr.services.channels.members.get(this.getPrimaryKey(request), context);
 
     if (!resource) {
       throw CrudException.notFound(`Channel member ${request.params.member_id} not found`);
@@ -80,11 +82,7 @@ export class ChannelMemberCrudController
     });
 
     try {
-      const result = await gr.services.channels.members.save(
-        entity,
-        {},
-        getExecutionContext(request),
-      );
+      const result = await gr.services.channels.members.save(entity, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(201);
@@ -112,11 +110,7 @@ export class ChannelMemberCrudController
     }
 
     try {
-      const result = await gr.services.channels.members.save(
-        entity,
-        {},
-        getExecutionContext(request),
-      );
+      const result = await gr.services.channels.members.save(entity, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(200);
@@ -185,11 +179,16 @@ export class ChannelMemberCrudController
       nextPageToken = users.nextPage?.page_token;
 
       for (const user of users.getEntities()) {
-        const channelMember = await gr.services.channels.members.getChannelMember(user, {
-          company_id: request.params.company_id,
-          workspace_id: request.params.workspace_id,
-          id: request.params.id,
-        });
+        const channelMember = await gr.services.channels.members.getChannelMember(
+          user,
+          {
+            company_id: request.params.company_id,
+            workspace_id: request.params.workspace_id,
+            id: request.params.id,
+          },
+          undefined,
+          context,
+        );
 
         if (channelMember) {
           list.push(channelMember);
@@ -238,16 +237,63 @@ export class ChannelMemberCrudController
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
     reply: FastifyReply,
   ): Promise<Response> {
-    const resource = await gr.services.channels.members.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    const context = getExecutionContext(request);
+    const resource = await gr.services.channels.members.get(this.getPrimaryKey(request), context);
 
     if (!resource) {
       return reply.status(200).send({ has_access: false });
     }
 
     return reply.status(200).send({ has_access: true });
+  }
+
+  /**
+   * Lists the channel read sections for all members.
+   *
+   * @param {FastifyRequest<{ Params: ChannelParameters }>} request - the request object
+   * @param {FastifyReply} reply - the reply object
+   * @returns {Promise<ResourceListResponse<ChannelMemberReadCursors>>} - the response
+   */
+  async getAllChannelMembersReadSections(
+    request: FastifyRequest<{ Params: ChannelParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<ChannelMemberReadCursors>> {
+    try {
+      const context = getExecutionContext(request);
+      const channelMembersReadSections =
+        await gr.services.channels.members.getChannelMembersReadSections(context);
+
+      return {
+        resources: channelMembersReadSections.getEntities(),
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
+
+  /**
+   * Get the channel member read section for a user.
+   *
+   * @param {FastifyRequest<{ Params: ChannelMemberParameters }>} request - the request object
+   * @param {FastifyReply} reply - the reply object
+   * @returns {Promise<ResourceGetResponse<ChannelMemberReadCursors>>} - the read section for the member
+   */
+  async getChannelMemberReadSections(
+    request: FastifyRequest<{ Params: ChannelMemberParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceGetResponse<ChannelMemberReadCursors>> {
+    try {
+      const { member_id } = request.params;
+      const context = getExecutionContext(request);
+      const channelMembersReadSections =
+        await gr.services.channels.members.getChannelMemberReadSections(member_id, context);
+
+      return {
+        resource: channelMembersReadSections,
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
   }
 }
 

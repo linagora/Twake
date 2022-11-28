@@ -14,7 +14,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import AvatarComponent from 'app/components/avatar/avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
 import Menu from 'components/menus/menu';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import ApplicationEditor from '../../../application-parameters/pages/application-editor';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
@@ -35,7 +35,6 @@ export default () => {
     applications: companyApplications,
     loading: isLoadingCompanyApplications,
     remove: deleteOneCompanyApplication,
-    isInstalled: isApplicationInstalledInCompany,
   } = useCompanyApplications(companyId);
   useCompanyApplicationsRealtime();
 
@@ -133,7 +132,8 @@ export default () => {
       dataIndex: 'actions',
       width: 200,
 
-      render: (initialValue: any, record: ColumnObjectType, index: number) => {
+      render: (_initialValue, record: ColumnObjectType) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { key, ...application } = record;
         return (
           <div style={{ float: 'right' }}>

@@ -16,7 +16,7 @@ export function buildSelectQuery<Entity>(
   },
 ): any {
   const instance = new (entityType as any)();
-  const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
+  const { columnsDefinition } = getEntityDefinition(instance);
 
   let where: any = {};
   Object.keys(filters).forEach((key: string) => {

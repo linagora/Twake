@@ -1,5 +1,4 @@
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
-import _ from 'lodash';
 
 /**
  * This convert a NodeMessage to a MessageWithReply type to make things easier

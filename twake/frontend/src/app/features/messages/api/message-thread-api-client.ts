@@ -50,7 +50,7 @@ class MessageThreadAPIClient {
     participants: { add: Participant[]; remove: Participant[] },
   ) {
     const response = await Api.post<
-      { resource: {}; options: { participants: { add: Participant[]; remove: Participant[] } } },
+      { resource: unknown; options: { participants: { add: Participant[]; remove: Participant[] } } },
       { resource: Thread }
     >(`${this.prefixUrl}/companies/${companyId}/threads/${threadId}`, {
       resource: {},

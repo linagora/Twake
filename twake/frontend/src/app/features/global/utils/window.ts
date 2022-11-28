@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { capitalize } from 'lodash';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 

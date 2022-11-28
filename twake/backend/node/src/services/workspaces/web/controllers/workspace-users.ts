@@ -35,6 +35,7 @@ import WorkspacePendingUser from "../../entities/workspace_pending_users";
 import { ConsoleCompany, CreateConsoleUser } from "../../../console/types";
 import { hasCompanyAdminLevel } from "../../../../utils/company";
 import gr from "../../../global-resolver";
+import { getChannelPendingEmailsInstance } from "../../../channels/entities";
 
 export class WorkspaceUsersCrudController
   implements
@@ -83,6 +84,9 @@ export class WorkspaceUsersCrudController
         deleted: Boolean(user.deleted),
         status: user.status_icon,
         last_activity: user.last_activity,
+        cache: {
+          companies: user.cache?.companies || [],
+        },
         companies: userCompanies
           .filter(cu => companiesMap.get(cu.group_id))
           .map(cu => {
@@ -125,7 +129,7 @@ export class WorkspaceUsersCrudController
       Params: WorkspaceUsersBaseRequest;
       Querystring: { search?: string; page_token?: string; limit?: string };
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUserObject>> {
     const context = getExecutionContext(request);
     let nextPageToken: string | null = null;
@@ -237,7 +241,7 @@ export class WorkspaceUsersCrudController
 
   async get(
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceUserObject>> {
     const context = getExecutionContext(request);
 
@@ -288,6 +292,53 @@ export class WorkspaceUsersCrudController
           role,
         );
       }
+
+      const user = await gr.services.users.get({
+        id: userId,
+      });
+
+      if (user) {
+        const userEmailDomain = user.email_canonical.split("@").pop();
+        const inviteDomainEntries = await gr.services.workspaces.getInviteDomainWorkspaces(
+          userEmailDomain,
+        );
+
+        inviteDomainEntries.map(async entry => {
+          const workspace = await gr.services.workspaces.get({
+            company_id: entry.company_id,
+            id: entry.workspace_id,
+          });
+
+          if (!workspace) {
+            return;
+          }
+
+          if (
+            !workspace.preferences.invite_domain ||
+            workspace.preferences.invite_domain !== userEmailDomain
+          ) {
+            return;
+          }
+
+          const existingUser = await gr.services.workspaces.getUser({
+            userId,
+            workspaceId: entry.workspace_id,
+          });
+
+          if (existingUser) {
+            return;
+          }
+
+          await gr.services.workspaces.addUser(
+            {
+              company_id: entry.company_id,
+              id: entry.workspace_id,
+            },
+            { id: userId },
+            "member",
+          );
+        });
+      }
     }
 
     const resource = await this.getForOne(userId, context);
@@ -333,7 +384,7 @@ export class WorkspaceUsersCrudController
       Body: WorkspaceUsersInvitationRequestBody;
       Params: WorkspaceUsersRequest;
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<WorkspaceUserInvitationResponse> {
     const context = getExecutionContext(request);
 
@@ -362,6 +413,16 @@ export class WorkspaceUsersCrudController
         invitation.role,
         invitation.company_role,
       );
+      (request.body.channels || []).forEach(async channelId => {
+        const channelPendingEmail = getChannelPendingEmailsInstance({
+          channel_id: channelId,
+          company_id: request.params.company_id,
+          email: invitation.email,
+          workspace_id: context.workspace_id,
+        });
+
+        await gr.services.channelPendingEmail.create(channelPendingEmail, context);
+      });
       responses.push({ email: invitation.email, status: "ok" });
     };
 
@@ -453,7 +514,21 @@ export class WorkspaceUsersCrudController
     }
 
     await Promise.all(
-      usersToProcessImmediately.map(user => gr.services.console.processPendingUser(user)),
+      usersToProcessImmediately.map(user => {
+        gr.services.console.processPendingUser(user);
+        gr.services.channelPendingEmail.proccessPendingEmails(
+          {
+            company_id: context.company_id,
+            user_id: user.id,
+            workspace_id: context.workspace_id,
+          },
+          {
+            workspace_id: context.workspace_id,
+            company_id: context.company_id,
+          },
+          context,
+        );
+      }),
     );
 
     return {
@@ -463,7 +538,7 @@ export class WorkspaceUsersCrudController
 
   async deletePending(
     request: FastifyRequest<{ Params: WorkspacePendingUserRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
       await gr.services.workspaces.removePendingUser({
@@ -482,7 +557,7 @@ export class WorkspaceUsersCrudController
 
   async listPending(
     request: FastifyRequest<{ Params: WorkspacePendingUserRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUsersInvitationItem>> {
     const resources = await gr.services.workspaces.getPendingUsers({
       workspace_id: request.params.workspace_id,

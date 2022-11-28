@@ -6,14 +6,21 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { Message } from "../../entities/messages";
-import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
+import { getInstance as getMessageInstance, Message } from "../../entities/messages";
+import {
+  CompanyExecutionContext,
+  MessageListQueryParameters,
+  MessageReadType,
+  ThreadExecutionContext,
+} from "../../types";
 import { handleError } from "../../../../utils/handleError";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { getThreadMessageWebsocketRoom } from "../realtime";
 import { ThreadPrimaryKey } from "../../entities/threads";
 import { extendExecutionContentWithChannel } from "./index";
 import gr from "../../../global-resolver";
+import { formatUser } from "../../../../utils/users";
+import { UserObject } from "../../../../services/user/web/types";
 
 export class MessagesController
   implements
@@ -56,9 +63,12 @@ export class MessagesController
         );
       }
 
-      const thread = await gr.services.messages.threads.get({
-        id: context.thread.id,
-      } as ThreadPrimaryKey);
+      const thread = await gr.services.messages.threads.get(
+        {
+          id: context.thread.id,
+        } as ThreadPrimaryKey,
+        context,
+      );
 
       if (!thread) {
         throw "Message must be in a thread";
@@ -76,7 +86,7 @@ export class MessagesController
       let entity = result.entity;
 
       if (request.query.include_users) {
-        entity = await gr.services.messages.messages.includeUsersInMessage(entity);
+        entity = await gr.services.messages.messages.includeUsersInMessage(entity, context);
       }
 
       return {
@@ -100,10 +110,10 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       await gr.services.messages.messages.forceDelete(
-        {
+        getMessageInstance({
           thread_id: request.params.thread_id,
           id: request.params.message_id,
-        },
+        }),
         context,
       );
       return {
@@ -127,10 +137,10 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       await gr.services.messages.messages.delete(
-        {
+        getMessageInstance({
           thread_id: request.params.thread_id,
           id: request.params.message_id,
-        },
+        }),
         context,
       );
       return {
@@ -163,7 +173,7 @@ export class MessagesController
       );
 
       if (request.query.include_users) {
-        resource = await gr.services.messages.messages.includeUsersInMessage(resource);
+        resource = await gr.services.messages.messages.includeUsersInMessage(resource, context);
       }
 
       return {
@@ -199,7 +209,7 @@ export class MessagesController
       let entities = [];
       if (request.query.include_users) {
         for (const msg of resources.getEntities()) {
-          entities.push(await gr.services.messages.messages.includeUsersInMessage(msg));
+          entities.push(await gr.services.messages.messages.includeUsersInMessage(msg, context));
         }
       } else {
         entities = resources.getEntities();
@@ -384,6 +394,84 @@ export class MessagesController
       };
     } catch (err) {
       handleError(reply, err);
+    }
+  }
+
+  /**
+   * Mark messages as seen
+   *
+   * @param {FastifyRequest} request - The request object
+   * @param {FastifyReply} reply - The reply object
+   * @returns {Promise<boolean>} - The response promise
+   */
+  async read(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        workspace_id: string;
+      };
+      Body: MessageReadType;
+    }>,
+    reply: FastifyReply,
+  ): Promise<boolean> {
+    try {
+      const { messages, channel_id } = request.body;
+      const context: CompanyExecutionContext = {
+        company: { id: request.params.company_id },
+        user: request.currentUser,
+        url: request.url,
+        method: request.routerMethod,
+        reqId: request.id,
+        transport: "http",
+      };
+
+      const result = await gr.services.messages.messages.read(messages, {
+        ...context,
+        channel_id,
+        workspace_id: request.params.workspace_id,
+      });
+      return !!result;
+    } catch (err) {
+      handleError(reply, err);
+      return false;
+    }
+  }
+
+  /**
+   * get users who've seen the message
+   *
+   * @param {FastifyRequest} request - the request object
+   * @param {FastifyReply} reply - the reply object
+   * @returns {Promise<ResourceListResponse<UserObject>>} - the users list
+   */
+  async seenBy(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        workspace_id: string;
+        thread_id: string;
+        message_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<UserObject>> {
+    try {
+      const { message_id, workspace_id } = request.params;
+      const context = getThreadExecutionContext(request);
+
+      const userIds = await gr.services.messages.messages.listSeenBy(message_id, {
+        ...context,
+        workspace: { id: workspace_id },
+      });
+
+      const users = await Promise.all(userIds.map(id => gr.services.users.get({ id }, context)));
+      const resources = await Promise.all(users.map(user => formatUser(user)));
+
+      return {
+        resources,
+      };
+    } catch (error) {
+      handleError(reply, error);
     }
   }
 }

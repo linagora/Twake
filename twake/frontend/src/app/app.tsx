@@ -14,7 +14,6 @@ import ApplicationLoader from './components/loader/application-loader';
 
 import DebugState from './components/debug/debug-state';
 import 'app/styles/index.less';
-import DesktopRedirect from './views/desktop-redirect';
 
 const delayMessage = 5000;
 
@@ -58,41 +57,39 @@ export default () => {
       <DebugState />
       <MobileRedirect>
         <Integration>
-          <DesktopRedirect>
-            <Router history={RouterServices.history}>
-              <Switch>
-                {RouterServices.routes.map((route: RouteType, index: number) => (
-                  <Route
-                    key={`${route.key}_${index}`}
-                    exact={route.exact ? route.exact : false}
-                    path={route.path}
-                    component={() =>
-                      route.options?.withErrorBoundary ? (
-                        <ErrorBoundary key={route.key}>
-                          <route.component />
-                        </ErrorBoundary>
-                      ) : (
-                        <route.component key={route.key} />
-                      )
-                    }
-                  />
-                ))}
-                {
-                  <Route
-                    path="/"
-                    component={() => {
-                      RouterServices.replace(
-                        `${
-                          RouterServices.pathnames.LOGIN
-                        }?auto&${RouterServices.history.location.search.substr(1)}`,
-                      );
-                      return <div />;
-                    }}
-                  />
-                }
-              </Switch>
-            </Router>
-          </DesktopRedirect>
+          <Router history={RouterServices.history}>
+            <Switch>
+              {RouterServices.routes.map((route: RouteType, index: number) => (
+                <Route
+                  key={`${route.key}_${index}`}
+                  exact={route.exact ? route.exact : false}
+                  path={route.path}
+                  component={() =>
+                    route.options?.withErrorBoundary ? (
+                      <ErrorBoundary key={route.key}>
+                        <route.component />
+                      </ErrorBoundary>
+                    ) : (
+                      <route.component key={route.key} />
+                    )
+                  }
+                />
+              ))}
+              {
+                <Route
+                  path="/"
+                  component={() => {
+                    RouterServices.replace(
+                      `${
+                        RouterServices.pathnames.LOGIN
+                      }?auto&${RouterServices.history.location.search.substr(1)}`,
+                    );
+                    return <div />;
+                  }}
+                />
+              }
+            </Switch>
+          </Router>
         </Integration>
       </MobileRedirect>
     </RecoilRoot>

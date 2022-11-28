@@ -1,89 +1,63 @@
-import { TwakePlatform } from "../core/platform/platform";
-import { ConsoleServiceAPI } from "./console/api";
-import {
-  ApplicationHooksServiceAPI,
-  CompanyApplicationServiceAPI,
-  MarketplaceApplicationServiceAPI,
-} from "./applications/api";
-import { StatisticsAPI } from "./statistics/types";
-import { CompaniesServiceAPI, UserExternalLinksService, UsersService } from "./user/api";
-import { CompanyServiceImpl } from "./user/services/companies";
-import { RealtimeServiceAPI } from "../core/platform/services/realtime/api";
-import WebServerAPI from "../core/platform/services/webserver/provider";
 import { FastifyInstance } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { WorkspaceService } from "./workspaces/api";
+
+import { TwakePlatform } from "../core/platform/platform";
+import { RealtimeServiceAPI } from "../core/platform/services/realtime/api";
+import WebServerAPI from "../core/platform/services/webserver/provider";
+import { SearchServiceAPI } from "../core/platform/services/search/api";
+import StorageAPI from "../core/platform/services/storage/provider";
+import { MessageQueueServiceAPI } from "../core/platform/services/message-queue/api";
+import { CounterAPI } from "../core/platform/services/counter/types";
+import { DatabaseServiceAPI } from "../core/platform/services/database/api";
+import AuthServiceAPI from "../core/platform/services/auth/provider";
+import { PushServiceAPI } from "../core/platform/services/push/api";
+import { CronAPI } from "../core/platform/services/cron/api";
+import WebSocketAPI from "../core/platform/services/websocket/provider";
+import TrackerAPI from "../core/platform/services/tracker/provider";
+import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
+import EmailPusherAPI from "../core/platform/services/email-pusher/provider";
+
+import { logger } from "../core/platform/framework";
+import assert from "assert";
+import { CompanyServiceImpl } from "./user/services/companies";
 import { WorkspaceServiceImpl } from "./workspaces/services/workspace";
 import { UserExternalLinksServiceImpl } from "./user/services/external_links";
 import { UserNotificationBadgeService } from "./notifications/services/bages";
-import {
-  ChannelMemberPreferencesServiceAPI,
-  ChannelThreadUsersServiceAPI,
-  UserNotificationBadgeServiceAPI,
-  UserNotificationPreferencesAPI,
-} from "./notifications/api";
-import { DatabaseServiceAPI } from "../core/platform/services/database/api";
 import { NotificationPreferencesService } from "./notifications/services/preferences";
-import {
-  MessageThreadMessagesServiceAPI,
-  MessageThreadsServiceAPI,
-  MessageUserBookmarksServiceAPI,
-  MessageViewsServiceAPI,
-} from "./messages/api";
 import { ThreadMessagesService } from "./messages/services/messages";
 import { MessagesFilesService } from "./messages/services/messages-files";
 import { ThreadsService } from "./messages/services/threads";
 import { UserBookmarksService } from "./messages/services/user-bookmarks";
-import { SearchServiceAPI } from "../core/platform/services/search/api";
-import StorageAPI from "../core/platform/services/storage/provider";
-import { PubsubServiceAPI } from "../core/platform/services/pubsub/api";
-import { CounterAPI } from "../core/platform/services/counter/types";
 import { UserServiceImpl } from "./user/services/users/service";
 import { CompanyApplicationServiceImpl } from "./applications/services/company-applications";
 import { ApplicationServiceImpl } from "./applications/services/applications";
 import { ViewsServiceImpl } from "./messages/services/views";
 import { MessagesEngine } from "./messages/services/engine";
-import { FileServiceAPI } from "./files/api";
 import { FileServiceImpl } from "./files/services";
 import { ChannelServiceImpl } from "./channels/services/channel/service";
-import {
-  ChannelPendingEmailService,
-  ChannelService,
-  MemberService,
-  TabService,
-} from "./channels/provider";
 import { MemberServiceImpl } from "./channels/services/member/service";
 import ChannelPendingEmailServiceImpl from "./channels/services/channel/pending-emails/service";
 import { TabServiceImpl } from "./channels/services/tab";
-import AuthServiceAPI from "../core/platform/services/auth/provider";
 import { ConsoleServiceImpl } from "./console/service";
 import { StatisticsServiceImpl } from "./statistics/service";
-import { logger } from "../core/platform/framework";
-import assert from "assert";
 import { NotificationEngine } from "./notifications/services/engine";
 import { MobilePushService } from "./notifications/services/mobile-push";
 import { ChannelMemberPreferencesServiceImpl } from "./notifications/services/channel-preferences";
 import { ChannelThreadUsersServiceImpl } from "./notifications/services/channel-thread-users";
-import { PushServiceAPI } from "../core/platform/services/push/api";
 import { PreviewProcessService } from "./previews/services/files/processing/service";
-import { LinkPreviewServiceAPI, PreviewServiceAPI } from "./previews/types";
-import { CronAPI } from "../core/platform/services/cron/api";
-import WebSocketAPI from "../core/platform/services/websocket/provider";
-import TrackerAPI from "../core/platform/services/tracker/provider";
 import { ApplicationHooksService } from "./applications/services/hooks";
-import { OnlineServiceAPI } from "./online/api";
 import OnlineServiceImpl from "./online/service";
 import { PreviewEngine } from "./previews/services/files/engine";
-import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
-import { ChannelsPubsubListener } from "./channels/services/pubsub";
+import { ChannelsMessageQueueListener } from "./channels/services/pubsub";
 import { LinkPreviewProcessService } from "./previews/services/links/processing/service";
 import { LinkPreviewEngine } from "./previews/services/links/engine";
+import { UserNotificationDigestService } from "./notifications/services/digest";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
   counter: CounterAPI;
   cron: CronAPI;
-  pubsub: PubsubServiceAPI;
+  messageQueue: MessageQueueServiceAPI;
   push: PushServiceAPI;
   realtime: RealtimeServiceAPI;
   search: SearchServiceAPI;
@@ -91,50 +65,52 @@ type PlatformServices = {
   tracker: TrackerAPI;
   webserver: WebServerAPI;
   websocket: WebSocketAPI;
+  knowledgeGraph: KnowledgeGraphService;
+  emailPusher: EmailPusherAPI;
 };
 
 type TwakeServices = {
-  workspaces: WorkspaceService;
-  companies: CompaniesServiceAPI;
-  users: UsersService;
-  console: ConsoleServiceAPI;
-  statistics: StatisticsAPI;
-  externalUser: UserExternalLinksService;
+  workspaces: WorkspaceServiceImpl;
+  companies: CompanyServiceImpl;
+  users: UserServiceImpl;
+  console: ConsoleServiceImpl;
+  statistics: StatisticsServiceImpl;
+  externalUser: UserExternalLinksServiceImpl;
   notifications: {
-    badges: UserNotificationBadgeServiceAPI;
-    channelPreferences: ChannelMemberPreferencesServiceAPI;
-    channelThreads: ChannelThreadUsersServiceAPI;
+    badges: UserNotificationBadgeService;
+    channelPreferences: ChannelMemberPreferencesServiceImpl;
+    channelThreads: ChannelThreadUsersServiceImpl;
     engine: NotificationEngine;
-    preferences: UserNotificationPreferencesAPI;
+    preferences: NotificationPreferencesService;
     mobilePush: MobilePushService;
+    digest: UserNotificationDigestService;
   };
   preview: {
-    files: PreviewServiceAPI;
-    links: LinkPreviewServiceAPI;
+    files: PreviewProcessService;
+    links: LinkPreviewProcessService;
   };
   messages: {
-    messages: MessageThreadMessagesServiceAPI;
+    messages: ThreadMessagesService;
     messagesFiles: MessagesFilesService;
-    threads: MessageThreadsServiceAPI;
-    userBookmarks: MessageUserBookmarksServiceAPI;
-    views: MessageViewsServiceAPI;
+    threads: ThreadsService;
+    userBookmarks: UserBookmarksService;
+    views: ViewsServiceImpl;
     engine: MessagesEngine;
   };
   applications: {
-    marketplaceApps: MarketplaceApplicationServiceAPI;
-    companyApps: CompanyApplicationServiceAPI;
-    hooks: ApplicationHooksServiceAPI;
+    marketplaceApps: ApplicationServiceImpl;
+    companyApps: CompanyApplicationServiceImpl;
+    hooks: ApplicationHooksService;
   };
-  files: FileServiceAPI;
+  files: FileServiceImpl;
   channels: {
-    channels: ChannelService;
-    members: MemberService;
-    pubsub: ChannelsPubsubListener;
+    channels: ChannelServiceImpl;
+    members: MemberServiceImpl;
+    pubsub: ChannelsMessageQueueListener;
   };
-  channelPendingEmail: ChannelPendingEmailService;
-  tab: TabService;
-  online: OnlineServiceAPI;
-  knowledgeGraph: KnowledgeGraphService;
+  channelPendingEmail: ChannelPendingEmailServiceImpl;
+  tab: TabServiceImpl;
+  online: OnlineServiceImpl;
 };
 
 class GlobalResolver {
@@ -156,7 +132,7 @@ class GlobalResolver {
       auth: platform.getProvider<AuthServiceAPI>("auth"),
       counter: platform.getProvider<CounterAPI>("counter"),
       cron: platform.getProvider<CronAPI>("cron"),
-      pubsub: platform.getProvider<PubsubServiceAPI>("pubsub"),
+      messageQueue: platform.getProvider<MessageQueueServiceAPI>("message-queue"),
       push: platform.getProvider<PushServiceAPI>("push"),
       realtime: platform.getProvider<RealtimeServiceAPI>("realtime"),
       search: platform.getProvider<SearchServiceAPI>("search"),
@@ -164,6 +140,8 @@ class GlobalResolver {
       tracker: platform.getProvider<TrackerAPI>("tracker"),
       webserver: platform.getProvider<WebServerAPI>("webserver"),
       websocket: platform.getProvider<WebSocketAPI>("websocket"),
+      knowledgeGraph: await new KnowledgeGraphService().init(),
+      emailPusher: platform.getProvider<EmailPusherAPI>("email-pusher"),
     };
 
     this.fastify = this.platformServices.webserver.getServer();
@@ -190,6 +168,7 @@ class GlobalResolver {
         engine: await new NotificationEngine().init(),
         preferences: await new NotificationPreferencesService().init(),
         mobilePush: await new MobilePushService().init(),
+        digest: await new UserNotificationDigestService().init(),
       },
       preview: {
         files: await new PreviewProcessService().init(),
@@ -198,9 +177,9 @@ class GlobalResolver {
       messages: {
         messages: await new ThreadMessagesService().init(platform),
         messagesFiles: await new MessagesFilesService().init(),
-        threads: await new ThreadsService().init(platform),
-        userBookmarks: await new UserBookmarksService().init(platform),
-        views: await new ViewsServiceImpl().init(platform),
+        threads: await new ThreadsService().init(),
+        userBookmarks: await new UserBookmarksService().init(),
+        views: await new ViewsServiceImpl().init(),
         engine: await new MessagesEngine().init(),
       },
       applications: {
@@ -212,12 +191,11 @@ class GlobalResolver {
       channels: {
         channels: await new ChannelServiceImpl().init(),
         members: await new MemberServiceImpl().init(),
-        pubsub: await new ChannelsPubsubListener().init(),
+        pubsub: await new ChannelsMessageQueueListener().init(),
       },
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
       online: await new OnlineServiceImpl().init(),
-      knowledgeGraph: await new KnowledgeGraphService().init(),
     };
 
     Object.keys(this.services).forEach((key: keyof TwakeServices) => {

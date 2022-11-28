@@ -2,6 +2,7 @@ import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
   CrudException,
+  ExecutionContext,
   ListResult,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
@@ -11,11 +12,11 @@ import {
   ChannelMember,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
+  ChannelPrimaryKey,
   getChannelPendingEmailsInstance,
   UserChannel,
   UsersIncludedChannel,
 } from "../../entities";
-import { ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
   BaseChannelsParameters,
@@ -40,13 +41,8 @@ import {
 import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
-import { ChannelUserCounterType } from "../../entities/channel-counters";
 import gr from "../../../global-resolver";
-import { checkCompanyAndWorkspaceForUser } from "../middleware";
 import { checkUserBelongsToCompany } from "../../../../utils/company";
-import { Message } from "../../../messages/entities/messages";
-import { orderBy } from "lodash";
-import { DirectChannel } from "../../entities/direct-channel";
 
 const logger = getLogger("channel.controller");
 
@@ -69,13 +65,13 @@ export class ChannelCrudController
 
   async get(
     request: FastifyRequest<{ Querystring: ChannelListQueryParameters; Params: ChannelParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelObject>> {
     const context = getExecutionContext(request);
 
-    let channel = await gr.services.channels.channels.get(
+    let channel: Channel | UsersIncludedChannel = await gr.services.channels.channels.get(
       this.getPrimaryKey(request),
-      getExecutionContext(request),
+      context,
     );
 
     if (!channel) {
@@ -86,6 +82,8 @@ export class ChannelCrudController
       const isMember = await gr.services.channels.members.getChannelMember(
         request.currentUser,
         channel,
+        undefined,
+        context,
       );
 
       if (!isMember) {
@@ -94,10 +92,7 @@ export class ChannelCrudController
     }
 
     if (request.query.include_users)
-      channel = await gr.services.channels.channels.includeUsersInDirectChannel(
-        channel,
-        getExecutionContext(request).user.id,
-      );
+      channel = await gr.services.channels.channels.includeUsersInDirectChannel(channel);
 
     const member = await gr.services.channels.members.get(
       _.assign(new ChannelMember(), {
@@ -106,14 +101,14 @@ export class ChannelCrudController
         company_id: channel.company_id,
         user_id: context.user.id,
       }),
-      getChannelExecutionContext(request, channel),
+      context,
     );
 
     const channelObject = ChannelObject.mapTo(channel, {
       user_member: ChannelMemberObject.mapTo(member),
     });
 
-    await this.completeWithStatistics([channelObject]);
+    await gr.services.channels.channels.completeWithStatistics([channelObject]);
 
     return {
       websocket: gr.platformServices.realtime.sign(
@@ -129,12 +124,13 @@ export class ChannelCrudController
       Querystring: ChannelSearchQueryParameters;
       Params: { company_id: string };
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<Channel>> {
     if (request.query?.q?.length === 0) {
       return this.recent(request);
     }
 
+    const context = getSimpleExecutionContext(request);
     const userId = request.currentUser.id;
 
     await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
@@ -147,10 +143,14 @@ export class ChannelCrudController
       let hasMore = true;
       do {
         channels = await gr.services.channels.channels
-          .search(new Pagination(lastPageToken, limit.toString()), {
-            search: request.query.q,
-            companyId: request.params.company_id,
-          })
+          .search(
+            new Pagination(lastPageToken, limit.toString()),
+            {
+              search: request.query.q,
+              companyId: request.params.company_id,
+            },
+            context,
+          )
           .then((a: ListResult<Channel>) => {
             lastPageToken = a.nextPage.page_token;
             if (!lastPageToken) {
@@ -176,6 +176,7 @@ export class ChannelCrudController
         { id: request.currentUser.id },
         ch,
         50,
+        context,
       );
 
       //If not public channel and not member then ignore
@@ -199,7 +200,7 @@ export class ChannelCrudController
       }
     }
 
-    await this.completeWithStatistics(channels as ChannelObject[]);
+    await gr.services.channels.channels.completeWithStatistics(channels as ChannelObject[]);
 
     return { resources: channels };
   }
@@ -208,12 +209,23 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<void> {
-    const channel = await gr.services.channels.channels.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    const context = getExecutionContext(request);
+    const channel = await gr.services.channels.channels.get(this.getPrimaryKey(request), context);
 
     reply.send(channel);
+  }
+
+  async thumbnail(
+    request: FastifyRequest<{ Params: ChannelParameters }>,
+    response: FastifyReply,
+  ): Promise<void> {
+    const data = await gr.services.channels.channels.thumbnail(request.params.id);
+    const filename = "thumbnail.jpg";
+
+    response.header("Content-disposition", `inline; filename="${filename}"`);
+    response.type("image/jpeg");
+
+    response.send(data.file);
   }
 
   async save(
@@ -251,7 +263,7 @@ export class ChannelCrudController
           company_id: channelResult.entity.company_id,
           user_id: context.user.id,
         }),
-        getChannelExecutionContext(request, channelResult.entity),
+        context,
       );
 
       let entityWithUsers: Channel = channelResult.entity;
@@ -332,6 +344,7 @@ export class ChannelCrudController
           ...context.workspace,
         },
         context.workspace,
+        context,
       );
     }
 
@@ -355,7 +368,7 @@ export class ChannelCrudController
 
     const resources = entities.map(a => ChannelObject.mapTo(a));
 
-    await this.completeWithStatistics(resources);
+    await gr.services.channels.channels.completeWithStatistics(resources);
 
     return {
       ...{
@@ -404,16 +417,18 @@ export class ChannelCrudController
     reply: FastifyReply,
   ): Promise<boolean> {
     const read = request.body.value;
-
+    const context = getExecutionContext(request);
     try {
       const result = read
         ? await gr.services.channels.channels.markAsRead(
             this.getPrimaryKey(request),
             request.currentUser,
+            context,
           )
         : await gr.services.channels.channels.markAsUnread(
             this.getPrimaryKey(request),
             request.currentUser,
+            context,
           );
       return result;
     } catch (err) {
@@ -459,9 +474,10 @@ export class ChannelCrudController
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reply: FastifyReply,
   ): Promise<ResourceCreateResponse<ChannelPendingEmails>> {
+    const context = getSimpleExecutionContext(request);
     const pendingEmail = await gr.services.channelPendingEmail.create(
       getChannelPendingEmailsInstance(request.body.resource),
-      getChannelPendingEmailsExecutionContext(request),
+      context,
     );
     logger.debug("reqId: %s - save - PendingEmails input %o", request.id, pendingEmail.entity);
     return { resource: pendingEmail.entity };
@@ -480,27 +496,9 @@ export class ChannelCrudController
         workspace_id: request.params.workspace_id,
         email: request.params.email,
       }),
-      getChannelPendingEmailsExecutionContext(request),
     );
 
     return { status: pendingEmail.deleted ? "success" : "error" };
-  }
-
-  async completeWithStatistics(channels: ChannelObject[]) {
-    await Promise.all(
-      channels.map(async a => {
-        const members = await gr.services.channels.members.getUsersCount({
-          ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MEMBERS,
-        });
-        //Fixme: even if it works strange to use "getUsersCount" to get messages count
-        const messages = await gr.services.channels.members.getUsersCount({
-          ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MESSAGES,
-        });
-        a.stats = { members, messages };
-      }),
-    );
   }
 
   async recent(
@@ -512,6 +510,7 @@ export class ChannelCrudController
     const companyId = request.params.company_id;
     const userId = request.currentUser.id;
 
+    const context = getSimpleExecutionContext(request);
     const limit = parseInt(request.query.limit) || 100;
 
     const workspaces = (
@@ -519,12 +518,12 @@ export class ChannelCrudController
     ).map(a => a.workspaceId);
 
     let channels: UserChannel[] = await gr.services.channels.channels
-      .getChannelsForUsersInWorkspace(companyId, "direct", userId)
+      .getChannelsForUsersInWorkspace(companyId, "direct", userId, undefined, context)
       .then(list => list.getEntities());
 
     for (const workspaceId of workspaces) {
       const workspaceChannels = await gr.services.channels.channels
-        .getChannelsForUsersInWorkspace(companyId, workspaceId, userId)
+        .getChannelsForUsersInWorkspace(companyId, workspaceId, userId, undefined, context)
         .then(list => list.getEntities());
       channels = [...channels, ...workspaceChannels];
     }
@@ -544,7 +543,11 @@ export class ChannelCrudController
         otherChannels = [
           ...otherChannels,
           ...(
-            await gr.services.channels.channels.getAllChannelsInWorkspace(companyId, workspaceId)
+            await gr.services.channels.channels.getAllChannelsInWorkspace(
+              companyId,
+              workspaceId,
+              context,
+            )
           ).map(ch => {
             return {
               ...ch,
@@ -563,8 +566,13 @@ export class ChannelCrudController
       }),
     );
 
+    const resources = userIncludedChannels.slice(0, limit).map(r => ChannelObject.mapTo(r, {}));
+    await gr.services.channels.channels.completeWithStatistics(resources);
+
+    await new Promise(r => setTimeout(r, 2000));
+
     return {
-      resources: userIncludedChannels.slice(0, limit),
+      resources,
     };
   }
 }
@@ -585,24 +593,6 @@ function getExecutionContext(
   };
 }
 
-function getChannelExecutionContext(
-  request: FastifyRequest<{ Params: ChannelParameters }>,
-  channel: Channel,
-): ChannelExecutionContext {
-  return {
-    user: request.currentUser,
-    url: request.url,
-    method: request.routerMethod,
-    reqId: request.id,
-    transport: "http",
-    channel: {
-      id: channel.id,
-      company_id: channel.company_id,
-      workspace_id: channel.workspace_id,
-    },
-  };
-}
-
 function getChannelPendingEmailsExecutionContext(
   request: FastifyRequest<{
     Params: ChannelPendingEmailsPrimaryKey | ChannelPendingEmailsDeleteQueryParameters;
@@ -619,5 +609,15 @@ function getChannelPendingEmailsExecutionContext(
       company_id: request.params.company_id,
       workspace_id: request.params.workspace_id,
     },
+  };
+}
+
+function getSimpleExecutionContext(request: FastifyRequest): ExecutionContext {
+  return {
+    user: request.currentUser,
+    url: request.url,
+    method: request.routerMethod,
+    reqId: request.id,
+    transport: "http",
   };
 }

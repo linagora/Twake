@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/outline';
 import _ from 'lodash';

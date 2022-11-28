@@ -8,6 +8,12 @@
   max-width: 90%;
 }
 
+.editor {
+  .public-DraftStyleDefault-ol, .public-DraftStyleDefault-ul {
+    margin: 0px;
+  }
+}
+
 .public-DraftStyleDefault-pre {
   margin-bottom: 0;
 }

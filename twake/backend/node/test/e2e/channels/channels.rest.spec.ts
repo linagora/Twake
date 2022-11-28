@@ -24,9 +24,7 @@ import { TestDbService } from "../utils.prepare.db";
 import { ChannelObject } from "../../../src/services/channels/services/channel/types";
 import { Api } from "../utils.api";
 import gr from "../../../src/services/global-resolver";
-import { createMessage, e2e_createMessage, e2e_createThread } from "../messages/utils";
-import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
-import { ParticipantObject, Thread } from "../../../src/services/messages/entities/threads";
+import { createMessage, e2e_createThread } from "../messages/utils";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
@@ -205,7 +203,6 @@ describe("The /internal/services/channels/v1 API", () => {
           company_id: channel1.company_id,
           user_id: newUser.id,
         } as ChannelMember,
-        {},
         channelUtils.getChannelContext(channel1, platform.currentUser),
       );
 
@@ -676,7 +673,11 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(channelUpdateResult.resource).toBeDefined();
       expect(channelUpdateResult.websocket).toBeDefined();
 
-      return await gr.services.channels.channels.get({ id });
+      return await gr.services.channels.channels.get({
+        id,
+        company_id: platform.workspace.company_id,
+        workspace_id: platform.workspace.workspace_id,
+      });
     }
 
     async function updateChannelFail(
@@ -1268,7 +1269,7 @@ describe("The /internal/services/channels/v1 API", () => {
         };
         await Promise.all([
           // gr.services.channels.channels.save(channel, {}, getContext()),
-          gr.services.channels.channels.save<ChannelSaveOptions>(
+          gr.services.channels.channels.save(
             directChannelIn,
             {
               members,

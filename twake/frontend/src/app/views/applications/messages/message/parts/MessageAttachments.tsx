@@ -1,11 +1,10 @@
-import React, { useContext, useEffect } from 'react';
-import 'moment-timezone';
 import { Row } from 'antd';
-import { MessageContext } from '../message-with-replies';
-import { useMessage } from 'app/features/messages/hooks/use-message';
-import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
-import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
+import { useMessage } from 'app/features/messages/hooks/use-message';
+import 'moment-timezone';
+import { useContext, useEffect } from 'react';
+import { MessageContext } from '../message-with-replies';
+import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 
 export default () => {
   const context = useContext(MessageContext);
@@ -33,18 +32,19 @@ export default () => {
     <Row justify="start" align="middle" className="small-top-margin" wrap>
       {files
         .filter(f => f.metadata)
-        .map((file, i) => (
+        .map(file => (
           <PossiblyPendingAttachment
             key={file.metadata?.external_id || file.id}
             type={'message'}
             file={file}
+            xlarge={files.length === 1 && (files[0].metadata?.thumbnails?.length || 0) > 0}
             large={
               //If all the documents are images
               files.length <= 6 &&
               files.filter(
                 file =>
                   file.metadata?.source === 'internal' &&
-                  (file.metadata?.thumbnails?.length || 0) > 0
+                  (file.metadata?.thumbnails?.length || 0) > 0,
               ).length === files.length
             }
             onRemove={() => setFiles(files.filter(f => f.id !== file.id))}

@@ -82,7 +82,7 @@ class MessageReactionService {
     this.realtimeReactionsUpdate(message, reactionName, userId);
 
     this.collection.completeObject({ _user_reaction: userReactionsNames }, message.front_id);
-    this.collection.save(message, messagesCollectionKey, () => {});
+    this.collection.save(message, messagesCollectionKey);
     MessageEditorManager.get(message?.channel_id || '').closeEditor();
   }
 }

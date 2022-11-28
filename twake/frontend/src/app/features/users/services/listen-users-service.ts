@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ws from 'app/deprecated/websocket/websocket';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import UserService from './current-user-service';

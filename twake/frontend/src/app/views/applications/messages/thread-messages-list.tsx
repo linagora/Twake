@@ -10,7 +10,6 @@ import {
   withNonMessagesComponents,
 } from '../../../features/messages/hooks/with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
-import { VirtuosoHandle } from 'react-virtuoso';
 import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
 import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
@@ -21,9 +20,10 @@ type Props = {
   workspaceId: string;
   channelId: string;
   threadId: string;
+  readonly?: boolean;
 };
 
-export default ({ companyId, workspaceId, channelId, threadId }: Props) => {
+export default ({ companyId, workspaceId, channelId, threadId, readonly }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
 
@@ -96,7 +96,9 @@ export default ({ companyId, workspaceId, channelId, threadId }: Props) => {
   const virtuosoLoading = highlight && highlight.answerId && !highlight?.reachedAnswer;
 
   return (
-    <MessagesListContext.Provider value={{ hideReplies: true, withBlock: false }}>
+    <MessagesListContext.Provider
+      value={{ hideReplies: true, withBlock: false, readonly: !!readonly }}
+    >
       {(!window.loaded || virtuosoLoading) && <MessagesPlaceholder />}
       {!window.loaded && <div style={{ flex: 1 }}></div>}
       {window.loaded && (
@@ -105,8 +107,11 @@ export default ({ companyId, workspaceId, channelId, threadId }: Props) => {
           followOutput={!!window.reachedEnd && 'smooth'}
           ref={listBuilderRef}
           style={virtuosoLoading ? { opacity: 0 } : {}}
-          onScroll={(e: any) => {
-            const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+          onScroll={(e: React.UIEvent<'div', UIEvent>) => {
+            const scrollBottom =
+              (e.target as HTMLElement).scrollHeight -
+              (e.target as HTMLElement).scrollTop -
+              (e.target as HTMLElement).clientHeight;
             const closeToBottom = scrollBottom < 100;
             if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
             cancelHighlight();
@@ -117,7 +122,7 @@ export default ({ companyId, workspaceId, channelId, threadId }: Props) => {
           filterOnAppend={messages => {
             return cleanFrontMessagesFromListOfMessages(messages);
           }}
-          itemContent={(index, m) => {
+          itemContent={(_index, m) => {
             if (m.type === 'timeseparator') {
               return (
                 <div key={m.type + m.id}>

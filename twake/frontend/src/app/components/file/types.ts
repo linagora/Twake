@@ -1,5 +1,3 @@
-import { PendingFileRecoilType } from 'app/features/files/types/file';
-
 export type DataFileType = {
   id: string;
   name: string;

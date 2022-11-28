@@ -1,0 +1,18 @@
+{
+  "name": "Documentation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs"
+  },
+  "devDependencies": {
+    "flexsearch": "^0.7.31",
+    "markdown-it": "^13.0.1",
+    "vitepress": "1.0.0-alpha.13",
+    "vitepress-plugin-search": "^1.0.4-alpha.15",
+    "vue": "^3.2.45"
+  }
+}

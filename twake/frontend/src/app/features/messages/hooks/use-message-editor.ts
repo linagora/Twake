@@ -1,4 +1,5 @@
-import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MessageWithReplies, NodeMessage, QuotedMessageType } from 'app/features/messages/types/message';
 import MessageAPIClient from 'app/features/messages/api/message-api-client';
 import {} from 'app/features/global/hooks/use-realtime';
 import _ from 'lodash';
@@ -18,6 +19,7 @@ import { useAddMessageToThread, useRemoveMessageFromThread } from './use-thread-
 import { useRef } from 'react';
 import { AtomMessageKey } from '../state/atoms/messages';
 import { MessagesAndComponentsType } from 'app/features/messages/hooks/with-non-messages-components';
+import { useMessageQuoteReply } from './use-message-quote-reply';
 
 export type EditorKey = {
   companyId: string;
@@ -35,15 +37,14 @@ export const useMessageEditor = (key: EditorKey) => {
     : `new-${key.channelId}`;
   const [editor, setEditor] = useRecoilState(MessagesEditorState(location));
   const editorRef = useRef(editor);
+  const { isActive: isQuoted, message: quotedMessageId, close: closeQuoteReply } = useMessageQuoteReply(key.channelId || '');
+  let quotedMessage: MessageWithReplies | null = null;
 
-  let message: NodeMessage | null = null;
-  if (key.messageId) {
-    message = useMessage({
-      companyId: key.companyId,
-      threadId: key.threadId || '',
-      id: key.messageId,
-    }).message;
-  }
+  quotedMessage = useMessage({
+    companyId: key.companyId,
+    threadId: quotedMessageId,
+    id: quotedMessageId
+  }).message;
 
   const propagateMessage = useAddMessageFromEditor(key);
 
@@ -67,10 +68,16 @@ export const useMessageEditor = (key: EditorKey) => {
       ...message,
     } as NodeMessage;
 
-    const tempMessage = {
+    if (isQuoted && quotedMessage) {
+      editedMessage.quote_message = quotedMessage as unknown as QuotedMessageType;
+      closeQuoteReply();
+    }
+
+    const tempMessage: NodeMessage = {
       ...editedMessage,
       _status: 'sending',
       id: key.threadId ? uuidv1() : editedMessage.thread_id,
+      status: 'sending'
     };
     propagateMessage(tempMessage as NodeMessage);
 
@@ -94,11 +101,11 @@ export const useMessageEditor = (key: EditorKey) => {
       if (!newMessage) {
         throw new Error('Not sent');
       }
-
-      propagateMessage({ ...tempMessage, _status: 'sent' });
-      propagateMessage(newMessage);
+      
+      propagateMessage({ ...tempMessage, _status: 'sent', status: 'sent' });
+      propagateMessage({ ...newMessage, _status: 'sent' });
     } catch (err) {
-      propagateMessage({ ...tempMessage, _status: 'failed' });
+      propagateMessage({ ...tempMessage, _status: 'failed', status: 'error' });
     }
   };
 

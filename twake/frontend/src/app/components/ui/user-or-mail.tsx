@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React from 'react';
 import { Avatar, Col, Typography } from 'antd';
 import UsersService from 'app/features/users/services/current-user-service';
 import './elements.scss';
-import UserAPIClient from 'app/features/users/api/user-api-client';
 import { useUser } from 'app/features/users/hooks/use-user';
 
 const { Text } = Typography;

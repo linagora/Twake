@@ -1,14 +1,21 @@
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
+  Paginable,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
-import { logger, RealtimeSaved, TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  logger,
+  RealtimeSaved,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { MessageThreadMessagesServiceAPI } from "../api";
 import {
   getInstance,
   Message,
@@ -20,6 +27,7 @@ import {
   BookmarkOperation,
   CompanyExecutionContext,
   DeleteLinkOperation,
+  MessageIdentifier,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -27,26 +35,29 @@ import {
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
+  UpdateDeliveryStatusOperation,
 } from "../types";
-import _, { first, pick } from "lodash";
+import _ from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import { ThreadMessagesOperationsService } from "./messages-operations";
-import { Thread, ThreadPrimaryKey } from "../entities/threads";
+import { Thread } from "../entities/threads";
 import { UserObject } from "../../user/web/types";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { getDefaultMessageInstance } from "../../../utils/messages";
 import { buildMessageListPagination, getLinks, getMentions } from "./utils";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../core/platform/framework/event-bus";
 import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
 import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
 import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs-reversed";
-import { LinkPreviewPubsubRequest } from "../../../services/previews/types";
+import { LinkPreviewMessageQueueRequest } from "../../../services/previews/types";
+import { Thumbnail } from "../../files/entities/file";
+import uuidTime from "uuid-time";
 
-export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
+export class ThreadMessagesService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<Message>;
   msgFilesRepository: Repository<MessageFile>;
@@ -116,7 +127,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let message = getDefaultMessageInstance(item, context);
     if (pk.id) {
-      const existingMessage = await this.repository.findOne(pk);
+      const existingMessage = await this.repository.findOne(pk, {}, context);
       if (!existingMessage && !serverRequest) {
         logger.error(`This message ${item.id} doesn't exists in thread ${item.thread_id}`);
         throw Error("This message doesn't exists.");
@@ -168,20 +179,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
 
       logger.info(`Saved message in thread ${message.thread_id}`);
-      await this.repository.save(message);
+      await this.repository.save(message, context);
     } else {
       logger.info(`Did not save ephemeral message in thread ${message.thread_id}`);
     }
 
     if (serverRequest || messageOwnerAndNotRemoved) {
-      message = await this.completeMessage(message, { files: item.files || message.files || [] });
+      message = await this.completeMessage(
+        message,
+        { files: item.files || message.files || [] },
+        context,
+      );
     }
 
     await this.onSaved(message, { created: messageCreated }, context);
 
-    if (messageCreated && context.channel) {
+    if (context.channel) {
       localEventBus.publish<KnowledgeGraphGenericEventPayload<Message>>(
-        KnowledgeGraphEvents.MESSAGE_CREATED,
+        KnowledgeGraphEvents.MESSAGE_UPSERT,
         {
           id: message.id,
           resource: message,
@@ -252,10 +267,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       } while (nextPage.page_token);
     }
 
-    const messageInOldThread = await this.repository.findOne({
-      thread_id: options.previous_thread,
-      id: pk.id,
-    });
+    const messageInOldThread = await this.repository.findOne(
+      {
+        thread_id: options.previous_thread,
+        id: pk.id,
+      },
+      {},
+      context,
+    );
 
     if (!messageInOldThread) {
       logger.error(`Unable to find message ${pk.id} in old thread ${context.thread.id}`);
@@ -263,10 +282,13 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     //Check new thread exists
-    let thread = await gr.services.messages.threads.get({ id: context.thread.id });
+    let thread = await gr.services.messages.threads.get({ id: context.thread.id }, context);
     if (!thread && `${context.thread.id}` === `${pk.id}`) {
       logger.info("Create empty thread for message moved out of thread");
-      const oldThread = await gr.services.messages.threads.get({ id: options.previous_thread });
+      const oldThread = await gr.services.messages.threads.get(
+        { id: options.previous_thread },
+        context,
+      );
       const upgradedContext = _.cloneDeep(context);
       upgradedContext.user.server_request = true;
       thread = (
@@ -287,12 +309,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const messageInNewThread = _.cloneDeep(messageInOldThread);
     messageInNewThread.thread_id = context.thread.id;
 
-    await this.repository.save(messageInNewThread);
+    await this.repository.save(messageInNewThread, context);
 
     await this.onSaved(messageInNewThread, { created: true }, context);
 
-    await this.repository.remove(messageInOldThread);
-    await gr.services.messages.threads.addReply(messageInOldThread.thread_id, -1);
+    await this.repository.remove(messageInOldThread, context);
+    await gr.services.messages.threads.addReply(messageInOldThread.thread_id, -1, context);
 
     logger.info(
       `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
@@ -318,10 +340,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       throw Error("Can't edit this message.");
     }
 
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: pk.id,
-    });
+    const message = await this.repository.findOne(
+      {
+        thread_id: context.thread.id,
+        id: pk.id,
+      },
+      {},
+      context,
+    );
 
     if (!message) {
       logger.error(
@@ -361,7 +387,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     message.files = [];
 
     logger.info(`Deleted message ${pk.id} from thread ${message.thread_id}`);
-    await this.repository.save(message);
+    await this.repository.save(message, context);
     await this.onSaved(message, { created: false }, context);
 
     //Only server and application can definively remove a message
@@ -369,7 +395,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       (forceDelete && (context.user.server_request || context.user.application_id)) ||
       message.application_id
     ) {
-      await this.repository.remove(message);
+      await this.repository.remove(message, context);
     }
 
     return new DeleteResult<Message>("message", message, true);
@@ -383,9 +409,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
     let message;
     if (thread) {
-      message = await this.getThread(thread, options);
+      message = await this.getThread(thread, options, context);
     } else {
-      message = await this.getSingleMessage(pk, options);
+      message = await this.getSingleMessage(pk, options, context);
     }
     return message;
   }
@@ -393,13 +419,18 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   private async getSingleMessage(
     pk: Pick<Message, "thread_id" | "id">,
     options?: { includeQuoteInMessage?: boolean },
+    context?: ExecutionContext,
   ) {
-    let message = await this.repository.findOne(pk);
+    let message = await this.repository.findOne(pk, {}, context);
     if (message) {
-      message = await this.completeMessage(message, {
-        files: message.files || [],
-        includeQuoteInMessage: options?.includeQuoteInMessage,
-      });
+      message = await this.completeMessage(
+        message,
+        {
+          files: message.files || [],
+          includeQuoteInMessage: options?.includeQuoteInMessage,
+        },
+        context,
+      );
     }
     return message;
   }
@@ -407,6 +438,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   async getThread(
     thread: Thread,
     options: MessagesGetThreadOptions = {},
+    context?: ExecutionContext,
   ): Promise<MessageWithReplies> {
     const lastRepliesUncompleted = (
       await this.repository.find(
@@ -416,19 +448,26 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         {
           pagination: new Pagination("", `${options?.replies_per_thread || 3}`, false),
         },
+        context,
       )
     ).getEntities();
 
     const lastReplies: Message[] = [];
     for (const lastReply of lastRepliesUncompleted) {
       if (lastReply)
-        lastReplies.push(await this.completeMessage(lastReply, { files: lastReply.files || [] }));
+        lastReplies.push(
+          await this.completeMessage(lastReply, { files: lastReply.files || [] }, context),
+        );
     }
 
-    const firstMessage = await this.getSingleMessage({
-      thread_id: thread.id,
-      id: thread.id,
-    });
+    const firstMessage = await this.getSingleMessage(
+      {
+        thread_id: thread.id,
+        id: thread.id,
+      },
+      {},
+      context,
+    );
 
     return {
       ...firstMessage,
@@ -441,13 +480,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   async list<ListOption>(
-    pagination: Pagination,
+    pagination: Paginable,
     options?: ListOption,
     context?: ThreadExecutionContext,
   ): Promise<ListResult<MessageWithUsers>> {
     const list = await this.repository.find(
       { thread_id: context.thread.id },
-      buildMessageListPagination(pagination, "id"),
+      buildMessageListPagination(Pagination.fromPaginable(pagination), "id"),
+      context,
     );
 
     //Get complete details about initial message
@@ -471,13 +511,16 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     const extendedList = [];
     for (const m of list.getEntities()) {
-      extendedList.push(await this.completeMessage(m));
+      extendedList.push(await this.completeMessage(m, {}, context));
     }
 
     return new ListResult("messages", extendedList, list.nextPage);
   }
 
-  async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
+  async includeUsersInMessage(
+    message: Message,
+    context?: ExecutionContext,
+  ): Promise<MessageWithUsers> {
     let ids: string[] = [];
     if (message.user_id) ids.push(message.user_id);
     if (message.pinned_info?.pinned_by) ids.push(message.pinned_info?.pinned_by);
@@ -497,17 +540,21 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let application = null;
     if (message.application_id) {
-      application = await gr.services.applications.marketplaceApps.get({
-        id: message.application_id,
-      });
+      application = await gr.services.applications.marketplaceApps.get(
+        {
+          id: message.application_id,
+        },
+        context,
+      );
     }
 
     const messageWithUsers: MessageWithUsers = { ...message, users, application };
 
     if (message.quote_message && (message.quote_message as any).id) {
-      messageWithUsers.quote_message = await this.includeUsersInMessage(
-        message.quote_message as any,
-      );
+      messageWithUsers.quote_message = {
+        ...(await this.includeUsersInMessage(message.quote_message as any, context)),
+        ...quoteMessageKeys(message),
+      };
     }
 
     return messageWithUsers;
@@ -515,27 +562,28 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async includeUsersInMessageWithReplies(
     message: MessageWithReplies,
+    context?: ExecutionContext,
   ): Promise<MessageWithRepliesWithUsers> {
     let last_replies = undefined;
     for (const reply of message.last_replies || []) {
       if (!last_replies) last_replies = [];
-      last_replies.push(await this.includeUsersInMessage(reply));
+      last_replies.push(await this.includeUsersInMessage(reply, context));
     }
 
     let highlighted_replies = undefined;
     for (const reply of message.highlighted_replies || []) {
       if (!highlighted_replies) highlighted_replies = [];
-      highlighted_replies.push(await this.includeUsersInMessage(reply));
+      highlighted_replies.push(await this.includeUsersInMessage(reply, context));
     }
 
     let thread: MessageWithRepliesWithUsers = undefined;
     if (message.thread) {
-      thread = await this.includeUsersInMessageWithReplies(message.thread);
+      thread = await this.includeUsersInMessageWithReplies(message.thread, context);
     }
 
     const messageWithUsers = {
       ...message,
-      users: (await this.includeUsersInMessage(message)).users,
+      users: (await this.includeUsersInMessage(message, context)).users,
       last_replies,
       ...(highlighted_replies ? { highlighted_replies } : {}),
       ...(thread ? { thread } : {}),
@@ -558,19 +606,39 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     if (options.created && !message.ephemeral) {
       const messageLinks = getLinks(message);
 
-      gr.platformServices.pubsub.publish<LinkPreviewPubsubRequest>("services:preview:links", {
-        data: {
-          links: messageLinks,
-          message: {
-            context,
-            resource: message,
-            created: options?.created,
+      gr.platformServices.messageQueue.publish<LinkPreviewMessageQueueRequest>(
+        "services:preview:links",
+        {
+          data: {
+            links: messageLinks,
+            message: {
+              context,
+              resource: message,
+              created: options?.created,
+            },
           },
         },
-      });
+      );
 
-      await gr.services.messages.threads.addReply(message.thread_id);
+      await gr.services.messages.threads.addReply(message.thread_id, 1, context);
+      try {
+        await gr.services.channels.members.setChannelMemberReadSections(
+          {
+            start: message.id,
+            end: message.id,
+          },
+          {
+            ...context,
+            channel_id: message.cache.channel_id,
+            workspace_id: message.cache.workspace_id,
+          },
+        );
+      } catch (error) {
+        logger.error("failed to set read sections");
+      }
     }
+
+    message = await this.includeUsersInMessage(message, context);
 
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
     await gr.services.messages.engine.dispatchMessage({
@@ -579,7 +647,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       created: options.created,
     });
 
-    return new SaveResult<Message>(
+    return new SaveResult<MessageWithUsers>(
       "message",
       message,
       options.created ? OperationType.CREATE : OperationType.UPDATE,
@@ -622,8 +690,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   async completeMessage(
     message: Message,
     options: { files?: Message["files"]; includeQuoteInMessage?: boolean } = {},
+    context: ExecutionContext,
   ) {
-    this.fixReactionsFormat(message);
+    this.fixReactionsFormat(message, context);
     try {
       if (options.files) message = await this.completeMessageFiles(message, options.files || []);
     } catch (err) {
@@ -649,20 +718,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
     if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
-      message.quote_message = await this.get(
-        {
-          thread_id: (message.quote_message as Message["quote_message"]).thread_id,
-          id: (message.quote_message as Message["quote_message"]).id,
-        },
-        undefined,
-        { includeQuoteInMessage: false },
-      );
+      message.quote_message = {
+        ...(await this.includeUsersInMessage(
+          await this.getSingleMessage(
+            {
+              thread_id: (message.quote_message as Message["quote_message"]).thread_id,
+              id: (message.quote_message as Message["quote_message"]).id,
+            },
+            { includeQuoteInMessage: false },
+          ),
+        )),
+        ...quoteMessageKeys(message),
+      };
     }
     return message;
   }
 
   //Fix https://github.com/linagora/Twake/issues/1559
-  async fixReactionsFormat(message: Message) {
+  async fixReactionsFormat(message: Message, context: ExecutionContext) {
     if (message.reactions?.length > 0) {
       let foundError = false;
       message.reactions.map(r => {
@@ -671,11 +744,15 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           r.users = Object.values(r.users);
         }
       });
-      if (foundError) await this.repository.save(message);
+      if (foundError) await this.repository.save(message, context);
     }
   }
 
-  async completeMessageFiles(message: Message, files: Message["files"]) {
+  async completeMessageFiles(
+    message: Message,
+    files: Message["files"],
+    context?: ExecutionContext,
+  ) {
     if (files.length === 0 && (message.files || []).length === 0) {
       return message;
     }
@@ -693,13 +770,17 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     //Delete all existing msg files not in the new files object
     const existingMsgFiles = (
-      await this.msgFilesRepository.find({
-        message_id: message.id,
-      })
+      await this.msgFilesRepository.find(
+        {
+          message_id: message.id,
+        },
+        {},
+        context,
+      )
     ).getEntities();
     for (const entity of existingMsgFiles) {
       if (!files.some(f => sameFile(f.metadata, entity.metadata))) {
-        await this.msgFilesRepository.remove(entity);
+        await this.msgFilesRepository.remove(entity, context);
       }
     }
 
@@ -712,7 +793,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       entity.message_id = message.id;
       entity.thread_id = message.thread_id;
       entity.id = file.id || undefined;
-      entity.company_id = file.company_id;
+      entity.company_id = file.company_id || message.cache?.company_id;
       entity.cache = {
         company_id: message.cache?.company_id,
         workspace_id: message.cache?.workspace_id,
@@ -724,10 +805,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       //If it is defined it should exists
       let messageFileExistOnDb = false;
       try {
-        messageFileExistOnDb = !!(await this.msgFilesRepository.findOne({
-          message_id: message.id,
-          id: entity.id,
-        }));
+        messageFileExistOnDb = !!(await this.msgFilesRepository.findOne(
+          {
+            message_id: message.id,
+            id: entity.id,
+          },
+          {},
+          context,
+        ));
       } catch (e) {}
       if (entity.id && !messageFileExistOnDb) {
         existing = null;
@@ -760,7 +845,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
             external_id: file.metadata.external_id,
           };
           file.metadata.thumbnails = (file.metadata.thumbnails || original.thumbnails || []).map(
-            (t, index) => {
+            (t: Thumbnail, index: number) => {
               t.url = gr.services.files.getThumbnailRoute(original, (t.index || index).toString());
               return t;
             },
@@ -772,7 +857,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       if (!existing || !_.isEqual(existing.metadata, entity.metadata)) {
         didChange = true;
-        await this.msgFilesRepository.save(entity);
+        await this.msgFilesRepository.save(entity, context);
       }
 
       message.files.push(entity);
@@ -782,7 +867,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       didChange = true;
 
     if (didChange) {
-      await this.repository.save(message);
+      await this.repository.save(message, context);
     }
 
     return message;
@@ -808,6 +893,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
               user_id: userId,
             },
             { pagination: new Pagination(lastPageToken, pagination.limitStr) },
+            context,
           )
           .then((a: ListResult<MessageUserInboxRef>) => {
             lastPageToken = a.nextPage.page_token;
@@ -841,7 +927,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
     }
 
-    const msgPromises = threadsIds.map(id => this.repository.findOne({ thread_id: id, id }));
+    const msgPromises = threadsIds.map(id =>
+      this.repository.findOne({ thread_id: id, id }, {}, context),
+    );
     return new ListResult<Message>("message", await Promise.all(msgPromises), nextPage);
   }
 
@@ -858,4 +946,118 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   ): Promise<SaveResult<Message>> {
     return this.operations.deleteLinkPreview(operation, context);
   }
+
+  /**
+   * Updates the message delivery status to delivered or read.
+   *
+   * @param {UpdateDeliveryStatusOperation} operation - The update delivery status operation
+   * @param {ThreadExecutionContext} context - The thread execution context
+   * @returns {Promise<SaveResult<Message>>} - The save result
+   */
+  async updateDeliveryStatus(
+    operation: UpdateDeliveryStatusOperation,
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.updateDeliveryStatus(operation, context);
+  }
+
+  /**
+   * Updates the messages delivery status to read.
+   *
+   * @param {MessageReadType} messages - The messages to mark as read
+   * @param {CompanyExecutionContext  & { channel_id: string; workspace_id: string }} context - The company execution context
+   * @returns {Promise<boolean>} - The promise result of the operation
+   */
+  async read(
+    messages: MessageIdentifier[],
+    context: CompanyExecutionContext & { channel_id: string; workspace_id: string },
+  ): Promise<boolean> {
+    const timestamps = messages
+      .map(({ message_id }) => ({
+        message_id,
+        timestamp: uuidTime.v1(message_id),
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp);
+
+    const read_section = {
+      start: timestamps[0].message_id,
+      end: timestamps[timestamps.length - 1].message_id,
+    };
+
+    await gr.services.channels.members.setChannelMemberReadSections(read_section, context);
+
+    const updates = await Promise.all(
+      messages.map(async message => {
+        const readOperation: UpdateDeliveryStatusOperation = {
+          ...message,
+          status: "read",
+        };
+
+        return this.updateDeliveryStatus(readOperation, {
+          ...context,
+          thread: { id: message.thread_id },
+        });
+      }),
+    );
+
+    return updates.every(item => !!item);
+  }
+
+  /**
+   * List users who've seen the specified message
+   *
+   * @param { String} id - the message id
+   * @param {ThreadExecutionContext} context - the thread execution context
+   * @returns {Promise<string[]>} - the users list
+   */
+  async listSeenBy(id: string, context: ThreadExecutionContext): Promise<string[]> {
+    try {
+      const message = await this.repository.findOne(
+        {
+          thread_id: context.thread.id,
+          id,
+        },
+        {},
+        context,
+      );
+
+      if (!message) {
+        logger.error(`message ${id} doesn't exist`);
+        throw Error("failed to list seen by users: message doesn't exist");
+      }
+
+      const channelContext = {
+        ...context,
+        channel: {
+          id: message.cache.channel_id,
+          company_id: context.company.id,
+          workspace_id: context.workspace.id,
+        },
+      };
+
+      return await gr.services.channels.members.getChannelMessageSeenByUsers(id, channelContext);
+    } catch (error) {
+      logger.error(error);
+      return [];
+    }
+  }
 }
+
+const quoteMessageKeys = (
+  message: Message,
+): { channel_id: string; workspace_id: string; company_id: string } => {
+  return {
+    channel_id:
+      message.quote_message?.channel_id ||
+      message.quote_message?.cache?.channel_id ||
+      message.cache.channel_id,
+    workspace_id:
+      message.quote_message?.workspace_id ||
+      message.quote_message?.cache?.workspace_id ||
+      message.cache.workspace_id,
+    company_id:
+      message.quote_message?.company_id ||
+      message.quote_message?.cache?.company_id ||
+      message.cache.company_id,
+  };
+};

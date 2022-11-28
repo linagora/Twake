@@ -25,7 +25,7 @@ export default class CronService extends TwakeService<CronAPI> implements CronAP
       task: cron.schedule(expression, () => {
         task.lastRun = Date.now();
         task.nbRuns++;
-        this.logger.debug(`Running job ${job.name}`);
+        this.logger.debug(`Running job ${description || "untitled"}`);
         try {
           job();
         } catch (err) {

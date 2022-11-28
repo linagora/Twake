@@ -13,8 +13,9 @@ import { getLogger, TwakeLogger, TwakeServiceProvider } from "../../../core/plat
 import { getUserRoom } from "../../../services/user/realtime";
 import User from "../../../services/user/entities/user";
 import { WebsocketUserEvent } from "../../../core/platform/services/websocket/types";
+import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 
-export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineServiceAPI {
+export default class OnlineServiceImpl implements TwakeServiceProvider {
   version = "1";
   service: OnlineServiceAPI;
   private pubsubService: OnlinePubsubService;
@@ -23,10 +24,6 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
 
   constructor() {
     this.logger = getLogger("online.service");
-  }
-
-  api(): OnlineServiceAPI {
-    return this.service;
   }
 
   public async init(): Promise<this> {
@@ -63,7 +60,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
           this.logger.debug(`Got an online:set request for ${(request.data || []).length} users`);
 
           this.broadcastOnline(event, companies);
-          this.setLastSeenOnline([event.user.id], Date.now(), false);
+          this.setLastSeenOnline([event.user.id], Date.now(), true);
           ack();
         },
       );
@@ -111,10 +108,15 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
       getInstance({ user_id, last_seen, is_connected }),
     );
     await this.onlineRepository.saveAll(onlineUsers);
+
+    //Send websocket event
+    onlineUsers.forEach(u => {
+      gr.services.users.publishPublicUserRealtime(u.user_id);
+    });
   }
 
-  async isOnline(userId: string): Promise<boolean> {
-    const user = await this.onlineRepository.findOne({ user_id: userId });
+  async isOnline(userId: string, context?: ExecutionContext): Promise<boolean> {
+    const user = await this.onlineRepository.findOne({ user_id: userId }, {}, context);
 
     if (!user) {
       return false;
@@ -123,13 +125,20 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
     return Date.now() - user.last_seen < DISCONNECTED_DELAY;
   }
 
-  private async areOnline(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
+  private async areOnline(
+    ids: Array<string> = [],
+    context?: ExecutionContext,
+  ): Promise<Array<[string, boolean]>> {
     const users = [];
     //This foreach is needed for $in operators https://github.com/linagora/Twake/issues/1246
     for (let i = 0; i < ids.length; i += 100) {
       users.push(
         ...(
-          await this.onlineRepository.find({}, { $in: [["user_id", ids.slice(i, i + 100)]] })
+          await this.onlineRepository.find(
+            {},
+            { $in: [["user_id", ids.slice(i, i + 100)]] },
+            context,
+          )
         ).getEntities(),
       );
     }
@@ -148,7 +157,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
   }
 
   private broadcastOnline(event: WebsocketUserEvent, companies: Array<string>): void {
-    (companies || []).forEach(company => {
+    (companies || []).forEach(company => {
       this.pubsubService.broadcastOnline([
         {
           company_id: company,

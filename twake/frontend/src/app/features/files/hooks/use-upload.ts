@@ -25,13 +25,11 @@ export const useUpload = () => {
   const downloadOneFile = ({
     companyId,
     fileId,
-    fileName,
     messageFile,
     blob,
   }: {
     companyId: string;
     fileId: string;
-    fileName: string;
     messageFile: MessageFileType;
     blob?: boolean;
   }) => {

@@ -1,11 +1,12 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Api from 'app/features/global/framework/api-service';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 import AceModeList from './utils/ace_modelist.js';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
+import _ from 'lodash';
 
 import Globals from 'app/features/global/services/globals-twake-app-service';
 
@@ -466,7 +467,7 @@ class Drive extends Observable {
 
     var extension2type = {
       image: ['png', 'jpg', 'jpeg', 'gif', 'tiff', 'heic'],
-      sound: ['wav', 'aif', 'aiff', 'mp3', 'flac'],
+      audio: ['wav', 'aif', 'aiff', 'mp3', 'flac'],
       link: ['url'],
       document: ['doc', 'docx', 'odt', 'rtf', 'txt'],
       slides: ['ppt', 'pptx', 'odp'],
@@ -512,6 +513,9 @@ class Drive extends Observable {
         is_url_file: true,
         url: (current.hidden_data || {}).editor_url,
         name: (current.hidden_data || {}).editor_name || 'web link',
+        app: {
+          name: (current.hidden_data || {}).editor_name || 'web link',
+        },
       });
     }
 
@@ -529,7 +533,7 @@ class Drive extends Observable {
         ) >= 0
       ) {
         if (app.display?.twake?.files?.editor?.edition_url) {
-          editor_candidate.push(app);
+          editor_candidate.push({ app });
         }
         if (app.display?.twake?.files?.editor?.preview_url) {
           preview_candidate.push({
@@ -563,7 +567,7 @@ class Drive extends Observable {
           encodeURIComponent(this.getLink(current, null, true)),
       });
     }
-    if (this.getFileType(current) === 'sound') {
+    if (this.getFileType(current) === 'audio') {
       preview_candidate.push({
         url:
           '/public/viewer/AudioViewer/viewer.html?link=' +
@@ -588,7 +592,7 @@ class Drive extends Observable {
         ) >= 0
       ) {
         if (app.display?.twake?.files?.editor?.edition_url) {
-          editor_candidate.push(app);
+          editor_candidate.push({ app });
         }
         if (app.display?.twake?.files?.editor?.preview_url) {
           preview_candidate.push({
@@ -600,8 +604,8 @@ class Drive extends Observable {
     });
 
     return {
-      preview_candidate: preview_candidate,
-      editor_candidate: editor_candidate,
+      preview_candidate: _.uniqBy(preview_candidate, a => a.app?.id || a.url),
+      editor_candidate: _.uniqBy(editor_candidate, a => a.app?.id || a.url),
     };
   }
 

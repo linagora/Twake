@@ -1,9 +1,4 @@
-import {
-  FastifyInstance,
-  FastifyPluginCallback,
-  FastifyRequest,
-  RouteHandlerMethod,
-} from "fastify";
+import { FastifyInstance, FastifyRequest, RouteHandlerMethod } from "fastify";
 import { IncomingMessage, ServerResponse, Server } from "http";
 import { TwakeServiceProvider } from "../../framework";
 

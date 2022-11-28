@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Tabs from '@molecules/tabs';
 import Languages from 'app/features/global/services/languages-service';
-import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { useSearchChannels } from 'app/features/search/hooks/use-search-channels';
 import {
   useSearchMessagesFiles,
@@ -8,7 +8,6 @@ import {
 } from 'app/features/search/hooks/use-search-files-or-medias';
 import { useSearchMessages } from 'app/features/search/hooks/use-search-messages';
 import { SearchInputState, SearchTabsState } from 'app/features/search/state/search-input';
-import { useEffect } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import SearchResultsAll from './tabs/all';

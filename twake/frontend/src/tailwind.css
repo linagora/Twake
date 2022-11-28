@@ -19,6 +19,39 @@ input.ant-input {
     background: linear-gradient(263.04deg, #007AFF 2.08%, #C600F9 97.25%);
 }
 
+hr {
+    border-color: #AAA;
+    opacity: 0.2;
+}
+
 a {
     color: var(--primary) !important;
+}
+
+.ant-switch-checked {
+    background-color: #004dff !important;
+}
+
+@layer base {
+    ul,ol {
+        list-style: revert;
+        padding: revert;
+    }
+}
+
+.webkit-h-full, body {
+    height: 100vh;
+}
+
+.min-h-screen {
+    min-height: 100vh;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .webkit-h-full, body {
+        height: -webkit-fill-available;
+    }
+    .min-h-screen {
+        min-height: -webkit-fill-available;
+    }
 }

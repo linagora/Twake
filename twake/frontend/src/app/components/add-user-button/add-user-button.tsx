@@ -1,16 +1,24 @@
 import React from 'react';
-import Icon from 'components/icon/icon.js';
+import Icon from 'app/components/icon/icon.jsx';
 import Languages from 'app/features/global/services/languages-service';
 import './add-user-button.scss';
-import popupManager from 'app/deprecated/popupManager/popupManager.js';
-import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';
+import { useRecoilState } from 'recoil';
+import { invitationState } from 'app/features/invitation/state/invitation';
+import { useInvitationUsers } from 'app/features/invitation/hooks/use-invitation-users';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
-export default (props: any) => {
-  return (
+export default () => {
+  const [, setInvitationOpen] = useRecoilState(invitationState);
+  const { allowed_guests, allowed_members } = useInvitationUsers();
+  const { workspace } = useCurrentWorkspace();
+
+  return AccessRightsService.hasLevel(workspace?.id, 'moderator') &&
+    (allowed_guests > 0 || allowed_members > 0) ? (
     <div
       className="channel addUserButton"
       onClick={() => {
-        return popupManager.open(<AddUserByEmail standalone />);
+        setInvitationOpen(true);
       }}
     >
       <div className="icon">
@@ -26,5 +34,7 @@ export default (props: any) => {
         )}
       </div>
     </div>
+  ) : (
+    <></>
   );
 };

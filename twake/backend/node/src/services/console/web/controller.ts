@@ -5,6 +5,7 @@ import {
   ConsoleHookBody,
   ConsoleHookBodyContent,
   ConsoleHookCompany,
+  ConsoleHookCompanyDeletedContent,
   ConsoleHookPreferenceContent,
   ConsoleHookResponse,
   ConsoleHookUser,
@@ -192,7 +193,7 @@ export class ConsoleController {
           await this.planUpdated(request.body.content as ConsoleHookBodyContent);
           break;
         case "company_deleted":
-          await this.companyRemoved(request.body.content as ConsoleHookBodyContent);
+          await this.companyRemoved(request.body.content as ConsoleHookCompanyDeletedContent);
           break;
         case "company_created":
           await this.companyUpdated(request.body.content as ConsoleHookBodyContent);
@@ -240,14 +241,12 @@ export class ConsoleController {
     await gr.services.console.processPendingUser(user);
   }
 
-  private async companyRemoved(content: ConsoleHookBodyContent) {
-    assert(content.company, "content.company is missing");
-    assert(content.company.details, "content.company.details is missing");
-    assert(content.company.details.code, "content.company.details.code is missing");
+  private async companyRemoved(content: ConsoleHookCompanyDeletedContent) {
+    assert(content.companyCode, "content.companyCode is missing");
 
     await gr.services.console.getClient().removeCompany({
       identity_provider: "console",
-      identity_provider_id: content.company.details.code,
+      identity_provider_id: content.companyCode,
     });
   }
 

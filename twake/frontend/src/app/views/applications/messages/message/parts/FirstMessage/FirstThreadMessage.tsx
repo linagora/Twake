@@ -1,6 +1,5 @@
 import React from 'react';
 import Languages from 'app/features/global/services/languages-service';
-import Emojione from 'components/emojione/emojione';
 import './FirstMessage.scss';
 
 export default ({ noReplies }: { noReplies?: boolean }) => {
