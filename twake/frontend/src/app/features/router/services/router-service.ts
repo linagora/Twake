@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createBrowserHistory, History } from 'history';
 import { matchPath, match } from 'react-router';
 import short, { Translator } from 'short-uuid';

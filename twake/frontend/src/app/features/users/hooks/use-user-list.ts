@@ -66,6 +66,7 @@ const completeUserWithWorkspaces = (
 });
 
 // Access from hooks-components
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function useSetUserList(key: string) {
   const set = useRecoilCallback(({ set }) => (nextList: UserType[]) => {
     const currentList = currentUserList;
@@ -74,7 +75,8 @@ export function useSetUserList(key: string) {
       const nextListMerged = nextList.map(u =>
         cloneDeep(
           _.merge(
-            currentList.find(cu => cu.id === u.id),
+            {},
+            currentList.find(cu => cu.id === u.id) || {},
             u,
           ),
         ),

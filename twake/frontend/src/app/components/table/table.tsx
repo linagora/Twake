@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import Languages from 'app/features/global/services/languages-service';
-import Button from 'components/buttons/button.js';
-import InputIcon from 'components/inputs/input-icon.js';
+import Button from 'components/buttons/button.jsx';
+import InputIcon from 'components/inputs/input-icon.jsx';
 import './table.scss';
 
 type Props = {
@@ -58,10 +59,8 @@ export default class Table extends Component<Props, State> {
       return false;
     }
     if (this.searchRunning) {
-      //@ts-ignore
-      clearTimeout(this.searchRunningTimeout);
-      //@ts-ignore
-      this.searchRunningTimeout = setTimeout(() => {
+      clearTimeout(this.searchRunningTimeout as number);
+      this.searchRunningTimeout = window.setTimeout(() => {
         this.search();
       }, 1000);
       return;
@@ -98,7 +97,7 @@ export default class Table extends Component<Props, State> {
   }
 
   setPosition() {
-    if (this.props.onSearch && !this.props.onAdd) return 'flex-end';
+    if (!!this.props.onSearch && !this.props.onAdd) return 'flex-end';
     else return 'space-between';
   }
 
@@ -148,7 +147,7 @@ export default class Table extends Component<Props, State> {
               onClick={this.props.onAdd}
             />
           )}
-          {this.props.onSearch && (
+          {!!this.props.onSearch && (
             <div>
               <InputIcon
                 icon="search"

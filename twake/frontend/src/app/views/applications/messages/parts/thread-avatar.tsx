@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import 'moment-timezone';
 import User from 'app/features/users/services/current-user-service';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-import Icon from 'components/icon/icon.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
+import Icon from 'app/components/icon/icon.jsx';
 import './threads.scss';
 import { MessageContext } from '../message/message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';

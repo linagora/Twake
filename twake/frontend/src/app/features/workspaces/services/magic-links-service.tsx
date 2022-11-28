@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CompanyType } from 'app/features/companies/types/company';
 import Api from 'app/features/global/framework/api-service';
 
@@ -6,13 +10,15 @@ export type MagicLinksGeneratorResponse = {
 };
 
 export class MagicLinksGeneratorService {
+  private route: string;
+
   constructor(
     protected companyId: string,
     protected workspaceId: string,
     protected loading = (_arg: boolean) => {},
-  ) {}
-
-  private route = `/internal/services/workspaces/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/users/tokens`;
+  ) {
+    this.route = `/internal/services/workspaces/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/users/tokens`;
+  }
 
   getCurrentTokens(): Promise<MagicLinksGeneratorResponse[] | null> {
     this.loading(true);
@@ -31,7 +37,7 @@ export class MagicLinksGeneratorService {
   deleteToken(token: string): Promise<undefined> {
     this.loading(true);
     return Api.delete(`${this.route}/${token}`)
-      .then(a => undefined)
+      .then(() => undefined)
       .finally(() => this.loading(false));
   }
 }

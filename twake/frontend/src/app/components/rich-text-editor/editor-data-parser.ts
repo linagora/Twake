@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentState, EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { markdownToDraft, DraftToMarkdownOptions } from 'markdown-draft-js';
 import draftToMarkdown from './markdown/draft-to-markdown';

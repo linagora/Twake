@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default {
   adp: "audio/adpcm",
   aif: "audio/x-aiff",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import Emojione from 'components/emojione/emojione';
 import Button from 'components/buttons/button';

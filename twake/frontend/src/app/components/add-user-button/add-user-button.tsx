@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from 'components/icon/icon.js';
+import Icon from 'app/components/icon/icon.jsx';
 import Languages from 'app/features/global/services/languages-service';
 import './add-user-button.scss';
 import { useRecoilState } from 'recoil';

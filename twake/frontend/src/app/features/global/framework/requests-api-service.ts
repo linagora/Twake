@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import JWTStorage from 'app/features/auth/jwt-storage-service';
 import Logger from './logger-service';
 

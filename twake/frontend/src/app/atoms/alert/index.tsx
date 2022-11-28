@@ -1,6 +1,7 @@
 export const Alert = (props: {
   theme: 'success' | 'danger' | 'warning' | 'gray' | 'primary';
   title: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
   className?: string;
   bullets?: string[];

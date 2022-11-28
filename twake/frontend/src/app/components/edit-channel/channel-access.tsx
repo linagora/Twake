@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from 'app/atoms/button/button';
-import { BaseSmall, Info, Subtitle } from 'app/atoms/text';
+import { BaseSmall } from 'app/atoms/text';
 import Switch from 'app/components/inputs/switch';
 import { ChannelType } from 'app/features/channels/types/channel';
 import Languages from 'app/features/global/services/languages-service';

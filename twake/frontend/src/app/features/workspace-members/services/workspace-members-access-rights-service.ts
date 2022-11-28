@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Observable from '../../../deprecated/Observable/Observable';
 
 type Rights = 'guest' | 'member' | 'moderator' | 'admin';

@@ -1,5 +1,5 @@
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-import { useChannel, useIsChannelMember } from 'app/features/channels/hooks/use-channel';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
+import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
@@ -45,8 +45,6 @@ export default (props: Props) => {
 
   // Quoted message logic
   const quotedMessage = useQuotedMessage(message, context);
-
-  const { channel } = useChannel(channelId);
   const showQuotedMessage = quotedMessage && quotedMessage.thread_id;
   let authorName = '';
   const currentRouterWorkspace = useRouterWorkspace();
@@ -240,7 +238,9 @@ export const MessageBlockContent = ({
             (message?.links?.length || 0) > 0 &&
             message.links
               .filter(link => link && (link.title || link.description || link.img))
-              .map((preview, i) => <LinkPreview key={i} preview={preview} />)}
+              .map((preview, i) => (
+                <LinkPreview key={`${i}-${preview.url}-${message.thread_id}`} preview={preview} />
+              ))}
 
           {suffix}
         </>

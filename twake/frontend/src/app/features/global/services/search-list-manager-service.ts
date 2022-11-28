@@ -2,7 +2,7 @@ import { ChannelType } from 'app/features/channels/types/channel';
 import { UserType } from 'app/features/users/types/user';
 import Strings from 'app/features/global/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import RouterServices from 'app/features/router/services/router-service';
 import { getUserParts } from 'app/components/member/user-parts';
 import Observable from 'app/deprecated/Observable/Observable';
@@ -137,9 +137,6 @@ class SearchListManager extends Observable {
 
   private filterUsers({ users }: { users: UserType[] }) {
     const usersSearched: GenericChannel[] = users.map(user => {
-      const { name } = getUserParts({
-        usersIds: [user.id || ''],
-      });
 
       return (
         user && {

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
 import InitService, {
   ConsoleConfiguration,

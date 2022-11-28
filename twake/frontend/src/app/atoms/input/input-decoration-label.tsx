@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { Info } from '../text';
 
 interface InputLabelProps {

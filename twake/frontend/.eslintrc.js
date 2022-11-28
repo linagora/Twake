@@ -17,7 +17,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['react', 'react-hooks', 'eslint-plugin-jsx-a11y', '@typescript-eslint'],
-  ignorePatterns: ['**/deprecated/*.js'],
+  ignorePatterns: ['**/deprecated/*.js', '**/deprecated/*.jsx', '**/*.jsx'],
   rules: {
     'react/display-name': 'off',
     '@typescript-eslint/triple-slash-reference': 'off',

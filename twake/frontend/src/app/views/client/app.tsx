@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React, { Suspense } from 'react';
 
 import Client from 'app/views/client';

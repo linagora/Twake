@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Info } from 'app/atoms/text';
 import Languages from 'app/features/global/services/languages-service';
 import { XIcon } from '@atoms/icons-agnostic';

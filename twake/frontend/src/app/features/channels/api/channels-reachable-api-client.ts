@@ -2,7 +2,6 @@ import {
   ChannelsReachableGetResponse,
   ChannelsReachableInviteUserRequest,
   ChannelsReachableInviteUserResponse,
-  ChannelsReachableRemoveUserResponse,
 } from 'app/features/channels/types/channels-reachable-types';
 import Api from '../../global/framework/api-service';
 import { ChannelType } from 'app/features/channels/types/channel';

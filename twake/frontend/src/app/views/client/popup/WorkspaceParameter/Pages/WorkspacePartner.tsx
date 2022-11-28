@@ -3,7 +3,7 @@ import { Search } from 'react-feather';
 import { Row, Col, Button, Input, Typography, Divider } from 'antd';
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.jsx';
 import groupService from 'app/deprecated/workspaces/groups.js';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Switch from 'components/inputs/switch';

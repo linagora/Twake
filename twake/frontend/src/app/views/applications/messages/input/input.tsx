@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import { EditorState } from 'draft-js';
@@ -7,7 +8,7 @@ import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 import InputOptions from './parts/InputOptions';
 import EphemeralMessages from './parts/EphemeralMessages';
 import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
-import MenusManager from 'app/components/menus/menus-manager.js';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
 import PendingAttachments from './parts/PendingAttachments';
 import RichTextEditorStateService from 'app/components/rich-text-editor/editor-state-service';
 import { EditorView } from 'app/components/rich-text-editor';
@@ -30,7 +31,7 @@ import {
   getCompanyApplications,
 } from 'app/features/applications/state/company-applications';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 
 import './input.scss';
@@ -131,7 +132,6 @@ export default (props: Props) => {
         );
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const disable_app: any = {};
@@ -169,6 +169,7 @@ export default (props: Props) => {
       });
 
       if (!app) {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         AlertManager.alert(() => {}, {
           text: Languages.t('services.apps.messages.no_command_possible', [content, app_name]),
           title: Languages.t('services.apps.messages.no_app'),
@@ -286,7 +287,7 @@ export default (props: Props) => {
     );
   };
 
-  const onUpArrow = (e: any): void => {
+  const onUpArrow = (): void => {
     if (isEmpty()) {
       //TODO
     }
@@ -308,10 +309,6 @@ export default (props: Props) => {
       return;
     }
     setRichTextEditorState(newEditorState);
-  };
-
-  const isEditing = (): boolean => {
-    return !!(props.messageId && props.messageId === messageEditorService.currentEditorMessageId);
   };
 
   const setUploadZoneRef = (node: UploadZone): void =>
@@ -420,7 +417,7 @@ export default (props: Props) => {
               plugins={editorPlugins}
               editorState={editorState}
               onSubmit={() => onSend()}
-              onUpArrow={e => onUpArrow(e)}
+              onUpArrow={() => onUpArrow()}
               onFilePaste={onFilePaste}
               placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
             />

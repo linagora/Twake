@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 import Observable from 'app/deprecated/CollectionsV1/observable';
 import DateTime from 'app/features/global/utils/datetime';
 import i18n from 'i18next';
@@ -72,7 +74,7 @@ class LanguagesService extends Observable {
   t(route: string, parameters: any[] = [], fallback?: string) {
     let replace: any = {};
     try {
-      if (typeof parameters === 'object' && parameters.forEach) {
+      if (Array.isArray(parameters)) {
         (parameters || []).forEach((r, i) => {
           replace[`$${i + 1}`] = r;
         });

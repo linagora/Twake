@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import A from '@atoms/link';
 import * as Text from '@atoms/text';
 import { formatDate } from '@features/global/utils/format-date';
@@ -32,7 +33,7 @@ export default ({
 
   return (
     <div
-      className="block w-full flex items-start p-2 hover:bg-zinc-50 rounded-md cursor-pointer"
+      className="w-full flex items-start p-2 hover:bg-zinc-50 rounded-md cursor-pointer"
       onClick={() => {
         openMessage(message, currentWorkspaceId);
         setOpen(false);

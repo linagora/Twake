@@ -9,6 +9,7 @@ import User from 'app/features/users/services/current-user-service';
 import { gotoMessage } from 'src/utils/messages';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import QuotedContent from 'app/molecules/quoted-content';
+import { NodeMessage } from 'app/features/messages/types/message';
 
 type PropsType = {
   closable?: boolean;
@@ -34,7 +35,7 @@ export default ({ closable = true, onClose }: PropsType): React.ReactElement => 
   const author = useUser(message.user_id);
   const authorName = author ? User.getFullName(author) : 'Anonymous';
   const deleted = message.subtype === 'deleted';
-  const quotedContent = <QuotedContent message={message} />;
+  const quotedContent = <QuotedContent message={message as unknown as NodeMessage['quote_message']} />;
 
   return (
     <MessageQuote

@@ -1,7 +1,9 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
-export const Channel = (props: any) => {
-  return <span className='label suggestion'>
-    { props.children }
-  </span>;
+type PropsType = {
+  children: ReactNode
+}
+
+export const Channel = (props: PropsType) => {
+  return <span className="label suggestion">{props.children}</span>;
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 import { atom, selectorFamily, atomFamily } from 'recoil';
 

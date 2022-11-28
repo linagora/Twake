@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import PseudoMarkdownDictionary from 'components/twacode/pseudo-markdown-dictionary';

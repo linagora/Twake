@@ -30,7 +30,7 @@ const ChannelCategory: FC<PropsType> = (props): JSX.Element => {
           {props.addIcon || <Icon type="plus" />}
         </div>
       )}
-      {props.suffix && props.suffix}
+      {props.suffix}
     </div>
   );
 };

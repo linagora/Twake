@@ -2,21 +2,13 @@ import React from 'react';
 
 import { useOpenChannelModal } from 'app/components/edit-channel';
 import Icon from 'app/components/icon/icon';
-import { useUsersSearchModal } from 'app/features/channel-members-search/state/search-channel-member';
-import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
-import { useChannel } from 'app/features/channels/hooks/use-channel';
-import { useRefreshFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import { useRefreshPublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import { ChannelType } from 'app/features/channels/types/channel';
 import Languages from 'app/features/global/services/languages-service';
-import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import RouterServices from 'app/features/router/services/router-service';
-import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 import Menu from 'components/menus/menu';
 
 type PropsType = {
@@ -45,11 +37,6 @@ const FullMenu = (props: PropsType): JSX.Element => {
   const companyId = props.channel.company_id;
   const workspaceId = useRouterWorkspace();
   const { badges } = useChannelNotifications(props.channel.id || '');
-  const { user: currentUser } = useCurrentUser();
-  const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
-  const { refresh: refreshChannel } = useChannel(props.channel.id || '');
-  const channelMember = props.channel.user_member || {};
-  const { setOpen: setParticipantsOpen } = useUsersSearchModal();
   const { refresh: refreshChannels } = useRefreshPublicOrPrivateChannels();
   const openChannelModal = useOpenChannelModal();
 

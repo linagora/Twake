@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { ViewConfiguration } from '../../../features/router/services/app-view-service';
 import { useTab } from '../../../features/tabs/hooks/use-tabs';

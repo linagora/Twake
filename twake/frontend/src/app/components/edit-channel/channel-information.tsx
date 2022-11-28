@@ -39,7 +39,7 @@ const ChannelGroupSelector = (props: { group: string; onChange: (str: string) =>
         <Block
           key={g}
           className="my-3"
-          avatar={<Avatar noGradient title={g} size="sm" />}
+          avatar={<Avatar nogradient title={g} size="sm" />}
           title={_.capitalize(g)}
           suffix={
             <Checkbox
@@ -134,7 +134,7 @@ export const ChannelInformationForm = (props: {
         <div className="inline-block overflow-hidden m-0 p-0">
           <Avatar
             size="xl"
-            noGradient={!!(icon && (icon?.length || 0) < 20)}
+            nogradient={!!(icon && (icon?.length || 0) < 20)}
             icon={icon && (icon?.length || 0) < 20 ? <Emojione type={icon} /> : false}
             avatar={(icon?.length || 0) > 20 ? icon : ''}
             title={name}
@@ -200,7 +200,7 @@ export const ChannelInformationForm = (props: {
             placeholder={Languages.t(
               'scenes.app.channelsbar.channel_information.description.placeholder',
             )}
-            value={description}
+            defaultValue={description}
             onChange={e => setDescription(e.target.value)}
             multiline
           />

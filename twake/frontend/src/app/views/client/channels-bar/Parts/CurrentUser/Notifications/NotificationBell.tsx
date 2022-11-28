@@ -1,17 +1,14 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
 import moment from 'moment';
 
 import Menu from 'components/menus/menu';
-import Icon from 'app/components/icon/icon.js';
+import Icon from 'app/components/icon/icon.jsx';
 
 import Languages from 'app/features/global/services/languages-service';
 import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
 
-type PropsType = {
-  preferences: any;
-};
-
-export default (props: PropsType) => {
+export default () => {
   const status = NotificationPreferences.areNotificationsAllowed();
 
   const tomorrowMorning = moment().add(1, 'd').hour(9).minute(0).second(0);

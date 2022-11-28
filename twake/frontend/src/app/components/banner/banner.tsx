@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FC } from 'react';
 import { Col, Layout, Row } from 'antd';
 import './banner.scss';
@@ -13,6 +14,7 @@ type PropsType = {
   style?: CSSProperties;
   contentColumnStyle?: CSSProperties;
   className?: string;
+  children?: JSX.Element | JSX.Element[];
 };
 
 const Banner: FC<PropsType> = ({

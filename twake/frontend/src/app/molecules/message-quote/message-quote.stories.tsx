@@ -16,7 +16,7 @@ export const deleted = Template.bind({});
 
 Editing.args = {
   author: 'John Doe',
-  message: 'This is a message that is being quoted',
+  message: <>'This is a message that is being quoted'</>,
   closable: true,
   onClose: () => {
     console.log('Closed');
@@ -25,7 +25,7 @@ Editing.args = {
 
 Displaying.args = {
   author: 'Jane Dove',
-  message: 'This is a quoted message while displaying it',
+  message: <>'This is a quoted message while displaying it'</>,
   closable: false,
   onClose: () => {
     console.log('Closed');
@@ -34,16 +34,16 @@ Displaying.args = {
 
 longMessage.args = {
   author: 'John Doe',
-  message: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vestibulum magna at tincidunt luctus.
+  message: <>`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vestibulum magna at tincidunt luctus.
     Etiam dignissim nec lorem ut porta. Mauris convallis lacinia orci, ut posuere nisi viverra vitae.
     Cras lacinia nisi sit amet nunc commodo, ac accumsan eros egestas. Nullam ligula quam, vestibulum eget lorem nec,
     molestie vulputate purus. Curabitur vel arcu eget odio auctor pharetra. Morbi aliquam cursus lacus et vestibulum.
-    Phasellus sapien augue, vulputate id rutrum et, vehicula ac ante. Aenean volutpat purus ut ultricies porttitor.`,
+    Phasellus sapien augue, vulputate id rutrum et, vehicula ac ante. Aenean volutpat purus ut ultricies porttitor.`</>,
   closable: true,
 };
 
 deleted.args = {
   author: 'Samir pesiron',
-  message: 'some deteled message',
+  message: <>'some deteled message'</>,
   deleted: true,
 };

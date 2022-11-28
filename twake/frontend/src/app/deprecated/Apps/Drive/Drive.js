@@ -1,6 +1,6 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Api from 'app/features/global/framework/api-service';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 import AceModeList from './utils/ace_modelist.js';

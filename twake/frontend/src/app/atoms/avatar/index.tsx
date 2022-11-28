@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react';
 import _ from 'lodash';
 import CryptoJS from 'crypto-js';
@@ -10,7 +12,7 @@ interface AvatarProps extends React.InputHTMLAttributes<HTMLInputElement> {
   avatar?: string;
   icon?: JSX.Element | false;
   title?: string;
-  noGradient?: boolean;
+  nogradient?: boolean;
 }
 
 const sizes = { xl: 24, lg: 14, md: 11, sm: 9, xs: 6 };
@@ -45,7 +47,7 @@ export default function Avatar(props: AvatarProps) {
 
   className +=
     ' border border-gray flex items-center justify-center bg-center bg-cover ' +
-    (props.noGradient ? ' bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white ' : '');
+    (props.nogradient ? ' bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white ' : '');
 
   const spl_title = avatarTitle.split(' ');
 
@@ -56,9 +58,9 @@ export default function Avatar(props: AvatarProps) {
 
   const lettersClass =
     `font-medium bg-gray text-${fontSize}` +
-    (props.noGradient ? ' text-zinc-900 dark:text-white ' : ' text-white');
+    (props.nogradient ? ' text-zinc-900 dark:text-white ' : ' text-white');
 
-  const style = props.noGradient
+  const style = props.nogradient
     ? {}
     : { backgroundImage: `url('${getGradient(props.title || '')}')` };
 

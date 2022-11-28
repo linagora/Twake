@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from 'app/atoms/button/button';
 import { RemoveIcon } from 'app/atoms/icons-colored';
 import { Input } from 'app/atoms/input/input-text';

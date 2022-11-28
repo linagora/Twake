@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentStory } from '@storybook/react';
 import { Badge } from '.';
 import { PlusIcon, SearchIcon } from '@heroicons/react/solid';

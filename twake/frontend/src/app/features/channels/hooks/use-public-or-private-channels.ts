@@ -85,7 +85,7 @@ export function usePublicOrPrivateChannels(): {
 } {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [mineChannels, _setMineChannels] = useRecoilState(
+  const [mineChannels] = useRecoilState(
     MineChannelsState({ companyId, workspaceId }),
   );
 

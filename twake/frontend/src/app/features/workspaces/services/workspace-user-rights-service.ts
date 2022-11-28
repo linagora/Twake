@@ -1,4 +1,4 @@
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
 import AccessRightsService, {
   RightsOrNone,
 } from 'app/features/workspace-members/services/workspace-members-access-rights-service';

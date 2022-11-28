@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 import { v1 as uuid } from 'uuid';
 
 import { FileType, PendingFileType } from 'app/features/files/types/file';

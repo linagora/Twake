@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import FileUploadService from 'app/features/files/services/file-upload-service';
 import Observable from 'app/deprecated/CollectionsV1/observable';
 import LocalStorage from 'app/features/global/framework/local-storage-service';

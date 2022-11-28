@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import 'moment-timezone';
 import MessageInput from '../../input/input';
-import Button from 'components/buttons/button.js';
+import Button from 'components/buttons/button.jsx';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import Languages from 'app/features/global/services/languages-service';
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';

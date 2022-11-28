@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { Component } from 'react';
 
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Languages from 'app/features/global/services/languages-service';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.jsx';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import ChannelUI from 'app/views/client/channels-bar/Parts/Channel/Channel';
 import {
   useCompanyApplications,

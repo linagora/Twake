@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 export type StyleConfig = {
   /**
    * Draft.js style to apply

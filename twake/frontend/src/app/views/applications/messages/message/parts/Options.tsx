@@ -2,12 +2,12 @@ import React, { useContext } from 'react';
 import 'moment-timezone';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2, CornerDownLeft } from 'react-feather';
 
-import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
-import Menu from 'components/menus/menu.js';
-import MenusManager from 'app/components/menus/menus-manager.js';
+import EmojiPicker from 'components/emoji-picker/emoji-picker.jsx';
+import Menu from 'components/menus/menu.jsx';
+import MenusManager from 'app/components/menus/menus-manager.jsx';
 import Languages from 'app/features/global/services/languages-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.jsx';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import User from 'app/features/users/services/current-user-service';
 import RouterServices from 'app/features/router/services/router-service';

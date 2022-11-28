@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Block,
   BlockActions,
@@ -16,7 +17,7 @@ import {
   BlockImage,
   BlockInput,
   BlockSection,
-} from '../../../../../backend/node/src/services/messages/blocks-types';
+} from './types';
 
 export const formatData = (
   object: any,

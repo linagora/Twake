@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Col, Row, Typography } from 'antd';
 import classNames from 'classnames';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox } from 'app/atoms/input/input-checkbox';
 import { useChannelMemberCurrentUser } from 'app/features/channel-members-search/hooks/member-hook';
 import { ChannelType } from 'app/features/channels/types/channel';

@@ -15,7 +15,7 @@ import MessageContent from 'app/views/applications/messages/message/parts/Messag
 import React, { useContext, useEffect } from 'react';
 
 type PropsType = {
-  message: NodeMessage['quote_message'];
+  message: NodeMessage['quote_message']
 };
 
 export const useQuotedMessage = (
