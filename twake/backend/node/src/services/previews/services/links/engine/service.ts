@@ -3,7 +3,7 @@ import {
   LinkPreviewMessageQueueCallback,
   LinkPreviewMessageQueueRequest,
 } from "../../../types";
-import { logger, TwakeContext } from "../../../../../core/platform/framework";
+import { logger } from "../../../../../core/platform/framework";
 import gr from "../../../../global-resolver";
 import { MessageQueueHandler } from "../../../../../core/platform/services/message-queue/api";
 
@@ -22,7 +22,7 @@ export class LinkPreviewProcessor
     ack: true,
   };
 
-  init?(context?: TwakeContext): Promise<this> {
+  init?(): Promise<this> {
     throw new Error("Method not implemented.");
   }
 

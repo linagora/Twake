@@ -33,7 +33,7 @@ export class InternalToHooksProcessor implements MessageQueueHandler<MessageHook
     );
 
     //TODO Check application access rights (hooks)
-    const access = application.access;
+    const _access = application.access;
 
     // Check application still exists in the company
     if (

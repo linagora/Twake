@@ -30,7 +30,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
   command: "ls",
   describe: "command that allow you to list applications (unpublished only)",
 
-  handler: async argv => {
+  handler: async _argv => {
     const spinner = ora({ text: "Retrieving applications" }).start();
     const platform = await twake.run(services);
     await gr.doInit(platform);

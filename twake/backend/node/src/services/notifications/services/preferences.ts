@@ -33,7 +33,6 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
   async get(
     pk: UserNotificationPreferencesPrimaryKey,
     user?: User,
-    context?: ExecutionContext,
   ): Promise<UserNotificationPreferences> {
     user = user || (await gr.services.users.get({ id: pk.user_id }));
     const notificationPreferences = (user?.preferences?.notifications || []).find(n => {
@@ -102,8 +101,6 @@ export class NotificationPreferencesService implements TwakeServiceProvider, Ini
     workspace_id: string,
     company_id: string,
     user_id: string,
-    filter: Pick<UserNotificationPreferencesPrimaryKey, "user_id">,
-    context?: ExecutionContext,
   ): Promise<ListResult<UserNotificationPreferences>> {
     if (!workspace_id || !company_id || !user_id) {
       throw CrudException.badRequest("workspace_id, company_id and user_id are required");

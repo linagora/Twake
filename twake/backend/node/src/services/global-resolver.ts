@@ -177,9 +177,9 @@ class GlobalResolver {
       messages: {
         messages: await new ThreadMessagesService().init(platform),
         messagesFiles: await new MessagesFilesService().init(),
-        threads: await new ThreadsService().init(platform),
-        userBookmarks: await new UserBookmarksService().init(platform),
-        views: await new ViewsServiceImpl().init(platform),
+        threads: await new ThreadsService().init(),
+        userBookmarks: await new UserBookmarksService().init(),
+        views: await new ViewsServiceImpl().init(),
         engine: await new MessagesEngine().init(),
       },
       applications: {

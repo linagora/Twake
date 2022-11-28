@@ -11,14 +11,13 @@ export class PreviewProcessService implements TwakeServiceProvider, Initializabl
   name: "PreviewProcessService";
   version: "1";
 
-  async init() {
+  async init(): Promise<this> {
     return this;
   }
 
   async generateThumbnails(
     document: Pick<PreviewMessageQueueRequest["document"], "filename" | "mime" | "path">,
     options: PreviewMessageQueueRequest["output"],
-    deleteTmpFile: boolean,
   ): Promise<ThumbnailResult[]> {
     if (isFileType(document.mime, document.filename, officeExtensions)) {
       const pdfPath = await convertFromOffice(document.path, {
@@ -29,8 +28,7 @@ export class PreviewProcessService implements TwakeServiceProvider, Initializabl
         numberOfPages: options.pages,
       });
       await cleanFiles([pdfPath.output]);
-      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
-        .output;
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options)).output;
       await cleanFiles(thumbnailPath.output);
       return images;
     }
@@ -40,14 +38,13 @@ export class PreviewProcessService implements TwakeServiceProvider, Initializabl
         numberOfPages: options.pages,
       });
       await cleanFiles([document.path]);
-      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
-        .output;
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options)).output;
       await cleanFiles(thumbnailPath.output);
       return images;
     }
 
     if (isFileType(document.mime, document.filename, imageExtensions)) {
-      const images = (await thumbnailsFromImages([document.path], options, deleteTmpFile)).output;
+      const images = (await thumbnailsFromImages([document.path], options)).output;
       await cleanFiles([document.path]);
       return images;
     }

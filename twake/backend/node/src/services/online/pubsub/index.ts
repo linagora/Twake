@@ -1,5 +1,4 @@
 import { getLogger, Initializable, TwakeLogger } from "../../../core/platform/framework";
-import { MessageQueueServiceAPI } from "../../../core/platform/services/message-queue/api";
 import { UsersOnlineMessage } from "../api";
 import { ONLINE_TOPIC } from "../constants";
 import { UserOnlineProcessor } from "./processor";

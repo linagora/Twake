@@ -6,3 +6,5 @@ coverage/*
 **/*.d.ts
 # custom definition files
 /src/types/
+# tests
+test/*

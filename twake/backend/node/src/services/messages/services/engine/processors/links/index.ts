@@ -1,4 +1,4 @@
-import { logger, TwakeContext } from "../../../../../../core/platform/framework";
+import { logger } from "../../../../../../core/platform/framework";
 import { MessageQueueHandler } from "../../../../../../core/platform/services/message-queue/api";
 import { Message } from "../../../../entities/messages";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
@@ -24,7 +24,7 @@ export class MessageLinksPreviewFinishedProcessor
     ack: true,
   };
 
-  init?(context?: TwakeContext): Promise<this> {
+  init?(): Promise<this> {
     throw new Error("Method not implemented.");
   }
 

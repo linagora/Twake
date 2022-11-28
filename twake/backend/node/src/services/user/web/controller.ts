@@ -5,7 +5,7 @@ import {
   ListResult,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import { uniq, orderBy } from "lodash";
+import { uniq } from "lodash";
 
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import {
@@ -31,12 +31,11 @@ import {
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 import coalesce from "../../../utils/coalesce";
-import { getCompanyRooms, getPublicUserRoom, getUserRooms } from "../realtime";
+import { getCompanyRooms, getUserRooms } from "../realtime";
 import { formatCompany, getCompanyStats } from "../utils";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { UserChannel, UsersIncludedChannel } from "../../channels/entities";
-import { ChannelObject } from "../../channels/services/channel/types";
 
 export class UsersCrudController
   implements
@@ -49,7 +48,7 @@ export class UsersCrudController
 {
   async get(
     request: FastifyRequest<{ Params: UserParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<UserObject>> {
     const context = getExecutionContext(request);
 
@@ -149,7 +148,7 @@ export class UsersCrudController
 
   async getUserCompanies(
     request: FastifyRequest<{ Params: UserParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<CompanyObject>> {
     const context = getExecutionContext(request);
 
@@ -196,7 +195,7 @@ export class UsersCrudController
 
   async getCompany(
     request: FastifyRequest<{ Params: CompanyParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await gr.services.companies.getCompany({ id: request.params.id });
     const context = getExecutionContext(request);
@@ -231,7 +230,7 @@ export class UsersCrudController
 
   async registerUserDevice(
     request: FastifyRequest<{ Body: RegisterDeviceBody }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<RegisterDeviceParams>> {
     const resource = request.body.resource;
     if (resource.type !== "FCM") {
@@ -253,7 +252,7 @@ export class UsersCrudController
 
   async getRegisteredDevices(
     request: FastifyRequest<{ Params: UserParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<RegisterDeviceParams>> {
     const context = getExecutionContext(request);
 
@@ -284,7 +283,7 @@ export class UsersCrudController
 
   async recent(
     request: FastifyRequest<{ Params: CompanyParameters; Querystring: { limit: 100 } }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<UserObject>> {
     const context = getExecutionContext(request);
     const userId = context.user.id;

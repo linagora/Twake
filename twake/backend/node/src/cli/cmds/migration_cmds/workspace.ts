@@ -7,7 +7,6 @@ import { PhpWorkspace, TYPE as phpTYPE } from "./php-workspace/php-workspace-ent
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Workspace, { TYPE, getInstance } from "../../../services/workspaces/entities/workspace";
 import _ from "lodash";
-import { logger } from "../../../core/platform/framework";
 import gr from "../../../services/global-resolver";
 
 type Options = {

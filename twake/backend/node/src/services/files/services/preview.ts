@@ -14,7 +14,7 @@ export class PreviewFinishedProcessor
 {
   constructor(readonly service: FileServiceImpl, private repository: Repository<File>) {}
 
-  async init(context?: TwakeContext): Promise<this> {
+  async init(_context?: TwakeContext): Promise<this> {
     return this;
   }
 

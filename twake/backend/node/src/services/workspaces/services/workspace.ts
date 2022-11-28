@@ -10,7 +10,6 @@ import {
   Paginable,
   Pagination,
   SaveResult,
-  UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import WorkspaceUser, {
@@ -368,7 +367,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     await this.workspaceUserRepository.save(merge(workspaceUser, { role }), context);
   }
 
-  async checkWorkspaceHasOtherAdmin(workspaceUserPk: WorkspaceUserPrimaryKey): Promise<boolean> {
+  async checkWorkspaceHasOtherAdmin(_workspaceUserPk: WorkspaceUserPrimaryKey): Promise<boolean> {
     //TODO: not implemented, we should check there is still an admin in the workspace before removal.
     // Note: company admin and owner are always workspace admins.
     return true;
@@ -437,7 +436,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
   async processPendingUser(
     user: User,
     companyId?: string,
-    context?: ExecutionContext,
+    _context?: ExecutionContext,
   ): Promise<void> {
     let userCompanies = [];
     if (!companyId) {
@@ -606,12 +605,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
    * @param context
    * @returns if workspace name is already used in the company, this will return the exceptedName with the current duplicates number otherwise simply return the exceptedName
    */
-  private async getWorkspaceName(
-    exceptedName: string,
-    companyId: string,
-    workspaceId: string,
-    context?: ExecutionContext,
-  ) {
+  private async getWorkspaceName(exceptedName: string, companyId: string, workspaceId: string) {
     const workspacesList = await this.list(
       null,
       {},
@@ -672,7 +666,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
       context,
     );
     return {
-      token: this.encodeInviteToken(companyId, workspaceId, userId, token, context),
+      token: this.encodeInviteToken(companyId, workspaceId, userId, token),
     };
   }
 
@@ -701,7 +695,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
   ): Promise<WorkspaceInviteTokens> {
     let tokenInfo: InviteTokenObject;
     try {
-      tokenInfo = this.decodeInviteToken(encodedToken, context);
+      tokenInfo = this.decodeInviteToken(encodedToken);
     } catch (e) {}
 
     if (!tokenInfo) {
@@ -722,8 +716,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     workspaceId: string,
     userId: string,
     token: string,
-    context?: ExecutionContext,
-  ) {
+  ): string {
     // Change base64 characters to make them url safe
     token = token.replace(/\+/g, ".").replace(/\//g, "_").replace(/=/g, "-");
     const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${reduceUUID4(
@@ -732,10 +725,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     return encodedToken;
   }
 
-  public decodeInviteToken(
-    encodedToken: string,
-    context?: ExecutionContext,
-  ): InviteTokenObject | null {
+  public decodeInviteToken(encodedToken: string): InviteTokenObject | null {
     try {
       const split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
@@ -766,7 +756,7 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     userPk: UserPrimaryKey,
     companyId: string,
     context?: ExecutionContext,
-  ) {
+  ): Promise<void> {
     const workspaces = await this.getAllForCompany(companyId);
     for (const workspace of workspaces) {
       const companyUser = await gr.services.companies.getCompanyUser(

@@ -112,7 +112,7 @@ export class CompanyServiceImpl {
     return new SaveResult<Company>("company", company, OperationType.UPDATE);
   }
 
-  async createCompany(company: Company, context?: ExecutionContext): Promise<Company> {
+  async createCompany(company: Company): Promise<Company> {
     const companyToCreate: Company = getCompanyInstance({
       ...company,
       ...{
@@ -328,15 +328,11 @@ export class CompanyServiceImpl {
     return Promise.resolve(null);
   }
 
-  getUsersCount(companyId: string, context?: ExecutionContext): Promise<number> {
+  async getUsersCount(companyId: string): Promise<number> {
     return this.getCompany({ id: companyId }).then(a => a.memberCount);
   }
 
-  async getUserRole(
-    companyId: uuid,
-    userId: uuid,
-    context?: ExecutionContext,
-  ): Promise<CompanyUserRole> {
+  async getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole> {
     const companyUser = await this.getCompanyUser({ id: companyId }, { id: userId });
     if (!companyUser) {
       return "guest";
@@ -344,7 +340,7 @@ export class CompanyServiceImpl {
     return companyUser.role;
   }
 
-  async ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey, context?: ExecutionContext) {
+  async ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey): Promise<void> {
     const user = await gr.services.users.get(userPk);
     if (user.deleted) {
       const companies = await this.getAllForUser(user.id);

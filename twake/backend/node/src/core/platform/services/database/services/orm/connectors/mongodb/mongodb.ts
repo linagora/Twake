@@ -75,7 +75,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
 
     return true;
   }
-  async upsert(entities: any[], options: UpsertOptions = {}): Promise<boolean[]> {
+  async upsert(entities: any[], _options: UpsertOptions = {}): Promise<boolean[]> {
     return new Promise(async resolve => {
       const promises: Promise<mongo.UpdateResult>[] = [];
 

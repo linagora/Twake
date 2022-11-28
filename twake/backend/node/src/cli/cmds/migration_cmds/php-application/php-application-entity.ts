@@ -21,7 +21,7 @@ export default class PhpApplication {
 
   @Type(() => String)
   @Column("app_group_name", "string")
-  app_group_name: string = "";
+  app_group_name = "";
 
   @Column("name", "encoded_string")
   depreciated_name: string;

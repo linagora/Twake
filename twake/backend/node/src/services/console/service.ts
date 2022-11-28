@@ -58,7 +58,7 @@ export class ConsoleServiceImpl implements TwakeServiceProvider {
     link: boolean = true,
     client: string,
     secret: string,
-    context?: ExecutionContext,
+    _context?: ExecutionContext,
   ): MergeProgress {
     return new MergeProcess(this.services.database, dryRun, console, link, {
       type: "remote",

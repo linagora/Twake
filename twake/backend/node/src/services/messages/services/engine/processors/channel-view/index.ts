@@ -1,4 +1,4 @@
-import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
+import { MessageLocalEvent } from "../../../../types";
 import { ParticipantObject, Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { getInstance, MessageChannelRef } from "../../../../entities/message-channel-refs";
@@ -6,19 +6,8 @@ import {
   getInstance as getInstanceReversed,
   MessageChannelRefReversed,
 } from "../../../../entities/message-channel-refs-reversed";
-import { localEventBus } from "../../../../../../core/platform/framework/event-bus";
-import {
-  RealtimeEntityActionType,
-  RealtimeLocalBusEvent,
-  ResourcePath,
-} from "../../../../../../core/platform/services/realtime/types";
-import { Message } from "../../../../entities/messages";
-import {
-  CreateResult,
-  ExecutionContext,
-  UpdateResult,
-} from "../../../../../../core/platform/framework/api/crud-service";
-import { getThreadMessagePath } from "../../../../web/realtime";
+
+import { ExecutionContext } from "../../../../../../core/platform/framework/api/crud-service";
 import gr from "../../../../../global-resolver";
 import { publishMessageInRealtime } from "../../../utils";
 

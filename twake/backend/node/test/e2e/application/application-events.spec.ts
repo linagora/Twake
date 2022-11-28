@@ -13,7 +13,6 @@ let signingSecret = "";
 describe("Application events", () => {
   const url = "/internal/services/applications/v1";
   let platform: TestPlatform;
-  let testDbService: TestDbService;
   let api: Api;
   let appId: string;
 
@@ -22,7 +21,7 @@ describe("Application events", () => {
 
     await platform.database.getConnector().drop();
 
-    testDbService = await TestDbService.getInstance(platform, true);
+    await TestDbService.getInstance(platform, true);
     api = new Api(platform);
 
     postPayload.company_id = platform.workspace.company_id;

@@ -6,7 +6,6 @@ import { logger } from "../../../../../core/platform/framework/logger";
 export async function generatePreview(
   inputPaths: string[],
   options: PreviewMessageQueueRequest["output"],
-  deleteInputFile: boolean,
 ): Promise<{
   output: ThumbnailResult[];
   done: boolean;

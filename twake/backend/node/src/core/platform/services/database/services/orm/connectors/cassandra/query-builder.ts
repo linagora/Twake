@@ -1,12 +1,11 @@
-import _ from "lodash";
 import { FindOptions } from "../../repository/repository";
 import { ObjectType } from "../../types";
-import { getEntityDefinition, secureOperators, unwrapPrimarykey } from "../../utils";
+import { getEntityDefinition, secureOperators } from "../../utils";
 import { transformValueToDbString } from "./typeTransforms";
 
 export function buildSelectQuery<Entity>(
   entityType: ObjectType<Entity>,
-  filters: any,
+  filters: Record<string, unknown>,
   findOptions: FindOptions,
   options: {
     secret?: string;
@@ -18,7 +17,6 @@ export function buildSelectQuery<Entity>(
 ): string {
   const instance = new (entityType as any)();
   const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
-  const primaryKey = unwrapPrimarykey(entityDefinition);
 
   const where = Object.keys(filters)
     .map(key => {

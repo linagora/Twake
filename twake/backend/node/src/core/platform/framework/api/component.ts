@@ -1,5 +1,4 @@
-import { combineLatest, BehaviorSubject } from "rxjs";
-import { filter } from "rxjs/operators";
+import { BehaviorSubject } from "rxjs";
 import { TwakeService } from "./service";
 import { TwakeServiceProvider } from "./service-provider";
 import { ServiceDefinition } from "./service-definition";

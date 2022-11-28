@@ -1,9 +1,5 @@
 import _, { uniqBy } from "lodash";
-import {
-  Initializable,
-  TwakeContext,
-  TwakeServiceProvider,
-} from "../../../core/platform/framework";
+import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
 import {
   ExecutionContext,
   ListResult,
@@ -44,7 +40,7 @@ export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
   searchRepository: SearchRepository<Message>;
   searchFilesRepository: SearchRepository<MessageFile>;
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     this.searchRepository = gr.platformServices.search.getRepository<Message>("messages", Message);
     this.searchFilesRepository = gr.platformServices.search.getRepository<MessageFile>(
       "message_files",

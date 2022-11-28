@@ -76,7 +76,7 @@ export class ApplicationController
       Params: { application_id: string };
       Body: { resource: Application };
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
@@ -199,7 +199,7 @@ export class ApplicationController
       Body: ApplicationEventRequestBody;
       Params: { application_id: string };
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceCreateResponse<any>> {
     const context = getExecutionContext(request);
 

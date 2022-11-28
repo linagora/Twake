@@ -1,7 +1,6 @@
 import { fromPath } from "pdf2pic";
 import { mkdirSync } from "fs";
 import { cleanFiles, getTmpFile } from "../../../utils";
-import fsys from "fs";
 
 export async function convertFromPdf(
   inputPath: string,

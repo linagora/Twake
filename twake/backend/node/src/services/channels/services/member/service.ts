@@ -32,7 +32,7 @@ import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
-import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
+import { ChannelListOptions } from "../../web/types";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { localEventBus } from "../../../../core/platform/framework/event-bus";

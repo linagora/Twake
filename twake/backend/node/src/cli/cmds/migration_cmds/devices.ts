@@ -5,7 +5,7 @@ import { TwakePlatform } from "../../../core/platform/platform";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PhpDevice, TYPE as phpTYPE } from "./php-device/php-device-entity";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
-import Device, { TYPE, getInstance } from "../../../services/user/entities/device";
+import Device, { TYPE } from "../../../services/user/entities/device";
 import User, { TYPE as userTYPE } from "../../../services/user/entities/user";
 import _ from "lodash";
 import gr from "../../../services/global-resolver";

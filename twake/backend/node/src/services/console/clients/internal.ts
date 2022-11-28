@@ -37,14 +37,14 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
   }
 
   async updateUserRole(
-    company: ConsoleCompany,
-    user: UpdateConsoleUserRole,
+    _company: ConsoleCompany,
+    _user: UpdateConsoleUserRole,
   ): Promise<UpdatedConsoleUserRole> {
     logger.info("Internal: updateUserRole");
     throw Error("ConsoleInternalClient.updateUserRole is not implemented");
   }
 
-  async createCompany(company: CreateConsoleCompany): Promise<CreatedConsoleCompany> {
+  async createCompany(_company: CreateConsoleCompany): Promise<CreatedConsoleCompany> {
     logger.info("Internal: ");
     throw Error("ConsoleInternalClient.createCompany is not implemented");
   }
@@ -65,42 +65,42 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     return createdUser;
   }
 
-  updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company> {
+  updateLocalCompanyFromConsole(_companyDTO: ConsoleHookCompany): Promise<Company> {
     logger.info("Internal: updateLocalCompanyFromConsole");
     throw new Error("Method should not be implemented.");
   }
 
-  updateLocalUserFromConsole(code: string): Promise<User> {
+  updateLocalUserFromConsole(_code: string): Promise<User> {
     logger.info("Internal: updateLocalUserFromConsole");
     throw new Error("Method should not be implemented.");
   }
 
-  removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
+  removeCompany(_companySearchKey: CompanySearchKey): Promise<void> {
     logger.info("Internal: removeCompany");
     throw new Error("Method should not be implemented.");
   }
 
-  removeCompanyUser(consoleUserId: string, company: Company): Promise<void> {
+  removeCompanyUser(_consoleUserId: string, _company: Company): Promise<void> {
     logger.info("Internal: removeCompanyUser");
     throw new Error("Method should not be implemented.");
   }
 
-  removeUser(consoleUserId: string): Promise<void> {
+  removeUser(_consoleUserId: string): Promise<void> {
     logger.info("Internal: removeUser");
     throw new Error("Method should not be implemented.");
   }
 
-  fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
+  fetchCompanyInfo(_consoleCompanyCode: string): Promise<ConsoleHookCompany> {
     logger.info("Internal: fetchCompanyInfo");
     throw new Error("Method should not be implemented.");
   }
 
-  getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
+  getUserByAccessToken(_accessToken: string): Promise<ConsoleHookUser> {
     logger.info("Internal: getUserByAccessToken");
     throw new Error("Method should not be implemented.");
   }
 
-  resendVerificationEmail(accessToken: string): Promise<void> {
+  resendVerificationEmail(_accessToken: string): Promise<void> {
     logger.info("Internal: resendVerificationEmail");
     throw new Error("Method should not be implemented.");
   }

@@ -18,7 +18,6 @@ export class NotificationPreferencesController {
       ALL,
       ALL,
       request.currentUser.id,
-      { ...request.query },
     );
 
     let resources = list.getEntities();

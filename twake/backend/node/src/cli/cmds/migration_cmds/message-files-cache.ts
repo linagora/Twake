@@ -15,7 +15,7 @@ import uuid from "node-uuid";
 import { MessageFile } from "../../../services/messages/entities/message-files";
 import { ThreadExecutionContext } from "../../../services/messages/types";
 
-type Options = {};
+type Options = Record<string, unknown>;
 
 class MessageFilesCacheMigrator {
   database: DatabaseServiceAPI;
@@ -26,7 +26,8 @@ class MessageFilesCacheMigrator {
     this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
   }
 
-  public async run(options: Options = {}, context?: ExecutionContext): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async run(_options: Options = {}, context?: ExecutionContext): Promise<void> {
     this.repository = await gr.database.getRepository<MessageFileRef>(
       "message_file_refs",
       MessageFileRef,
@@ -173,8 +174,8 @@ const command: yargs.CommandModule<unknown, unknown> = {
   command: "message-files-cache",
   describe: "command that allow you to fix cache for each message-file refs",
   builder: {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handler: async argv => {
+
+  handler: async () => {
     const spinner = ora({ text: "Migrating messages - " }).start();
     const platform = await twake.run(services);
     await gr.doInit(platform);

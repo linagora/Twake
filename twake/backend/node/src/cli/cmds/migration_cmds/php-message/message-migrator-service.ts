@@ -38,12 +38,12 @@ class MessageMigrator {
   private migratedMessages = 0;
   private options: Options = {};
 
-  constructor(readonly platform: TwakePlatform) {
+  constructor(readonly _platform: TwakePlatform) {
     this.phpMessageService = new PhpMessagesService();
   }
 
   public async run(options: Options = {}): Promise<void> {
-    await gr.doInit(this.platform);
+    await gr.doInit(this._platform);
     this.options = options;
 
     await this.phpMessageService.init();
@@ -101,7 +101,7 @@ class MessageMigrator {
    *  Set all direct messages in company and set them to channelPhpMessages
    */
   private async migrateCompanyDirectMessages(company: Company) {
-    await gr.doInit(this.platform);
+    await gr.doInit(this._platform);
     let pageDirectChannels: Pagination = { limitStr: "100" };
     // For each directChannels find messages
     do {
@@ -133,7 +133,7 @@ class MessageMigrator {
    * Set all messages in company and set them to channelPhpMessages
    */
   private async migrateCompanyChannelsMessages(company: Company) {
-    await gr.doInit(this.platform);
+    await gr.doInit(this._platform);
 
     // Get all workspaces in company
     const workspacesInCompany = (
@@ -228,7 +228,7 @@ class MessageMigrator {
     if (!message.id) {
       return;
     }
-    await gr.doInit(this.platform);
+    await gr.doInit(this._platform);
     //Create thread first if not exists
     const threadId = message.parent_message_id || message.id;
 
@@ -264,7 +264,7 @@ class MessageMigrator {
   }
 
   private async migrateChannelsMessagesBackToPhp(company: Company, channel: MigratedChannel) {
-    await gr.doInit(this.platform);
+    await gr.doInit(this._platform);
     const channelRefRepository = await gr.database.getRepository(
       "message_channel_refs",
       MessageChannelRef,
@@ -505,7 +505,7 @@ class MessageMigrator {
    * Set override message Object
    * @param message PhpMessage
    */
-  private setMessageOverrideObject(message: PhpMessage): MessageOverride {
+  private setMessageOverrideObject(_message: PhpMessage): MessageOverride {
     return null;
   }
 

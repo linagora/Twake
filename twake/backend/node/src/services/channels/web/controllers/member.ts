@@ -51,7 +51,7 @@ export class ChannelMemberCrudController
 
   async get(
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelMember>> {
     if (!isCurrentUser(request.params.member_id, request.currentUser)) {
       throw CrudException.badRequest("User does not have enough rights to get member");

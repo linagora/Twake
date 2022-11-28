@@ -36,7 +36,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
     companyId = platform.workspace.company_id;
 
-    authServiceApi = await platform.platform.getProvider<AuthService>("auth");
+    await platform.platform.getProvider<AuthService>("auth");
     testDbService = new TestDbService(platform);
     await resetDatabase();
   };

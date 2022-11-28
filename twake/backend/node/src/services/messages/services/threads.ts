@@ -3,15 +3,9 @@ import {
   ExecutionContext,
   ListResult,
   OperationType,
-  Paginable,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import {
-  Initializable,
-  logger,
-  TwakeContext,
-  TwakeServiceProvider,
-} from "../../../core/platform/framework";
+import { Initializable, logger, TwakeServiceProvider } from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { ParticipantObject, Thread } from "../entities/threads";
 import { CompanyExecutionContext, ThreadExecutionContext } from "../types";
@@ -25,7 +19,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
   name: "ThreadsService";
   repository: Repository<Thread>;
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     this.repository = await gr.database.getRepository<Thread>("threads", Thread);
     return this;
   }
@@ -257,12 +251,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
     }
 
     //Check user is in one of the participant channels
-    for (const channel of thread.participants.filter(p => p.type === "channel")) {
-      if (true) {
-        //TODO get the channel_member from channel micro_service
-        return true;
-      }
-    }
+    //TODO: get the channel_member from channel micro_service
 
     return false;
   }
@@ -293,11 +282,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
     return new DeleteResult("thread", thread, context.user.server_request && !!thread);
   }
 
-  list<ListOptions>(
-    pagination: Paginable,
-    options?: ListOptions,
-    context?: ExecutionContext,
-  ): Promise<ListResult<Thread>> {
+  list(): Promise<ListResult<Thread>> {
     throw new Error("CRUD method not used.");
   }
 }

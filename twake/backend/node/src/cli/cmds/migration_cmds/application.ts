@@ -7,11 +7,8 @@ import PhpApplication, {
   DepreciatedDisplayConfiguration,
   TYPE as phpTYPE,
 } from "./php-application/php-application-entity";
-import { ExecutionContext, Pagination } from "../../../core/platform/framework/api/crud-service";
-import Application, {
-  ApplicationPublication,
-  TYPE,
-} from "../../../services/applications/entities/application";
+import { Pagination } from "../../../core/platform/framework/api/crud-service";
+import Application, { TYPE } from "../../../services/applications/entities/application";
 import gr from "../../../services/global-resolver";
 
 type Options = {

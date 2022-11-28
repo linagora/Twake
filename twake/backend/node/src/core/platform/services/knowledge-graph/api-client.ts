@@ -1,13 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 
-import {
-  KnowledgeGraphCreateBodyRequest,
-  KnowledgeGraphCreateCompanyObjectData,
-  KnowledgeGraphCreateWorkspaceObjectData,
-  KnowledgeGraphCreateUserObjectData,
-  KnowledgeGraphCreateChannelObjectData,
-  KnowledgeGraphCreateMessageObjectData,
-} from "./types";
+import { KnowledgeGraphCreateBodyRequest, KnowledgeGraphCreateMessageObjectData } from "./types";
 
 import Workspace from "../../../../services/workspaces/entities/workspace";
 import Company from "../../../../services/user/entities/company";

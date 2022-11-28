@@ -6,7 +6,7 @@ export default (
   options: FastifyRegisterOptions<{
     prefix: string;
   }>,
-) => {
+): void => {
   fastify.log.debug("Configuring /internal/services/previews/v1 routes");
   fastify.register(routes, options);
 };

@@ -1,13 +1,14 @@
-export function compareTimeuuid(a?: string, b?: string) {
+export function compareTimeuuid(a?: string, b?: string): number {
   return timeuuidToDate(a || "") - timeuuidToDate(b || "");
 }
 
-export function timeuuidToDate(time_str: string) {
+export function timeuuidToDate(time_str: string): number {
   if (!time_str) {
     return 0;
   }
-  var uuid_arr = time_str.split("-"),
-    // eslint-disable-next-line no-redeclare
-    time_str = [uuid_arr[2].substring(1), uuid_arr[1], uuid_arr[0]].join("");
-  return parseInt(time_str, 16);
+
+  const uuid_arr = time_str.split("-");
+  const time_string = [uuid_arr[2].substring(1), uuid_arr[1], uuid_arr[0]].join("");
+
+  return parseInt(time_string, 16);
 }

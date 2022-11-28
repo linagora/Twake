@@ -10,7 +10,6 @@ import {
   Initializable,
   RealtimeDeleted,
   RealtimeSaved,
-  TwakeContext,
   TwakeServiceProvider,
 } from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
@@ -24,7 +23,7 @@ export class UserBookmarksService implements TwakeServiceProvider, Initializable
   version: "1";
   repository: Repository<UserMessageBookmark>;
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     this.repository = await gr.database.getRepository<UserMessageBookmark>(
       "user_message_bookmarks",
       UserMessageBookmark,

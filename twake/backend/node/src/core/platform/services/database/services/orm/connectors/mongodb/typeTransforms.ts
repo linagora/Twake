@@ -1,6 +1,6 @@
 import { ColumnOptions, ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../../../../../../crypto";
-import _, { isNull } from "lodash";
+import { isNull } from "lodash";
 import { fromMongoDbOrderable, toMongoDbOrderable } from "../../utils";
 
 type TransformOptions = {

@@ -13,7 +13,6 @@ import {
 } from "../../types";
 import gr from "../../../global-resolver";
 import { CompanyExecutionContext } from "../../../applications/web/types";
-import { PublicFile } from "../../../files/entities/file";
 import searchFiles from "./views/search-files";
 import recentFiles from "./views/recent-files";
 
@@ -129,7 +128,7 @@ export class ViewsController {
         company_id: string;
       };
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<Message>> {
     const context = getCompanyExecutionContext(request);
     const messages = await gr.services.messages.messages.inbox(

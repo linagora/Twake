@@ -129,7 +129,7 @@ export class WorkspaceUsersCrudController
       Params: WorkspaceUsersBaseRequest;
       Querystring: { search?: string; page_token?: string; limit?: string };
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUserObject>> {
     const context = getExecutionContext(request);
     let nextPageToken: string | null = null;
@@ -241,7 +241,7 @@ export class WorkspaceUsersCrudController
 
   async get(
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceUserObject>> {
     const context = getExecutionContext(request);
 
@@ -384,7 +384,7 @@ export class WorkspaceUsersCrudController
       Body: WorkspaceUsersInvitationRequestBody;
       Params: WorkspaceUsersRequest;
     }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<WorkspaceUserInvitationResponse> {
     const context = getExecutionContext(request);
 
@@ -538,7 +538,7 @@ export class WorkspaceUsersCrudController
 
   async deletePending(
     request: FastifyRequest<{ Params: WorkspacePendingUserRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
       await gr.services.workspaces.removePendingUser({
@@ -557,7 +557,7 @@ export class WorkspaceUsersCrudController
 
   async listPending(
     request: FastifyRequest<{ Params: WorkspacePendingUserRequest }>,
-    reply: FastifyReply,
+    _reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUsersInvitationItem>> {
     const resources = await gr.services.workspaces.getPendingUsers({
       workspace_id: request.params.workspace_id,

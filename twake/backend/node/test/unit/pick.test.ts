@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import * as pickUtils from "../../src/utils/pick";
 
 describe("The pick utils", () => {

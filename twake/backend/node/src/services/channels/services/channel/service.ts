@@ -303,7 +303,7 @@ export class ChannelServiceImpl {
     return saveResult;
   }
 
-  async get(pk: ChannelPrimaryKey, context?: ExecutionContext): Promise<ChannelObject> {
+  async get(pk: ChannelPrimaryKey, _context?: ExecutionContext): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
     let channel = await this.channelRepository.findOne(primaryKey);
     if (!channel) {
@@ -698,7 +698,7 @@ export class ChannelServiceImpl {
     context: ExecutionContext,
   ): Promise<boolean> {
     const now = Date.now();
-    let channel = await this.get(pk, context);
+    const channel = await this.get(pk, context);
 
     if (!channel) {
       throw CrudException.notFound("Channel not found");

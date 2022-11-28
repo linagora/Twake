@@ -1,4 +1,4 @@
-import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
+import { MessageLocalEvent } from "../../../../types";
 import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import {
@@ -9,19 +9,8 @@ import {
   getInstance as getInboxThreadInstance,
   MessageUserInboxRefReversed,
 } from "../../../../entities/message-user-inbox-refs-reversed";
-import { localEventBus } from "../../../../../../core/platform/framework/event-bus";
-import {
-  RealtimeEntityActionType,
-  RealtimeLocalBusEvent,
-  ResourcePath,
-} from "../../../../../../core/platform/services/realtime/types";
-import { getThreadMessagePath } from "../../../../web/realtime";
-import {
-  CreateResult,
-  ExecutionContext,
-  UpdateResult,
-} from "../../../../../../core/platform/framework/api/crud-service";
-import { Message } from "../../../../entities/messages";
+
+import { ExecutionContext } from "../../../../../../core/platform/framework/api/crud-service";
 import gr from "../../../../../global-resolver";
 import { publishMessageInRealtime } from "../../../utils";
 
