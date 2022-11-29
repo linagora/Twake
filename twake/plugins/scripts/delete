@@ -1,0 +1,3 @@
+#!/bin/bash
+
+node /usr/src/app/helpers/delete.js $1

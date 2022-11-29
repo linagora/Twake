@@ -8,8 +8,27 @@ services:
       - ./docker-data/mongo:/data/db
     ports:
       - 27017:27017
+    networks:
+      - twake_network
+
+  plugins:
+    container_name: plugins
+    image: twaketech/twake-plugins
+    privileged: true
+    volumes:
+      - ./plugins/plugins:/usr/src/app/plugins
+      - ./plugins/plugins.json:/usr/src/app/plugins.json
+    build: 
+      context: .
+      dockerfile: ./docker/twake-plugins/Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - twake_network
+
   node:
     image: twaketech/twake-node
+    container_name: node
     ports:
       - 4000:3000
       - 8000:3000
@@ -30,3 +49,14 @@ services:
       - mongo
     links:
       - mongo
+    networks:
+      - twake_network
+
+networks:
+  twake_network:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.21.0.0/16
+         gateway: 172.21.0.1
+         

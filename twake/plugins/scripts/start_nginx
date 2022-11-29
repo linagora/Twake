@@ -1,0 +1,12 @@
+#!/bin/bash
+
+docker network create \
+  --driver=bridge \
+  --subnet=172.64.0.0/16 \
+  --ip-range=172.64.0.0/24 \
+  --gateway=172.64.0.1 \
+  dind-net
+
+
+node /usr/src/app/helpers/start_nginx.js
+

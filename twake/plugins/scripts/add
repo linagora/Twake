@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+GITURL=$1
+FOLDERNAME=${GITURL##*-}
+ID=$2
+SECRET=$3
+VENV=$4
+
+
+
+docker network create \
+  --driver=bridge \
+  --subnet=172.64.0.0/16 \
+  --ip-range=172.64.0.0/24 \
+  --gateway=172.64.0.1 \
+  dind-net
+
+
+node /usr/src/app/helpers/add.js $1 ${FOLDERNAME} ${ID} ${SECRET} "${VENV}"
+
+
+
+
+
+
