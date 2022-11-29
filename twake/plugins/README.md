@@ -1,4 +1,4 @@
-# PluginsServer
+# PluginsServer - This module is WIP and not ready for production ⚠️
 
 A simple to use docker image for Twake plugins. This image use docker in docker to permit to deploy plugin easily and quickly everywhere. Docker in Docker is useful but is not ready for production environment because you need to use the root container with privileged. Furthermore, with Dockerception 127.0.0.1 is not home so this is a little schema to help understanding how this container work with Twake.
 ![Alt text](twake/plugins/HowItWorks.png "How it works !")
