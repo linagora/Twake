@@ -166,26 +166,6 @@ export class ChannelServiceImpl {
         throw CrudException.badRequest("Current user can not update requested fields");
       }
 
-      if (channelToUpdate.icon && channelToUpdate.icon.startsWith("data:")) {
-        const logoInternalPath = `/channels/${channelToUpdate.id}/thumbnail.jpg`;
-        const logoPublicPath = `/internal/services/channels/v1/companies/${
-          channelToUpdate.company_id
-        }/workspaces/${channelToUpdate.workspace_id}/channels/${
-          channelToUpdate.id
-        }/thumbnail?t=${new Date().getTime()}`;
-
-        const image = await sharp(Buffer.from(channel.icon.split(",").pop(), "base64"))
-          .resize(250, 250)
-          .toBuffer();
-
-        const s = new Readable();
-        s.push(image);
-        s.push(null);
-        await gr.platformServices.storage.write(logoInternalPath, s);
-
-        channelToUpdate.icon = logoPublicPath;
-      }
-
       channelToSave = cloneDeep(channelToUpdate);
 
       updatableFields.forEach(field => {
@@ -259,6 +239,26 @@ export class ChannelServiceImpl {
 
       channelToSave = channel;
       channelToSave.owner = context.user.id;
+    }
+
+    if (channelToSave.icon && channelToSave.icon.startsWith("data:")) {
+      const logoInternalPath = `/channels/${channelToSave.id}/thumbnail.jpg`;
+      const logoPublicPath = `/internal/services/channels/v1/companies/${
+        channelToSave.company_id
+      }/workspaces/${channelToSave.workspace_id}/channels/${
+        channelToSave.id
+      }/thumbnail?t=${new Date().getTime()}`;
+
+      const image = await sharp(Buffer.from(channel.icon.split(",").pop(), "base64"))
+        .resize(250, 250)
+        .toBuffer();
+
+      const s = new Readable();
+      s.push(image);
+      s.push(null);
+      await gr.platformServices.storage.write(logoInternalPath, s);
+
+      channelToSave.icon = logoPublicPath;
     }
 
     const channelActivity = await this.activityRepository.findOne(
