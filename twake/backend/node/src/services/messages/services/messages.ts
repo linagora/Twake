@@ -662,9 +662,9 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       { resource: message, created: options.created, context },
       {
         type: "channel",
-        id: message.cache.channel_id,
-        company_id: message.cache.company_id,
-        workspace_id: message.cache.workspace_id,
+        id: message.cache?.channel_id || context?.channel?.id,
+        company_id: message.cache?.company_id || context?.company?.id,
+        workspace_id: message.cache?.workspace_id || context.workspace?.id,
       },
     );
   }
