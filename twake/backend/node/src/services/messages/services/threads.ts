@@ -5,14 +5,21 @@ import {
   OperationType,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import { Initializable, logger, TwakeServiceProvider } from "../../../core/platform/framework";
+import {
+  Initializable,
+  logger,
+  RealtimeSaved,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { ParticipantObject, Thread } from "../entities/threads";
 import { CompanyExecutionContext, ThreadExecutionContext } from "../types";
-import { Message } from "../entities/messages";
+import { Message, MessageWithUsers } from "../entities/messages";
 import _ from "lodash";
 import { extendExecutionContentWithChannel } from "../web/controllers";
 import gr from "../../global-resolver";
+import { ResourcePath } from "../../../core/platform/services/realtime/types";
+import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 
 export class ThreadsService implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -191,7 +198,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
    * @param increment
    * @param context
    */
-  async addReply(threadId: string, increment: number = 1, context: ExecutionContext) {
+  async addReply(threadId: string, increment: number = 1, context: ThreadExecutionContext) {
     const thread = await this.repository.findOne({ id: threadId }, {}, context);
     if (thread) {
       thread.answers = Math.max(0, (thread.answers || 0) + increment);
@@ -202,6 +209,15 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
     } else {
       throw new Error("Try to add reply count to inexistent thread");
     }
+
+    await gr.services.messages.messages.shareMessageInRealtime(
+      {
+        id: threadId,
+        thread_id: threadId,
+      },
+      {},
+      context,
+    );
   }
 
   /**

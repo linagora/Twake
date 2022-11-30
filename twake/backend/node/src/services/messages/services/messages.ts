@@ -19,6 +19,7 @@ import Repository from "../../../core/platform/services/database/services/orm/re
 import {
   getInstance,
   Message,
+  MessagePrimaryKey,
   MessageWithUsers,
   TYPE as MessageTableName,
 } from "../entities/messages";
@@ -592,17 +593,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     return messageWithUsers;
   }
 
-  @RealtimeSaved<Message>((message, context) => [
-    {
-      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
-    },
-  ])
-  async onSaved(
-    message: Message,
-    options: { created?: boolean },
-    context: ThreadExecutionContext,
-  ): Promise<SaveResult<Message>> {
+  async onSaved(message: Message, options: { created?: boolean }, context: ThreadExecutionContext) {
     if (options.created && !message.ephemeral) {
       const messageLinks = getLinks(message);
 
@@ -638,8 +629,6 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       }
     }
 
-    message = await this.includeUsersInMessage(message, context);
-
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
     await gr.services.messages.engine.dispatchMessage({
       resource: message,
@@ -647,10 +636,33 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       created: options.created,
     });
 
+    return await this.shareMessageInRealtime(message, { message, ...options }, context);
+  }
+
+  @RealtimeSaved<Message>((message, context) => [
+    {
+      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
+      path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
+    },
+  ])
+  async shareMessageInRealtime(
+    pk: MessagePrimaryKey,
+    options: { message?: Message; created?: boolean },
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<MessageWithUsers>> {
+    let message =
+      options?.message ||
+      (await gr.services.messages.messages.get(pk, context, {
+        includeQuoteInMessage: true,
+      }));
+
+    if (!message) return null;
+    message = await this.includeUsersInMessage(message, context);
+
     return new SaveResult<MessageWithUsers>(
       "message",
       message,
-      options.created ? OperationType.CREATE : OperationType.UPDATE,
+      options?.created ? OperationType.CREATE : OperationType.UPDATE,
     );
   }
 
