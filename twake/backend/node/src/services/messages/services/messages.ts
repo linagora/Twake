@@ -19,6 +19,7 @@ import Repository from "../../../core/platform/services/database/services/orm/re
 import {
   getInstance,
   Message,
+  MessagePrimaryKey,
   MessageWithUsers,
   TYPE as MessageTableName,
 } from "../entities/messages";
@@ -592,17 +593,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     return messageWithUsers;
   }
 
-  @RealtimeSaved<Message>((message, context) => [
-    {
-      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
-    },
-  ])
-  async onSaved(
-    message: Message,
-    options: { created?: boolean },
-    context: ThreadExecutionContext,
-  ): Promise<SaveResult<Message>> {
+  async onSaved(message: Message, options: { created?: boolean }, context: ThreadExecutionContext) {
     if (options.created && !message.ephemeral) {
       const messageLinks = getLinks(message);
 
@@ -638,8 +629,6 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       }
     }
 
-    message = await this.includeUsersInMessage(message, context);
-
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
     await gr.services.messages.engine.dispatchMessage({
       resource: message,
@@ -647,10 +636,28 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       created: options.created,
     });
 
+    await this.shareMessageInRealtime(message, context, options.created);
+  }
+
+  @RealtimeSaved<Message>((message, context) => [
+    {
+      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
+      path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
+    },
+  ])
+  async shareMessageInRealtime(
+    pk: MessagePrimaryKey,
+    context?: ThreadExecutionContext,
+    created?: boolean,
+  ): Promise<SaveResult<MessageWithUsers>> {
+    let message = await gr.services.messages.messages.get(pk, context, {
+      includeQuoteInMessage: true,
+    });
+    message = await this.includeUsersInMessage(message, context);
     return new SaveResult<MessageWithUsers>(
       "message",
       message,
-      options.created ? OperationType.CREATE : OperationType.UPDATE,
+      created ? OperationType.CREATE : OperationType.UPDATE,
     );
   }
 

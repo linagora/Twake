@@ -2,11 +2,13 @@ import axios, { AxiosInstance } from "axios";
 
 import { KnowledgeGraphCreateBodyRequest, KnowledgeGraphCreateMessageObjectData } from "./types";
 
-import Workspace from "../../../../services/workspaces/entities/workspace";
+import { md5 } from "../../../../core/crypto";
+import { Channel } from "../../../../services/channels/entities";
+import gr from "../../../../services/global-resolver";
+import { Message } from "../../../../services/messages/entities/messages";
 import Company from "../../../../services/user/entities/company";
 import User from "../../../../services/user/entities/user";
-import { Channel } from "../../../../services/channels/entities";
-import { Message } from "../../../../services/messages/entities/messages";
+import Workspace from "../../../../services/workspaces/entities/workspace";
 import { getLogger, TwakeLogger } from "../../framework";
 
 export default class KnowledgeGraphAPIClient {
@@ -17,6 +19,11 @@ export default class KnowledgeGraphAPIClient {
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
+  }
+
+  private async getUserKGId(id: string, email?: string) {
+    email = email || (await gr.services.users.get({ id }))?.email_canonical;
+    return md5(email.trim().toLocaleLowerCase());
   }
 
   public onCompanyCreated(company: Partial<Company>): void {
@@ -66,6 +73,7 @@ export default class KnowledgeGraphAPIClient {
           value: {
             id: "User",
             properties: {
+              _kg_user_id: await this.getUserKGId(user.id, user.email_canonical),
               user_id: user.id,
               email: user.email_canonical,
               username: user.username_canonical,
@@ -93,6 +101,7 @@ export default class KnowledgeGraphAPIClient {
           value: {
             id: "Channel",
             properties: {
+              _kg_user_id: await this.getUserKGId(channel.owner),
               channel_id: channel.id,
               channel_name: channel.name,
               channel_owner: channel.owner,
@@ -121,6 +130,7 @@ export default class KnowledgeGraphAPIClient {
           value: {
             id: "Message",
             properties: {
+              _kg_user_id: await this.getUserKGId(message.user_id),
               message_thread_id: message.thread_id,
               message_content: sensitiveData ? message.text : "",
               type_message: message.type,
