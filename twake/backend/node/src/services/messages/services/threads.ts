@@ -215,6 +215,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
         id: threadId,
         thread_id: threadId,
       },
+      {},
       context,
     );
   }

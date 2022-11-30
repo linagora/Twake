@@ -636,7 +636,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
       created: options.created,
     });
 
-    return await this.shareMessageInRealtime(message, context, { message, ...options });
+    return await this.shareMessageInRealtime(message, { message, ...options }, context);
   }
 
   @RealtimeSaved<Message>((message, context) => [
@@ -647,8 +647,8 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
   ])
   async shareMessageInRealtime(
     pk: MessagePrimaryKey,
+    options: { message?: Message; created?: boolean },
     context: ThreadExecutionContext,
-    options?: { message?: Message; created?: boolean },
   ): Promise<SaveResult<MessageWithUsers>> {
     let message =
       options?.message ||
