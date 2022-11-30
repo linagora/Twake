@@ -46,7 +46,12 @@ import { UserObject } from "../../user/web/types";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { getDefaultMessageInstance } from "../../../utils/messages";
-import { buildMessageListPagination, getLinks, getMentions } from "./utils";
+import {
+  buildMessageListPagination,
+  getLinks,
+  getMentions,
+  publishMessageInRealtime,
+} from "./utils";
 import { localEventBus } from "../../../core/platform/framework/event-bus";
 import {
   KnowledgeGraphEvents,
@@ -639,12 +644,6 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     return await this.shareMessageInRealtime(message, { message, ...options }, context);
   }
 
-  @RealtimeSaved<Message>((message, context) => [
-    {
-      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
-    },
-  ])
   async shareMessageInRealtime(
     pk: MessagePrimaryKey,
     options: { message?: Message; created?: boolean },
@@ -659,10 +658,14 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     if (!message) return null;
     message = await this.includeUsersInMessage(message, context);
 
-    return new SaveResult<MessageWithUsers>(
-      "message",
-      message,
-      options?.created ? OperationType.CREATE : OperationType.UPDATE,
+    publishMessageInRealtime(
+      { resource: message, created: options.created, context },
+      {
+        type: "channel",
+        id: message.cache?.channel_id || context?.channel?.id,
+        company_id: message.cache?.company_id || context?.company?.id,
+        workspace_id: message.cache?.workspace_id || context.workspace?.id,
+      },
     );
   }
 

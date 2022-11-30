@@ -80,7 +80,7 @@ export const getLinks = (messageResource: Message): string[] => {
  */
 export const publishMessageInRealtime = (
   message: MessageLocalEvent,
-  participant: ParticipantObject,
+  participant: Omit<ParticipantObject, "created_at" | "created_by">,
 ): void => {
   if (participant.type !== "channel") return;
 
