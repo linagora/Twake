@@ -198,7 +198,7 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
    * @param increment
    * @param context
    */
-  async addReply(threadId: string, increment: number = 1, context: ExecutionContext) {
+  async addReply(threadId: string, increment: number = 1, context: ThreadExecutionContext) {
     const thread = await this.repository.findOne({ id: threadId }, {}, context);
     if (thread) {
       thread.answers = Math.max(0, (thread.answers || 0) + increment);
@@ -210,10 +210,13 @@ export class ThreadsService implements TwakeServiceProvider, Initializable {
       throw new Error("Try to add reply count to inexistent thread");
     }
 
-    await gr.services.messages.messages.shareMessageInRealtime({
-      id: threadId,
-      thread_id: threadId,
-    });
+    await gr.services.messages.messages.shareMessageInRealtime(
+      {
+        id: threadId,
+        thread_id: threadId,
+      },
+      context,
+    );
   }
 
   /**
