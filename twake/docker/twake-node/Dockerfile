@@ -15,7 +15,7 @@ RUN apt-get update && \
 ### Install Twake
 
 WORKDIR /usr/src/app
-COPY backend/node/package*.json .
+COPY backend/node/package*.json ./
 
 # Test Stage
 FROM node-base as test
