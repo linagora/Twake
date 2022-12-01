@@ -15,6 +15,8 @@ else
   fi
 fi
 
+[[ -d "/etc/nginx/sites-enabled" ]] || mkdir /etc/nginx/sites-enabled
+
 function _selfsigned() {
     self-signed.sh
     export NGINX_LISTEN="443 ssl"
@@ -43,10 +45,4 @@ export PHP_UPSTREAM
 envsubst '$${NODE_HOST} $${NGINX_LISTEN}' < /etc/nginx/sites-available/site.template > /etc/nginx/sites-enabled/site
 echo "upstream php-upstream { server ${PHP_UPSTREAM}; }" > /etc/nginx/conf.d/upstream.conf
 
-# Symlink stdout and stderr to logs file for docker log collector
-# See https://github.com/nginxinc/docker-nginx/blob/456bf337ceb922a207651aa7c6077a316c3e368c/mainline/debian/Dockerfile#L99-L100
-ln -sf /dev/stdout /var/log/nginx/access.log && \
-  ln -sf /dev/stderr /var/log/nginx/error.log
-
-cron -f &
 nginx -g "daemon off;"
