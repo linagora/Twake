@@ -90,3 +90,20 @@ export enum KnowledgeGraphEvents {
   MESSAGE_UPSERT = "kg:message:upsert",
   USER_UPSERT = "kg:user:upsert",
 }
+
+export type KnowledgeGraphCallbackEvent = {
+  recipients: {
+    type: "user";
+    id: string; // KG user id which is a md5 of the email
+  }[];
+  event: {
+    type: "user_tags"; //More events will be added later
+    data: {
+      //For user_tags event only
+      tags?: {
+        value: string;
+        weight: number;
+      }[];
+    };
+  };
+};

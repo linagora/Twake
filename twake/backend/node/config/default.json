@@ -145,6 +145,7 @@
   },
   "knowledge-graph": {
     "endpoint": "http://host-gateway:8888",
+    "callback_token": "secret",
     "use": false,
     "forwarded_companies": []
   },
@@ -182,6 +183,7 @@
     "cron",
     "online",
     "knowledge-graph",
+    "knowledge-graph-web",
     "email-pusher"
   ]
 }
