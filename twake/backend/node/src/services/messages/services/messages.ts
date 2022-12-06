@@ -411,7 +411,7 @@ export class ThreadMessagesService implements TwakeServiceProvider, Initializabl
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
     options?: { includeQuoteInMessage?: boolean },
-  ): Promise<MessageWithUsers> {
+  ): Promise<MessageWithUsers | MessageWithRepliesWithUsers> {
     const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
     let message;
     if (thread) {
