@@ -35,7 +35,10 @@ export default ({ closable = true, onClose }: PropsType): React.ReactElement => 
   const author = useUser(message.user_id);
   const authorName = author ? User.getFullName(author) : 'Anonymous';
   const deleted = message.subtype === 'deleted';
-  const quotedContent = <QuotedContent message={message as unknown as NodeMessage['quote_message']} />;
+
+  const quotedContent = (
+    <QuotedContent message={message as unknown as NodeMessage['quote_message']} />
+  );
 
   return (
     <MessageQuote
