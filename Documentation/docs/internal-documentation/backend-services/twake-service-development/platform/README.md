@@ -10,7 +10,7 @@ description: >-
 
 Twake uses a custom ORM to work with both MongoDB and CassandraDB/ScyllaDB.
 
-{% page-ref page="database-orm-platform-service.md" %}
+[database-orm-platform-service](database-orm-platform-service.md)
 
 ## **Realtime Technical Service**
 
@@ -86,8 +86,8 @@ The `RealtimeCreated` decorator will intercept the `create` call and will publis
 
 The Realtime\* decorators to add on methods to intercept calls and publish data are all following the same API. A decorator takes two parameters as input:
 
-* First one is the room name to publish the notification to \(`/messages` in the example above\)
-* Second one is the full path of the resource linked to the action \(`message => /messages/${message.id}` in the example above\)
+- First one is the room name to publish the notification to \(`/messages` in the example above\)
+- Second one is the full path of the resource linked to the action \(`message => /messages/${message.id}` in the example above\)
 
 Both parameters can take a string or an arrow function as parameter. If arrow function is used, the input parameter will be the result element. By doing this, the paths can be generated dynamically at runtime.
 
@@ -97,9 +97,9 @@ Services annotated as described above automatically publish events to WebSockets
 
 **Authentication**
 
-* Client have to provide a valid JWT token to be able to connect and be authenticated by providing it as string in the `authenticate` event like `{ token: "the jwt token value" }`
-* If the JWT token is valid, the client will receive a `authenticated` event
-* If the JWT token is not valid or empty, the client will receive a `unauthorized` event
+- Client have to provide a valid JWT token to be able to connect and be authenticated by providing it as string in the `authenticate` event like `{ token: "the jwt token value" }`
+- If the JWT token is valid, the client will receive a `authenticated` event
+- If the JWT token is not valid or empty, the client will receive a `unauthorized` event
 
 **Example**
 
@@ -117,7 +117,7 @@ socket.on("connect", () => {
     .on("authenticated", () => {
       console.log("User Authenticated");
     })
-    .on("unauthorized", err => {
+    .on("unauthorized", (err) => {
       console.log("User is not authorized", err);
     });
 });
@@ -131,8 +131,8 @@ CRUD operations on resources are pushing events in Socket.io rooms. In order to 
 
 As a result, the client will receive events:
 
-* `realtime:join:success` when join is succesful with data containing the name of the linked room like `{ name: "room" }`.
-* `realtime:join:error` when join failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
+- `realtime:join:success` when join is succesful with data containing the name of the linked room like `{ name: "room" }`.
+- `realtime:join:error` when join failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
 
 **Example**
 
@@ -149,7 +149,7 @@ socket.on("connect", () => {
     .on("authenticated", () => {
       // join the /channels room
       socket.emit("realtime:join", { name: "/channels", token: "twake" });
-      socket.on("realtime:join:error", message => {
+      socket.on("realtime:join:error", (message) => {
         // will fire when join does not provide a valid token
         console.log("Error on join", message);
       });
@@ -158,11 +158,11 @@ socket.on("connect", () => {
       // As event based, this event is not linked only to the join above
       // but to all joins. So you have to dig into the message to know which one
       // is successful.
-      socket.on("realtime:join:success", message => {
+      socket.on("realtime:join:success", (message) => {
         console.log("Successfully joined room", message.name);
       });
     })
-    .on("unauthorized", err => {
+    .on("unauthorized", (err) => {
       console.log("Unauthorized", err);
     });
 });
@@ -176,8 +176,8 @@ The client can leave the room by emitting a `realtime:leave` event with the name
 
 As a result, the client will receive events:
 
-* `realtime:leave:success` when leave is succesful with data containing the name of the linked room like `{ name: "room" }`.
-* `realtime:leave:error` when leave failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
+- `realtime:leave:success` when leave is succesful with data containing the name of the linked room like `{ name: "room" }`.
+- `realtime:leave:error` when leave failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
 
 Note: Asking to leave a room which has not been joined will not fire any error.
 
@@ -189,7 +189,7 @@ socket.on("connect", () => {
     // leave the "/channels" room
     socket.emit("realtime:leave", { name: "/channels" });
 
-    socket.on("realtime:leave:error", message => {
+    socket.on("realtime:leave:error", (message) => {
       // will fire when join does not provide a valid token
       console.log("Error on leave", message);
     });
@@ -198,7 +198,7 @@ socket.on("connect", () => {
     // As event based, this event is not linked only to the leave above
     // but to all leaves. So you have to dig into the message to know which one
     // is successful.
-    socket.on("realtime:leave:success", message => {
+    socket.on("realtime:leave:success", (message) => {
       console.log("Successfully left room", message.name);
     });
   });
@@ -234,13 +234,12 @@ socket.on("connect", () => {
       // will only occur when an action occured on a resource
       // and if and only if the client joined the room
       // in which the resource is linked
-      socket.on("realtime:resource", event => {
+      socket.on("realtime:resource", (event) => {
         console.log("Resource has been ${event.action}", event.resource);
       });
     })
-    .on("unauthorized", err => {
+    .on("unauthorized", (err) => {
       console.log("Unauthorized", err);
     });
 });
 ```
-

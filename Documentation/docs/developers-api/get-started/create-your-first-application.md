@@ -12,13 +12,13 @@ This guide will walk you through creating, setting up and installing a Twake app
 
 ## Prerequisites:
 
-* _You are a **manager** of the company._
+- _You are a **manager** of the company._
 
 ## Steps:
 
 ### 1. Create a Twake application
 
-![ Fastest way to create an app](../../.gitbook/assets/twake-create-a-twake-app.gif)
+![ Fastest way to create an app](../../assets/twake-create-a-twake-app.gif)
 
 1. _Start by opening your `Workspace settings`_
 2. _Go to `Applications and connectors`, you should see an **Installed applications area** and **Applications developed by the company**,_
@@ -29,7 +29,7 @@ This guide will walk you through creating, setting up and installing a Twake app
 
 ### **2. Identity of the application (Optional)**
 
-![](../../.gitbook/assets/twake-identity-of-the-application.gif)
+![](../../assets/twake-identity-of-the-application.gif)
 
 Let's add a description and an icon for our application. \
 it will be much prettier! 😇
@@ -38,18 +38,18 @@ it will be much prettier! 😇
 
 There you will find some important pieces of information:
 
-![](../../.gitbook/assets/twake-api-settings.gif)
+![](../../assets/twake-api-settings.gif)
 
-* _Your API private key,_
-* _Your public application identifier,_
-* _URL that will be used to receive events for your application,_
-* _List of IP addresses that have the right to call the Twake API with your credentials. (You can use `*`during the development of your application.)_
+- _Your API private key,_
+- _Your public application identifier,_
+- _URL that will be used to receive events for your application,_
+- _List of IP addresses that have the right to call the Twake API with your credentials. (You can use `*`during the development of your application.)_
 
 **Private key** and **Public application identifier** ​​relate to **calls to the Twake API**.
 
 ### 4. Display settings (Optional)
 
-![You can fill your JSON object here](../../.gitbook/assets/twake-display-settings.png)
+![You can fill your JSON object here](../../assets/twake-display-settings.png)
 
 To configure where your application should display, you need to fill a `JSON` object in `Display Settings` field.
 
@@ -57,13 +57,13 @@ To configure where your application should display, you need to fill a `JSON` ob
 
 ### 5. Application privileges
 
-![](../../.gitbook/assets/twake-application-privileges.gif)
+![](../../assets/twake-application-privileges.gif)
 
 Your application can access and modify data, only according to your needs you don't need to access all the data present in Twake. \
 \
 This is why you must specify the accesses for the proper functioning of your application. These accesses will be public and indicated to the user before the installation of your application.
 
-In our example, we will only add  `message_save` and `message_remove` in `Write privileges`.\
+In our example, we will only add `message_save` and `message_remove` in `Write privileges`.\
 \
 If you want to know more about capabilities and privileges, take a look at the list [here](../application-settings/privileges.md).
 
@@ -71,7 +71,7 @@ If you want to know more about capabilities and privileges, take a look at the l
 
 Once you've configured your application, you need to install it on Twake.&#x20;
 
-![](../../.gitbook/assets/twake-install-application.gif)
+![](../../assets/twake-install-application.gif)
 
 Go to `Applications and connectors`, search and display your application then install it.
 

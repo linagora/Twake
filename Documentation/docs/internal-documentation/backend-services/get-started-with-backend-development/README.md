@@ -2,11 +2,8 @@
 
 You can have different needs that will require different skills, let break this into three scenarios:
 
-{% page-ref page="start-working-into-a-service.md" %}
+[start-working-into-a-service](start-working-into-a-service.md)
 
-{% page-ref page="create-a-new-twake-service.md" %}
+[create-a-new-twake-service](create-a-new-twake-service.md)
 
-{% page-ref page="create-a-new-core-service.md" %}
-
-
-
+[create-a-new-core-service](create-a-new-core-service.md)

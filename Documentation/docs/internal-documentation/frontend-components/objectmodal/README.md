@@ -9,23 +9,15 @@ description: >-
 #### Usage
 
 ```jsx
-import ObjectModal from 'components/ObjectModal/ObjectModal.js';
+import ObjectModal from "components/ObjectModal/ObjectModal.js";
 ```
 
 ```jsx
 <ObjectModal
-  title={
-    <ObjectModalTitle>
-      My awesome title !
-    </ObjectModalTitle>
-  }
+  title={<ObjectModalTitle>My awesome title !</ObjectModalTitle>}
   onClose={() => myComponent.closeSomething()}
   disabled
-  footer={
-    <Button>
-      Definitly not usefull
-    </Button>
-  }
+  footer={<Button>Definitly not usefull</Button>}
 >
   <FirstChild />
   <span>Some text</span>
@@ -47,6 +39,6 @@ import ObjectModal from 'components/ObjectModal/ObjectModal.js';
 
 #### Preview
 
-![Modal example with task editor](../../../.gitbook/assets/screenshot-2020-07-15-at-17.00.48.png)
+![Modal example with task editor](../../../assets/screenshot-2020-07-15-at-17.00.48.png)
 
-****
+---

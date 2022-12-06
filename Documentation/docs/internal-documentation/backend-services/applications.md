@@ -1,6 +1,5 @@
 # 🍎 \(WIP\) Applications
 
-{% hint style="info" %}
+::: info
 This page isn't ready yet
-{% endhint %}
-
+:::

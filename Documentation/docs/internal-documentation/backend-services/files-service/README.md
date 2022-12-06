@@ -22,16 +22,13 @@ Files and Storage services in Twake feature encryption at rest in **aes-256-cbc*
 
 Each file is encrypted with two layers:
 
-* A file encryption key and iv stored in database and different for each file.
-* A global encryption key and iv used in addition to the previous one and equal for each file.
+- A file encryption key and iv stored in database and different for each file.
+- A global encryption key and iv used in addition to the previous one and equal for each file.
 
 ## Models and APIs
 
-{% page-ref page="database-models.md" %}
-
-{% page-ref page="rest-apis.md" %}
+[database-models](database-models.md)
 
 ## Miscellaneous
 
-{% page-ref page="resumablejs.md" %}
-
+[resumablejs](resumablejs.md)

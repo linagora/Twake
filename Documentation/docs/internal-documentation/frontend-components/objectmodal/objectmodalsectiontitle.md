@@ -7,13 +7,11 @@ description: Section title, perfect after a separator.
 #### Usage
 
 ```jsx
-import ObjectModalFormTitle from 'components/ObjectModal/ObjectModal.js';
+import ObjectModalFormTitle from "components/ObjectModal/ObjectModal.js";
 ```
 
 ```jsx
-  <ObjectModalFormTitle
-    name={'Awesome Title!'}
-  />
+<ObjectModalFormTitle name={"Awesome Title!"} />
 ```
 
 ####
@@ -31,6 +29,6 @@ import ObjectModalFormTitle from 'components/ObjectModal/ObjectModal.js';
 
 #### Preview
 
-![](../../../.gitbook/assets/capture-decran-de-2020-07-17-17-58-03.png)
+![](../../../assets/capture-decran-de-2020-07-17-17-58-03.png)
 
-****
+---

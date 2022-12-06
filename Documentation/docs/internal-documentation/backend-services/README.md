@@ -15,27 +15,26 @@ If document are empty, check out our Notion documentation: [https://www.notion.s
 
 ### General
 
-{% page-ref page="authentication.md" %}
+[authentication](authentication.md)
 
 ### Services
 
-{% page-ref page="users-and-workspaces-service.md" %}
+[users-and-workspaces-service](users-and-workspaces-service.md)
 
-{% page-ref page="applications/" %}
+[applications/](applications/README.md))
 
-{% page-ref page="channels-service/" %}
+[channels-service/](channels-service/README.md))
 
-{% page-ref page="messages-service/" %}
+[messages-service/](messages-service/README.md))
 
-{% page-ref page="notifications-service/" %}
+[notifications-service/](notifications-service/README.md))
 
 ## Get started to code in Twake
 
 Want to edit Twake code ? Congratulation ! You participate in the development of a great product 😃
 
-{% page-ref page="twake-service-development/start-working-into-a-service.md" %}
+[start-working-into-a-service](twake-service-development/start-working-into-a-service.md)
 
-{% page-ref page="twake-service-development/create-a-new-twake-service.md" %}
+[create-a-new-twake-service](twake-service-development/create-a-new-twake-service.md)
 
-{% page-ref page="twake-service-development/platform/" %}
-
+[twake-service-development/platform/](twake-service-development/platform/README.md))

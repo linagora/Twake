@@ -12,11 +12,11 @@ This **documentation** assists developers and users in having the best Twake exp
 
 To use Twake online it is simple, just go on [twake.app](https://twake.app) and click "Sign up".
 
-> Want to install it on your own server ? [It is here](installation/).
+> Want to install it on your own server ? [It is here](onprem/installation.md)).
 
 #### Now, you can learn how to become a Twake super-user
 
-> Learn how to become a power user of Twake: [welcome.md](../how-to-use-it/welcome.md)
+> Learn how to become a power user of Twake: [welcome.md](./how-to-use-it/welcome.md)
 
 > If you want to see the latest updates you can go here: [https://github.com/linagora/Twake/blob/main/changelog.md](https://github.com/linagora/Twake/blob/canary/changelog.md)
 
