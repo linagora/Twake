@@ -6,7 +6,7 @@ import { ServerConfiguration } from "./types";
 
 @Prefix("/internal/services/general/v1")
 @Consumes(["webserver"])
-export default class MessageService extends TwakeService<GeneralServiceAPI> {
+export default class GeneralService extends TwakeService<GeneralServiceAPI> {
   version = "1";
   name = "general";
   service: GeneralServiceAPI;

@@ -6,7 +6,11 @@ import Company from "../../../../services/user/entities/company";
 import User from "../../../../services/user/entities/user";
 import { Channel } from "../../../../services/channels/entities";
 import { Message } from "../../../../services/messages/entities/messages";
-import { KnowledgeGraphGenericEventPayload, KnowledgeGraphEvents } from "./types";
+import {
+  KnowledgeGraphGenericEventPayload,
+  KnowledgeGraphEvents,
+  KnowledgeGraphCallbackEvent,
+} from "./types";
 import KnowledgeGraphAPIClient from "./api-client";
 import gr from "../../../../services/global-resolver";
 
@@ -55,6 +59,15 @@ export default class KnowledgeGraphService
     );
 
     return this;
+  }
+
+  /** When the KG service send us new events */
+  async onCallbackEvent(token: string, data: KnowledgeGraphCallbackEvent): Promise<void> {
+    if (token === this.getConfigurationEntry<string>("callback_token")) {
+      this.logger.info("Unimplemented: KnowledgeGraph - Callback event", data);
+    } else {
+      throw new Error("Invalid token");
+    }
   }
 
   async onCompanyCreated(data: KnowledgeGraphGenericEventPayload<Company>): Promise<void> {
