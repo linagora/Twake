@@ -11,6 +11,7 @@ import {
   CompanyExecutionContext,
   MessageListQueryParameters,
   MessageReadType,
+  MessageWithReplies,
   ThreadExecutionContext,
 } from "../../types";
 import { handleError } from "../../../../utils/handleError";
@@ -173,7 +174,14 @@ export class MessagesController
       );
 
       if (request.query.include_users) {
-        resource = await gr.services.messages.messages.includeUsersInMessage(resource, context);
+        if ((resource as MessageWithReplies).last_replies?.length) {
+          resource = await gr.services.messages.messages.includeUsersInMessageWithReplies(
+            resource as MessageWithReplies,
+            context,
+          );
+        } else {
+          resource = await gr.services.messages.messages.includeUsersInMessage(resource, context);
+        }
       }
 
       return {
