@@ -23,13 +23,14 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _, next) => {
         }
       } catch (e) {
         reply.status(500).send({
+          status: "error",
           error: "Internal server error",
           message: e.message || "Unknown error",
         });
       }
 
       reply.status(200).send({
-        message: "OK",
+        status: "success",
       });
     },
   });
