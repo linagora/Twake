@@ -58,7 +58,7 @@ export default ({ message }: PropsType): React.ReactElement => {
 
   const attachmentType = fileUploadApiClient.mimeToType(message.files?.[0]?.metadata?.mime || '');
 
-  if (message.channel_id !== context.channelId) {
+  if (context.channelId && message.channel_id !== context.channelId) {
     return (
       <>
         <MessageContext.Provider
