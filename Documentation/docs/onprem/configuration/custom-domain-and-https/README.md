@@ -4,15 +4,13 @@ description: Use a custom domain with Twake
 
 # 🔗 Custom domain + HTTPS
 
-
-
-{% hint style="info" %}
+::: info
 We do not offer the possibility to edit the nginx configuration present in the docker-compose containers yet. To enable https you first need to install nginx and configure on your machine.
 
 Your nginx installation will be used to forward the requests from https to the docker-compose http port.
 
 The last step is to tell Twake that the frontend is accessed from a different domain and protocol to handle the redirections.
-{% endhint %}
+:::
 
 #### Use port 80 or 443 over https
 
@@ -70,6 +68,3 @@ export default {
 
 > Dont forget to restart your docker-compose 😉 and rebuild the frontend:  
 > `docker-compose exec nginx yarn build`
-
-
-

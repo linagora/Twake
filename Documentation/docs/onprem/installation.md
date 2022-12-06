@@ -24,7 +24,7 @@ If you kept the default configuration, you can simply follow the signup steps, n
 
 ## Ship Twake in production
 
-See how to [manage configuration](../configuration/). And then how to [update security keys](../configuration/security.md), and finally how to use your [custom domain](../configuration/custom-domain-and-https/).
+See how to [manage configuration](./configuration/index.md)). And then how to [update security keys](./configuration/security.md), and finally how to use your [custom domain](./configuration/custom-domain-and-https/README.md)).
 
 ### Update Twake
 

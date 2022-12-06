@@ -12,7 +12,7 @@ description: How to manage authentification on API call
 Authorization: Basic base64(public_id:private_api_key)
 ```
 
-**You must concatenate** your [public\_id and private\_api\_key](../get-started/#identity-and-api-settings) , **then convert** the whole **to base64**. Your HTTP header will therefore look like:
+**You must concatenate** your [public_id and private_api_key](../get-started/README.md#identity-and-api-settings) , **then convert** the whole **to base64**. Your HTTP header will therefore look like:
 
 ```text
 # For the keys 'public_id' and 'private_key'
@@ -21,5 +21,4 @@ Authorization: Basic cHVibGljX2lkOnByaXZhdGVfYXBpX2tleQ==
 
 ## Authencate your app in a company
 
-**All your requests should have at least a "group\_id" key with the company id you**
-
+**All your requests should have at least a "group_id" key with the company id you**

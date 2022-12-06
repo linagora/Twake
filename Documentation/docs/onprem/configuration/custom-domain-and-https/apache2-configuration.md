@@ -74,5 +74,4 @@ a2enconf remoteip
 service apache2 restart
 ```
 
-Return to the section "Configure domain name" of [Custom domain + HTTPS](./#configure-domain-name) page to continue the configuration.
-
+Return to the section "Configure domain name" of [Custom domain + HTTPS](./README.md#configure-domain-name) page to continue the configuration.

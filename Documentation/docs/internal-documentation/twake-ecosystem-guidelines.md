@@ -12,15 +12,13 @@ description: >-
 
 #### Logos
 
-{% file src="../.gitbook/assets/logo\_shape.svg" caption="Logo shape in SVG format" %}
+{% file src="../assets/logo\_shape.svg" caption="Logo shape in SVG format" %}
 
 #### Colors and fonts
 
 The fonts and colors to use are defined in the document bellow, scroll down for the hexadecimal codes of each color.
 
-![](../.gitbook/assets/screenshot-2021-03-31-at-14.51.23.png)
-
-
+![](../assets/screenshot-2021-03-31-at-14.51.23.png)
 
 Colors code extracted from the Twake theme [https://github.com/linagora/Twake/blob/main/twake/frontend/src/app/theme.less](https://github.com/linagora/Twake/blob/main/twake/frontend/src/app/theme.less)
 
@@ -30,8 +28,8 @@ Colors code extracted from the Twake theme [https://github.com/linagora/Twake/bl
 // TT Norms = Russia
 
 // --- Twake fonts --- //
-@main-font: 'Circular Std', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue',
-  'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
+@main-font: "Circular Std", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+  "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 
 // --- Twake colors --- //
 @primary: #3840f7;
@@ -76,8 +74,8 @@ We strongly recommend using Antd design system: [https://ant.design/](https://an
 
 Feel free to add any library in this table.
 
-| Use case | used by | prefered library |
-| :--- | :--- | :--- |
+| Use case        | used by            | prefered library                                         |
+| :-------------- | :----------------- | :------------------------------------------------------- |
 | Infinite scroll | Twake message feed | [https://virtuoso.dev/](https://virtuoso.dev/) \(React\) |
 
 ## Backend guidelines
@@ -85,6 +83,3 @@ Feel free to add any library in this table.
 ### Programmation languages
 
 ### Databases and middlewares
-
-
-

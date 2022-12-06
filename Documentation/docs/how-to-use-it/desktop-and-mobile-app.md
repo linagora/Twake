@@ -1,5 +1,5 @@
 ---
-description: 'Yes, we have desktop and mobile apps !'
+description: "Yes, we have desktop and mobile apps !"
 ---
 
 # 🖥 Desktop and mobile app
@@ -10,7 +10,7 @@ You can download Twake for Mac, Windows, Linux here: [https://github.com/linagor
 
 Click on the version according your OS, and click on "download" to get the desktop application.
 
-![](../.gitbook/assets/image%20%283%29%20%281%29.png)
+![](../assets/image (3) (1).png)
 
 ### Switch to on-premise servers
 
@@ -18,8 +18,6 @@ On the desktop app, you can use the following options to change your server:
 
 • On MacOS, click on Help &gt; Change Twake Server  
 • On Windows, MacOS and Linux, use the shortcut CTRL+ALT+SHIFT+S or CMD+ALT+SHIFT+S
-
-
 
 ## Mobile App
 
@@ -32,4 +30,3 @@ On the mobile app, just log out and you should be able to change the server from
 #### Push notifications on the on-premise mobile app
 
 This feature is not yet available, say you want this feature using a "thumbs up" emoji here: [https://github.com/TwakeApp/Twake/issues/130](https://github.com/TwakeApp/Twake/issues/130)
-

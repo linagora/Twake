@@ -7,9 +7,6 @@ description: >-
 
 # Create a new core service
 
-{% hint style="info" %}
+::: info
 Please ensure to read [Create a new Twake service](create-a-new-twake-service.md) page before to understand how services works
-{% endhint %}
-
-
-
+:::

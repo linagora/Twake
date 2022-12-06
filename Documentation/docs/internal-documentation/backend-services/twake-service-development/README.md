@@ -4,11 +4,8 @@ description: Get started with Twake service development
 
 # 🛠 Twake service development
 
-{% page-ref page="start-working-into-a-service.md" %}
+[start-working-into-a-service](start-working-into-a-service.md)
 
-{% page-ref page="create-a-new-twake-service.md" %}
+[create-a-new-twake-service](create-a-new-twake-service.md)
 
-{% page-ref page="platform/" %}
-
-
-
+[platform/](platform/README.md))

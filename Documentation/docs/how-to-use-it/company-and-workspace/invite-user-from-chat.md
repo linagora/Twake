@@ -6,15 +6,10 @@ description: Invite user from Twake
 
 You can invite user in your workspace.
 
-Open the menu, and click on `Collaborators`  &gt; `Add colleagues`. Enter emails of your colleagues \(separated with coma\) and validate.
+Open the menu, and click on `Collaborators` &gt; `Add colleagues`. Enter emails of your colleagues \(separated with coma\) and validate.
 
-![](../../.gitbook/assets/invitefromtwake.gif)
-
-
+![](../../assets/invitefromtwake.gif)
 
 You can also invite users from the console :
 
-{% page-ref page="../console/users.md" %}
-
-
-
+[users](../console/users.md)

@@ -6,9 +6,9 @@ description: >-
 
 # Create a new service
 
-{% hint style="info" %}
+::: info
 Please ensure you read the [Start working into a service](start-working-into-a-service.md) before
-{% endhint %}
+:::
 
 To create a new component, a new folder must be created under the `src/services` one and an `index.ts` file must export the a class. This class will be instantiated by the platform and will be linked to the required services automatically.
 
@@ -149,7 +149,8 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
     const path = this.configuration.get < string > ("path", "/socket");
 
     // The "get" method is generic and can accept custom types like
-    const adapters = this.configuration.get < AdaptersConfiguration > "adapters";
+    const adapters =
+      this.configuration.get < AdaptersConfiguration > "adapters";
   }
 }
 
@@ -159,9 +160,9 @@ interface AdaptersConfiguration {
 }
 ```
 
-{% hint style="info" %}
+::: info
 After creating a new service, you can add controllers, business services and entities, go back to the [What is a service section](start-working-into-a-service.md)
-{% endhint %}
+:::
 
 ## Create a new technical service
 
@@ -169,5 +170,4 @@ Now you are bringing things a step further, you are going to add new core servic
 
 Creating a new core service is as easy as creating a functional service. But it must be in `src/core/platform/services` .
 
-You can read the [complete list of existing technical services here](platform/) .
-
+You can read the [complete list of existing technical services here](platform/README.md)) .

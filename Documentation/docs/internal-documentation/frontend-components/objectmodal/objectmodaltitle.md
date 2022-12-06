@@ -7,13 +7,13 @@ description: Main title for the ObjectModal component.
 #### Usage
 
 ```jsx
-import ObjectModalTitle from 'components/ObjectModal/ObjectModal.js';
+import ObjectModalTitle from "components/ObjectModal/ObjectModal.js";
 ```
 
 ```jsx
-  <ObjectModalTitle className="my-awesome-class" style={{ marginBottom: 0 }}>
-    My awesome title !
-  </ObjectModalTitle>
+<ObjectModalTitle className="my-awesome-class" style={{ marginBottom: 0 }}>
+  My awesome title !
+</ObjectModalTitle>
 ```
 
 ####
@@ -29,6 +29,6 @@ import ObjectModalTitle from 'components/ObjectModal/ObjectModal.js';
 
 #### Preview
 
-![](../../../.gitbook/assets/capture-decran-de-2020-07-17-17-48-56.png)
+![](../../../assets/capture-decran-de-2020-07-17-17-48-56.png)
 
-****
+---
