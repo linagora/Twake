@@ -15,7 +15,7 @@ import MessageContent from 'app/views/applications/messages/message/parts/Messag
 import React, { useContext, useEffect } from 'react';
 
 type PropsType = {
-  message: NodeMessage['quote_message']
+  message: NodeMessage['quote_message'];
 };
 
 export const useQuotedMessage = (
@@ -58,7 +58,7 @@ export default ({ message }: PropsType): React.ReactElement => {
 
   const attachmentType = fileUploadApiClient.mimeToType(message.files?.[0]?.metadata?.mime || '');
 
-  if (message.channel_id !== context.channelId) {
+  if (context.channelId && message.channel_id !== context.channelId) {
     return (
       <>
         <MessageContext.Provider
