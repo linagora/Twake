@@ -1,14 +1,13 @@
 import { FastifyRequest } from "fastify";
 import { logger } from "src/core/platform/framework";
-import { Pagination } from "src/core/platform/framework/api/crud-service";
+import { CrudException } from "src/core/platform/framework/api/crud-service";
+import { File } from "src/services/files/entities/file";
+import { UploadOptions } from "src/services/files/types";
 import globalResolver from "src/services/global-resolver";
-import {
-  PaginationQueryParameters,
-  ResourceDeleteResponse,
-  ResourceGetResponse,
-} from "src/utils/types";
+import { PaginationQueryParameters } from "src/utils/types";
 import { DriveFile } from "../../entities/drive-file";
-import { CompanyExecutionContext } from "../../types";
+import { FileVersion } from "../../entities/file-version";
+import { CompanyExecutionContext, DriveItemDetails } from "../../types";
 
 type RequestParams = {
   company_id: string;
@@ -19,56 +18,114 @@ type ItemRequestParams = RequestParams & {
 };
 
 export class DocumentsController {
-  create = async (request: FastifyRequest<{ Params: RequestParams }>) => {
-    const context = getCompanyExecutionContext(request);
-    return {};
-  };
-
-  delete = async (
-    request: FastifyRequest<{ Params: ItemRequestParams }>,
-  ): Promise<ResourceDeleteResponse> => {
-    const context = getCompanyExecutionContext(request);
-
+  /**
+   * Creates a DriveFile item
+   *
+   * @param {FastifyRequest} request
+   * @returns
+   */
+  create = async (
+    request: FastifyRequest<{
+      Params: RequestParams;
+      Querystring: Record<string, string>;
+      Body: {
+        item: Partial<DriveFile>;
+        version: Partial<FileVersion>;
+      };
+    }>,
+  ): Promise<DriveFile> => {
     try {
-      await globalResolver.services.documents.delete(request.params.id, context);
+      const context = getCompanyExecutionContext(request);
 
-      return {
-        status: "success",
-      };
+      let createdFile: File = null;
+      if (request.isMultipart()) {
+        const file = await request.file();
+        const q = request.query;
+        const options: UploadOptions = {
+          totalChunks: parseInt(q.resumableTotalChunks || q.total_chunks) || 1,
+          totalSize: parseInt(q.resumableTotalSize || q.total_size) || 0,
+          chunkNumber: parseInt(q.resumableChunkNumber || q.chunk_number) || 1,
+          filename: q.resumableFilename || q.filename || file?.filename || undefined,
+          type: q.resumableType || q.type || file?.mimetype || undefined,
+          waitForThumbnail: !!q.thumbnail_sync,
+        };
+
+        createdFile = await globalResolver.services.files.save(null, file, options, context);
+      }
+
+      const { item, version } = request.body;
+
+      return await globalResolver.services.documents.create(createdFile, item, version, context);
     } catch (error) {
-      logger.error("failed to delete drive item", error);
-
-      return {
-        status: "error",
-      };
+      logger.error("Failed to create Drive item", error);
+      throw new CrudException("Failed to create Drive item", 500);
     }
   };
 
+  /**
+   * Deletes a DriveFile item or empty the trash or delete root folder contents
+   *
+   * @param {FastifyRequest} request
+   * @returns {Promise<void>}
+   */
+  delete = async (request: FastifyRequest<{ Params: ItemRequestParams }>): Promise<void> => {
+    const context = getCompanyExecutionContext(request);
+
+    return await globalResolver.services.documents.delete(request.params.id, context);
+  };
+
+  /**
+   * Lists the drive root folder.
+   *
+   * @param {FastifyRequest} request
+   * @returns {Promise<DriveItemDetails>}
+   */
+  listRootFolder = async (
+    request: FastifyRequest<{ Params: RequestParams; Querystring: PaginationQueryParameters }>,
+  ): Promise<DriveItemDetails> => {
+    const context = getCompanyExecutionContext(request);
+
+    return await globalResolver.services.documents.get("", context);
+  };
+
+  /**
+   * Fetches a DriveFile item.
+   *
+   * @param {FastifyRequest} request
+   * @returns {Promise<DriveItemDetails>}
+   */
   get = async (
     request: FastifyRequest<{ Params: ItemRequestParams; Querystring: PaginationQueryParameters }>,
-  ): Promise<ResourceGetResponse<DriveFile[]>> => {
+  ): Promise<DriveItemDetails> => {
     const context = getCompanyExecutionContext(request);
-
     const { id } = request.params;
-    const items = await globalResolver.services.documents.get(
-      id,
-      new Pagination(request.query.page_token, request.query.limit),
-      context,
-    );
 
-    return {
-      resource: items.getEntities(),
-    };
+    return await globalResolver.services.documents.get(id, context);
   };
 
-  update = async (request: FastifyRequest<{ Params: ItemRequestParams }>) => {
+  /**
+   *
+   * @param {FastifyRequest} request
+   * @returns
+   */
+  update = async (
+    request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<DriveFile> }>,
+  ): Promise<DriveFile> => {
     const context = getCompanyExecutionContext(request);
-    return {};
+    const { id } = request.params;
+    const update = request.body;
+
+    return await globalResolver.services.documents.update(id, update, context);
   };
 
-  updateVersion = async (request: FastifyRequest<{ Params: ItemRequestParams }>) => {
+  createVersion = async (
+    request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<FileVersion> }>,
+  ): Promise<FileVersion> => {
     const context = getCompanyExecutionContext(request);
-    return {};
+    const { id } = request.params;
+    const version = request.body;
+
+    return await globalResolver.services.documents.createVersion(id, version, context);
   };
 }
 

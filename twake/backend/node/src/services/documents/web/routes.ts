@@ -8,6 +8,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
 
   fastify.route({
     method: "GET",
+    url: `${serviceUrl}`,
+    preValidation: [fastify.authenticate],
+    handler: documentsController.listRootFolder.bind(documentsController),
+  });
+
+  fastify.route({
+    method: "GET",
     url: `${serviceUrl}/:id`,
     preValidation: [fastify.authenticate],
     handler: documentsController.get.bind(documentsController),
@@ -31,7 +38,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
     method: "POST",
     url: `${serviceUrl}/:id/version`,
     preValidation: [fastify.authenticate],
-    handler: documentsController.updateVersion.bind(documentsController),
+    handler: documentsController.createVersion.bind(documentsController),
   });
 
   return next();
