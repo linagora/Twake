@@ -30,9 +30,10 @@ You can <a href="https://twake.app"> try Twake</a> in SaaS.
 
 Or run your own local Twake instance with :
 
-```
-cd twake
-sudo ./start.sh
+```bash
+cd twake 
+export COMPOSE_FILE=docker-compose.onpremise.yml
+docker compose up -d
 ```
 
 Twake will be running on http//localhost and by default redirect to https and uses a self-signed certificate. If you want to run http only then set SSL_CERTS=none at docker-compose.yml
