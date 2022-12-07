@@ -1,5 +1,5 @@
 # Common node machine
-FROM node:16-bullseye-slim as node-base
+FROM node:lts as node-base
 
 ### Install dependancies
 RUN apt-get update && \
@@ -29,12 +29,12 @@ FROM node-base as with-frontend
 COPY backend/node/ .
 #Install dev dependancies for build
 RUN NODE_ENV=development npm install && \
-#Build in production mode
+    #Build in production mode
     export NODE_ENV=production && \
     npm run build && \
-    rm -R node_modules && \
+    rm -rf node_modules && \
     #Install prod dependancies after build
-    npm install
+    npm install --legacy-peer-deps
 
 # Add frontend into node
 COPY frontend/ ../public_build/
