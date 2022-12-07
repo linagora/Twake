@@ -152,6 +152,8 @@ export class DocumentsService {
         last_version_cache: { ...driveItemVersion },
       });
 
+      await this.updateItemSize(driveItem.parent_id, context);
+
       return driveItem;
     } catch (error) {
       this.logger.error("Failed to create drive item", error);
@@ -190,6 +192,7 @@ export class DocumentsService {
 
       const driveItem = getDefaultDriveItem(content, context);
       await this.repository.save(driveItem, context);
+      await this.updateItemSize(driveItem.parent_id, context);
 
       return driveItem;
     } catch (error) {
@@ -231,6 +234,8 @@ export class DocumentsService {
             context,
           );
         });
+
+        await this.updateItemSize("", context);
       } catch (error) {
         logger;
         throw new CrudException("Failed to delete root folder", 500);
@@ -276,6 +281,18 @@ export class DocumentsService {
 
     try {
       if (item.is_instrash) {
+        const itemVersions = await this.fileVersionRepository.find(
+          {
+            file_id: item.id,
+            provider: "internal",
+          },
+          {},
+          context,
+        );
+
+        itemVersions.getEntities().forEach(async version => {
+          await this.fileVersionRepository.remove(version);
+        });
         return await this.repository.remove(item);
       }
 
@@ -283,11 +300,13 @@ export class DocumentsService {
         await this.moveDirectoryContentsTotrash(item.id, context);
       }
 
-      return await this.repository.save({
+      await this.repository.save({
         ...item,
         is_instrash: true,
         parent_id: this.ROOT,
       });
+
+      await this.updateItemSize(item.parent_id, context);
     } catch (error) {
       this.logger.error("Failed to delete drive item", error);
       throw new CrudException("Failed to delete item", 500);
@@ -324,6 +343,10 @@ export class DocumentsService {
 
       if (!item) {
         throw Error("Drive item not found");
+      }
+
+      if (item.is_directory) {
+        throw Error("cannot create version for a directory");
       }
 
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
@@ -367,5 +390,55 @@ export class DocumentsService {
         return await this.moveDirectoryContentsTotrash(child.id, context);
       }
     });
+  };
+
+  /**
+   * Recalculates and updates the Drive item size
+   *
+   * @param {string} id - the item id
+   * @param {CompanyExecutionContext} context - the execution context
+   * @returns {Promise<void>}
+   */
+  private updateItemSize = async (id: string, context: CompanyExecutionContext): Promise<void> => {
+    if (!id || id === "" || id === "trash") return;
+
+    const item = await this.repository.findOne({ id, company_id: context.company.id });
+
+    if (!item) {
+      logger.error("item doesn't exist");
+      throw Error("Drive item doesn't exist");
+    }
+
+    item.size = await this.calculateItemSize(item, context);
+
+    return await this.repository.save(item);
+  };
+
+  /**
+   * Calculates the size of the Drive Item
+   *
+   * @param {DriveFile} item - The file or directory
+   * @param {CompanyExecutionContext} context - the execution context
+   * @returns {Promise<number>} - the size of the Drive Item
+   */
+  private calculateItemSize = async (
+    item: DriveFile,
+    context: CompanyExecutionContext,
+  ): Promise<number> => {
+    if (item.is_directory) {
+      let initialSize = 0;
+      const children = await this.repository.find({
+        parent_id: item.id,
+        company_id: context.company.id,
+      });
+
+      children.getEntities().forEach(async child => {
+        initialSize += await this.calculateItemSize(child, context);
+      });
+
+      return initialSize;
+    }
+
+    return item.size;
   };
 }
