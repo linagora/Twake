@@ -8,43 +8,59 @@ services:
       - 9042:9042
     volumes:
       - ./docker-data/scylladb:/var/lib/scylla
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status | grep UN"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   rabbitmq:
     image: rabbitmq:3
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   node:
-    image: twaketech/twake-node:2021.Q2.505
+    build:
+      context: .
+      dockerfile: docker/twake-node/Dockerfile
     environment:
       - NODE_ENV=production
       - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
     volumes:
-      - ./configuration/backend-node/production.json:/usr/src/app/config/production.json
+      - ./default-configuration/backend-node/production.json:/usr/src/app/config/production.json
       - ./docker-data/documents/:/storage/
     depends_on:
-      - scylladb
-      - rabbitmq
-    links:
-      - scylladb
+      scylladb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   php:
-    image: twaketech/twake-php:2021.Q2.505
+    build:
+      context: .
+      dockerfile: docker/twake-php/Dockerfile
     environment:
       - DEV=production
     volumes:
-      - ./configuration/backend/Parameters.php:/configuration/Parameters.php
+      - ./default-configuration/backend/Parameters.php:/configuration/Parameters.php
       - ./connectors/:/twake-core/src/BuiltInConnectors/Connectors
       - ./docker-data/drive/:/twake-core/drive/
       - ./docker-data/fpm/:/etc/docker-data/fpm/
       - ./docker-data/drive-preview/:/twake-core/web/medias/
       - ./docker-data/uploads/:/twake-core/web/upload/
     depends_on:
-      - scylladb
-      - rabbitmq
-    links:
-      - scylladb
+      scylladb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   nginx:
-    image: twaketech/twake-nginx:2021.Q2.505
+    build:
+      context: .
+      dockerfile: docker/twake-nginx/Dockerfile
     environment:
       - DEV=production
       - SSL_CERTS=selfsigned
