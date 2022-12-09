@@ -20,7 +20,6 @@ class ChannelMembersApiClient {
     this._realtime = value;
   }
 
-  //GET http://localhost:8000/internal/services/channels/v1/companies/bed8e8c0-e702-11ec-8b1c-853839b98938/workspaces/bef76d40-e702-11ec-8b1c-853839b98938/channels/57578c6a-99ce-4a32-842f-4005c81c5e7d/members?websockets=1
   async getMembers(params: ParamsChannelMember, search?: string) {
     console.log('getMembers ....', params);
     return Api.get<ResponseChannelMemberTypeList>(
@@ -33,7 +32,6 @@ class ChannelMembersApiClient {
     });
   }
 
-  //post  /channels/v1/companies/{company_id}/workspaces/{workspace_id | "direct"}/channels/{channel_id}/members/{user_id | void}
   async addMember(member: Partial<ChannelMemberType>, params: ParamsChannelMember) {
     return Api.post<PayloadChannelMemberType, ResponseChannelMemberType>(
       `${this.apiBaseUrl}/${params.companyId}/workspaces/${params.workspaceId}/channels/${params.channelId}/members`,
