@@ -37,7 +37,7 @@ export const ChannelMembersListModal = (): JSX.Element => {
 
   useEffect(() => {
     if (channelId) refresh();
-  });
+  }, [channelId]);
 
   return (
     <div
