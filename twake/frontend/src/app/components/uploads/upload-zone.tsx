@@ -150,9 +150,7 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
     /**
      * DRAGOVER EVENT
      */
-    currentNode.addEventListener('dragover', () =>
-      currentNode.classList.add('input-drag-focus'),
-    );
+    currentNode.addEventListener('dragover', () => currentNode.classList.add('input-drag-focus'));
 
     body.addEventListener('dragover', (e: DragEvent) => {
       body.classList.add('body-drag-focus');
@@ -268,8 +266,12 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
         }}
       >
         {!this.props.disabled && (
-          <div className={classNames('on_drag_over_background', { dragover: this.state.dragover })}>
-            <div className="dashed">
+          <div
+            className={classNames('on_drag_over_background', {
+              dragover: this.state.dragover,
+            })}
+          >
+            <div className={'dashed ' + this.props.overClassName}>
               <div
                 className={classNames('centered', { skew_in_top_nobounce: !!this.state.dragover })}
               >
