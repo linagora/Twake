@@ -26,7 +26,15 @@ export default class KnowledgeGraphAPIClient {
     return md5(email.trim().toLocaleLowerCase());
   }
 
-  public onCompanyCreated(company: Partial<Company>): void {
+  private async getCompanyKGId(id: string, identity_provider_id?: string) {
+    identity_provider_id =
+      identity_provider_id ||
+      (await gr.services.companies.getCompany({ id }))?.identity_provider_id ||
+      id;
+    return identity_provider_id;
+  }
+
+  public async onCompanyCreated(company: Partial<Company>): Promise<void> {
     this.send({
       records: [
         {
@@ -34,8 +42,9 @@ export default class KnowledgeGraphAPIClient {
           value: {
             id: "Company",
             properties: {
+              _kg_company_id: await this.getCompanyKGId(company.id, company.identity_provider_id),
               company_id: company.id,
-              company_name: company.name,
+              company_name: company.displayName || company.name,
             },
           },
         },
@@ -51,6 +60,7 @@ export default class KnowledgeGraphAPIClient {
           value: {
             id: "Workspace",
             properties: {
+              _kg_company_id: await this.getCompanyKGId(workspace.company_id),
               company_id: workspace.company_id,
               workspace_name: workspace.name,
               workspace_id: workspace.id,
@@ -74,6 +84,7 @@ export default class KnowledgeGraphAPIClient {
             id: "User",
             properties: {
               _kg_user_id: await this.getUserKGId(user.id, user.email_canonical),
+              _kg_company_id: await this.getCompanyKGId(companyId),
               user_id: user.id,
               email: user.email_canonical,
               username: user.username_canonical,
@@ -102,6 +113,7 @@ export default class KnowledgeGraphAPIClient {
             id: "Channel",
             properties: {
               _kg_user_id: await this.getUserKGId(channel.owner),
+              _kg_company_id: await this.getCompanyKGId(channel.company_id),
               channel_id: channel.id,
               channel_name: channel.name,
               channel_owner: channel.owner,
@@ -131,13 +143,14 @@ export default class KnowledgeGraphAPIClient {
             id: "Message",
             properties: {
               _kg_user_id: await this.getUserKGId(message.user_id),
+              _kg_company_id: await this.getCompanyKGId(message.cache?.company_id),
               message_thread_id: message.thread_id,
               message_content: sensitiveData ? message.text : "",
               type_message: message.type,
               message_created_at: message.created_at,
               message_updated_at: message.updated_at,
               user_id: message.user_id,
-              channel_id: channelId,
+              channel_id: message.cache?.channel_id || channelId,
               workspace_id: message.cache?.workspace_id,
               company_id: message.cache?.company_id,
             },
