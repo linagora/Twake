@@ -15,7 +15,7 @@ export const getDefaultDriveItem = (
   item: Partial<DriveFile>,
   context: CompanyExecutionContext,
 ): DriveFile => {
-  const defaultDriveItem = merge<DriveFile, Partial<DriveFile>>(new DriveFile(), {
+  const defaultDriveItem = merge(new DriveFile(), {
     company_id: context.company.id,
     added: item.added || new Date().getTime().toString(),
     creator: item.creator || context.user.id,
@@ -73,7 +73,7 @@ export const getDefaultDriveItemVersion = (
   version: Partial<FileVersion>,
   context: CompanyExecutionContext,
 ): FileVersion => {
-  const defaultVersion = merge<FileVersion, Partial<FileVersion>>(new FileVersion(), {
+  const defaultVersion = merge(new FileVersion(), {
     application_id: version.application_id || "",
     creator_id: version.creator_id || context.user.id,
     data: version.data || {},

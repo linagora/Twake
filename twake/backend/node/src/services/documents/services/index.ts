@@ -178,11 +178,10 @@ export class DocumentsService {
       }
 
       await this.fileVersionRepository.save(driveItemVersion);
-      await this.repository.save({
-        ...driveItem,
-        last_version_cache: { ...driveItemVersion },
-      });
 
+      driveItem.last_version_cache = driveItemVersion;
+
+      await this.repository.save(driveItem);
       await this.updateItemSize(driveItem.parent_id, context);
 
       return driveItem;
@@ -229,7 +228,7 @@ export class DocumentsService {
       }
 
       const driveItem = getDefaultDriveItem(content, context);
-      await this.repository.save(driveItem, context);
+      await this.repository.save(driveItem);
       await this.updateItemSize(driveItem.parent_id, context);
 
       return driveItem;
@@ -265,14 +264,10 @@ export class DocumentsService {
             await this.moveDirectoryContentsTotrash(item.id, context);
           }
 
-          await this.repository.save(
-            {
-              ...item,
-              is_instrash: true,
-              parent_id: this.ROOT,
-            },
-            context,
-          );
+          item.is_instrash = true;
+          item.parent_id = this.ROOT;
+
+          await this.repository.save(item);
         });
 
         await this.updateItemSize("", context);
@@ -353,11 +348,10 @@ export class DocumentsService {
         await this.moveDirectoryContentsTotrash(item.id, context);
       }
 
-      await this.repository.save({
-        ...item,
-        is_instrash: true,
-        parent_id: this.ROOT,
-      });
+      item.is_instrash = true;
+      item.parent_id = this.ROOT;
+
+      await this.repository.save(item);
 
       await this.updateItemSize(item.parent_id, context);
     } catch (error) {
@@ -410,10 +404,10 @@ export class DocumentsService {
 
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
       await this.fileVersionRepository.save(driveItemVersion);
-      await this.repository.save({
-        ...item,
-        last_version_cache: { ...driveItemVersion },
-      });
+
+      item.last_version_cache = driveItemVersion;
+
+      await this.repository.save(item);
 
       return driveItemVersion;
     } catch (error) {
@@ -444,11 +438,10 @@ export class DocumentsService {
     );
 
     children.getEntities().forEach(async child => {
-      await this.repository.save({
-        ...child,
-        parent_id: this.ROOT,
-        is_instrash: true,
-      });
+      child.parent_id = this.ROOT;
+      child.is_instrash = true;
+
+      await this.repository.save(child);
 
       if (child.is_directory) {
         return await this.moveDirectoryContentsTotrash(child.id, context);
