@@ -22,8 +22,8 @@ export class DriveFile {
   parent_id: string;
 
   @Type(() => Boolean)
-  @Column("is_instrash", "boolean")
-  is_instrash: boolean;
+  @Column("is_intrash", "boolean")
+  is_intrash: boolean;
 
   @Type(() => Boolean)
   @Column("is_directory", "boolean")

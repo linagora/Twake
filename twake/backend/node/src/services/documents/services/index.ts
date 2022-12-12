@@ -46,12 +46,10 @@ export class DocumentsService {
       const items = await this.repository.find(
         {
           company_id: context.company.id,
+          parent_id: "",
         },
         {
-          $in: [
-            ["is_intrash", [false]],
-            ["parent_id", [this.ROOT]],
-          ],
+          $in: [["is_intrash", [false]]],
         },
         context,
       );
@@ -129,10 +127,9 @@ export class DocumentsService {
     const children = await this.repository.find(
       {
         company_id: context.company.id,
+        parent_id: id,
       },
-      {
-        $in: [["parent_id", [id]]],
-      },
+      {},
       context,
     );
 
@@ -264,7 +261,7 @@ export class DocumentsService {
             await this.moveDirectoryContentsTotrash(item.id, context);
           }
 
-          item.is_instrash = true;
+          item.is_intrash = true;
           item.parent_id = this.ROOT;
 
           await this.repository.save(item);
@@ -326,7 +323,7 @@ export class DocumentsService {
     }
 
     try {
-      if (item.is_instrash) {
+      if (item.is_intrash) {
         const itemVersions = await this.fileVersionRepository.find(
           {},
           {
@@ -348,7 +345,7 @@ export class DocumentsService {
         await this.moveDirectoryContentsTotrash(item.id, context);
       }
 
-      item.is_instrash = true;
+      item.is_intrash = true;
       item.parent_id = this.ROOT;
 
       await this.repository.save(item);
@@ -430,16 +427,15 @@ export class DocumentsService {
     const children = await this.repository.find(
       {
         company_id: context.company.id,
+        parent_id: id,
       },
-      {
-        $in: [["parent_id", [id]]],
-      },
+      {},
       context,
     );
 
     children.getEntities().forEach(async child => {
       child.parent_id = this.ROOT;
-      child.is_instrash = true;
+      child.is_intrash = true;
 
       await this.repository.save(child);
 
@@ -502,12 +498,9 @@ export class DocumentsService {
     if ((typeof item === "string" && item === "") || !item) {
       let rootSize = 0;
       const rootFolderItems = await this.repository.find(
-        { company_id: context.company.id },
+        { company_id: context.company.id, parent_id: "" },
         {
-          $in: [
-            ["is_intrash", [false]],
-            ["parent_id", [""]],
-          ],
+          $in: [["is_intrash", [false]]],
         },
         context,
       );
@@ -524,10 +517,9 @@ export class DocumentsService {
       const children = await this.repository.find(
         {
           company_id: context.company.id,
+          parent_id: item.id,
         },
-        {
-          $in: [["parent_id", [item.id]]],
-        },
+        {},
         context,
       );
 
