@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { Column, Entity } from "src/core/platform/services/database/services/orm/decorators";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { FileVersion } from "./file-version";
 
 export const TYPE = "drive_files";

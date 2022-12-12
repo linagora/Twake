@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { Column, Entity } from "src/core/platform/services/database/services/orm/decorators";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 export const TYPE = "file_version";
 

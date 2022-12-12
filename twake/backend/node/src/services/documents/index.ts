@@ -1,5 +1,5 @@
-import { Prefix, TwakeService } from "src/core/platform/framework";
-import WebServerAPI from "src/core/platform/services/webserver/provider";
+import { Prefix, TwakeService } from "../../core/platform/framework";
+import WebServerAPI from "../../core/platform/services/webserver/provider";
 import web from "./web";
 
 @Prefix("/internal/services/documents/v1")

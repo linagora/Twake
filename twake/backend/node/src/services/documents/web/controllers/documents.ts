@@ -1,10 +1,10 @@
 import { FastifyRequest } from "fastify";
-import { logger } from "src/core/platform/framework";
-import { CrudException } from "src/core/platform/framework/api/crud-service";
-import { File } from "src/services/files/entities/file";
-import { UploadOptions } from "src/services/files/types";
-import globalResolver from "src/services/global-resolver";
-import { PaginationQueryParameters } from "src/utils/types";
+import { logger } from "../../../../core/platform/framework";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
+import { File } from "../../../../services/files/entities/file";
+import { UploadOptions } from "../../../../services/files/types";
+import globalResolver from "../../../../services/global-resolver";
+import { PaginationQueryParameters } from "../../../../utils/types";
 import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import { CompanyExecutionContext, DriveItemDetails } from "../../types";

@@ -1,10 +1,10 @@
-import { getLogger, logger, TwakeLogger } from "src/core/platform/framework";
-import Repository from "src/core/platform/services/database/services/orm/repository/repository";
-import globalResolver from "src/services/global-resolver";
+import { getLogger, logger, TwakeLogger } from "../../../core/platform/framework";
+import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import globalResolver from "../../../services/global-resolver";
 import { CompanyExecutionContext, DriveItemDetails } from "../types";
 import { DriveFile, TYPE } from "../entities/drive-file";
-import { CrudException } from "src/core/platform/framework/api/crud-service";
-import { PublicFile } from "src/services/files/entities/file";
+import { CrudException } from "../../../core/platform/framework/api/crud-service";
+import { PublicFile } from "../../../services/files/entities/file";
 import { getDefaultDriveItem, getDefaultDriveItemVersion } from "../utils";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 

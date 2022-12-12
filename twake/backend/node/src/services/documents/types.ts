@@ -1,4 +1,4 @@
-import { ExecutionContext } from "src/core/platform/framework/api/crud-service";
+import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { DriveFile } from "./entities/drive-file";
 import { FileVersion } from "./entities/file-version";
 
