@@ -14,7 +14,7 @@ export const DriveItem = ({ className, onClick }: { className?: string; onClick:
     >
       <DesktopComputerIcon className="h-5 w-5 shrink-0 text-blue-500 mr-2" />
       <div className="grow text-ellipsis whitespace-nowrap overflow-hidden">
-        <Base className="!font-semibold">Romaric's Mac Book Pro</Base>
+        <Base className="!font-semibold">Device 1o</Base>
       </div>
     </div>
   );

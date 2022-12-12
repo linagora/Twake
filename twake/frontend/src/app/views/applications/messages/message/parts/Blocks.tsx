@@ -26,11 +26,14 @@ const Code = ({ className, children }: { className: string; children: string }) 
 
 const Link = ({ href, children }: { href: string; children: string }) => {
   let target = '_blank';
+  if (!href) {
+    return <a href="#">{children}</a>;
+  }
   //If same domain, stay on the same tab
   if (
     href
-      .replace(/https?:\/\//g, '')
-      .split('/')[0]
+      ?.replace(/https?:\/\//g, '')
+      ?.split('/')[0]
       ?.toLocaleLowerCase() ===
     environment.front_root_url
       .replace(/https?:\/\//g, '')
@@ -39,6 +42,7 @@ const Link = ({ href, children }: { href: string; children: string }) => {
   ) {
     target = '_self';
   }
+
   return (
     <a target={target} rel="noreferrer" href={href?.replace(/^javascript:/, '')}>
       {children}
