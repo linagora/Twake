@@ -256,16 +256,18 @@ export class DocumentsService {
           context,
         );
 
-        rootFolderItems.getEntities().forEach(async item => {
-          if (item.is_directory) {
-            await this.moveDirectoryContentsTotrash(item.id, context);
-          }
+        Promise.all(
+          rootFolderItems.getEntities().map(async item => {
+            if (item.is_directory) {
+              await this.moveDirectoryContentsTotrash(item.id, context);
+            }
 
-          item.is_intrash = true;
-          item.parent_id = this.ROOT;
+            item.is_intrash = true;
+            item.parent_id = this.ROOT;
 
-          await this.repository.save(item);
-        });
+            await this.repository.save(item);
+          }),
+        );
 
         await this.updateItemSize("", context);
       } catch (error) {
@@ -286,9 +288,11 @@ export class DocumentsService {
           context,
         );
 
-        itemsInTrash.getEntities().forEach(async item => {
-          await this.repository.remove(item);
-        });
+        await Promise.all(
+          itemsInTrash.getEntities().map(async item => {
+            await this.repository.remove(item);
+          }),
+        );
       } catch (error) {
         this.logger.error("Failed to empty trash", error);
         throw new CrudException("Failed to empty trash", 500);
@@ -335,9 +339,11 @@ export class DocumentsService {
           context,
         );
 
-        itemVersions.getEntities().forEach(async version => {
-          await this.fileVersionRepository.remove(version);
-        });
+        await Promise.all(
+          itemVersions.getEntities().map(async version => {
+            await this.fileVersionRepository.remove(version);
+          }),
+        );
         return await this.repository.remove(item);
       }
 
@@ -433,16 +439,18 @@ export class DocumentsService {
       context,
     );
 
-    children.getEntities().forEach(async child => {
-      child.parent_id = this.ROOT;
-      child.is_intrash = true;
+    await Promise.all(
+      children.getEntities().map(async child => {
+        child.parent_id = this.ROOT;
+        child.is_intrash = true;
 
-      await this.repository.save(child);
+        await this.repository.save(child);
 
-      if (child.is_directory) {
-        return await this.moveDirectoryContentsTotrash(child.id, context);
-      }
-    });
+        if (child.is_directory) {
+          return await this.moveDirectoryContentsTotrash(child.id, context);
+        }
+      }),
+    );
   };
 
   /**
@@ -505,9 +513,11 @@ export class DocumentsService {
         context,
       );
 
-      rootFolderItems.getEntities().forEach(async child => {
-        rootSize += await this.calculateItemSize(child, context);
-      });
+      await Promise.all(
+        rootFolderItems.getEntities().map(async child => {
+          rootSize += await this.calculateItemSize(child, context);
+        }),
+      );
 
       return rootSize;
     }
@@ -523,12 +533,16 @@ export class DocumentsService {
         context,
       );
 
-      children.getEntities().forEach(async child => {
-        initialSize += await this.calculateItemSize(child, context);
-      });
+      Promise.all(
+        children.getEntities().map(async child => {
+          initialSize += await this.calculateItemSize(child, context);
+        }),
+      );
 
       return initialSize;
     }
+
+    console.log("returning", item.size);
 
     return item.size;
   };
