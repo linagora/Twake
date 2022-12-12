@@ -45,15 +45,22 @@ export class DocumentsService {
     if (!id || !id.length || id === "") {
       const items = await this.repository.find(
         {
-          parent_id: this.ROOT,
-          is_instrash: false,
           company_id: context.company.id,
         },
-        {},
+        {
+          $in: [
+            ["is_intrash", [false]],
+            ["parent_id", [this.ROOT]],
+          ],
+        },
         context,
       );
 
       return {
+        item: {
+          name: "root",
+          size: await this.calculateItemSize("", context),
+        } as DriveFile,
         children: items.getEntities(),
       };
     }
@@ -61,14 +68,19 @@ export class DocumentsService {
     if (id === "trash") {
       const items = await this.repository.find(
         {
-          is_instrash: true,
           company_id: context.company.id,
         },
-        {},
+        {
+          $in: [["is_intrash", [true]]],
+        },
         context,
       );
 
       return {
+        item: {
+          name: "trash",
+          size: await this.calculateItemSize("trash", context),
+        } as DriveFile,
         children: items.getEntities(),
       };
     }
@@ -99,10 +111,10 @@ export class DocumentsService {
     }
 
     const versions = await this.fileVersionRepository.find(
-      {
-        file_id: entity.id,
-      },
       {},
+      {
+        $in: [["file_id", [entity.id]]],
+      },
       context,
     );
 
@@ -116,10 +128,11 @@ export class DocumentsService {
 
     const children = await this.repository.find(
       {
-        parent_id: id,
         company_id: context.company.id,
       },
-      {},
+      {
+        $in: [["parent_id", [id]]],
+      },
       context,
     );
 
@@ -163,6 +176,7 @@ export class DocumentsService {
         driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
         driveItemVersion.file_size = file.upload_data.size;
       }
+
       await this.fileVersionRepository.save(driveItemVersion);
       await this.repository.save({
         ...driveItem,
@@ -236,11 +250,13 @@ export class DocumentsService {
     if (!id || id === "") {
       try {
         const rootFolderItems = await this.repository.find(
-          {
-            parent_id: this.ROOT,
-            is_intrash: false,
-          },
           {},
+          {
+            $in: [
+              ["is_intrash", [false]],
+              ["parent_id", [this.ROOT]],
+            ],
+          },
           context,
         );
 
@@ -271,10 +287,10 @@ export class DocumentsService {
     if (id === "trash") {
       try {
         const itemsInTrash = await this.repository.find(
-          {
-            is_instrash: true,
-          },
           {},
+          {
+            $in: [["is_intrash", [true]]],
+          },
           context,
         );
 
@@ -317,11 +333,13 @@ export class DocumentsService {
     try {
       if (item.is_instrash) {
         const itemVersions = await this.fileVersionRepository.find(
-          {
-            file_id: item.id,
-            provider: "internal",
-          },
           {},
+          {
+            $in: [
+              ["provider", ["internal"]],
+              ["file_id", [item.id]],
+            ],
+          },
           context,
         );
 
@@ -415,10 +433,15 @@ export class DocumentsService {
     id: string,
     context?: CompanyExecutionContext,
   ): Promise<void> => {
-    const children = await this.repository.find({
-      company_id: context.company.id,
-      parent_id: id,
-    });
+    const children = await this.repository.find(
+      {
+        company_id: context.company.id,
+      },
+      {
+        $in: [["parent_id", [id]]],
+      },
+      context,
+    );
 
     children.getEntities().forEach(async child => {
       await this.repository.save({
@@ -463,15 +486,57 @@ export class DocumentsService {
    * @returns {Promise<number>} - the size of the Drive Item
    */
   private calculateItemSize = async (
-    item: DriveFile,
+    item: DriveFile | "" | "trash",
     context: CompanyExecutionContext,
   ): Promise<number> => {
+    if (item === "trash") {
+      let trashSize = 0;
+      const trashedItems = await this.repository.find(
+        { company_id: context.company.id },
+        {
+          $in: [["is_intrash", [true]]],
+        },
+        context,
+      );
+
+      trashedItems.getEntities().forEach(child => {
+        trashSize += child.size;
+      });
+
+      return trashSize;
+    }
+
+    if ((typeof item === "string" && item === "") || !item) {
+      let rootSize = 0;
+      const rootFolderItems = await this.repository.find(
+        { company_id: context.company.id },
+        {
+          $in: [
+            ["is_intrash", [false]],
+            ["parent_id", [""]],
+          ],
+        },
+        context,
+      );
+
+      rootFolderItems.getEntities().forEach(async child => {
+        rootSize += await this.calculateItemSize(child, context);
+      });
+
+      return rootSize;
+    }
+
     if (item.is_directory) {
       let initialSize = 0;
-      const children = await this.repository.find({
-        parent_id: item.id,
-        company_id: context.company.id,
-      });
+      const children = await this.repository.find(
+        {
+          company_id: context.company.id,
+        },
+        {
+          $in: [["parent_id", [item.id]]],
+        },
+        context,
+      );
 
       children.getEntities().forEach(async child => {
         initialSize += await this.calculateItemSize(child, context);

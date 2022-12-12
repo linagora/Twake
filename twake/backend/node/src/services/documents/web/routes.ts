@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { DocumentsController } from "./controllers";
 
-const serviceUrl = "/companies/:company_id/item/";
+const serviceUrl = "/companies/:company_id/item";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next) => {
   const documentsController = new DocumentsController();
