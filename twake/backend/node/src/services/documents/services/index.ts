@@ -73,6 +73,17 @@ export class DocumentsService {
       };
     }
 
+    try {
+      const hasAccess = this.checkAccess(id, context);
+      if (!hasAccess) {
+        this.logger.error("user does not have access drive item ", id);
+        throw Error("user does not have access to this item");
+      }
+    } catch (error) {
+      this.logger.error("Failed to grant access to the drive item", error);
+      throw new CrudException("User does not have access to this item or its children", 401);
+    }
+
     const entity = await this.repository.findOne(
       {
         id,
@@ -138,6 +149,12 @@ export class DocumentsService {
       const driveItem = getDefaultDriveItem(content, context);
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
+      const hasAccess = this.checkAccess(driveItem.parent_id, context);
+      if (!hasAccess) {
+        this.logger.error("user does not have access drive item parent", driveItem.parent_id);
+        throw Error("user does not have access to this item parent");
+      }
+
       if (file) {
         driveItem.size = file.upload_data.size;
         driveItem.is_directory = false;
@@ -180,6 +197,13 @@ export class DocumentsService {
     }
 
     try {
+      const hasAccess = this.checkAccess(id, context);
+
+      if (!hasAccess) {
+        this.logger.error("user does not have access drive item ", id);
+        throw Error("user does not have access to this item");
+      }
+
       const item = await this.repository.findOne({
         id,
         company_id: context.company.id,
@@ -265,6 +289,17 @@ export class DocumentsService {
       return;
     }
 
+    try {
+      const hasAccess = this.checkAccess(id, context);
+      if (!hasAccess) {
+        this.logger.error("user does not have access drive item ", id);
+        throw Error("user does not have access to this item");
+      }
+    } catch (error) {
+      this.logger.error("Failed to grant access to the drive item", error);
+      throw new CrudException("User does not have access to this item or its children", 401);
+    }
+
     const item = await this.repository.findOne(
       {
         id,
@@ -332,6 +367,12 @@ export class DocumentsService {
     }
 
     try {
+      const hasAccess = this.checkAccess(id, context);
+      if (!hasAccess) {
+        this.logger.error("user does not have access drive item ", id);
+        throw Error("user does not have access to this item");
+      }
+
       const item = await this.repository.findOne(
         {
           id,
@@ -441,4 +482,76 @@ export class DocumentsService {
 
     return item.size;
   };
+
+  /**
+   * Checks if the current user has access to a drive item.
+   *
+   * @param {string} id - the drive item id.
+   * @param {CompanyExecutionContext} context - the execution context.
+   * @returns {Promise<boolean>} - whether the current user has access to the item or not.
+   */
+  private checkAccess = async (id: string, context: CompanyExecutionContext): Promise<boolean> => {
+    if (!id || id === "" || id === "trash") return true;
+
+    try {
+      const item = await this.repository.findOne({
+        id,
+        company_id: context.company.id,
+      });
+
+      if (!item) {
+        logger.error("Drive item doesn't exist");
+        throw Error("Drive item doesn't exist");
+      }
+
+      if (
+        !item.access_info.authorized_entities.find(entity =>
+          entityIdentityCheck(entity.id, context),
+        )
+      ) {
+        return false;
+      }
+
+      if (
+        item.access_info.unauthorized_entities.find(entity =>
+          entityIdentityCheck(entity.id, context),
+        )
+      ) {
+        return false;
+      }
+
+      if (!item.is_directory) return true;
+
+      const children = await this.repository.find({
+        parent_id: id,
+        company: context.company.id,
+      });
+
+      return children.getEntities().every(child => {
+        if (
+          child.access_info.unauthorized_entities.find(entity =>
+            entityIdentityCheck(entity.id, context),
+          )
+        ) {
+          return false;
+        }
+
+        if (
+          !child.access_info.authorized_entities.find(entity =>
+            entityIdentityCheck(entity.id, context),
+          )
+        ) {
+          return false;
+        }
+
+        return true;
+      });
+    } catch (error) {
+      logger.error("failed to check Drive item access", error);
+      throw Error(error);
+    }
+  };
 }
+
+const entityIdentityCheck = (id: string, context: CompanyExecutionContext): boolean =>
+  id === context.user.id;
