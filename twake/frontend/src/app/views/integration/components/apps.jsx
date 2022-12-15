@@ -39,7 +39,7 @@ export default function Apps(props) {
       >
         <div className="integration-apps">
           {props.apps.map(item => (
-            <a className="app" target="_BLANK" rel="noreferrer" href={item.url} key={item.url}>
+            <a className="app" target="_BLANK" rel="noreferrer" href={item.url?.replace(/^javascript:/, '')} key={item.url}>
               <div className="image" style={{ backgroundImage: 'url(' + item.icon + ')' }} />
               <div className="app-title">{item.name}</div>
             </a>

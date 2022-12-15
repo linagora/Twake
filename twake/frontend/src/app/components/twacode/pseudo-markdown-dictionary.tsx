@@ -93,7 +93,7 @@ export const DynamicComponent = ({
     }
     return (
       // eslint-disable-next-line react/jsx-no-target-blank
-      <a target="_blank" rel="noreferrer" href={url}>
+      <a target="_blank" rel="noreferrer" href={url?.replace(/^javascript:/, '')}>
         {child}
       </a>
     );
@@ -335,9 +335,7 @@ class PseudoMarkdownDictionary {
       object: (_child: any, object: any) => <DynamicComponent type="iframe" data={object} />,
     },
     image: {
-      object: (_child: any, object: any) => (
-        <DynamicComponent type="image" data={object} />
-      ),
+      object: (_child: any, object: any) => <DynamicComponent type="image" data={object} />,
     },
     icon: {
       object: (_child: any, object: any) => <DynamicComponent type="icon" data={object} />,
