@@ -5,8 +5,8 @@ import { FileVersion } from "./file-version";
 export const TYPE = "drive_files";
 
 @Entity(TYPE, {
-  globalIndexes: [["company_id", "parent_id", "id"]],
-  primaryKey: [["company_id", "id"]],
+  globalIndexes: [["company_id", "parent_id"]],
+  primaryKey: [["company_id"], "id"],
   type: TYPE,
 })
 export class DriveFile {
@@ -19,7 +19,7 @@ export class DriveFile {
   id: string;
 
   @Type(() => String)
-  @Column("parent_id", "uuid")
+  @Column("parent_id", "string")
   parent_id: string;
 
   @Type(() => Boolean)

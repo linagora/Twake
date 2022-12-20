@@ -114,7 +114,7 @@ description: Knowledge-graph API
         {
             key: "null",
             value: {
-                id: "Company",
+                id: "Workspace",
                 properties: {
                     _kg_company_id: string; //Console wide company id
                     company_id: string; //Internal to Twake company id
@@ -136,6 +136,7 @@ Authorised by a Token authorization header:
 `Authorization: Token {some token defined together}`
 
 And with the following data in JSON:
+
 ```typescript
 {
   events: [KnowledgeGraphCallbackEvent, KnowledgeGraphCallbackEvent, KnowledgeGraphCallbackEvent, ...]
@@ -161,6 +162,7 @@ type KnowledgeGraphCallbackEvent = {
 ```
 
 The reply will be if everything was alright:
+
 ```typescript
 {
   "status": "success"

@@ -289,7 +289,9 @@ export class CassandraConnector extends AbstractConnector<
 
         const query = `CREATE INDEX IF NOT EXISTS ${indexDbName} ON ${this.options.keyspace}."${
           entity.name
-        }" (${globalIndex.join(", ")})`;
+        }" (${
+          globalIndex.length === 1 ? globalIndex[0] : `(${globalIndex[0]}), ${globalIndex[1]}`
+        })`;
 
         try {
           logger.debug(
