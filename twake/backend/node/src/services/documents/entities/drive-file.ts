@@ -123,12 +123,17 @@ export class DriveFile {
 }
 
 type AccessInformation = {
-  public_access_token: string;
-  authorized_entities: AuthEntity[];
-  unauthorized_entities: AuthEntity[];
+  public: {
+    token: string;
+    level: publicAccessLevel;
+  };
+  entities: AuthEntity[];
 };
 
 type AuthEntity = {
-  type: string;
-  id: string;
+  type: "user" | "channel" | "company" | "folder";
+  id: string | "parent";
+  level: "manage" | "write" | "read" | "none";
 };
+
+type publicAccessLevel = "write" | "read" | "none";

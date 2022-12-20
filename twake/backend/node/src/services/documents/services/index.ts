@@ -70,7 +70,7 @@ export class DocumentsService {
 
     //Check access to entity
     try {
-      const hasAccess = this.checkAccess(id, entity, context);
+      const hasAccess = this.checkAccess(id, entity, "read", context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -113,7 +113,7 @@ export class DocumentsService {
     const accessMap: { [key: string]: boolean } = {};
     await Promise.all(
       children.map(async child => {
-        accessMap[child.id] = await this.checkAccess(child.id, child, context);
+        accessMap[child.id] = await this.checkAccess(child.id, child, "read", context);
       }),
     );
     children = children.filter(child => accessMap[child.id]);
@@ -153,7 +153,7 @@ export class DocumentsService {
       const driveItem = getDefaultDriveItem(content, context);
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
-      const hasAccess = this.checkAccess(driveItem.parent_id, null, context);
+      const hasAccess = this.checkAccess(driveItem.parent_id, null, "write", context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item parent", driveItem.parent_id);
         throw Error("user does not have access to this item parent");
@@ -201,7 +201,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, null, context);
+      const hasAccess = this.checkAccess(id, null, "write", context);
 
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
@@ -288,7 +288,7 @@ export class DocumentsService {
       }
 
       try {
-        const hasAccess = this.checkAccess(item.id, item, context);
+        const hasAccess = this.checkAccess(item.id, item, "write", context);
         if (!hasAccess) {
           this.logger.error("user does not have access drive item ", id);
           throw Error("user does not have access to this item");
@@ -365,7 +365,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, null, context);
+      const hasAccess = this.checkAccess(id, null, "write", context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -501,8 +501,10 @@ export class DocumentsService {
    */
   private checkAccess = async (
     id: string,
-    item?: DriveFile,
-    context?: CompanyExecutionContext,
+    item: DriveFile | null,
+    level: "read" | "write" | "manage",
+    context: CompanyExecutionContext,
+    token?: string,
   ): Promise<boolean> => {
     if (!id || id === this.ROOT || id === this.TRASH) return true;
 
@@ -519,18 +521,30 @@ export class DocumentsService {
         throw Error("Drive item doesn't exist");
       }
 
-      if (
-        !item.access_info.authorized_entities.find(entity =>
-          entityIdentityCheck(entity.id, context),
-        )
-      ) {
-        return false;
+      if (token) {
+        if (!item.access_info.public.token) {
+          return false;
+        }
+
+        const { token: itemToken, level: itemLevel } = item.access_info.public;
+
+        return itemLevel === level && itemToken === token;
       }
 
       if (
-        item.access_info.unauthorized_entities.find(entity =>
-          entityIdentityCheck(entity.id, context),
-        )
+        !item.access_info.entities.find(entity => {
+          if (entity.level !== level) return false;
+
+          if (entity.type === "user" && entity.id === context.user.id) {
+            return true;
+          }
+
+          if (entity.type === "company" && entity.id === context.company.id) {
+            return true;
+          }
+
+          return false;
+        })
       ) {
         return false;
       }
@@ -543,23 +557,7 @@ export class DocumentsService {
       });
 
       return children.getEntities().every(child => {
-        if (
-          child.access_info.unauthorized_entities.find(entity =>
-            entityIdentityCheck(entity.id, context),
-          )
-        ) {
-          return false;
-        }
-
-        if (
-          !child.access_info.authorized_entities.find(entity =>
-            entityIdentityCheck(entity.id, context),
-          )
-        ) {
-          return false;
-        }
-
-        return true;
+        return this.checkAccess(child.id, child, level, context, token);
       });
     } catch (error) {
       logger.error("failed to check Drive item access", error);
@@ -580,13 +578,10 @@ export class DocumentsService {
       company_id: context.company.id,
     });
 
-    if (!item || (!this.checkAccess(id, item, context) && !ignoreAccess)) {
+    if (!item || (!this.checkAccess(id, item, "read", context) && !ignoreAccess)) {
       return [];
     }
 
     return [...(await this.getPath(item.parent_id, ignoreAccess, context)), item];
   };
 }
-
-const entityIdentityCheck = (id: string, context: CompanyExecutionContext): boolean =>
-  id === context.user.id;
