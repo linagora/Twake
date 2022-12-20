@@ -2,9 +2,9 @@
 description: Knowledge-graph API
 ---
 
-# Events sent to the knowledge graph
+## Events sent by twake to the knowledge graph
 
-#### User created / updated
+### User created / updated
 
 ```typescript
 {
@@ -32,7 +32,7 @@ description: Knowledge-graph API
 }
 ```
 
-#### Channel created / updated
+### Channel created / updated
 
 ```typescript
 {
@@ -57,7 +57,7 @@ description: Knowledge-graph API
 }
 ```
 
-#### Message created / updated
+### Message created / updated
 
 ```typescript
 {
@@ -86,7 +86,7 @@ description: Knowledge-graph API
 }
 ```
 
-#### Company created / updated
+### Company created / updated
 
 ```typescript
 {
@@ -106,7 +106,7 @@ description: Knowledge-graph API
 }
 ```
 
-#### Workspace created / updated
+### Workspace created / updated
 
 ```typescript
 {
@@ -124,5 +124,45 @@ description: Knowledge-graph API
             },
         },
     ],
+}
+```
+
+## Sending events to Twake from the KG
+
+Twake listen at at:
+`POST https://domain/internal/services/knowledge-graph/v1/push`
+
+Authorised by a Token authorization header:
+`Authorization: Token {some token defined together}`
+
+And with the following data in JSON:
+```typescript
+{
+  events: [KnowledgeGraphCallbackEvent, KnowledgeGraphCallbackEvent, KnowledgeGraphCallbackEvent, ...]
+}
+
+type KnowledgeGraphCallbackEvent = {
+  recipients: {
+    type: "user";
+    id: string; // KG user id which is a md5 of the email
+  }[];
+  event: {
+    type: "user_tags"; //More events will be added later
+    data: {
+      //For user_tags event only
+      tags?: {
+        value: string;
+        weight: number;
+      }[];
+    };
+  };
+};
+
+```
+
+The reply will be if everything was alright:
+```typescript
+{
+  "status": "success"
 }
 ```
