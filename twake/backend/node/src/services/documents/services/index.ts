@@ -43,48 +43,29 @@ export class DocumentsService {
       return null;
     }
 
-    if (!id || !id.length || id === "") {
-      const items = await this.repository.find(
-        {
-          company_id: context.company.id,
-          parent_id: "",
-        },
-        {},
-        context,
-      );
-      items.filterEntities(item => item.is_in_trash === false);
+    id = id || this.ROOT;
 
-      return {
-        item: {
-          name: "root",
-          size: await this.calculateItemSize("", context),
-        } as DriveFile,
-        children: items.getEntities(),
-      };
+    //Get requested entity
+    const entity =
+      id === this.ROOT || id === this.TRASH
+        ? null
+        : await this.repository.findOne(
+            {
+              company_id: context.company.id,
+              id,
+            },
+            {},
+            context,
+          );
+
+    if (!entity && !(id === this.ROOT || id === this.TRASH)) {
+      this.logger.error("Drive item not found");
+      throw new CrudException("Item not found", 404);
     }
 
-    if (id === "trash") {
-      const items = await this.repository.find(
-        {
-          company_id: context.company.id,
-          parent_id: "trash",
-        },
-        {},
-        context,
-      );
-      items.filterEntities(item => item.is_in_trash === true);
-
-      return {
-        item: {
-          name: "trash",
-          size: await this.calculateItemSize("trash", context),
-        } as DriveFile,
-        children: items.getEntities(),
-      };
-    }
-
+    //Check access to entity
     try {
-      const hasAccess = this.checkAccess(id, context);
+      const hasAccess = this.checkAccess(id, entity, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -94,49 +75,54 @@ export class DocumentsService {
       throw new CrudException("User does not have access to this item or its children", 401);
     }
 
-    const entity = await this.repository.findOne(
-      {
-        company_id: context.company.id,
-        id,
-      },
-      {},
-      context,
+    //Get entity version in case of a file
+    const versions = entity.is_directory
+      ? []
+      : (
+          await this.fileVersionRepository.find(
+            {
+              file_id: entity.id,
+            },
+            {},
+            context,
+          )
+        ).getEntities();
+
+    //Get children if it is a directory
+    let children = entity.is_directory
+      ? (
+          await this.repository.find(
+            {
+              company_id: context.company.id,
+              parent_id: id,
+            },
+            {},
+            context,
+          )
+        ).getEntities()
+      : [];
+
+    //Check each children for access
+    const accessMap: { [key: string]: boolean } = {};
+    await Promise.all(
+      children.map(async child => {
+        accessMap[child.id] = await this.checkAccess(child.id, child, context);
+      }),
     );
+    children = children.filter(child => accessMap[child.id]);
 
-    if (!entity) {
-      this.logger.error("Drive item not found");
-      throw new CrudException("Item not found", 404);
-    }
-
-    const versions = await this.fileVersionRepository.find(
-      {
-        file_id: entity.id,
-      },
-      {},
-      context,
-    );
-
-    if (!entity.is_directory) {
-      return {
-        item: entity,
-        versions: versions.getEntities(),
-        children: [],
-      };
-    }
-
-    const children = await this.repository.find(
-      {
-        company_id: context.company.id,
-        parent_id: id,
-      },
-      {},
-      context,
-    );
-
+    //Return complete object
     return {
-      item: entity,
-      versions: versions.getEntities(),
-      children: children.getEntities(),
+      item:
+        entity ||
+        ({
+          id,
+          parent_id: null,
+          name: id === this.ROOT ? "root" : id === this.TRASH ? "trash" : "unknown",
+          size: await this.calculateItemSize(id === this.ROOT ? this.ROOT : "trash", context),
+        } as DriveFile),
+      versions: versions,
+      children: children,
     };
   };
 
@@ -159,7 +145,7 @@ export class DocumentsService {
       const driveItem = getDefaultDriveItem(content, context);
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
-      const hasAccess = this.checkAccess(driveItem.parent_id, context);
+      const hasAccess = this.checkAccess(driveItem.parent_id, null, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item parent", driveItem.parent_id);
         throw Error("user does not have access to this item parent");
@@ -207,7 +193,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, context);
+      const hasAccess = this.checkAccess(id, null, context);
 
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
@@ -301,7 +287,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, context);
+      const hasAccess = this.checkAccess(id, null, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -378,7 +364,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, context);
+      const hasAccess = this.checkAccess(id, null, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -550,14 +536,20 @@ export class DocumentsService {
    * @param {CompanyExecutionContext} context - the execution context.
    * @returns {Promise<boolean>} - whether the current user has access to the item or not.
    */
-  private checkAccess = async (id: string, context: CompanyExecutionContext): Promise<boolean> => {
+  private checkAccess = async (
+    id: string,
+    item?: DriveFile,
+    context?: CompanyExecutionContext,
+  ): Promise<boolean> => {
     if (!id || id === "" || id === "trash") return true;
 
     try {
-      const item = await this.repository.findOne({
-        id,
-        company_id: context.company.id,
-      });
+      item =
+        item ||
+        (await this.repository.findOne({
+          id,
+          company_id: context.company.id,
+        }));
 
       if (!item) {
         logger.error("Drive item doesn't exist");
