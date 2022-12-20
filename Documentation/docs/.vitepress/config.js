@@ -31,6 +31,23 @@ export default {
           },
         ],
       },
+      {
+        text: "Internal documentation",
+        items: [
+          {
+            text: "Our stack",
+            link: "/internal-documentation/our-stack",
+          },
+          {
+            text: "Translation",
+            link: "/internal-documentation/translation",
+          },
+          {
+            text: "Knowledge graph",
+            link: "/internal-documentation/knowledge-graph",
+          },
+        ],
+      },
     ],
   },
   head: [],

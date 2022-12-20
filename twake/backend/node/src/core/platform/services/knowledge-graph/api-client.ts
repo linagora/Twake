@@ -21,7 +21,12 @@ export default class KnowledgeGraphAPIClient {
     this.apiUrl = apiUrl;
   }
 
-  private async getUserKGId(id: string, email?: string) {
+  private async getUserKGId(id: string, provider_id?: string) {
+    provider_id = provider_id || (await gr.services.users.get({ id }))?.identity_provider_id;
+    return provider_id;
+  }
+
+  private async getUserKGMailId(id: string, email?: string) {
     email = email || (await gr.services.users.get({ id }))?.email_canonical;
     return md5(email.trim().toLocaleLowerCase());
   }
@@ -83,8 +88,11 @@ export default class KnowledgeGraphAPIClient {
           value: {
             id: "User",
             properties: {
-              _kg_user_id: await this.getUserKGId(user.id, user.email_canonical),
-              _kg_company_id: await this.getCompanyKGId(companyId),
+              _kg_user_id: await this.getUserKGId(user.id, user.identity_provider_id),
+              _kg_email_id: await this.getUserKGMailId(user.id, user.email_canonical),
+              _kg_company_all_id: await Promise.all(
+                user.cache.companies.map(async c => await this.getCompanyKGId(c)),
+              ),
               user_id: user.id,
               email: user.email_canonical,
               username: user.username_canonical,
@@ -113,6 +121,7 @@ export default class KnowledgeGraphAPIClient {
             id: "Channel",
             properties: {
               _kg_user_id: await this.getUserKGId(channel.owner),
+              _kg_email_id: await this.getUserKGMailId(channel.owner),
               _kg_company_id: await this.getCompanyKGId(channel.company_id),
               channel_id: channel.id,
               channel_name: channel.name,
@@ -143,6 +152,7 @@ export default class KnowledgeGraphAPIClient {
             id: "Message",
             properties: {
               _kg_user_id: await this.getUserKGId(message.user_id),
+              _kg_email_id: await this.getUserKGMailId(message.user_id),
               _kg_company_id: await this.getCompanyKGId(message.cache?.company_id),
               message_thread_id: message.thread_id,
               message_content: sensitiveData ? message.text : "",
