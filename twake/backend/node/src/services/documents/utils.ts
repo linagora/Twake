@@ -20,7 +20,7 @@ export const getDefaultDriveItem = (
     added: item.added || new Date().getTime().toString(),
     creator: item.creator || context.user.id,
     is_directory: item.is_directory || false,
-    is_intrash: false,
+    is_in_trash: false,
     last_user: item.last_user || context.user.id,
     last_modified: new Date().getTime().toString(),
     parent_id: item.parent_id || "",

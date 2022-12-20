@@ -7,6 +7,7 @@ export interface CompanyExecutionContext extends ExecutionContext {
 }
 
 export type DriveItemDetails = {
+  path: DriveFile[];
   item?: DriveFile;
   versions?: FileVersion[];
   children: DriveFile[];

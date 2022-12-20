@@ -1,18 +1,21 @@
 import { getLogger, logger, TwakeLogger } from "../../../core/platform/framework";
-import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import globalResolver from "../../../services/global-resolver";
-import { CompanyExecutionContext, DriveItemDetails } from "../types";
-import { DriveFile, TYPE } from "../entities/drive-file";
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
+import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { PublicFile } from "../../../services/files/entities/file";
-import { getDefaultDriveItem, getDefaultDriveItemVersion } from "../utils";
+import globalResolver from "../../../services/global-resolver";
+import { hasCompanyAdminLevel } from "../../../utils/company";
+import gr from "../../global-resolver";
+import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
+import { CompanyExecutionContext, DriveItemDetails } from "../types";
+import { getDefaultDriveItem, getDefaultDriveItemVersion } from "../utils";
 
 export class DocumentsService {
   version: "1";
   repository: Repository<DriveFile>;
   fileVersionRepository: Repository<FileVersion>;
   ROOT: "";
+  TRASH: "trash";
   logger: TwakeLogger = getLogger("Documents Service");
 
   async init(): Promise<this> {
@@ -42,49 +45,29 @@ export class DocumentsService {
       return null;
     }
 
-    if (!id || !id.length || id === "") {
-      const items = await this.repository.find(
-        {
-          company_id: context.company.id,
-          parent_id: "",
-        },
-        {
-          $in: [["is_intrash", [false]]],
-        },
-        context,
-      );
+    id = id || this.ROOT;
 
-      return {
-        item: {
-          name: "root",
-          size: await this.calculateItemSize("", context),
-        } as DriveFile,
-        children: items.getEntities(),
-      };
+    //Get requested entity
+    const entity =
+      id === this.ROOT || id === this.TRASH
+        ? null
+        : await this.repository.findOne(
+            {
+              company_id: context.company.id,
+              id,
+            },
+            {},
+            context,
+          );
+
+    if (!entity && !(id === this.ROOT || id === this.TRASH)) {
+      this.logger.error("Drive item not found");
+      throw new CrudException("Item not found", 404);
     }
 
-    if (id === "trash") {
-      const items = await this.repository.find(
-        {
-          company_id: context.company.id,
-        },
-        {
-          $in: [["is_intrash", [true]]],
-        },
-        context,
-      );
-
-      return {
-        item: {
-          name: "trash",
-          size: await this.calculateItemSize("trash", context),
-        } as DriveFile,
-        children: items.getEntities(),
-      };
-    }
-
+    //Check access to entity
     try {
-      const hasAccess = this.checkAccess(id, context);
+      const hasAccess = this.checkAccess(id, entity, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -94,49 +77,55 @@ export class DocumentsService {
       throw new CrudException("User does not have access to this item or its children", 401);
     }
 
-    const entity = await this.repository.findOne(
-      {
-        id,
-        company_id: context.company.id,
-      },
-      {},
-      context,
+    //Get entity version in case of a file
+    const versions = entity.is_directory
+      ? []
+      : (
+          await this.fileVersionRepository.find(
+            {
+              file_id: entity.id,
+            },
+            {},
+            context,
+          )
+        ).getEntities();
+
+    //Get children if it is a directory
+    let children = entity.is_directory
+      ? (
+          await this.repository.find(
+            {
+              company_id: context.company.id,
+              parent_id: id,
+            },
+            {},
+            context,
+          )
+        ).getEntities()
+      : [];
+
+    //Check each children for access
+    const accessMap: { [key: string]: boolean } = {};
+    await Promise.all(
+      children.map(async child => {
+        accessMap[child.id] = await this.checkAccess(child.id, child, context);
+      }),
     );
+    children = children.filter(child => accessMap[child.id]);
 
-    if (!entity) {
-      this.logger.error("Drive item not found");
-      throw new CrudException("Item not found", 404);
-    }
-
-    const versions = await this.fileVersionRepository.find(
-      {},
-      {
-        $in: [["file_id", [entity.id]]],
-      },
-      context,
-    );
-
-    if (!entity.is_directory) {
-      return {
-        item: entity,
-        versions: versions.getEntities(),
-        children: [],
-      };
-    }
-
-    const children = await this.repository.find(
-      {
-        company_id: context.company.id,
-        parent_id: id,
-      },
-      {},
-      context,
-    );
-
+    //Return complete object
     return {
-      item: entity,
-      versions: versions.getEntities(),
-      children: children.getEntities(),
+      path: await this.getPath(id, false, context),
+      item:
+        entity ||
+        ({
+          id,
+          parent_id: null,
+          name: id === this.ROOT ? "root" : id === this.TRASH ? "trash" : "unknown",
+          size: await this.calculateItemSize(id === this.ROOT ? this.ROOT : "trash", context),
+        } as DriveFile),
+      versions: versions,
+      children: children,
     };
   };
 
@@ -159,7 +148,7 @@ export class DocumentsService {
       const driveItem = getDefaultDriveItem(content, context);
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
-      const hasAccess = this.checkAccess(driveItem.parent_id, context);
+      const hasAccess = this.checkAccess(driveItem.parent_id, null, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item parent", driveItem.parent_id);
         throw Error("user does not have access to this item parent");
@@ -207,7 +196,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, context);
+      const hasAccess = this.checkAccess(id, null, context);
 
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
@@ -215,8 +204,8 @@ export class DocumentsService {
       }
 
       const item = await this.repository.findOne({
-        id,
         company_id: context.company.id,
+        id,
       });
 
       if (!item) {
@@ -236,61 +225,42 @@ export class DocumentsService {
   };
 
   /**
-   * deletes or moves to Trash a Drive Document
+   * deletes or moves to Trash a Drive Document and its children
    *
    * @param {string} id - the item id
    * @param {CompanyExecutionContext} context - the execution context
    * @returns {Promise<void>}
    */
-  delete = async (id: string | "trash" | "", context: CompanyExecutionContext): Promise<void> => {
-    if (!id || id === "") {
-      try {
-        const rootFolderItems = await this.repository.find(
-          {},
-          {
-            $in: [
-              ["is_intrash", [false]],
-              ["parent_id", [this.ROOT]],
-            ],
-          },
-          context,
-        );
-
-        Promise.all(
-          rootFolderItems.getEntities().map(async item => {
-            if (item.is_directory) {
-              await this.moveDirectoryContentsTotrash(item.id, context);
-            }
-
-            item.is_intrash = true;
-            item.parent_id = this.ROOT;
-
-            await this.repository.save(item);
-          }),
-        );
-
-        await this.updateItemSize("", context);
-      } catch (error) {
-        logger;
-        throw new CrudException("Failed to delete root folder", 500);
-      }
-
+  delete = async (
+    id: string | "trash" | "",
+    item?: DriveFile,
+    context?: CompanyExecutionContext,
+  ): Promise<void> => {
+    if (!id) {
+      //We can't remove the root folder
       return;
     }
 
+    //In the case of the trash we definitively delete the items
     if (id === "trash") {
+      //Only administrators can execute this action
+      const role = await gr.services.companies.getUserRole(context.company.id, context.user.id);
+      if (hasCompanyAdminLevel(role) === false) {
+        throw new CrudException("Only administrators can empty the trash", 403);
+      }
+
       try {
         const itemsInTrash = await this.repository.find(
-          {},
           {
-            $in: [["is_intrash", [true]]],
+            company_id: context.company.id,
+            parent_id: "trash",
           },
+          {},
           context,
         );
-
         await Promise.all(
           itemsInTrash.getEntities().map(async item => {
-            await this.repository.remove(item);
+            await this.delete(item.id, item, context);
           }),
         );
       } catch (error) {
@@ -299,67 +269,75 @@ export class DocumentsService {
       }
 
       return;
-    }
+    } else {
+      item =
+        item ||
+        (await this.repository.findOne({
+          company_id: context.company.id,
+          id,
+        }));
 
-    try {
-      const hasAccess = this.checkAccess(id, context);
-      if (!hasAccess) {
-        this.logger.error("user does not have access drive item ", id);
-        throw Error("user does not have access to this item");
-      }
-    } catch (error) {
-      this.logger.error("Failed to grant access to the drive item", error);
-      throw new CrudException("User does not have access to this item or its children", 401);
-    }
-
-    const item = await this.repository.findOne(
-      {
-        id,
-        company_id: context.company.id,
-      },
-      {},
-      context,
-    );
-
-    if (!item) {
-      this.logger.error("item to delete not found");
-      throw new CrudException("Drive item not found", 404);
-    }
-
-    try {
-      if (item.is_intrash) {
-        const itemVersions = await this.fileVersionRepository.find(
-          {},
-          {
-            $in: [
-              ["provider", ["internal"]],
-              ["file_id", [item.id]],
-            ],
-          },
-          context,
-        );
-
-        await Promise.all(
-          itemVersions.getEntities().map(async version => {
-            await this.fileVersionRepository.remove(version);
-          }),
-        );
-        return await this.repository.remove(item);
+      if (!item) {
+        this.logger.error("item to delete not found");
+        throw new CrudException("Drive item not found", 404);
       }
 
-      if (item.is_directory) {
-        await this.moveDirectoryContentsTotrash(item.id, context);
+      try {
+        const hasAccess = this.checkAccess(item.id, item, context);
+        if (!hasAccess) {
+          this.logger.error("user does not have access drive item ", id);
+          throw Error("user does not have access to this item");
+        }
+      } catch (error) {
+        this.logger.error("Failed to grant access to the drive item", error);
+        throw new CrudException("User does not have access to this item or its children", 401);
       }
 
-      item.is_intrash = true;
-      item.parent_id = this.ROOT;
+      const previousParentId = item.parent_id;
+      if (
+        item.parent_id === this.TRASH ||
+        (await this.getPath(item.parent_id, true, context))[0].parent_id === this.TRASH
+      ) {
+        //This item is already in trash, we can delete it definitively
 
-      await this.repository.save(item);
-
-      await this.updateItemSize(item.parent_id, context);
-    } catch (error) {
-      this.logger.error("Failed to delete drive item", error);
-      throw new CrudException("Failed to delete item", 500);
+        if (item.is_directory) {
+          //We delete the children
+          const children = await this.repository.find(
+            {
+              company_id: context.company.id,
+              parent_id: item.id,
+            },
+            {},
+            context,
+          );
+          await Promise.all(
+            children.getEntities().map(async child => {
+              await this.delete(child.id, child, context);
+            }),
+          );
+        } else {
+          //Delete the version and stored file
+          const itemVersions = await this.fileVersionRepository.find(
+            {
+              file_id: item.id,
+            },
+            {},
+            context,
+          );
+          await Promise.all(
+            itemVersions.getEntities().map(async version => {
+              await this.fileVersionRepository.remove(version);
+              await gr.services.files.delete(version.file_id, context);
+            }),
+          );
+        }
+        await this.repository.remove(item);
+      } else {
+        //This item is not in trash, we move it to trash
+        item.parent_id = this.TRASH;
+        await this.repository.save(item);
+      }
+      await this.updateItemSize(previousParentId, context);
     }
   };
 
@@ -382,7 +360,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, context);
+      const hasAccess = this.checkAccess(id, null, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -417,40 +395,6 @@ export class DocumentsService {
       this.logger.error("Failed to create Drive item version", error);
       throw new CrudException("Failed to create Drive item version", 500);
     }
-  };
-
-  /**
-   * Recursively move directory contents to trash
-   *
-   * @param {string} id - the directory id
-   * @param {CompanyExecutionContext} context - the execution context
-   * @returns {Promise<void>}
-   */
-  private moveDirectoryContentsTotrash = async (
-    id: string,
-    context?: CompanyExecutionContext,
-  ): Promise<void> => {
-    const children = await this.repository.find(
-      {
-        company_id: context.company.id,
-        parent_id: id,
-      },
-      {},
-      context,
-    );
-
-    await Promise.all(
-      children.getEntities().map(async child => {
-        child.parent_id = this.ROOT;
-        child.is_intrash = true;
-
-        await this.repository.save(child);
-
-        if (child.is_directory) {
-          return await this.moveDirectoryContentsTotrash(child.id, context);
-        }
-      }),
-    );
   };
 
   /**
@@ -489,10 +433,8 @@ export class DocumentsService {
     if (item === "trash") {
       let trashSize = 0;
       const trashedItems = await this.repository.find(
-        { company_id: context.company.id },
-        {
-          $in: [["is_intrash", [true]]],
-        },
+        { company_id: context.company.id, parent_id: this.TRASH },
+        {},
         context,
       );
 
@@ -506,10 +448,8 @@ export class DocumentsService {
     if ((typeof item === "string" && item === "") || !item) {
       let rootSize = 0;
       const rootFolderItems = await this.repository.find(
-        { company_id: context.company.id, parent_id: "" },
-        {
-          $in: [["is_intrash", [false]]],
-        },
+        { company_id: context.company.id, parent_id: this.ROOT },
+        {},
         context,
       );
 
@@ -554,14 +494,20 @@ export class DocumentsService {
    * @param {CompanyExecutionContext} context - the execution context.
    * @returns {Promise<boolean>} - whether the current user has access to the item or not.
    */
-  private checkAccess = async (id: string, context: CompanyExecutionContext): Promise<boolean> => {
+  private checkAccess = async (
+    id: string,
+    item?: DriveFile,
+    context?: CompanyExecutionContext,
+  ): Promise<boolean> => {
     if (!id || id === "" || id === "trash") return true;
 
     try {
-      const item = await this.repository.findOne({
-        id,
-        company_id: context.company.id,
-      });
+      item =
+        item ||
+        (await this.repository.findOne({
+          id,
+          company_id: context.company.id,
+        }));
 
       if (!item) {
         logger.error("Drive item doesn't exist");
@@ -614,6 +560,26 @@ export class DocumentsService {
       logger.error("failed to check Drive item access", error);
       throw Error(error);
     }
+  };
+
+  private getPath = async (
+    id: string,
+    ignoreAccess?: boolean,
+    context?: CompanyExecutionContext,
+  ): Promise<DriveFile[]> => {
+    id = id || this.ROOT;
+    if (id === this.ROOT || id === this.TRASH) return [];
+
+    const item = await this.repository.findOne({
+      id,
+      company_id: context.company.id,
+    });
+
+    if (!item || (!this.checkAccess(id, item, context) && !ignoreAccess)) {
+      return [];
+    }
+
+    return [...(await this.getPath(item.parent_id, ignoreAccess, context)), item];
   };
 }
 
