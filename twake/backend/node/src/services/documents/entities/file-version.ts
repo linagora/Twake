@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
-export const TYPE = "file_version";
+export const TYPE = "drive_file_versions";
 
 @Entity(TYPE, {
   primaryKey: [["file_id"], "id"],
