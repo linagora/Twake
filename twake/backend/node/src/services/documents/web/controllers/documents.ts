@@ -71,7 +71,7 @@ export class DocumentsController {
   delete = async (request: FastifyRequest<{ Params: ItemRequestParams }>): Promise<void> => {
     const context = getCompanyExecutionContext(request);
 
-    return await globalResolver.services.documents.delete(request.params.id, context);
+    return await globalResolver.services.documents.delete(request.params.id, null, context);
   };
 
   /**
