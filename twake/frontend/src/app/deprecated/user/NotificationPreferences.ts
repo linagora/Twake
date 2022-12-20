@@ -41,11 +41,11 @@ class NotificationPreferencesService extends Observable {
       );
 
       const isNightBreak = this.isInPeriod(nightBreakIntrv[0], nightBreakIntrv[1]);
-      const isDeactivate = moment
-        .unix(this.notificationPreferences.preferences.deactivate_notifications_until)
-        .diff(moment());
+      const isDeactivate =
+        new Date().getTime() <
+        this.notificationPreferences.preferences.deactivate_notifications_until;
 
-      return isNightBreak ? false : isDeactivate > 0 ? false : true;
+      return isNightBreak ? false : isDeactivate ? false : true;
     }
 
     return false;
@@ -56,9 +56,9 @@ class NotificationPreferencesService extends Observable {
    * @param timeToAdd Time to add
    * @param format Unit of time
    */
-  deactivateNotificationsUntil(timeToAdd: number, format: 's' | 'm' | 'h' | 'd' | 'y'): void {
+  deactivateNotificationsUntil(timeToAddMs: number): void {
     this.save([
-      { key: 'deactivate_notifications_until', value: moment().add(timeToAdd, format).unix() },
+      { key: 'deactivate_notifications_until', value: new Date().getTime() + timeToAddMs },
     ]);
   }
 

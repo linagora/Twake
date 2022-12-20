@@ -26,18 +26,20 @@ export default () => {
     {
       type: 'menu',
       text: Languages.t('scenes.app.channelsbar.currentuser.disabling_notifications'),
-      onClick: () => NotificationPreferences.deactivateNotificationsUntil(1, 'h'),
+      onClick: () => NotificationPreferences.deactivateNotificationsUntil(1 * 60 * 60 * 1000),
     },
     {
       type: 'menu',
       text: '2 hours', // Add translation
-      onClick: () => NotificationPreferences.deactivateNotificationsUntil(2, 'h'),
+      onClick: () => NotificationPreferences.deactivateNotificationsUntil(2 * 60 * 60 * 1000),
     },
     {
       type: 'menu',
       text: Languages.t('scenes.app.channelsbar.currentuser.disabling_notifications_until'),
       onClick: () =>
-        NotificationPreferences.deactivateNotificationsUntil(hoursUntilTomorrowMorning, 'h'),
+        NotificationPreferences.deactivateNotificationsUntil(
+          hoursUntilTomorrowMorning * 60 * 60 * 1000,
+        ),
     },
     {
       type: 'menu',
@@ -48,8 +50,8 @@ export default () => {
       ),
       onClick: () => {
         status
-          ? NotificationPreferences.deactivateNotificationsUntil(24, 'y')
-          : NotificationPreferences.deactivateNotificationsUntil(0, 's');
+          ? NotificationPreferences.deactivateNotificationsUntil(10 * 365 * 24 * 60 * 60 * 1000)
+          : NotificationPreferences.deactivateNotificationsUntil(0);
       },
     },
     {
