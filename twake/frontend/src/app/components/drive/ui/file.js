@@ -10,6 +10,7 @@ import FileType from './file-type';
 import TagPicker from 'components/tag-picker/tag-picker';
 import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import '../drive.scss';
+import { formatTime } from '@features/global/utils/Numbers';
 
 export default class File extends React.Component {
   constructor(props) {
@@ -20,16 +21,13 @@ export default class File extends React.Component {
 
     var date = false;
     if (this.props.data.modified) {
-      date = moment(this.props.data.modified * 1000);
+      date = new Date(this.props.data.modified * 1000);
     }
     if (this.props.data.added && this.props.isVersion) {
-      date = moment(this.props.data.added * 1000);
+      date = new Date(this.props.data.added * 1000);
     }
 
-    var date_string = date ? date.format('L') : '-';
-    if (new Date().getTime() - date.unix() * 1000 < 1000 * 23 * 60 * 60) {
-      date_string = date ? date.format('LT') : '-';
-    }
+    var date_string = date ? formatTime(date) : '-';
 
     return [
       <div
