@@ -77,8 +77,10 @@ export class DocumentsService {
       throw new CrudException("User does not have access to this item or its children", 401);
     }
 
+    const isDirectory = entity ? entity.is_directory : true;
+
     //Get entity version in case of a file
-    const versions = entity.is_directory
+    const versions = isDirectory
       ? []
       : (
           await this.fileVersionRepository.find(
@@ -91,7 +93,7 @@ export class DocumentsService {
         ).getEntities();
 
     //Get children if it is a directory
-    let children = entity.is_directory
+    let children = isDirectory
       ? (
           await this.repository.find(
             {
