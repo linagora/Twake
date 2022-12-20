@@ -1,14 +1,14 @@
 import { getLogger, logger, TwakeLogger } from "../../../core/platform/framework";
-import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import globalResolver from "../../../services/global-resolver";
-import { CompanyExecutionContext, DriveItemDetails } from "../types";
-import { DriveFile, TYPE } from "../entities/drive-file";
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
+import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { PublicFile } from "../../../services/files/entities/file";
-import { getDefaultDriveItem, getDefaultDriveItemVersion } from "../utils";
-import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
+import globalResolver from "../../../services/global-resolver";
+import { hasCompanyAdminLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
-import { hasCompanyAdminLevel, isCompanyAdminRole } from "src/utils/company";
+import { DriveFile, TYPE } from "../entities/drive-file";
+import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
+import { CompanyExecutionContext, DriveItemDetails } from "../types";
+import { getDefaultDriveItem, getDefaultDriveItemVersion } from "../utils";
 
 export class DocumentsService {
   version: "1";
