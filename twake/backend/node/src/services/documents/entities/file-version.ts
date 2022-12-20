@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 export const TYPE = "file_version";
 
 @Entity(TYPE, {
-  primaryKey: [["id"]],
+  primaryKey: [["file_id"], "id"],
   type: TYPE,
 })
 export class FileVersion {

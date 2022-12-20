@@ -5,7 +5,8 @@ import { FileVersion } from "./file-version";
 export const TYPE = "drive_files";
 
 @Entity(TYPE, {
-  primaryKey: [["company_id", "id"], "parent_id"],
+  globalIndexes: [["company_id", "parent_id", "id"]],
+  primaryKey: [["company_id", "id"]],
   type: TYPE,
 })
 export class DriveFile {
@@ -22,8 +23,8 @@ export class DriveFile {
   parent_id: string;
 
   @Type(() => Boolean)
-  @Column("is_intrash", "boolean")
-  is_intrash: boolean;
+  @Column("is_in_trash", "boolean")
+  is_in_trash: boolean;
 
   @Type(() => Boolean)
   @Column("is_directory", "boolean")

@@ -13,6 +13,7 @@ export class DocumentsService {
   repository: Repository<DriveFile>;
   fileVersionRepository: Repository<FileVersion>;
   ROOT: "";
+  TRASH: "trash";
   logger: TwakeLogger = getLogger("Documents Service");
 
   async init(): Promise<this> {
@@ -48,11 +49,10 @@ export class DocumentsService {
           company_id: context.company.id,
           parent_id: "",
         },
-        {
-          $in: [["is_intrash", [false]]],
-        },
+        {},
         context,
       );
+      items.filterEntities(item => item.is_in_trash === false);
 
       return {
         item: {
@@ -67,12 +67,12 @@ export class DocumentsService {
       const items = await this.repository.find(
         {
           company_id: context.company.id,
+          parent_id: "trash",
         },
-        {
-          $in: [["is_intrash", [true]]],
-        },
+        {},
         context,
       );
+      items.filterEntities(item => item.is_in_trash === true);
 
       return {
         item: {
@@ -96,8 +96,8 @@ export class DocumentsService {
 
     const entity = await this.repository.findOne(
       {
-        id,
         company_id: context.company.id,
+        id,
       },
       {},
       context,
@@ -109,10 +109,10 @@ export class DocumentsService {
     }
 
     const versions = await this.fileVersionRepository.find(
-      {},
       {
-        $in: [["file_id", [entity.id]]],
+        file_id: entity.id,
       },
+      {},
       context,
     );
 
@@ -215,8 +215,8 @@ export class DocumentsService {
       }
 
       const item = await this.repository.findOne({
-        id,
         company_id: context.company.id,
+        id,
       });
 
       if (!item) {
@@ -246,15 +246,14 @@ export class DocumentsService {
     if (!id || id === "") {
       try {
         const rootFolderItems = await this.repository.find(
-          {},
           {
-            $in: [
-              ["is_intrash", [false]],
-              ["parent_id", [this.ROOT]],
-            ],
+            company_id: context.company.id,
+            parent_id: this.ROOT,
           },
+          {},
           context,
         );
+        rootFolderItems.filterEntities(item => item.is_in_trash === false);
 
         Promise.all(
           rootFolderItems.getEntities().map(async item => {
@@ -262,7 +261,7 @@ export class DocumentsService {
               await this.moveDirectoryContentsTotrash(item.id, context);
             }
 
-            item.is_intrash = true;
+            item.is_in_trash = true;
             item.parent_id = this.ROOT;
 
             await this.repository.save(item);
@@ -281,10 +280,10 @@ export class DocumentsService {
     if (id === "trash") {
       try {
         const itemsInTrash = await this.repository.find(
-          {},
           {
-            $in: [["is_intrash", [true]]],
+            parent_id: "trash",
           },
+          {},
           context,
         );
 
@@ -327,23 +326,20 @@ export class DocumentsService {
     }
 
     try {
-      if (item.is_intrash) {
+      if (item.is_in_trash) {
         const itemVersions = await this.fileVersionRepository.find(
-          {},
           {
-            $in: [
-              ["provider", ["internal"]],
-              ["file_id", [item.id]],
-            ],
+            file_id: item.id,
           },
+          {},
           context,
         );
-
         await Promise.all(
           itemVersions.getEntities().map(async version => {
             await this.fileVersionRepository.remove(version);
           }),
         );
+
         return await this.repository.remove(item);
       }
 
@@ -351,7 +347,7 @@ export class DocumentsService {
         await this.moveDirectoryContentsTotrash(item.id, context);
       }
 
-      item.is_intrash = true;
+      item.is_in_trash = true;
       item.parent_id = this.ROOT;
 
       await this.repository.save(item);
@@ -441,8 +437,8 @@ export class DocumentsService {
 
     await Promise.all(
       children.getEntities().map(async child => {
-        child.parent_id = this.ROOT;
-        child.is_intrash = true;
+        child.parent_id = this.TRASH;
+        child.is_in_trash = true;
 
         await this.repository.save(child);
 
@@ -491,7 +487,7 @@ export class DocumentsService {
       const trashedItems = await this.repository.find(
         { company_id: context.company.id },
         {
-          $in: [["is_intrash", [true]]],
+          $in: [["is_in_trash", [true]]],
         },
         context,
       );
@@ -508,7 +504,7 @@ export class DocumentsService {
       const rootFolderItems = await this.repository.find(
         { company_id: context.company.id, parent_id: "" },
         {
-          $in: [["is_intrash", [false]]],
+          $in: [["is_in_trash", [false]]],
         },
         context,
       );
