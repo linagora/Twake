@@ -10,12 +10,15 @@ import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import { CompanyExecutionContext, DriveItemDetails } from "../types";
 import { getDefaultDriveItem, getDefaultDriveItemVersion } from "../utils";
 
+type RootType = "root";
+type TrashType = "trash";
+
 export class DocumentsService {
   version: "1";
   repository: Repository<DriveFile>;
   fileVersionRepository: Repository<FileVersion>;
-  ROOT: "";
-  TRASH: "trash";
+  ROOT: RootType = "root";
+  TRASH: TrashType = "trash";
   logger: TwakeLogger = getLogger("Documents Service");
 
   async init(): Promise<this> {
@@ -234,7 +237,7 @@ export class DocumentsService {
    * @returns {Promise<void>}
    */
   delete = async (
-    id: string | "trash" | "",
+    id: string | RootType | TrashType,
     item?: DriveFile,
     context?: CompanyExecutionContext,
   ): Promise<void> => {
@@ -407,7 +410,7 @@ export class DocumentsService {
    * @returns {Promise<void>}
    */
   private updateItemSize = async (id: string, context: CompanyExecutionContext): Promise<void> => {
-    if (!id || id === "" || id === "trash") return;
+    if (!id || id === this.ROOT || id === this.TRASH) return;
 
     const item = await this.repository.findOne({ id, company_id: context.company.id });
 
@@ -429,10 +432,10 @@ export class DocumentsService {
    * @returns {Promise<number>} - the size of the Drive Item
    */
   private calculateItemSize = async (
-    item: DriveFile | "" | "trash",
+    item: DriveFile | TrashType | RootType,
     context: CompanyExecutionContext,
   ): Promise<number> => {
-    if (item === "trash") {
+    if (item === this.TRASH) {
       let trashSize = 0;
       const trashedItems = await this.repository.find(
         { company_id: context.company.id, parent_id: this.TRASH },
@@ -447,7 +450,7 @@ export class DocumentsService {
       return trashSize;
     }
 
-    if ((typeof item === "string" && item === "") || !item) {
+    if (item === this.ROOT || !item) {
       let rootSize = 0;
       const rootFolderItems = await this.repository.find(
         { company_id: context.company.id, parent_id: this.ROOT },
@@ -501,7 +504,7 @@ export class DocumentsService {
     item?: DriveFile,
     context?: CompanyExecutionContext,
   ): Promise<boolean> => {
-    if (!id || id === "" || id === "trash") return true;
+    if (!id || id === this.ROOT || id === this.TRASH) return true;
 
     try {
       item =
