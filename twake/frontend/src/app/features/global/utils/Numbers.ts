@@ -104,3 +104,27 @@ export default class Numbers {
     return ret;
   }
 }
+
+export const formatTime = (
+  time: number | string,
+  locale?: string,
+  options: { keepTime?: boolean; keepSeconds?: boolean; keepDate?: boolean } = {
+    keepTime: true,
+  }
+) => {
+  time = new Date(time).getTime();
+  locale = locale || navigator.language;
+  const now = Date.now();
+  const year = new Date(time).getFullYear();
+  const nowYear = new Date(now).getFullYear();
+  const day = 24 * 60 * 60 * 1000;
+  return new Intl.DateTimeFormat(locale, {
+    year: nowYear !== year || options?.keepDate ? "numeric" : undefined,
+    month: now - time >= day || options?.keepDate ? "short" : undefined,
+    day: now - time >= day || options?.keepDate ? "numeric" : undefined,
+    hour: now - time < day || options?.keepTime ? "numeric" : undefined,
+    minute: now - time < day || options?.keepTime ? "numeric" : undefined,
+    second: options?.keepSeconds ? "numeric" : undefined,
+  }).format(new Date(time));
+};
+
