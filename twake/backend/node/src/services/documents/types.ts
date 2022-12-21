@@ -12,3 +12,9 @@ export type DriveItemDetails = {
   versions?: FileVersion[];
   children: DriveFile[];
 };
+
+export type DriveFileAccessLevel = "read" | "write" | "manage";
+export type publicAccessLevel = "write" | "read" | "none";
+
+export type RootType = "root";
+export type TrashType = "trash";
