@@ -7,11 +7,15 @@ import { hasCompanyAdminLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
 import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
-import { CompanyExecutionContext, DriveItemDetails } from "../types";
-import { getDefaultDriveItem, getDefaultDriveItemVersion } from "../utils";
-
-type RootType = "root";
-type TrashType = "trash";
+import { CompanyExecutionContext, DriveItemDetails, RootType, TrashType } from "../types";
+import {
+  calculateItemSize,
+  checkAccess,
+  getDefaultDriveItem,
+  getDefaultDriveItemVersion,
+  getPath,
+  updateItemSize,
+} from "../utils";
 
 export class DocumentsService {
   version: "1";
@@ -70,7 +74,7 @@ export class DocumentsService {
 
     //Check access to entity
     try {
-      const hasAccess = this.checkAccess(id, entity, "read", context);
+      const hasAccess = checkAccess(id, entity, "read", this.repository, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -113,21 +117,25 @@ export class DocumentsService {
     const accessMap: { [key: string]: boolean } = {};
     await Promise.all(
       children.map(async child => {
-        accessMap[child.id] = await this.checkAccess(child.id, child, "read", context);
+        accessMap[child.id] = await checkAccess(child.id, child, "read", this.repository, context);
       }),
     );
     children = children.filter(child => accessMap[child.id]);
 
     //Return complete object
     return {
-      path: await this.getPath(id, false, context),
+      path: await getPath(id, this.repository, false, context),
       item:
         entity ||
         ({
           id,
           parent_id: null,
           name: id === this.ROOT ? "root" : id === this.TRASH ? "trash" : "unknown",
-          size: await this.calculateItemSize(id === this.ROOT ? this.ROOT : "trash", context),
+          size: await calculateItemSize(
+            id === this.ROOT ? this.ROOT : "trash",
+            this.repository,
+            context,
+          ),
         } as DriveFile),
       versions: versions,
       children: children,
@@ -153,7 +161,7 @@ export class DocumentsService {
       const driveItem = getDefaultDriveItem(content, context);
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
-      const hasAccess = this.checkAccess(driveItem.parent_id, null, "write", context);
+      const hasAccess = checkAccess(driveItem.parent_id, null, "write", this.repository, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item parent", driveItem.parent_id);
         throw Error("user does not have access to this item parent");
@@ -173,7 +181,7 @@ export class DocumentsService {
       driveItem.last_version_cache = driveItemVersion;
 
       await this.repository.save(driveItem);
-      await this.updateItemSize(driveItem.parent_id, context);
+      await updateItemSize(driveItem.parent_id, this.repository, context);
 
       return driveItem;
     } catch (error) {
@@ -201,7 +209,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, null, "write", context);
+      const hasAccess = checkAccess(id, null, "write", this.repository, context);
 
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
@@ -220,7 +228,7 @@ export class DocumentsService {
 
       const driveItem = getDefaultDriveItem(content, context);
       await this.repository.save(driveItem);
-      await this.updateItemSize(driveItem.parent_id, context);
+      await updateItemSize(driveItem.parent_id, this.repository, context);
 
       return driveItem;
     } catch (error) {
@@ -288,8 +296,7 @@ export class DocumentsService {
       }
 
       try {
-        const hasAccess = this.checkAccess(item.id, item, "write", context);
-        if (!hasAccess) {
+        if (!checkAccess(item.id, item, "write", this.repository, context)) {
           this.logger.error("user does not have access drive item ", id);
           throw Error("user does not have access to this item");
         }
@@ -301,7 +308,7 @@ export class DocumentsService {
       const previousParentId = item.parent_id;
       if (
         item.parent_id === this.TRASH ||
-        (await this.getPath(item.parent_id, true, context))[0].parent_id === this.TRASH
+        (await getPath(item.parent_id, this.repository, true, context))[0].parent_id === this.TRASH
       ) {
         //This item is already in trash, we can delete it definitively
 
@@ -342,7 +349,7 @@ export class DocumentsService {
         item.parent_id = this.TRASH;
         await this.repository.save(item);
       }
-      await this.updateItemSize(previousParentId, context);
+      await updateItemSize(previousParentId, this.repository, context);
     }
   };
 
@@ -365,7 +372,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = this.checkAccess(id, null, "write", context);
+      const hasAccess = checkAccess(id, null, "write", this.repository, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -400,188 +407,5 @@ export class DocumentsService {
       this.logger.error("Failed to create Drive item version", error);
       throw new CrudException("Failed to create Drive item version", 500);
     }
-  };
-
-  /**
-   * Recalculates and updates the Drive item size
-   *
-   * @param {string} id - the item id
-   * @param {CompanyExecutionContext} context - the execution context
-   * @returns {Promise<void>}
-   */
-  private updateItemSize = async (id: string, context: CompanyExecutionContext): Promise<void> => {
-    if (!id || id === this.ROOT || id === this.TRASH) return;
-
-    const item = await this.repository.findOne({ id, company_id: context.company.id });
-
-    if (!item) {
-      logger.error("item doesn't exist");
-      throw Error("Drive item doesn't exist");
-    }
-
-    item.size = await this.calculateItemSize(item, context);
-
-    return await this.repository.save(item);
-  };
-
-  /**
-   * Calculates the size of the Drive Item
-   *
-   * @param {DriveFile} item - The file or directory
-   * @param {CompanyExecutionContext} context - the execution context
-   * @returns {Promise<number>} - the size of the Drive Item
-   */
-  private calculateItemSize = async (
-    item: DriveFile | TrashType | RootType,
-    context: CompanyExecutionContext,
-  ): Promise<number> => {
-    if (item === this.TRASH) {
-      let trashSize = 0;
-      const trashedItems = await this.repository.find(
-        { company_id: context.company.id, parent_id: this.TRASH },
-        {},
-        context,
-      );
-
-      trashedItems.getEntities().forEach(child => {
-        trashSize += child.size;
-      });
-
-      return trashSize;
-    }
-
-    if (item === this.ROOT || !item) {
-      let rootSize = 0;
-      const rootFolderItems = await this.repository.find(
-        { company_id: context.company.id, parent_id: this.ROOT },
-        {},
-        context,
-      );
-
-      await Promise.all(
-        rootFolderItems.getEntities().map(async child => {
-          rootSize += await this.calculateItemSize(child, context);
-        }),
-      );
-
-      return rootSize;
-    }
-
-    if (item.is_directory) {
-      let initialSize = 0;
-      const children = await this.repository.find(
-        {
-          company_id: context.company.id,
-          parent_id: item.id,
-        },
-        {},
-        context,
-      );
-
-      Promise.all(
-        children.getEntities().map(async child => {
-          initialSize += await this.calculateItemSize(child, context);
-        }),
-      );
-
-      return initialSize;
-    }
-
-    console.log("returning", item.size);
-
-    return item.size;
-  };
-
-  /**
-   * Checks if the current user has access to a drive item.
-   *
-   * @param {string} id - the drive item id.
-   * @param {CompanyExecutionContext} context - the execution context.
-   * @returns {Promise<boolean>} - whether the current user has access to the item or not.
-   */
-  private checkAccess = async (
-    id: string,
-    item: DriveFile | null,
-    level: "read" | "write" | "manage",
-    context: CompanyExecutionContext,
-    token?: string,
-  ): Promise<boolean> => {
-    if (!id || id === this.ROOT || id === this.TRASH) return true;
-
-    try {
-      item =
-        item ||
-        (await this.repository.findOne({
-          id,
-          company_id: context.company.id,
-        }));
-
-      if (!item) {
-        logger.error("Drive item doesn't exist");
-        throw Error("Drive item doesn't exist");
-      }
-
-      if (token) {
-        if (!item.access_info.public.token) {
-          return false;
-        }
-
-        const { token: itemToken, level: itemLevel } = item.access_info.public;
-
-        return itemLevel === level && itemToken === token;
-      }
-
-      if (
-        !item.access_info.entities.find(entity => {
-          if (entity.level !== level) return false;
-
-          if (entity.type === "user" && entity.id === context.user.id) {
-            return true;
-          }
-
-          if (entity.type === "company" && entity.id === context.company.id) {
-            return true;
-          }
-
-          return false;
-        })
-      ) {
-        return false;
-      }
-
-      if (!item.is_directory) return true;
-
-      const children = await this.repository.find({
-        parent_id: id,
-        company: context.company.id,
-      });
-
-      return children.getEntities().every(child => {
-        return this.checkAccess(child.id, child, level, context, token);
-      });
-    } catch (error) {
-      logger.error("failed to check Drive item access", error);
-      throw Error(error);
-    }
-  };
-
-  private getPath = async (
-    id: string,
-    ignoreAccess?: boolean,
-    context?: CompanyExecutionContext,
-  ): Promise<DriveFile[]> => {
-    id = id || this.ROOT;
-    if (id === this.ROOT || id === this.TRASH) return [];
-
-    const item = await this.repository.findOne({
-      id,
-      company_id: context.company.id,
-    });
-
-    if (!item || (!this.checkAccess(id, item, "read", context) && !ignoreAccess)) {
-      return [];
-    }
-
-    return [...(await this.getPath(item.parent_id, ignoreAccess, context)), item];
   };
 }

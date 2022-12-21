@@ -1,8 +1,16 @@
 import { merge } from "lodash";
 import { DriveFile } from "./entities/drive-file";
-import { CompanyExecutionContext } from "./types";
+import {
+  CompanyExecutionContext,
+  DriveFileAccessLevel,
+  publicAccessLevel,
+  RootType,
+  TrashType,
+} from "./types";
 import crypto from "crypto";
 import { FileVersion } from "./entities/file-version";
+import globalResolver from "../global-resolver";
+import Repository from "../../core/platform/services/database/services/orm/repository/repository";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -104,4 +112,242 @@ const generateAccessToken = (): string => {
   const randomBytes = crypto.randomBytes(32);
 
   return crypto.createHash("sha1").update(randomBytes).digest("hex");
+};
+
+/**
+ * Checks if the level meets the required level.
+ *
+ * @param {publicAccessLevel | DriveFileAccessLevel} requiredLevel
+ * @param {publicAccessLevel} level
+ * @returns {boolean}
+ */
+export const hasAccessLevel = (
+  requiredLevel: publicAccessLevel | DriveFileAccessLevel,
+  level: DriveFileAccessLevel,
+): boolean => {
+  if (requiredLevel === level) return true;
+
+  if (requiredLevel === "write") {
+    return level === "manage";
+  }
+
+  if (requiredLevel === "read") {
+    return level === "manage" || level === "write";
+  }
+
+  if (requiredLevel === "none") {
+    return level === "manage" || level === "write" || level === "read";
+  }
+
+  return false;
+};
+
+/**
+ * checks the current user is a guest
+ *
+ * @param {CompanyExecutionContext} context
+ * @returns {Promise<boolean>}
+ */
+export const isCompanyGuest = async (context: CompanyExecutionContext): Promise<boolean> => {
+  const userRole = await globalResolver.services.companies.getUserRole(
+    context.company.id,
+    context.user.id,
+  );
+
+  return userRole === "guest";
+};
+
+/**
+ * Calculates the size of the Drive Item
+ *
+ * @param {DriveFile} item - The file or directory
+ * @param {Repository<DriveFile>} repository - the database repository
+ * @param {CompanyExecutionContext} context - the execution context
+ * @returns {Promise<number>} - the size of the Drive Item
+ */
+export const calculateItemSize = async (
+  item: DriveFile | TrashType | RootType,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+): Promise<number> => {
+  if (item === "trash") {
+    let trashSize = 0;
+    const trashedItems = await repository.find(
+      { company_id: context.company.id, parent_id: "trash" },
+      {},
+      context,
+    );
+
+    trashedItems.getEntities().forEach(child => {
+      trashSize += child.size;
+    });
+
+    return trashSize;
+  }
+
+  if (item === "root" || !item) {
+    let rootSize = 0;
+    const rootFolderItems = await repository.find(
+      { company_id: context.company.id, parent_id: "root" },
+      {},
+      context,
+    );
+
+    await Promise.all(
+      rootFolderItems.getEntities().map(async child => {
+        rootSize += await calculateItemSize(child, repository, context);
+      }),
+    );
+
+    return rootSize;
+  }
+
+  if (item.is_directory) {
+    let initialSize = 0;
+    const children = await repository.find(
+      {
+        company_id: context.company.id,
+        parent_id: item.id,
+      },
+      {},
+      context,
+    );
+
+    Promise.all(
+      children.getEntities().map(async child => {
+        initialSize += await calculateItemSize(child, repository, context);
+      }),
+    );
+
+    return initialSize;
+  }
+
+  return item.size;
+};
+
+/**
+ * Recalculates and updates the Drive item size
+ *
+ * @param {string} id - the item id
+ * @param {Repository<DriveFile>} repository
+ * @param {CompanyExecutionContext} context - the execution context
+ * @returns {Promise<void>}
+ */
+export const updateItemSize = async (
+  id: string,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+): Promise<void> => {
+  if (!id || id === "root" || id === "trash") return;
+
+  const item = await repository.findOne({ id, company_id: context.company.id });
+
+  if (!item) {
+    throw Error("Drive item doesn't exist");
+  }
+
+  item.size = await calculateItemSize(item, repository, context);
+
+  return await repository.save(item);
+};
+
+/**
+ * gets the path for the driveitem
+ *
+ * @param {string} id
+ * @param {Repository<DriveFile>} repository
+ * @param {boolean} ignoreAccess
+ * @param {CompanyExecutionContext} context
+ * @returns
+ */
+export const getPath = async (
+  id: string,
+  repository: Repository<DriveFile>,
+  ignoreAccess?: boolean,
+  context?: CompanyExecutionContext,
+): Promise<DriveFile[]> => {
+  id = id || "root";
+  if (id === "root" || id === "trash") return [];
+
+  const item = await repository.findOne({
+    id,
+    company_id: context.company.id,
+  });
+
+  if (!item || (!checkAccess(id, item, "read", repository, context) && !ignoreAccess)) {
+    return [];
+  }
+
+  return [...(await getPath(item.parent_id, repository, ignoreAccess, context)), item];
+};
+
+/**
+ * checks if access can be granted for the drive item
+ *
+ * @param {string} id
+ * @param {DriveFile | null} item
+ * @param {DriveFileAccessLevel} level
+ * @param {Repository<DriveFile>} repository
+ * @param {CompanyExecutionContext} context
+ * @param {string} token
+ * @returns {Promise<boolean>}
+ */
+export const checkAccess = async (
+  id: string,
+  item: DriveFile | null,
+  level: DriveFileAccessLevel,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+  token?: string,
+): Promise<boolean> => {
+  if (!id || id === "root" || id === "trash") return true;
+
+  try {
+    item =
+      item ||
+      (await repository.findOne({
+        id,
+        company_id: context.company.id,
+      }));
+
+    if (!item) {
+      throw Error("Drive item doesn't exist");
+    }
+
+    if (token) {
+      if (!item.access_info.public.token) {
+        return false;
+      }
+
+      const { token: itemToken, level: itemLevel } = item.access_info.public;
+
+      return hasAccessLevel(itemLevel, level) && itemToken === token;
+    }
+
+    return !!item.access_info.entities.find(async entity => {
+      if (!hasAccessLevel(entity.level, level)) return false;
+
+      switch (entity.type) {
+        case "user":
+          return entity.id === context.user.id;
+
+        case "company":
+          if (entity.id === context.company.id) {
+            return !isCompanyGuest(context);
+          }
+
+          return false;
+        case "folder":
+          return (
+            entity.id !== "root" &&
+            entity.id !== "trash" &&
+            (await checkAccess(entity.id, null, level, repository, context, token))
+          );
+        default:
+          return false;
+      }
+    });
+  } catch (error) {
+    throw Error(error);
+  }
 };

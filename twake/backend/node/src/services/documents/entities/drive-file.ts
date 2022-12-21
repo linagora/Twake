@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { DriveFileAccessLevel, publicAccessLevel } from "../types";
 import { FileVersion } from "./file-version";
 
 export const TYPE = "drive_files";
@@ -133,7 +134,5 @@ type AccessInformation = {
 type AuthEntity = {
   type: "user" | "channel" | "company" | "folder";
   id: string | "parent";
-  level: "manage" | "write" | "read" | "none";
+  level: publicAccessLevel | DriveFileAccessLevel;
 };
-
-type publicAccessLevel = "write" | "read" | "none";
