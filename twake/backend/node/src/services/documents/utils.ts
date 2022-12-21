@@ -321,10 +321,22 @@ export const checkAccess = async (
 
       const { token: itemToken, level: itemLevel } = item.access_info.public;
 
-      return hasAccessLevel(itemLevel, level) && itemToken === token;
+      if (itemToken === token && hasAccessLevel(itemLevel, level)) {
+        return true;
+      }
     }
 
-    return !!item.access_info.entities.find(async entity => {
+    const entities = item.access_info.entities.sort((a, b): number => {
+      if (a.type === "channel" && b.type === "folder") return 1;
+      if (a.type === "folder" && b.type === "channel") return -1;
+      if (a.type !== "channel" && b.type === "channel") return 1;
+      if (a.type !== "folder" && b.type !== "channel") return -1;
+      if (a.type === "channel" || a.type === "folder") return -1;
+      if (b.type === "channel" || b.type === "folder") return 1;
+      if (a.type === b.type) return 0;
+    });
+
+    return !!entities.find(async entity => {
       if (!hasAccessLevel(entity.level, level)) return false;
 
       switch (entity.type) {
@@ -343,6 +355,9 @@ export const checkAccess = async (
             entity.id !== "trash" &&
             (await checkAccess(entity.id, null, level, repository, context, token))
           );
+        case "channel":
+          // TODO: implement it
+          return false;
         default:
           return false;
       }
