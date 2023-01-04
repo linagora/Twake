@@ -123,7 +123,7 @@ export default (props: Props) => {
             className="date"
             // eslint-disable-next-line react/jsx-no-target-blank
             target="_BLANK"
-            href={messageLink ? addUrlTryDesktop(messageLink) : '#'}
+            href={(messageLink ? addUrlTryDesktop(messageLink) : '#')?.replace(/^javascript:/, '')}
             onMouseEnter={() => updateMessageLink()}
             rel="noreferrer"
           >

@@ -34,7 +34,7 @@ export default ({ preview }: PropsType): React.ReactElement => {
             </div>
             <div className="preview-title">
               <a
-                href={preview.url}
+                href={preview.url?.replace(/^javascript:/, '')}
                 target="_blank"
                 rel="noreferrer"
                 className="truncate text-ellipsis	w-full"
