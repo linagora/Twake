@@ -77,6 +77,10 @@ export class MessagesController
 
       let hasOneMembership = false;
       for (const participant of thread.participants) {
+        if (thread.created_by === context.user.id) {
+          hasOneMembership = true;
+          break;
+        }
         if (participant.type === "channel") {
           const isMember = await gr.services.channels.members.getChannelMember(
             { id: context.user.id },
