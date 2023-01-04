@@ -12,7 +12,7 @@ export const e2e_createDocument = async (
 
   const response = await platform.app.inject({
     method: "POST",
-    url: `${url}/companies/${platform.workspace.company_id}/items`,
+    url: `${url}/companies/${platform.workspace.company_id}/item`,
     headers: {
       authorization: `Bearer ${token}`,
     },
