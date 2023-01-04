@@ -5,7 +5,13 @@ import { ResourceListResponse, ResourceUpdateResponse } from "../../../src/utils
 import { deserialize } from "class-transformer";
 import { v4 as uuidv4 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
-import { createMessage, createParticipant, e2e_createMessage, e2e_createThread } from "./utils";
+import {
+  createMessage,
+  createParticipant,
+  e2e_createChannel,
+  e2e_createMessage,
+  e2e_createThread,
+} from "./utils";
 import { MessageWithReplies } from "../../../src/services/messages/types";
 
 describe("The Messages feature", () => {
@@ -42,7 +48,7 @@ describe("The Messages feature", () => {
 
   describe("On user use messages in channel view", () => {
     it("should create a message and retrieve it in channel view", async () => {
-      const channelId = uuidv4();
+      const channel = await e2e_createChannel(platform, [platform.currentUser.id]);
 
       const response = await e2e_createThread(
         platform,
@@ -50,7 +56,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -73,7 +81,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -89,7 +99,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -100,7 +112,7 @@ describe("The Messages feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const listResponse = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}/feed?replies_per_thread=3&include_users=1`,
+        url: `${url}/companies/${channel.resource.company_id}/workspaces/${channel.resource.workspace_id}/channels/${channel.resource.id}/feed?replies_per_thread=3&include_users=1`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },

@@ -14,7 +14,7 @@ import {
   ThreadExecutionContext,
 } from "../../types";
 import { handleError } from "../../../../utils/handleError";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { getThreadMessageWebsocketRoom } from "../realtime";
 import { ThreadPrimaryKey } from "../../entities/threads";
 import { extendExecutionContentWithChannel } from "./index";
@@ -72,6 +72,36 @@ export class MessagesController
 
       if (!thread) {
         throw "Message must be in a thread";
+      }
+
+      let hasOneMembership = false;
+      for (const participant of thread.participants) {
+        if (thread.created_by === context.user.id) {
+          hasOneMembership = true;
+          break;
+        }
+        if (participant.type === "channel") {
+          const isMember = await gr.services.channels.members.getChannelMember(
+            { id: context.user.id },
+            {
+              company_id: participant.company_id,
+              workspace_id: participant.workspace_id,
+              id: participant.id,
+            },
+          );
+          if (isMember) {
+            hasOneMembership = true;
+            break;
+          }
+        } else if (participant.type === "user") {
+          if (participant.id === context.user.id) {
+            hasOneMembership = true;
+            break;
+          }
+        }
+      }
+      if (!hasOneMembership) {
+        throw CrudException.notFound("You can't post in this thread");
       }
 
       const result = await gr.services.messages.messages.save(

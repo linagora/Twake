@@ -25,7 +25,7 @@ export default function A(
 
   return (
     <a
-      href={props.href || '#'}
+      href={(props.href || '#').replace(/^javascript:/, '')}
       className={colors + ' ' + (props.className || '')}
       {..._.omit(props, 'children', 'className', 'noColor')}
     >
