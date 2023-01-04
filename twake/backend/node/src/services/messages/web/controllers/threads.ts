@@ -10,7 +10,7 @@ import { handleError } from "../../../../utils/handleError";
 import { CompanyExecutionContext } from "../../types";
 import { ParticipantObject, Thread } from "../../entities/threads";
 import gr from "../../../global-resolver";
-import { CrudException } from "src/core/platform/framework/api/crud-service";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 
 export class ThreadsController
   implements
