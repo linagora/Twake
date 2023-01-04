@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import { createMessage, e2e_createMessage, e2e_createThread } from "./utils";
+import { createMessage, e2e_createChannel, e2e_createMessage, e2e_createThread } from "./utils";
 import { ResourceUpdateResponse } from "../../../src/utils/types";
 import { ParticipantObject, Thread } from "../../../src/services/messages/entities/threads";
 import { deserialize } from "class-transformer";
@@ -121,22 +121,22 @@ describe("The /messages API", () => {
       done();
     });
     it("Filter out messages from channels we are not member of", async done => {
-      const channel = await createChannel();
-      const anotherChannel = await createChannel(uuidv1());
       const anotherUserId = uuidv1();
+      const channel = await e2e_createChannel(platform, [platform.currentUser.id, anotherUserId]);
+      const anotherChannel = await e2e_createChannel(platform, [anotherUserId]);
 
       const participant = {
         type: "channel",
-        id: channel.id,
-        company_id: platform.workspace.company_id,
-        workspace_id: platform.workspace.workspace_id,
+        id: channel.resource.id,
+        company_id: channel.resource.company_id,
+        workspace_id: channel.resource.workspace_id,
       } as ParticipantObject;
 
       const participant2 = {
         type: "channel",
-        id: anotherChannel.id,
-        company_id: platform.workspace.company_id,
-        workspace_id: platform.workspace.workspace_id,
+        id: anotherChannel.resource.id,
+        company_id: anotherChannel.resource.company_id,
+        workspace_id: anotherChannel.resource.workspace_id,
       } as ParticipantObject;
 
       const file = new MessageFile();
