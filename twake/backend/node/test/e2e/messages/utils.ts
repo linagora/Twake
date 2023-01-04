@@ -9,8 +9,12 @@ import { TestPlatform } from "../setup";
 
 const url = "/internal/services/messages/v1";
 
-export const e2e_createChannel = async (platform: TestPlatform, members: string[]) => {
-  const jwtToken = await platform.auth.getJWTToken();
+export const e2e_createChannel = async (
+  platform: TestPlatform,
+  members: string[],
+  owner?: string,
+) => {
+  const jwtToken = await platform.auth.getJWTToken({ sub: owner || platform.currentUser.id });
   const response = await platform.app.inject({
     method: "POST",
     url: `/internal/services/channels/v1/companies/${platform.workspace.company_id}/workspaces/direct/channels`,

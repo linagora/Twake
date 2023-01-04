@@ -123,7 +123,7 @@ describe("The /messages API", () => {
     it("Filter out messages from channels we are not member of", async done => {
       const anotherUserId = uuidv1();
       const channel = await e2e_createChannel(platform, [platform.currentUser.id, anotherUserId]);
-      const anotherChannel = await e2e_createChannel(platform, [anotherUserId]);
+      const anotherChannel = await e2e_createChannel(platform, [anotherUserId], anotherUserId); //Test user is not the owner
 
       const participant = {
         type: "channel",
