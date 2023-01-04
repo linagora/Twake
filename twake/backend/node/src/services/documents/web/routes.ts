@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { DocumentsController } from "./controllers";
+import { createDocumentSchema, createVersionSchema } from "./schemas";
 
 const serviceUrl = "/companies/:company_id/item";
 
@@ -24,6 +25,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
     method: "POST",
     url: serviceUrl,
     preValidation: [fastify.authenticate],
+    schema: createDocumentSchema,
     handler: documentsController.create.bind(documentsController),
   });
 
@@ -38,6 +40,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
     method: "POST",
     url: `${serviceUrl}/:id/version`,
     preValidation: [fastify.authenticate],
+    schema: createVersionSchema,
     handler: documentsController.createVersion.bind(documentsController),
   });
 

@@ -69,7 +69,7 @@ export class DriveFile {
   workspace_id: string;
 
   @Type(() => String)
-  @Column("workspace_id", "string")
+  @Column("public_access_key", "string")
   public_access_key: string;
 
   @Type(() => String)
