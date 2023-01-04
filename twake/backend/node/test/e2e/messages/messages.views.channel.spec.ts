@@ -5,7 +5,13 @@ import { ResourceListResponse, ResourceUpdateResponse } from "../../../src/utils
 import { deserialize } from "class-transformer";
 import { v4 as uuidv4 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
-import { createMessage, createParticipant, e2e_createMessage, e2e_createThread } from "./utils";
+import {
+  createMessage,
+  createParticipant,
+  e2e_createChannel,
+  e2e_createMessage,
+  e2e_createThread,
+} from "./utils";
 import { MessageWithReplies } from "../../../src/services/messages/types";
 
 describe("The Messages feature", () => {
@@ -42,7 +48,8 @@ describe("The Messages feature", () => {
 
   describe("On user use messages in channel view", () => {
     it("should create a message and retrieve it in channel view", async () => {
-      const channelId = uuidv4();
+      const channel = await e2e_createChannel(platform, [platform.currentUser.id]);
+      const channelId = channel.resource.id;
 
       const response = await e2e_createThread(
         platform,

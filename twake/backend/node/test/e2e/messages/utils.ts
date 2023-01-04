@@ -1,11 +1,39 @@
+import { deserialize } from "class-transformer";
 import {
   getInstance as getMessageInstance,
   Message,
 } from "../../../src/services/messages/entities/messages";
 import { ParticipantObject } from "../../../src/services/messages/entities/threads";
+import { Channel, ResourceCreateResponse } from "../../../src/utils/types";
 import { TestPlatform } from "../setup";
 
 const url = "/internal/services/messages/v1";
+
+export const e2e_createChannel = async (platform: TestPlatform, members: string[]) => {
+  const jwtToken = await platform.auth.getJWTToken();
+  const response = await platform.app.inject({
+    method: "POST",
+    url: `/internal/services/channels/v1/companies/${platform.workspace.company_id}/workspaces/direct/channels`,
+    headers: {
+      authorization: `Bearer ${jwtToken}`,
+    },
+    payload: {
+      options: {
+        members,
+      },
+      resource: {
+        description: "A direct channel description",
+        visibility: "direct",
+      },
+    },
+  });
+  await new Promise(resolve => setTimeout(resolve, 200));
+  const channelCreateResult: ResourceCreateResponse<Channel> = deserialize(
+    ResourceCreateResponse,
+    response.body,
+  );
+  return channelCreateResult;
+};
 
 export const e2e_createThread = async (
   platform: TestPlatform,
