@@ -17,7 +17,6 @@ import {
   getPath,
   updateItemSize,
 } from "../utils";
-
 import archiver from "archiver";
 
 export class DocumentsService {
@@ -417,44 +416,5 @@ export class DocumentsService {
       this.logger.error("Failed to create Drive item version", error);
       throw new CrudException("Failed to create Drive item version", 500);
     }
-  };
-
-  /**
-   * Creates a zip archive containing the drive items.
-   *
-   * @param {string[]} ids - the drive item list
-   * @param {CompanyExecutionContext} context - the execution context
-   * @returns {Promise<archiver.Archiver>} the created archive.
-   */
-  createZip = async (
-    ids: string[] = [],
-    context: CompanyExecutionContext,
-  ): Promise<archiver.Archiver> => {
-    if (!context) {
-      this.logger.error("invalid execution context");
-      return null;
-    }
-
-    const archive = archiver("zip", {
-      zlib: { level: 9 },
-    });
-
-    await Promise.all(
-      ids.map(async id => {
-        if (!(await checkAccess(id, null, "read", this.repository, context))) {
-          this.logger.warn(`not enough permissions to download ${id}, skipping`);
-          return;
-        }
-
-        try {
-          await addDriveItemToArchive(id, null, archive, this.repository, context);
-        } catch (error) {
-          this.logger.warn("failed to add item to archive", error);
-          throw new Error("Failed to add item to archive");
-        }
-      }),
-    );
-
-    return archive;
   };
 }
