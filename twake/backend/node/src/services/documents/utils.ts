@@ -326,7 +326,7 @@ export const checkAccess = async (
       }
     }
 
-    const entities = item.access_info.entities.sort((a, b): number => {
+    const entities = (item.access_info.entities || []).sort((a, b): number => {
       if (a.type === "channel" && b.type === "folder") return 1;
       if (a.type === "folder" && b.type === "channel") return -1;
       if (a.type !== "channel" && b.type === "channel") return 1;
