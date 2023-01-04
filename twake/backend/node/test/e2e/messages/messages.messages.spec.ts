@@ -9,7 +9,13 @@ import {
 } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { ParticipantObject, Thread } from "../../../src/services/messages/entities/threads";
-import { createMessage, e2e_createMessage, e2e_createThread } from "./utils";
+import {
+  createMessage,
+  createParticipant,
+  e2e_createChannel,
+  e2e_createMessage,
+  e2e_createThread,
+} from "./utils";
 import { Message } from "../../../src/services/messages/entities/messages";
 import { v1 as uuidv1 } from "uuid";
 import { MessageWithReplies } from "../../../src/services/messages/types";
@@ -104,10 +110,20 @@ describe("The Messages feature", () => {
       const userB = uuidv1();
       const userC = uuidv1();
 
+      const channel = await e2e_createChannel(platform, [userA, userB, userC]);
+
       const thread1Request = await e2e_createThread(
         platform,
-        [],
+        [
+          createParticipant({
+            type: "channel",
+            id: channel.resource.id,
+            workspace_id: channel.resource.workspace_id,
+            company_id: channel.resource.company_id,
+          }),
+        ],
         createMessage({ text: "Message A in thread 1", user_id: userA }),
+        userA,
       );
       const thread1Result: ResourceUpdateResponse<Thread> = deserialize(
         ResourceUpdateResponse,
@@ -117,8 +133,16 @@ describe("The Messages feature", () => {
 
       const thread2Request = await e2e_createThread(
         platform,
-        [],
+        [
+          createParticipant({
+            type: "channel",
+            id: channel.resource.id,
+            workspace_id: channel.resource.workspace_id,
+            company_id: channel.resource.company_id,
+          }),
+        ],
         createMessage({ text: "Message B in thread 2", user_id: userB }),
+        userB,
       );
       const thread2Result: ResourceUpdateResponse<Thread> = deserialize(
         ResourceUpdateResponse,
@@ -129,7 +153,7 @@ describe("The Messages feature", () => {
       const messageCRequest = await e2e_createMessage(
         platform,
         thread1.id,
-        createMessage({ text: "Message C in thread 1", user_id: userC }),
+        createMessage({ text: "Message C in thread 1", user_id: userC }, userC),
       );
       const messageCResult: ResourceUpdateResponse<Message> = deserialize(
         ResourceUpdateResponse,
@@ -189,7 +213,6 @@ describe("The Messages feature", () => {
 
   describe("Inbox", () => {
     it("Should get recent user messages", async done => {
-      const channel = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const members = [platform.currentUser.id, uuidv1()];
       const directWorkspace: Workspace = {
@@ -198,7 +221,6 @@ describe("The Messages feature", () => {
       };
 
       await Promise.all([
-        gr.services.channels.channels.save(channel, {}, getContext()),
         gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelIn,
           {
@@ -209,12 +231,12 @@ describe("The Messages feature", () => {
       ]);
 
       const recipient: ParticipantObject = {
-        company_id: platform.workspace.company_id,
         created_at: 0,
         created_by: "",
-        id: channel.id,
         type: "channel",
+        company_id: directChannelIn.company_id,
         workspace_id: "direct",
+        id: directChannelIn.id,
       };
 
       for (let i = 0; i < 6; i++) {
@@ -270,8 +292,8 @@ describe("The Messages feature", () => {
           application_id: null,
           text: expect.any(String),
           cache: {
-            company_id: channel.company_id,
-            channel_id: channel.id,
+            company_id: directChannelIn.company_id,
+            channel_id: directChannelIn.id,
           },
         });
       }
