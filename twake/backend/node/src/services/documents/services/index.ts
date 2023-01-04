@@ -9,6 +9,7 @@ import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import { CompanyExecutionContext, DriveItemDetails, RootType, TrashType } from "../types";
 import {
+  archiveDriveItem,
   calculateItemSize,
   checkAccess,
   getDefaultDriveItem,
@@ -16,6 +17,8 @@ import {
   getPath,
   updateItemSize,
 } from "../utils";
+
+import archiver from "archiver";
 
 export class DocumentsService {
   version: "1";
@@ -74,7 +77,7 @@ export class DocumentsService {
 
     //Check access to entity
     try {
-      const hasAccess = checkAccess(id, entity, "read", this.repository, context);
+      const hasAccess = await checkAccess(id, entity, "read", this.repository, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -161,7 +164,13 @@ export class DocumentsService {
       const driveItem = getDefaultDriveItem(content, context);
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
-      const hasAccess = checkAccess(driveItem.parent_id, null, "write", this.repository, context);
+      const hasAccess = await checkAccess(
+        driveItem.parent_id,
+        null,
+        "write",
+        this.repository,
+        context,
+      );
       if (!hasAccess) {
         this.logger.error("user does not have access drive item parent", driveItem.parent_id);
         throw Error("user does not have access to this item parent");
@@ -209,7 +218,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = checkAccess(id, null, "write", this.repository, context);
+      const hasAccess = await checkAccess(id, null, "write", this.repository, context);
 
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
@@ -296,7 +305,7 @@ export class DocumentsService {
       }
 
       try {
-        if (!checkAccess(item.id, item, "write", this.repository, context)) {
+        if (!(await checkAccess(item.id, item, "write", this.repository, context))) {
           this.logger.error("user does not have access drive item ", id);
           throw Error("user does not have access to this item");
         }
@@ -372,7 +381,7 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = checkAccess(id, null, "write", this.repository, context);
+      const hasAccess = await checkAccess(id, null, "write", this.repository, context);
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
         throw Error("user does not have access to this item");
@@ -406,6 +415,36 @@ export class DocumentsService {
     } catch (error) {
       this.logger.error("Failed to create Drive item version", error);
       throw new CrudException("Failed to create Drive item version", 500);
+    }
+  };
+
+  createZip = async (
+    ids: string[] = [],
+    context: CompanyExecutionContext,
+  ): Promise<archiver.Archiver> => {
+    if (!context) {
+      this.logger.error("invalid execution context");
+      return null;
+    }
+
+    try {
+      const archive = archiver("zip", {
+        zlib: { level: 9 },
+      });
+
+      ids.forEach(async id => {
+        if (!(await checkAccess(id, null, "read", this.repository, context))) {
+          this.logger.warn(`not enough permissions to download ${id}, skipping`);
+          return;
+        }
+
+        await archiveDriveItem(id, null, archive, this.repository, context);
+      });
+
+      return archive;
+    } catch (error) {
+      this.logger.error("Failed to create zip archive for files", error);
+      throw new CrudException("Failed to create zip archive for files", 500);
     }
   };
 }

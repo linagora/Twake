@@ -11,6 +11,7 @@ import crypto from "crypto";
 import { FileVersion } from "./entities/file-version";
 import globalResolver from "../global-resolver";
 import Repository from "../../core/platform/services/database/services/orm/repository/repository";
+import archiver from "archiver";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -362,6 +363,45 @@ export const checkAccess = async (
           return false;
       }
     });
+  } catch (error) {
+    throw Error(error);
+  }
+};
+
+export const archiveDriveItem = async (
+  id: string,
+  entity: DriveFile | null,
+  archive: archiver.Archiver,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+  prefix?: string,
+): Promise<void> => {
+  try {
+    const item = entity || (await repository.findOne({ id, company_id: context.company.id }));
+
+    if (!item) {
+      throw Error("item not found");
+    }
+
+    if (!item.is_directory) {
+      const file_id = item.last_version_cache.file_id;
+      const file = await globalResolver.services.files.download(file_id, context);
+
+      if (!file) {
+        throw Error("file not found");
+      }
+
+      archive.append(file.file, { name: file.name, prefix: prefix ?? "" });
+    } else {
+      const items = await repository.find({
+        parent_id: item.id,
+        company_id: context.company.id,
+      });
+
+      items.getEntities().forEach(child => {
+        archiveDriveItem(child.id, child, archive, repository, context, item.name);
+      });
+    }
   } catch (error) {
     throw Error(error);
   }

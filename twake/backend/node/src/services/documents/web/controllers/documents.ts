@@ -1,4 +1,4 @@
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { logger } from "../../../../core/platform/framework";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import { File } from "../../../../services/files/entities/file";
@@ -7,15 +7,13 @@ import globalResolver from "../../../../services/global-resolver";
 import { PaginationQueryParameters } from "../../../../utils/types";
 import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
-import { CompanyExecutionContext, DriveItemDetails } from "../../types";
-
-type RequestParams = {
-  company_id: string;
-};
-
-type ItemRequestParams = RequestParams & {
-  id: string;
-};
+import {
+  CompanyExecutionContext,
+  DownloadZipBodyRequest,
+  DriveItemDetails,
+  ItemRequestParams,
+  RequestParams,
+} from "../../types";
 
 export class DocumentsController {
   /**
@@ -126,6 +124,28 @@ export class DocumentsController {
     const version = request.body;
 
     return await globalResolver.services.documents.createVersion(id, version, context);
+  };
+
+  downloadZip = async (
+    request: FastifyRequest<{ Params: RequestParams; Body: DownloadZipBodyRequest }>,
+    reply: FastifyReply,
+  ) => {
+    const context = getCompanyExecutionContext(request);
+    const ids = request.body.items;
+
+    const archive = await globalResolver.services.documents.createZip(ids, context);
+
+    archive.on("finish", () => {
+      reply.status(200);
+    });
+
+    archive.on("error", () => {
+      reply.internalServerError();
+    });
+
+    archive.pipe(await reply);
+
+    archive.finalize();
   };
 }
 
