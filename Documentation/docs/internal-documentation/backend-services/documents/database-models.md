@@ -24,20 +24,6 @@ description: Documents database models
   "access_info": AccessInformation;
   "content_keywords": string;
   "hidden_data": unknown;
-  "workspace_id": string;
-  "public_access_key": string;
-  "root_group_folder": string;
-  "creator": string;
-  "size": number;
-  "detached_file": boolean;
-  "has_preview": boolean;
-  "shared": boolean;
-  "url": string;
-  "preview_link": string;
-  "object_link_cache": string;
-  "external_storage": boolean;
-  "last_user": string;
-  "attachements": unknown[];
   "last_version_cache": Partial<FileVersion>;
 }
 
