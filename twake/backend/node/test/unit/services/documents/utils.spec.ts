@@ -1,5 +1,8 @@
-import { describe, it, expect } from "@jest/globals";
+import { describe, it, expect, jest } from "@jest/globals";
 import { hasAccessLevel } from "../../../../src/services/documents/utils";
+
+jest.mock("../../../../src/services/documents/entities/drive-file.ts");
+jest.mock("class-transformer");
 
 describe("the Drive feature utility functions", () => {
   describe("the hasAccessLevel function", () => {
