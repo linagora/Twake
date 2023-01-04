@@ -13,7 +13,7 @@ import { DriveItem } from '../types';
  * @param id
  * @returns
  */
-export const useDriveChildren = (id: string | 'trash' | '' = '') => {
+export const useDriveChildren = (id: string | 'trash' | 'root' = 'root') => {
   const companyId = useRouterCompany();
   const [loading, setLoading] = useRecoilState(LoadingState('useDriveChildren-' + id));
   const children = useRecoilValue(DriveItemChildrenAtom(id));

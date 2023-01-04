@@ -2,13 +2,20 @@ import { ChevronDownIcon } from '@heroicons/react/outline';
 import { Button } from 'app/atoms/button/button';
 import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import UploadZone from 'app/components/uploads/upload-zone';
-import { useState } from 'react';
+import { useDriveChildren } from 'app/features/drive/hooks/use-drive-children';
+import { useEffect, useState } from 'react';
 import { DriveItem } from './drive-item';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
 
 export default () => {
   const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
+
+  const { children, refresh } = useDriveChildren('root');
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   const selectedCount = Object.values(checked).filter(v => v).length;
   const drives = [1, 2];
