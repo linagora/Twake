@@ -148,7 +148,7 @@ describe("The /messages API", () => {
       await createReply(firstThreadId, "Filtered message 1-3");
       await createReply(firstThreadId, "Filtered message 1-4", { files: [file] });
 
-      const secondThreadId = await createThread("Filtered thread 2", [participant2]);
+      const secondThreadId = await createThread("Filtered thread 2", [participant2], anotherUserId);
       await createReply(secondThreadId, "Filtered message 2-1");
       await createReply(secondThreadId, "Filtered message 2-2");
       await createReply(secondThreadId, "Filtered message 2-3");
@@ -204,8 +204,13 @@ describe("The /messages API", () => {
     return creationResult.entity;
   }
 
-  async function createThread(text, participants: ParticipantObject[]) {
-    const response = await e2e_createThread(platform, participants, createMessage({ text: text }));
+  async function createThread(text, participants: ParticipantObject[], owner?: string) {
+    const response = await e2e_createThread(
+      platform,
+      participants,
+      createMessage({ text: text, user_id: owner }),
+      owner,
+    );
 
     const result: ResourceUpdateResponse<Thread> = deserialize(
       ResourceUpdateResponse,

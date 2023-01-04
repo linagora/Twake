@@ -41,7 +41,10 @@ export class ThreadsController
   ): Promise<ResourceCreateResponse<Thread>> {
     const context = getCompanyExecutionContext(request);
 
-    for (const participant of request.body.resource.participants) {
+    const participants = request.body.resource.participants?.length
+      ? request.body.resource.participants
+      : request.body.options.participants.add || [];
+    for (const participant of participants) {
       if (participant.type === "channel") {
         const isMember = await gr.services.channels.members.getChannelMember(
           { id: context.user.id },

@@ -42,8 +42,9 @@ export const e2e_createThread = async (
   platform: TestPlatform,
   participants: ParticipantObject[],
   message: Message,
+  owner?: string,
 ) => {
-  const jwtToken = await platform.auth.getJWTToken();
+  const jwtToken = await platform.auth.getJWTToken({ sub: owner || platform.currentUser.id });
   const res = await platform.app.inject({
     method: "POST",
     url: `${url}/companies/${platform.workspace.company_id}/threads`,
