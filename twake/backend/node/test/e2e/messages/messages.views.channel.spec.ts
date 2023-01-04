@@ -49,7 +49,6 @@ describe("The Messages feature", () => {
   describe("On user use messages in channel view", () => {
     it("should create a message and retrieve it in channel view", async () => {
       const channel = await e2e_createChannel(platform, [platform.currentUser.id]);
-      const channelId = channel.resource.id;
 
       const response = await e2e_createThread(
         platform,
@@ -57,7 +56,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -80,7 +81,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -96,7 +99,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -107,7 +112,7 @@ describe("The Messages feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const listResponse = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}/feed?replies_per_thread=3&include_users=1`,
+        url: `${url}/companies/${channel.resource.company_id}/workspaces/${channel.resource.workspace_id}/channels/${channel.resource.id}/feed?replies_per_thread=3&include_users=1`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },

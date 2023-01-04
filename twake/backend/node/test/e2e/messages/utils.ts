@@ -27,7 +27,6 @@ export const e2e_createChannel = async (platform: TestPlatform, members: string[
       },
     },
   });
-  await new Promise(resolve => setTimeout(resolve, 200));
   const channelCreateResult: ResourceCreateResponse<Channel> = deserialize(
     ResourceCreateResponse,
     response.body,
