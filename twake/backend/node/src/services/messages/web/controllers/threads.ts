@@ -10,6 +10,7 @@ import { handleError } from "../../../../utils/handleError";
 import { CompanyExecutionContext } from "../../types";
 import { ParticipantObject, Thread } from "../../entities/threads";
 import gr from "../../../global-resolver";
+import { CrudException } from "src/core/platform/framework/api/crud-service";
 
 export class ThreadsController
   implements
@@ -39,6 +40,23 @@ export class ThreadsController
     reply: FastifyReply,
   ): Promise<ResourceCreateResponse<Thread>> {
     const context = getCompanyExecutionContext(request);
+
+    for (const participant of request.body.resource.participants) {
+      if (participant.type === "channel") {
+        const isMember = await gr.services.channels.members.getChannelMember(
+          { id: context.user.id },
+          {
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+            id: participant.id,
+          },
+        );
+        if (!isMember) {
+          throw CrudException.notFound("Channel not found");
+        }
+      }
+    }
+
     try {
       const result = await gr.services.messages.threads.save(
         {

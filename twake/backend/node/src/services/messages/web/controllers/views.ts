@@ -2,7 +2,11 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ResourceListResponse } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
-import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import {
   ChannelViewExecutionContext,
   FlatFileFromMessage,
@@ -37,6 +41,18 @@ export class ViewsController {
     );
     const query = { ...request.query, include_users: request.query.include_users };
     const context = getChannelViewExecutionContext(request);
+
+    const isMember = await gr.services.channels.members.getChannelMember(
+      { id: context.user.id },
+      {
+        company_id: request.params.company_id,
+        workspace_id: request.params.workspace_id,
+        id: request.params.channel_id,
+      },
+    );
+    if (!isMember) {
+      throw CrudException.notFound("Channel not found");
+    }
 
     let resources: ListResult<MessageWithReplies | FlatFileFromMessage | FlatPinnedFromMessage>;
 
