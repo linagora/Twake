@@ -102,9 +102,10 @@ export class DocumentsController {
   };
 
   /**
+   * Update drive item
    *
    * @param {FastifyRequest} request
-   * @returns
+   * @returns {Promise<DriveFile>}
    */
   update = async (
     request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<DriveFile> }>,
@@ -116,6 +117,12 @@ export class DocumentsController {
     return await globalResolver.services.documents.update(id, update, context);
   };
 
+  /**
+   * Create a drive file version.
+   *
+   * @param {FastifyRequest} request
+   * @returns {Promise<FileVersion>}
+   */
   createVersion = async (
     request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<FileVersion> }>,
   ): Promise<FileVersion> => {
@@ -126,26 +133,37 @@ export class DocumentsController {
     return await globalResolver.services.documents.createVersion(id, version, context);
   };
 
+  /**
+   * Downloads a zip archive containing the drive items.
+   *
+   * @param {FastifyRequest} request
+   * @param {FastifyReply} reply
+   */
   downloadZip = async (
     request: FastifyRequest<{ Params: RequestParams; Body: DownloadZipBodyRequest }>,
     reply: FastifyReply,
-  ) => {
+  ): Promise<void> => {
     const context = getCompanyExecutionContext(request);
     const ids = request.body.items;
 
-    const archive = await globalResolver.services.documents.createZip(ids, context);
+    try {
+      const archive = await globalResolver.services.documents.createZip(ids, context);
 
-    archive.on("finish", () => {
-      reply.status(200);
-    });
+      archive.on("finish", () => {
+        reply.status(200);
+      });
 
-    archive.on("error", () => {
-      reply.internalServerError();
-    });
+      archive.on("error", () => {
+        reply.internalServerError();
+      });
 
-    archive.pipe(await reply);
+      archive.pipe(reply.raw);
 
-    archive.finalize();
+      archive.finalize();
+    } catch (error) {
+      logger.error("failed to send zip file", error);
+      throw new CrudException("Failed to create zip file", 500);
+    }
   };
 }
 

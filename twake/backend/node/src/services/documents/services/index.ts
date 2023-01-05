@@ -9,7 +9,7 @@ import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import { CompanyExecutionContext, DriveItemDetails, RootType, TrashType } from "../types";
 import {
-  archiveDriveItem,
+  addDriveItemToArchive,
   calculateItemSize,
   checkAccess,
   getDefaultDriveItem,
@@ -183,6 +183,7 @@ export class DocumentsService {
         driveItem.extension = file.metadata.name.split(".").pop();
         driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
         driveItemVersion.file_size = file.upload_data.size;
+        driveItemVersion.file_id = file.id;
       }
 
       await this.fileVersionRepository.save(driveItemVersion);
@@ -418,6 +419,13 @@ export class DocumentsService {
     }
   };
 
+  /**
+   * Creates a zip archive containing the drive items.
+   *
+   * @param {string[]} ids - the drive item list
+   * @param {CompanyExecutionContext} context - the execution context
+   * @returns {Promise<archiver.Archiver>} the created archive.
+   */
   createZip = async (
     ids: string[] = [],
     context: CompanyExecutionContext,
@@ -427,24 +435,26 @@ export class DocumentsService {
       return null;
     }
 
-    try {
-      const archive = archiver("zip", {
-        zlib: { level: 9 },
-      });
+    const archive = archiver("zip", {
+      zlib: { level: 9 },
+    });
 
-      ids.forEach(async id => {
+    await Promise.all(
+      ids.map(async id => {
         if (!(await checkAccess(id, null, "read", this.repository, context))) {
           this.logger.warn(`not enough permissions to download ${id}, skipping`);
           return;
         }
 
-        await archiveDriveItem(id, null, archive, this.repository, context);
-      });
+        try {
+          await addDriveItemToArchive(id, null, archive, this.repository, context);
+        } catch (error) {
+          this.logger.warn("failed to add item to archive", error);
+          throw new Error("Failed to add item to archive");
+        }
+      }),
+    );
 
-      return archive;
-    } catch (error) {
-      this.logger.error("Failed to create zip archive for files", error);
-      throw new CrudException("Failed to create zip archive for files", 500);
-    }
+    return archive;
   };
 }
