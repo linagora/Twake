@@ -30,3 +30,17 @@ export type TrashType = "trash";
 export type DownloadZipBodyRequest = {
   items: string[];
 };
+
+export type SearchDocumentsOptions = {
+  search?: string;
+  company_id?: string;
+  creator?: string;
+  added?: string;
+};
+
+export type SearchDocumentsBody = {
+  search?: string;
+  company_id?: string;
+  creator?: string;
+  added?: string;
+};
