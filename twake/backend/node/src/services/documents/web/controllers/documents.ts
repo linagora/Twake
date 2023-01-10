@@ -1,4 +1,4 @@
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { logger } from "../../../../core/platform/framework";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import { File } from "../../../../services/files/entities/file";
@@ -7,15 +7,13 @@ import globalResolver from "../../../../services/global-resolver";
 import { PaginationQueryParameters } from "../../../../utils/types";
 import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
-import { CompanyExecutionContext, DriveItemDetails } from "../../types";
-
-type RequestParams = {
-  company_id: string;
-};
-
-type ItemRequestParams = RequestParams & {
-  id: string;
-};
+import {
+  CompanyExecutionContext,
+  DownloadZipBodyRequest,
+  DriveItemDetails,
+  ItemRequestParams,
+  RequestParams,
+} from "../../types";
 
 export class DocumentsController {
   /**
@@ -104,9 +102,10 @@ export class DocumentsController {
   };
 
   /**
+   * Update drive item
    *
    * @param {FastifyRequest} request
-   * @returns
+   * @returns {Promise<DriveFile>}
    */
   update = async (
     request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<DriveFile> }>,
@@ -118,6 +117,12 @@ export class DocumentsController {
     return await globalResolver.services.documents.update(id, update, context);
   };
 
+  /**
+   * Create a drive file version.
+   *
+   * @param {FastifyRequest} request
+   * @returns {Promise<FileVersion>}
+   */
   createVersion = async (
     request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<FileVersion> }>,
   ): Promise<FileVersion> => {
@@ -126,6 +131,39 @@ export class DocumentsController {
     const version = request.body;
 
     return await globalResolver.services.documents.createVersion(id, version, context);
+  };
+
+  /**
+   * Downloads a zip archive containing the drive items.
+   *
+   * @param {FastifyRequest} request
+   * @param {FastifyReply} reply
+   */
+  downloadZip = async (
+    request: FastifyRequest<{ Params: RequestParams; Body: DownloadZipBodyRequest }>,
+    reply: FastifyReply,
+  ): Promise<void> => {
+    const context = getCompanyExecutionContext(request);
+    const ids = request.body.items;
+
+    try {
+      const archive = await globalResolver.services.documents.createZip(ids, context);
+
+      archive.on("finish", () => {
+        reply.status(200);
+      });
+
+      archive.on("error", () => {
+        reply.internalServerError();
+      });
+
+      archive.pipe(reply.raw);
+
+      archive.finalize();
+    } catch (error) {
+      logger.error("failed to send zip file", error);
+      throw new CrudException("Failed to create zip file", 500);
+    }
   };
 }
 

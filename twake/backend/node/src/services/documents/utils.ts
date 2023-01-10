@@ -11,6 +11,7 @@ import crypto from "crypto";
 import { FileVersion } from "./entities/file-version";
 import globalResolver from "../global-resolver";
 import Repository from "../../core/platform/services/database/services/orm/repository/repository";
+import archiver from "archiver";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -23,7 +24,7 @@ export const getDefaultDriveItem = (
   item: Partial<DriveFile>,
   context: CompanyExecutionContext,
 ): DriveFile => {
-  const defaultDriveItem = merge(new DriveFile(), {
+  const defaultDriveItem = merge<DriveFile, Partial<DriveFile>>(new DriveFile(), {
     company_id: context.company.id,
     added: item.added || new Date().getTime().toString(),
     creator: item.creator || context.user.id,
@@ -31,20 +32,23 @@ export const getDefaultDriveItem = (
     is_in_trash: false,
     last_user: item.last_user || context.user.id,
     last_modified: new Date().getTime().toString(),
-    parent_id: item.parent_id || "",
+    parent_id: item.parent_id || "root",
     root_group_folder: item.root_group_folder || "",
     attachements: item.attachements || [],
     content_keywords: item.content_keywords || "",
     description: item.description || "",
     access_info: item.access_info || {
-      authorized_entities: [
+      entities: [
         {
           id: context.user.id,
           type: "user",
+          level: "write",
         },
       ],
-      unauthorized_entities: [],
-      public_access_token: generateAccessToken(),
+      public: {
+        level: "read",
+        token: generateAccessToken(),
+      },
     },
     detached_file: item.detached_file || false,
     extension: item.extension || "",
@@ -364,5 +368,51 @@ export const checkAccess = async (
     });
   } catch (error) {
     throw Error(error);
+  }
+};
+
+/**
+ * Adds drive items to an archive recursively
+ *
+ * @param {string} id - the drive item id
+ * @param {DriveFile | null } entity - the drive item entity
+ * @param {archiver.Archiver} archive - the archive
+ * @param {Repository<DriveFile>} repository - the repository
+ * @param {CompanyExecutionContext} context - the execution context
+ * @param {string} prefix - folder prefix
+ * @returns {Promise<void>}
+ */
+export const addDriveItemToArchive = async (
+  id: string,
+  entity: DriveFile | null,
+  archive: archiver.Archiver,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+  prefix?: string,
+): Promise<void> => {
+  const item = entity || (await repository.findOne({ id, company_id: context.company.id }));
+
+  if (!item) {
+    throw Error("item not found");
+  }
+
+  if (!item.is_directory) {
+    const file_id = item.last_version_cache.file_id;
+    const file = await globalResolver.services.files.download(file_id, context);
+
+    if (!file) {
+      throw Error("file not found");
+    }
+
+    archive.append(file.file, { name: file.name, prefix: prefix ?? "" });
+  } else {
+    const items = await repository.find({
+      parent_id: item.id,
+      company_id: context.company.id,
+    });
+
+    items.getEntities().forEach(child => {
+      addDriveItemToArchive(child.id, child, archive, repository, context, `${item.name}/`);
+    });
   }
 };

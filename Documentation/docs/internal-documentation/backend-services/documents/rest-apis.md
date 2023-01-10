@@ -221,3 +221,21 @@ Used to create a drive item version
 ### Success Response
 
 **Code** : `200 OK`
+
+## zip download
+
+Used to create a zip archive containing the requested drive items ( files and folders ).
+
+**URL** : `/internal/services/documents/v1/companies/:company_id/item/:id/download/zip`
+
+**Method** : `POST`
+
+**Auth required** : Yes
+
+**Data constraints**
+
+```javascript
+{
+  items: string[]
+}
+```

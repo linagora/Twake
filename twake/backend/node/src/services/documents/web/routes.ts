@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { DocumentsController } from "./controllers";
-import { createDocumentSchema, createVersionSchema } from "./schemas";
+import { createDocumentSchema, createVersionSchema, downloadZipSchema } from "./schemas";
 
 const serviceUrl = "/companies/:company_id/item";
 
@@ -42,6 +42,14 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
     preValidation: [fastify.authenticate],
     schema: createVersionSchema,
     handler: documentsController.createVersion.bind(documentsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${serviceUrl}/download/zip`,
+    preValidation: [fastify.authenticate],
+    schema: downloadZipSchema,
+    handler: documentsController.downloadZip.bind(documentsController),
   });
 
   return next();
