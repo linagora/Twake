@@ -111,7 +111,7 @@
     "scenes.app.popup.appsparameters.pages.remove_app_from_workspace": "Remover do espaço de trabalho",
     "scenes.app.popup.appsparameters.pages.show_button": "mostrar",
     "scenes.app.popup.appsparameters.pages.status_tilte": "Estado",
-    "scenes.app.popup.appsparameters.pages.string_information": "Essa string identifica seu aplicativo e será usada em comandos de mensagem.",
+    "scenes.app.popup.appsparameters.pages.string_information": "Essa cadeia identifica o sua aplicação e será usada em comandos de mensagem.",
     "scenes.app.popup.appsparameters.pages.title_tester": "Testador de Twakecode",
     "scenes.app.popup.appsparameters.pages.url_reception_events_label": "URL de recepção de eventos",
     "scenes.app.popup.appsparameters.pages.waiting_availability_application": "Aguardando...",

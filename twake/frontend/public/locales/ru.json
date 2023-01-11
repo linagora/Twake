@@ -977,7 +977,7 @@
     "scenes.app.channelsbar.channel_information.group": "Группа каналов",
     "scenes.app.channelsbar.channel_information.group.none": "Не выбрано",
     "scenes.app.channelsbar.channel_information.group.new": "Создать новую группу",
-    "scenes.app.channelsbar.channel_information.group.save": "Добавить в группу каналов $1",
+    "scenes.app.channelsbar.channel_information.group.save": "Добавить в группу каналов {{$1}}",
     "scenes.app.channelsbar.channel_information.group.save_none": "Не добавлять в группу каналов",
     "scenes.app.channelsbar.channel_information.save": "Сохранить изменения",
     "components.invitation.invitation_channels.button": "Пригласить в каналы",
@@ -998,11 +998,11 @@
     "components.invitation.invitation_target.invite_as_members": "Пригласить всех в качестве участников",
     "components.invitation.invitation_target.channels_button": "Выбрать каналы",
     "components.invitation.workspace_link.text": "Ссылка для приглашения в рабочую среду",
-    "components.invitation.title": "пригласить людей в {{$1}}",
-    "components.invitation.bulk_invitation": "Групповое приглашение",
+    "components.invitation.title": "Пригласить пользователей в {{$1}}",
+    "components.invitation.bulk_invitation": "Несколько адресов",
     "components.invitation.button": "Отправить приглашения",
     "scenes.client.readonly.info": "Этот канал доступен только для чтения, но вы можете оставлять комментарии.",
     "scenes.app.channelsbar.channel_information.group.title": "Группы каналов",
-    "components.invitation.custom_role_invitation": "Классическое приглашение",
-    "components.invitation.link": "Ссылка на сайт"
+    "components.invitation.custom_role_invitation": "Стандартное приглашение",
+    "components.invitation.link": "Ссылка"
 }
