@@ -1,4 +1,4 @@
-import SearchRepository from "src/core/platform/services/search/repository";
+import SearchRepository from "../../../core/platform/services/search/repository";
 import { getLogger, logger, TwakeLogger } from "../../../core/platform/framework";
 import { CrudException, ListResult } from "../../../core/platform/framework/api/crud-service";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
@@ -10,6 +10,7 @@ import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import {
   CompanyExecutionContext,
+  DocumentsMessageQueueRequest,
   DriveItemDetails,
   RootType,
   SearchDocumentsOptions,
@@ -205,6 +206,16 @@ export class DocumentsService {
 
       await this.repository.save(driveItem);
       await updateItemSize(driveItem.parent_id, this.repository, context);
+
+      globalResolver.platformServices.messageQueue.publish<DocumentsMessageQueueRequest>(
+        "services:documents:process",
+        {
+          data: {
+            item: driveItem,
+            version: driveItemVersion,
+          },
+        },
+      );
 
       return driveItem;
     } catch (error) {

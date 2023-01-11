@@ -44,3 +44,18 @@ export type SearchDocumentsBody = {
   creator?: string;
   added?: string;
 };
+
+export type DocumentsMessageQueueRequest = {
+  item: DriveFile;
+  version: FileVersion;
+};
+
+export type DocumentsMessageQueueCallback = {
+  item: DriveFile;
+  content_keywords: string;
+};
+
+export type exportKeywordPayload = {
+  file_id: string;
+  company_id: string;
+};

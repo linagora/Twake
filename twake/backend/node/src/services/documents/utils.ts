@@ -12,6 +12,8 @@ import { FileVersion } from "./entities/file-version";
 import globalResolver from "../global-resolver";
 import Repository from "../../core/platform/services/database/services/orm/repository/repository";
 import archiver from "archiver";
+import { Readable } from "stream";
+import { stopWords } from "./const";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -413,4 +415,55 @@ export const addDriveItemToArchive = async (
       addDriveItemToArchive(child.id, child, archive, repository, context, `${item.name}/`);
     });
   }
+};
+
+/**
+ * Converts a file readable stream to string
+ *
+ * @param {Readable} readable - the file stream
+ * @returns {Promise<string>}
+ */
+export const readableToString = async (readable: Readable): Promise<string> => {
+  let content = "";
+
+  return new Promise((resolve, reject) => {
+    readable.on("data", data => {
+      content += data.toString();
+    });
+
+    readable.on("end", () => {
+      resolve(content);
+    });
+
+    readable.on("error", error => {
+      reject(error);
+    });
+  });
+};
+
+/**
+ * Extracts the most popular 250 keywords from a text.
+ *
+ * @param {string} data - file data string.
+ * @returns {string}
+ */
+export const extractKeywords = (data: string): string => {
+  const words = data.toLowerCase().split(/[^a-zA-Z']+/);
+  const filteredWords = words.filter(word => !stopWords.includes(word));
+
+  const wordFrequency = filteredWords.reduce((acc: Record<string, number>, word: string) => {
+    acc[word] = (acc[word] || 0) + 1;
+
+    return acc;
+  }, {});
+
+  const sortedFrequency = Object.entries(wordFrequency)
+    .sort((a, b) => b[1] - a[1])
+    .reduce((acc: Record<string, number>, [key, val]) => {
+      acc[key] = val;
+
+      return acc;
+    }, {});
+
+  return Object.keys(sortedFrequency).slice(0, 250).join(" ");
 };
