@@ -1,8 +1,8 @@
 import globalResolver from "../../../global-resolver";
 import { Initializable } from "../../../../core/platform/framework";
-import { DocumentsProcessor } from "./start-service";
+import { DocumentsProcessor } from "./extract-keywords";
 import { DriveFile } from "../../entities/drive-file";
-import { DocumentsFinishedProcess } from "./finish-service";
+import { DocumentsFinishedProcess } from "./save-keywords";
 
 export class DocumentsEngine implements Initializable {
   async init(): Promise<this> {
