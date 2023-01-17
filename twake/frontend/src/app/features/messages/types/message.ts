@@ -11,6 +11,7 @@ export type ThumbnailType = {
   index?: number;
   size?: number;
   mime?: string;
+  type?: string;
   url: string;
 };
 

@@ -21,6 +21,7 @@ import { ExternalLinkIcon } from '@heroicons/react/outline';
 import InitService from 'app/features/global/services/init-service';
 import * as Text from '../../../../atoms/text';
 import workspaceService from 'app/deprecated/workspaces/workspaces.jsx';
+import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 
 export default class UserParameter extends Component {
   constructor(props) {
@@ -63,7 +64,7 @@ export default class UserParameter extends Component {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     var that = this;
     event.preventDefault();
-    uploadService.getFilesTree(event, function (tree) {
+    getFilesTree(event, function (tree) {
       var first = tree[Object.keys(tree)[0]];
       if (first.constructor.name !== 'Object') {
         //A file

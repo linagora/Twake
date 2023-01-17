@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
-import Languages from 'app/features/global/services/languages-service';
+import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import groupService from 'app/deprecated/workspaces/groups';
-import ButtonWithTimeout from 'components/buttons/button-with-timeout';
-import Attribute from 'components/parameters/attribute';
-import uploadService from 'app/deprecated/uploadManager/upload-manager';
-import Input from 'components/inputs/input';
+import Languages from 'app/features/global/services/languages-service';
 import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
+import ButtonWithTimeout from 'components/buttons/button-with-timeout';
+import Input from 'components/inputs/input';
+import Attribute from 'components/parameters/attribute';
 
 import './Pages.scss';
 
@@ -33,7 +33,7 @@ export default class CompanyIdendity extends Component {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     var that = this;
     event.preventDefault();
-    uploadService.getFilesTree(event, function (tree) {
+    getFilesTree(event, function (tree) {
       var first = tree[Object.keys(tree)[0]];
       if (first.constructor.name !== 'Object') {
         //A file

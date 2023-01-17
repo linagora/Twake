@@ -13,7 +13,6 @@ import MenusBodyLayer from 'app/components/menus/menus-body-layer.jsx';
 import DriveUploadViewer from 'components/uploads/upload-viewer.jsx';
 import ChatUploadsViewer from 'app/components/file-uploads/uploads-viewer';
 import ConfigBodyLayer from 'components/configurators/config-body-layer.jsx';
-import DriveViewer from 'app/views/applications/drive/viewer/drive-deprecated-viewer';
 import Viewer from 'app/views/applications/viewer/viewer';
 import ModalComponent from 'app/components/modal/modal-component';
 import ConnectionIndicator from 'components/connection-indicator/connection-indicator';
@@ -91,7 +90,6 @@ export default React.memo((): JSX.Element => {
       <DriveUploadViewer />
       <ConfigBodyLayer />
       <Viewer />
-      <DriveViewer />
       <ModalComponent />
       <SearchPopup />
       <ChannelAttachementList />

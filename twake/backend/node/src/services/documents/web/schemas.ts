@@ -68,8 +68,6 @@ const documentSchema = {
     },
     content_keywords: { type: "string" },
     hidden_data: {},
-    public_access_key: { type: "string" },
-    workspace_id: { type: "string" },
     root_group_folder: { type: "string" },
     creator: { type: "string" },
     size: { type: "number" },

@@ -4,7 +4,7 @@ import { MessageFileType } from 'app/features/messages/types/message';
 import { useRecoilState } from 'recoil';
 import { PendingUploadZonesListState } from '../state/atoms/pending-upload-zones-list';
 import { useUpload } from './use-upload';
-import { PendingFileType } from 'app/features/files/types/file';
+import { FileType, PendingFileType } from 'app/features/files/types/file';
 
 export const useUploadZones = (zoneId: string) => {
   const { currentTask, getOnePendingFile } = useUpload();
@@ -23,8 +23,11 @@ export const useUploadZones = (zoneId: string) => {
     }
   }, [currentTask]);
 
-  const upload = async (list: File[]) => {
-    const newFiles = await FileUploadService.upload(list);
+  const upload = async (
+    list: File[],
+    options?: { uploader?: (file: File, context: any) => Promise<FileType>; context?: any },
+  ) => {
+    const newFiles = await FileUploadService.upload(list, options);
     setFiles([
       ...files,
       ...newFiles.map(f => {
