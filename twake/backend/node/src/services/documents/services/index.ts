@@ -527,6 +527,9 @@ export class DocumentsService {
     return await this.searchRepository.search(
       {},
       {
+        pagination: {
+          limitStr: "100",
+        },
         ...(options.company_id ? { $in: [["company_id", [options.company_id]]] } : {}),
         ...(options.creator ? { $in: [["creator", [options.creator]]] } : {}),
         ...(options.added ? { $in: [["added", [options.added]]] } : {}),
