@@ -58,8 +58,12 @@ export const useDriveItem = (id: string) => {
     [id, setLoading, refresh],
   );
 
+  const inTrash = id === 'trash' || item?.path?.some(i => i.parent_id === 'trash');
+
   return {
+    inTrash,
     loading,
+    path: item?.path,
     item: item?.item,
     versions: item?.versions,
     createVersion,

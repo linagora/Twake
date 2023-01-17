@@ -1,6 +1,6 @@
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { ToasterService } from 'app/features/global/services/toaster-service';
-import { LoadingState } from 'app/features/global/state/atoms/Loading';
+import { LoadingState, LoadingStateInitTrue } from 'app/features/global/state/atoms/Loading';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { useCallback } from 'react';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
@@ -15,17 +15,18 @@ import { DriveItem, DriveItemVersion } from '../types';
  */
 export const useDriveChildren = (id: string | 'trash' | 'root' = 'root') => {
   const companyId = useRouterCompany();
-  const [loading, setLoading] = useRecoilState(LoadingState('useDriveChildren-' + id));
+  const [loading, setLoading] = useRecoilState(LoadingStateInitTrue('useDriveChildren-' + id));
   const children = useRecoilValue(DriveItemChildrenAtom(id));
 
   const refresh = useRecoilCallback(
     ({ set, snapshot }) =>
-      async () => {
+      async (parentId?: string) => {
+        parentId = parentId || id;
         setLoading(true);
         try {
-          const details = await DriveApiClient.get(companyId, id);
-          set(DriveItemChildrenAtom(id), details.children);
-          set(DriveItemAtom(id), details);
+          const details = await DriveApiClient.get(companyId, parentId);
+          set(DriveItemChildrenAtom(parentId), details.children);
+          set(DriveItemAtom(parentId), details);
           for (const child of details.children) {
             const currentValue = snapshot.getLoadable(DriveItemAtom(child.id)).contents;
             set(DriveItemAtom(child.id), { ...currentValue, item: child });
@@ -47,7 +48,7 @@ export const useDriveChildren = (id: string | 'trash' | 'root' = 'root') => {
       setLoading(true);
       try {
         driveFile = await DriveApiClient.create(companyId, { item, version });
-        await refresh();
+        await refresh(item.parent_id);
       } catch (e) {
         ToasterService.error('Unable to create a new file.');
       }

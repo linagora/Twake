@@ -4,11 +4,13 @@ export type DriveItemDetails = {
   item: DriveItem;
   versions: DriveItemVersion[];
   children: DriveItem[];
+  path: DriveItem[];
 };
 
 export type DriveItem = {
   id: string;
   company_id: string;
+  workspace_id: string;
 
   parent_id: string;
   in_trash: boolean;

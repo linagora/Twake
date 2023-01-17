@@ -2,10 +2,13 @@ import { DotsHorizontalIcon } from '@heroicons/react/outline';
 import { DocumentIcon } from '@heroicons/react/solid';
 import { Button } from 'app/atoms/button/button';
 import { Base, BaseSmall } from 'app/atoms/text';
+import Menu from 'app/components/menus/menu';
+import { formatBytes } from 'app/features/drive/utils';
+import { formatSize } from 'app/features/global/utils/format-file-size';
 import { useState } from 'react';
 import { CheckableIcon, DriveItemProps } from './common';
 
-export const DocumentRow = ({ className, onCheck, checked, onClick }: DriveItemProps) => {
+export const DocumentRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
 
   return (
@@ -24,26 +27,71 @@ export const DocumentRow = ({ className, onCheck, checked, onClick }: DriveItemP
         else onClick();
       }}
     >
-      <CheckableIcon
-        className="mr-2 -ml-1"
-        show={hover || checked}
-        checked={checked}
-        onCheck={onCheck}
-        fallback={<DocumentIcon className="h-5 w-5 shrink-0 text-gray-400" />}
-      />
-      <div className="grow text-ellipsis whitespace-nowrap overflow-hidden">
-        <Base>My super document</Base>
-      </div>
-      <div className="shrink-0 ml-4">
-        <BaseSmall>14mb</BaseSmall>
-      </div>
-      <div className="shrink-0 ml-4">
-        <Button
-          theme={'secondary'}
-          size="sm"
-          className={'!rounded-full '}
-          icon={DotsHorizontalIcon}
+      <div onClick={e => e.stopPropagation()}>
+        <CheckableIcon
+          className="mr-2 -ml-1"
+          show={hover || checked}
+          checked={checked}
+          onCheck={onCheck}
+          fallback={<DocumentIcon className="h-5 w-5 shrink-0 text-gray-400" />}
         />
+      </div>
+      <div className="grow text-ellipsis whitespace-nowrap overflow-hidden">
+        <Base>{item.name}</Base>
+      </div>
+      <div className="shrink-0 ml-4">
+        <BaseSmall>{formatBytes(item.size)}</BaseSmall>
+      </div>
+      <div className="shrink-0 ml-4">
+        <Menu
+          menu={[
+            {
+              type: 'menu',
+              text: 'Preview',
+              onClick: () => console.log('Preview'),
+            },
+            {
+              type: 'menu',
+              text: 'Download',
+              onClick: () => console.log('Download'),
+            },
+            { type: 'separator' },
+            {
+              type: 'menu',
+              text: 'Modify properties',
+              onClick: () => console.log('Modify properties'),
+            },
+            {
+              type: 'menu',
+              text: 'Manage access',
+              onClick: () => console.log('Manage access'),
+            },
+            {
+              type: 'menu',
+              text: 'Versions',
+              onClick: () => console.log('Versions'),
+            },
+            {
+              type: 'menu',
+              text: 'Move',
+              onClick: () => console.log('Move'),
+            },
+            { type: 'separator' },
+            {
+              type: 'menu',
+              text: 'Move to trash',
+              className: 'error',
+              onClick: () => console.log('Move to trash'),
+            },
+          ]}
+        >
+          <Button
+            theme={'secondary'}
+            size="sm"
+            className={'!rounded-full '}
+            icon={DotsHorizontalIcon}
+          />
+        </Menu>
       </div>
     </div>
   );

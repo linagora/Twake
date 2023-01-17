@@ -31,6 +31,7 @@ export const useDriveUpload = () => {
               company_id: context.companyId,
               parent_id: parentId,
               name: directory,
+              is_directory: true,
             },
             {},
           );
@@ -57,6 +58,7 @@ export const useDriveUpload = () => {
             create(
               {
                 company_id: context.companyId,
+                workspace_id: 'someid',
                 parent_id: context.parentId,
                 name: file.metadata?.name,
               },

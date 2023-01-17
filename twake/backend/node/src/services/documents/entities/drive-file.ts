@@ -65,14 +65,6 @@ export class DriveFile {
   hidden_data: unknown;
 
   @Type(() => String)
-  @Column("workspace_id", "uuid")
-  workspace_id: string;
-
-  @Type(() => String)
-  @Column("public_access_key", "string")
-  public_access_key: string;
-
-  @Type(() => String)
   @Column("root_group_folder", "string")
   root_group_folder: string;
 
