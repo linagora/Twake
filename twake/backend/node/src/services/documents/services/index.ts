@@ -17,6 +17,7 @@ import {
   getPath,
   updateItemSize,
 } from "../utils";
+
 import archiver from "archiver";
 
 export class DocumentsService {
@@ -161,6 +162,7 @@ export class DocumentsService {
   ): Promise<DriveFile> => {
     try {
       const driveItem = getDefaultDriveItem(content, context);
+      const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
       const hasAccess = await checkAccess(
         driveItem.parent_id,
@@ -174,26 +176,19 @@ export class DocumentsService {
         throw Error("user does not have access to this item parent");
       }
 
-      if (!driveItem.is_directory) {
-        const driveItemVersion = getDefaultDriveItemVersion(version, context);
-        if (file) {
-          driveItem.size = file.upload_data.size;
-          driveItem.is_directory = false;
-          driveItem.has_preview = true;
-          driveItem.extension = file.metadata.name.split(".").pop();
-          driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
-          driveItemVersion.file_size = file.upload_data.size;
-          driveItemVersion.file_id = file.id;
-        }
-
-        if (!driveItemVersion.file_id) {
-          throw new CrudException("File version is required", 400);
-        }
-
-        await this.fileVersionRepository.save(driveItemVersion);
-
-        driveItem.last_version_cache = driveItemVersion;
+      if (file) {
+        driveItem.size = file.upload_data.size;
+        driveItem.is_directory = false;
+        driveItem.has_preview = true;
+        driveItem.extension = file.metadata.name.split(".").pop();
+        driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
+        driveItemVersion.file_size = file.upload_data.size;
+        driveItemVersion.file_id = file.id;
       }
+
+      await this.fileVersionRepository.save(driveItemVersion);
+
+      driveItem.last_version_cache = driveItemVersion;
 
       await this.repository.save(driveItem);
       await updateItemSize(driveItem.parent_id, this.repository, context);
@@ -422,5 +417,44 @@ export class DocumentsService {
       this.logger.error("Failed to create Drive item version", error);
       throw new CrudException("Failed to create Drive item version", 500);
     }
+  };
+
+  /**
+   * Creates a zip archive containing the drive items.
+   *
+   * @param {string[]} ids - the drive item list
+   * @param {CompanyExecutionContext} context - the execution context
+   * @returns {Promise<archiver.Archiver>} the created archive.
+   */
+  createZip = async (
+    ids: string[] = [],
+    context: CompanyExecutionContext,
+  ): Promise<archiver.Archiver> => {
+    if (!context) {
+      this.logger.error("invalid execution context");
+      return null;
+    }
+
+    const archive = archiver("zip", {
+      zlib: { level: 9 },
+    });
+
+    await Promise.all(
+      ids.map(async id => {
+        if (!(await checkAccess(id, null, "read", this.repository, context))) {
+          this.logger.warn(`not enough permissions to download ${id}, skipping`);
+          return;
+        }
+
+        try {
+          await addDriveItemToArchive(id, null, archive, this.repository, context);
+        } catch (error) {
+          this.logger.warn("failed to add item to archive", error);
+          throw new Error("Failed to add item to archive");
+        }
+      }),
+    );
+
+    return archive;
   };
 }
