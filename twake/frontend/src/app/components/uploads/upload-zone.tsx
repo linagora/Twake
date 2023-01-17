@@ -8,9 +8,11 @@ import { Upload } from 'react-feather';
 import classNames from 'classnames';
 import './uploads.scss';
 import { Typography } from 'antd';
-import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
 
-type PropsType = { [key: string]: any };
+type PropsType = {
+  [key: string]: any;
+  onAddFiles: (files: File[], event: Event & { dataTransfer: DataTransfer }) => void;
+};
 
 type StateType = { [key: string]: any };
 
@@ -115,30 +117,11 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
    */
   change(event: any) {
     if (this.props.disabled) return;
-
     event.preventDefault();
-
-    console.log(event.target.files, event.target);
-
-    const files = event.target.files || event.dataTransfer.files || [];
-    if (this.props.onAddFiles && files.length > 0) return this.props.onAddFiles([...files]);
-
     this.hover(false);
 
-    UploadManager.getFilesTree(event, (tree: any, nb: any, totalSize: any) => {
-      this.file_input.value = '';
-
-      if (this.props.filesLimit) {
-        nb <= this.props.filesLimit
-          ? this.upload(tree, nb, totalSize)
-          : Toaster.error(
-              Languages.t('components.upload.drop_files.toaster.error', [this.props.filesLimit]),
-              4,
-            );
-      } else {
-        this.upload(tree, nb, totalSize);
-      }
-    });
+    const files = event.target.files || event.dataTransfer.files || [];
+    if (this.props.onAddFiles && files.length > 0) return this.props.onAddFiles([...files], event);
   }
 
   /**

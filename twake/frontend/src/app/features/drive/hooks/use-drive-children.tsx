@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import { DriveApiClient } from '../api-client/api-client';
 import { DriveItemAtom, DriveItemChildrenAtom } from '../state/store';
-import { DriveItem } from '../types';
+import { DriveItem, DriveItemVersion } from '../types';
 
 /**
  * Returns the children of a drive item
@@ -41,15 +41,18 @@ export const useDriveChildren = (id: string | 'trash' | 'root' = 'root') => {
   );
 
   const create = useCallback(
-    async (item: Partial<DriveItem>, version: Partial<DriveItem>) => {
+    async (item: Partial<DriveItem>, version: Partial<DriveItemVersion>) => {
+      let driveFile = null;
+      if (!item.company_id) item.company_id = companyId;
       setLoading(true);
       try {
-        await DriveApiClient.create(companyId, { item, version });
+        driveFile = await DriveApiClient.create(companyId, { item, version });
         await refresh();
       } catch (e) {
         ToasterService.error('Unable to create a new file.');
       }
       setLoading(false);
+      return driveFile;
     },
     [id, setLoading, refresh],
   );

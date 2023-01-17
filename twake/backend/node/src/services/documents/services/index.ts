@@ -161,7 +161,6 @@ export class DocumentsService {
   ): Promise<DriveFile> => {
     try {
       const driveItem = getDefaultDriveItem(content, context);
-      const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
       const hasAccess = await checkAccess(
         driveItem.parent_id,
@@ -175,19 +174,26 @@ export class DocumentsService {
         throw Error("user does not have access to this item parent");
       }
 
-      if (file) {
-        driveItem.size = file.upload_data.size;
-        driveItem.is_directory = false;
-        driveItem.has_preview = true;
-        driveItem.extension = file.metadata.name.split(".").pop();
-        driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
-        driveItemVersion.file_size = file.upload_data.size;
-        driveItemVersion.file_id = file.id;
+      if (!driveItem.is_directory) {
+        const driveItemVersion = getDefaultDriveItemVersion(version, context);
+        if (file) {
+          driveItem.size = file.upload_data.size;
+          driveItem.is_directory = false;
+          driveItem.has_preview = true;
+          driveItem.extension = file.metadata.name.split(".").pop();
+          driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
+          driveItemVersion.file_size = file.upload_data.size;
+          driveItemVersion.file_id = file.id;
+        }
+
+        if (!driveItemVersion.file_id) {
+          throw new CrudException("File version is required", 400);
+        }
+
+        await this.fileVersionRepository.save(driveItemVersion);
+
+        driveItem.last_version_cache = driveItemVersion;
       }
-
-      await this.fileVersionRepository.save(driveItemVersion);
-
-      driveItem.last_version_cache = driveItemVersion;
 
       await this.repository.save(driveItem);
       await updateItemSize(driveItem.parent_id, this.repository, context);

@@ -1,3 +1,5 @@
+import { ThumbnailType } from '../messages/types/message';
+
 export type DriveItemDetails = {
   item: DriveItem;
   versions: DriveItemVersion[];
@@ -10,7 +12,7 @@ export type DriveItem = {
 
   parent_id: string;
   in_trash: boolean;
-  is_directory: string;
+  is_directory: boolean;
   name: string;
   extension: string;
   description: string;
@@ -21,6 +23,8 @@ export type DriveItem = {
   last_version_cache: DriveItemVersion;
 
   access_info: DriveItemAccessInfo;
+
+  size: number;
 };
 
 export type DriveItemAccessInfo = {
@@ -62,13 +66,13 @@ export type FileMetadata = {
 };
 
 export type Thumbnail = {
-  index: number;
-  id: string;
+  index?: number;
+  id?: string;
 
-  type: string;
-  size: number;
-  width: number;
-  height: number;
+  type?: string;
+  size?: number;
+  width?: number;
+  height?: number;
 
   url: string;
   full_url?: string;

@@ -39,7 +39,13 @@ class FileUploadService {
     this.recoilHandler(_.cloneDeep(updatedState));
   }
 
-  public async upload(fileList: File[]): Promise<PendingFileType[]> {
+  public async upload(
+    fileList: File[],
+    options?: {
+      context?: any;
+      callback?: (file: FileType | null, context: any) => void;
+    },
+  ): Promise<PendingFileType[]> {
     const { companyId } = RouterServices.getStateFromRoute();
 
     if (!fileList || !companyId) {
@@ -72,7 +78,9 @@ class FileUploadService {
       this.notify();
 
       // First we create the file object
-      const resource = (await FileUploadAPIClient.upload(file, { companyId }))?.resource;
+      const resource = (
+        await FileUploadAPIClient.upload(file, { companyId, ...(options?.context || {}) })
+      )?.resource;
 
       if (!resource) {
         throw new Error('A server error occured');
@@ -98,9 +106,7 @@ class FileUploadService {
 
       pendingFile.resumable.addFile(file);
 
-      pendingFile.resumable.on('fileAdded', () =>
-        pendingFile.resumable.upload(),
-      );
+      pendingFile.resumable.on('fileAdded', () => pendingFile.resumable.upload());
 
       pendingFile.resumable.on('fileProgress', (f: any) => {
         const bytesDelta = (f.progress() - pendingFile.progress) * pendingFile.originalFile.size;
@@ -121,6 +127,8 @@ class FileUploadService {
         try {
           pendingFile.backendFile = JSON.parse(message).resource;
           pendingFile.status = 'success';
+          console.log('fileSuccess', options?.callback);
+          options?.callback?.(pendingFile.backendFile, options?.context || {});
           this.notify();
         } catch (e) {
           logger.error(`Error on fileSuccess Event`, e);
@@ -130,6 +138,7 @@ class FileUploadService {
       pendingFile.resumable.on('fileError', () => {
         pendingFile.status = 'error';
         pendingFile.resumable.cancel();
+        options?.callback?.(null, options?.context || {});
         this.notify();
       });
     });

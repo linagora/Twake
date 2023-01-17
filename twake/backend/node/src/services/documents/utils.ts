@@ -45,10 +45,6 @@ export const getDefaultDriveItem = (
           level: "write",
         },
       ],
-      public: {
-        level: "read",
-        token: generateAccessToken(),
-      },
     },
     detached_file: item.detached_file || false,
     extension: item.extension || "",
@@ -63,7 +59,7 @@ export const getDefaultDriveItem = (
     size: item.size || 0,
     tags: item.tags || [],
     url: item.url || "",
-    public_access_key: item.public_access_key || generateAccessToken(),
+    public_access_key: "",
     workspace_id: item.workspace_id || "",
   });
 

@@ -32,7 +32,7 @@ const ChannelGroupSelector = (props: { group: string; onChange: (str: string) =>
   }, [groups]);
 
   return (
-    <div className="w-screen max-w-xs">
+    <div className="w-screen max-w-sm p-4 -m-4">
       <hr className="my-1 -mx-4 mb-3" />
 
       {groups.map(g => (
@@ -117,7 +117,7 @@ export const ChannelInformationForm = (props: {
   const [icon, setIcon] = useState(props.channel?.icon || '');
 
   return (
-    <div className="w-screen max-w-xs">
+    <div className="w-screen max-w-sm p-4 -m-4">
       <Modal open={channelGroupModal !== false} onClose={() => setChannelGroupModal(false)}>
         <ModalContent title={Languages.t('scenes.app.channelsbar.channel_information.group.title')}>
           <ChannelGroupSelector

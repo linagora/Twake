@@ -55,7 +55,7 @@ export const ChannelSettingsMenu = (props: {
     user?.id === props.channel?.owner || workspaceUserRightsService.hasWorkspacePrivilege();
 
   return (
-    <div className="w-screen max-w-xs">
+    <div className="w-screen max-w-sm p-4 -m-4">
       {!isDirect && (
         <>
           <Block

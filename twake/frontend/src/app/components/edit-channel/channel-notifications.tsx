@@ -20,7 +20,7 @@ export const ChannelNotificationsForm = (props: { channel?: ChannelType; onBack:
   };
 
   return (
-    <div className="w-screen max-w-xs">
+    <div className="w-screen max-w-sm p-4 -m-4">
       <Block
         className="my-4"
         avatar={<></>}

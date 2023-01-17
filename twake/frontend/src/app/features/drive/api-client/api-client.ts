@@ -23,12 +23,16 @@ export class DriveApiClient {
 
   static async create(
     companyId: string,
-    data: { item: Partial<DriveItem>; version: Partial<DriveItemVersion> },
+    data: { item: Partial<DriveItem>; version?: Partial<DriveItemVersion> },
   ) {
+    if (!data.version) data.version = {} as Partial<DriveItemVersion>;
     return await Api.post<
       { item: Partial<DriveItem>; version: Partial<DriveItemVersion> },
       DriveItem
-    >(`/internal/services/documents/v1/companies/${companyId}/item`, data);
+    >(
+      `/internal/services/documents/v1/companies/${companyId}/item`,
+      data as { item: Partial<DriveItem>; version: Partial<DriveItemVersion> },
+    );
   }
 
   static async createVersion(companyId: string, id: string, version: Partial<DriveItemVersion>) {

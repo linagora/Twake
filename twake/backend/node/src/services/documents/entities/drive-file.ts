@@ -124,7 +124,7 @@ export class DriveFile {
 }
 
 type AccessInformation = {
-  public: {
+  public?: {
     token: string;
     level: publicAccessLevel;
   };
