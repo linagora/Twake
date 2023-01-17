@@ -41,7 +41,7 @@ export const EditChannelModal = () => {
     <Modal
       open={channelModal.open}
       onClose={() => setChannelModal({ ...channelModal, open: false })}
-      className="int-channel-edit-modal"
+      className="int-channel-edit-modal !max-w-sm"
     >
       {!channelModal.channelId && <CreateChannelForm />}
       {!!channelModal.channelId && <EditChannelForm />}
@@ -77,7 +77,6 @@ const EditChannelForm = () => {
         style={{
           display: 'grid',
           gridTemplate: '1fr / 1fr',
-          placeItems: 'center',
         }}
       >
         <Transition
@@ -207,7 +206,6 @@ const CreateChannelForm = () => {
         style={{
           display: 'grid',
           gridTemplate: '1fr / 1fr',
-          placeItems: 'center',
         }}
       >
         <Transition

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import Messages from 'app/views/applications/messages';
-import Drive from 'app/views/applications/drive/drive';
+import Drive from 'app/views/applications/drive';
 import Calendar from 'app/views/applications/calendar/calendar-content';
 import Tasks from 'app/views/applications/tasks/tasks';
 import NoApp from '../NoApp';
@@ -29,7 +29,7 @@ const AppView: FC<PropsType> = props => {
 
   switch (app?.identity?.code) {
     case 'twake_drive':
-      return <Drive options={configuration} />;
+      return <Drive />;
     case 'twake_calendar':
       return <Calendar options={configuration} />;
     case 'twake_tasks':

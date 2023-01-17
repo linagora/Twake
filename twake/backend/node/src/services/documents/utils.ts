@@ -46,7 +46,7 @@ export const getDefaultDriveItem = (
         },
       ],
       public: {
-        level: "read",
+        level: "none",
         token: generateAccessToken(),
       },
     },
@@ -63,8 +63,6 @@ export const getDefaultDriveItem = (
     size: item.size || 0,
     tags: item.tags || [],
     url: item.url || "",
-    public_access_key: item.public_access_key || generateAccessToken(),
-    workspace_id: item.workspace_id || "",
   });
 
   if (item.id) {
@@ -113,7 +111,7 @@ export const getDefaultDriveItemVersion = (
  * @returns {String} - the random access token ( sha1 hex digest ).
  */
 const generateAccessToken = (): string => {
-  const randomBytes = crypto.randomBytes(32);
+  const randomBytes = crypto.randomBytes(64);
 
   return crypto.createHash("sha1").update(randomBytes).digest("hex");
 };
