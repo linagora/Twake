@@ -61,6 +61,7 @@ export const useDriveUpload = () => {
                 workspace_id: 'someid',
                 parent_id: context.parentId,
                 name: file.metadata?.name,
+                size: file.upload_data?.size,
               },
               {
                 file_id: file.id,
@@ -68,9 +69,9 @@ export const useDriveUpload = () => {
                 application_id: '',
                 file_metadata: {
                   name: file.metadata?.name,
-                  size: file.metadata?.size,
+                  size: file.upload_data?.size,
                   mime: file.metadata?.mime,
-                  thumbnails: file.metadata?.thumbnails,
+                  thumbnails: file?.thumbnails,
                   source: 'internal',
                   external_id: { id: file.id, company_id: file.company_id },
                 },
