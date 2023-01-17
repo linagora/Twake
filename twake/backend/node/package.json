@@ -148,7 +148,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "match-all": "^1.2.6",
-    "minio": "^7.0.18",
+    "minio": "^7.0.32",
     "moment": "^2.29.4",
     "mongodb": "^4.1.0",
     "multistream": "^4.1.0",
