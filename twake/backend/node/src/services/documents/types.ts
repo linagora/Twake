@@ -48,6 +48,7 @@ export type SearchDocumentsBody = {
 export type DocumentsMessageQueueRequest = {
   item: DriveFile;
   version: FileVersion;
+  context: CompanyExecutionContext;
 };
 
 export type DocumentsMessageQueueCallback = {

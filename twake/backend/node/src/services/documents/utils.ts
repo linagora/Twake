@@ -449,7 +449,7 @@ export const readableToString = async (readable: Readable): Promise<string> => {
  */
 export const extractKeywords = (data: string): string => {
   const words = data.toLowerCase().split(/[^a-zA-Z']+/);
-  const filteredWords = words.filter(word => !stopWords.includes(word));
+  const filteredWords = words.filter(word => !stopWords.includes(word) && word.length > 3);
 
   const wordFrequency = filteredWords.reduce((acc: Record<string, number>, word: string) => {
     acc[word] = (acc[word] || 0) + 1;

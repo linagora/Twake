@@ -213,6 +213,7 @@ export class DocumentsService {
           data: {
             item: driveItem,
             version: driveItemVersion,
+            context,
           },
         },
       );
