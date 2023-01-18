@@ -7,6 +7,7 @@ import { DriveApiClient } from '../api-client/api-client';
 import { DriveItemAtom, DriveItemChildrenAtom } from '../state/store';
 import { DriveItem, DriveItemVersion } from '../types';
 import { useDriveActions } from './use-drive-actions';
+import { useDriveUpload } from './use-drive-upload';
 
 /**
  * Get in store single item and expose methods to operate on it
@@ -19,6 +20,7 @@ export const useDriveItem = (id: string) => {
   const children = useRecoilValue(DriveItemChildrenAtom(id));
   const [loading, setLoading] = useRecoilState(LoadingState('useDriveItem-' + id));
   const { refresh: refreshItem, create } = useDriveActions();
+  const { uploadVersion: _uploadVersion } = useDriveUpload();
 
   const refresh = useCallback(
     async (parentId: string) => {
@@ -57,18 +59,17 @@ export const useDriveItem = (id: string) => {
     [id, setLoading, refresh, item?.item?.parent_id],
   );
 
-  const createVersion = useCallback(
-    async (version: Partial<DriveItemVersion>) => {
+  const uploadVersion = useCallback(
+    async file => {
       setLoading(true);
       try {
-        await DriveApiClient.createVersion(companyId, id, version);
-        await refresh(item?.item?.parent_id || '');
+        await _uploadVersion(file, { companyId, id });
       } catch (e) {
         ToasterService.error('Unable to create a new version of this file.');
       }
       setLoading(false);
     },
-    [id, setLoading, refresh, item?.item?.parent_id],
+    [companyId, id, setLoading, refresh, item?.item?.parent_id],
   );
 
   const inTrash = id === 'trash' || item?.path?.some(i => i.parent_id === 'trash');
@@ -80,8 +81,8 @@ export const useDriveItem = (id: string) => {
     path: item?.path,
     item: item?.item,
     versions: item?.versions,
+    uploadVersion,
     create,
-    createVersion,
     update,
     remove,
     refresh,

@@ -227,7 +227,7 @@ Used to create a drive item version
 Shortcut to download a file (you can also use the file-service directly).
 If the item is a folder, a zip will be automatically generated.
 
-**URL** : `/internal/services/documents/v1/companies/:company_id/item/:id/download`
+**URL** : `/internal/services/documents/v1/companies/:company_id/item/:id/download?version_id=:optional_id`
 
 **Method** : `GET`
 

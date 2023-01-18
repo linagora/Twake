@@ -141,14 +141,19 @@ export class DocumentsController {
    * @param {FastifyReply} reply
    */
   download = async (
-    request: FastifyRequest<{ Params: ItemRequestParams }>,
+    request: FastifyRequest<{ Params: ItemRequestParams; Querystring: { version_id?: string } }>,
     response: FastifyReply,
   ): Promise<void> => {
     const context = getCompanyExecutionContext(request);
     const id = request.params.id || "";
+    const versionId = request.query.version_id || null;
 
     try {
-      const archiveOrFile = await globalResolver.services.documents.download(id, context);
+      const archiveOrFile = await globalResolver.services.documents.download(
+        id,
+        versionId,
+        context,
+      );
 
       if (archiveOrFile.archive) {
         const archive = archiveOrFile.archive;

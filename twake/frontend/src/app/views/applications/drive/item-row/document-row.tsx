@@ -7,11 +7,14 @@ import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { formatBytes } from 'app/features/drive/utils';
 import { formatSize } from 'app/features/global/utils/format-file-size';
 import { useState } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
 
 export const DocumentRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download } = useDriveActions();
+  const setVersionModal = useSetRecoilState(VersionsModalAtom);
 
   return (
     <div
@@ -71,7 +74,7 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
             {
               type: 'menu',
               text: 'Versions',
-              onClick: () => console.log('Versions'),
+              onClick: () => setVersionModal({ open: true, id: item.id }),
             },
             {
               type: 'menu',

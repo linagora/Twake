@@ -422,6 +422,7 @@ export class DocumentsService {
 
   download = async (
     id: string,
+    versionId: string | null,
     context: CompanyExecutionContext,
   ): Promise<{
     archive?: archiver.Archiver;
@@ -438,7 +439,13 @@ export class DocumentsService {
       return { archive: await this.createZip([id], context) };
     }
 
-    const fileId = item.item.last_version_cache.file_id;
+    let version = item.item.last_version_cache;
+    if (versionId) version = item.versions.find(version => version.id === versionId);
+    if (!version) {
+      throw new CrudException("Version not found", 404);
+    }
+
+    const fileId = version.file_id;
     const file = await globalResolver.services.files.download(fileId, context);
 
     return { file };

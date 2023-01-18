@@ -51,9 +51,9 @@ export const useDriveActions = () => {
   );
 
   const download = useCallback(
-    async (id: string) => {
+    async (id: string, versionId?: string) => {
       try {
-        const url = await DriveApiClient.getDownloadUrl(companyId, id);
+        const url = await DriveApiClient.getDownloadUrl(companyId, id, versionId);
         (window as any).open(url, '_blank').focus().close();
       } catch (e) {
         ToasterService.error('Unable to download this file.');

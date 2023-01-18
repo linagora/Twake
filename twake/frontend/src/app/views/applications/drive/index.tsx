@@ -19,6 +19,7 @@ import HeaderPath from './header-path';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
 import { CreateModal, CreateModalAtom } from './modals/create-modal';
+import { VersionsModal } from './modals/versions';
 
 export const DriveCurrentFolderAtom = atom<string>({
   key: 'DriveCurrentFolderAtom',
@@ -75,6 +76,7 @@ export default () => {
       }}
     >
       <CreateModal selectFromDevice={() => uploadZoneRef.current?.open()} />
+      <VersionsModal />
 
       <div
         className={
