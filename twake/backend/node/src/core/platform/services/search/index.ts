@@ -37,7 +37,7 @@ export default class Search extends TwakeService<SearchServiceAPI> {
       logger.info("Loaded Mongo adapter for search.");
       this.service = new MongosearchService(this.database);
     } else {
-      logger.warning("No adapter for search was loaded.");
+      logger.warn("No adapter for search was loaded.");
       this.service = null;
     }
 
