@@ -19,6 +19,7 @@ import {
 } from "../utils";
 
 import archiver from "archiver";
+import internal from "stream";
 
 export class DocumentsService {
   version: "1";
@@ -417,6 +418,30 @@ export class DocumentsService {
       this.logger.error("Failed to create Drive item version", error);
       throw new CrudException("Failed to create Drive item version", 500);
     }
+  };
+
+  download = async (
+    id: string,
+    context: CompanyExecutionContext,
+  ): Promise<{
+    archive?: archiver.Archiver;
+    file?: {
+      file: internal.Readable;
+      name: string;
+      mime: string;
+      size: number;
+    };
+  }> => {
+    const item = await this.get(id, context);
+
+    if (item.item.is_directory) {
+      return { archive: await this.createZip([id], context) };
+    }
+
+    const fileId = item.item.last_version_cache.file_id;
+    const file = await globalResolver.services.files.download(fileId, context);
+
+    return { file };
   };
 
   /**

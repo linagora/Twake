@@ -1,7 +1,7 @@
 import { Button } from 'app/atoms/button/button';
 import { Input } from 'app/atoms/input/input-text';
 import { Info } from 'app/atoms/text';
-import { useDriveChildren } from 'app/features/drive/hooks/use-drive-children';
+import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { CreateModalAtom } from '.';
@@ -10,7 +10,7 @@ export const CreateFolder = () => {
   const [name, setName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [state, setState] = useRecoilState(CreateModalAtom);
-  const { create } = useDriveChildren(state.parent_id);
+  const { create } = useDriveActions();
 
   return (
     <>

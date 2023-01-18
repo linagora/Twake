@@ -115,13 +115,3 @@ export const createVersionSchema = {
     "2xx": fileVersionSchema,
   },
 };
-
-export const downloadZipSchema = {
-  body: {
-    type: "object",
-    properties: {
-      items: { type: "array" },
-    },
-    required: ["items"],
-  },
-};

@@ -4,13 +4,14 @@ import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
-import { useDriveChildren } from 'app/features/drive/hooks/use-drive-children';
+import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { formatBytes } from 'app/features/drive/utils';
 import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import { FileType } from 'app/features/files/types/file';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { DriveItem } from './drive-item';
@@ -29,8 +30,8 @@ export default () => {
 
   const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom);
 
-  const { children, refresh, loading } = useDriveChildren(parentId);
-  const { item, inTrash } = useDriveItem(parentId);
+  const { download, downloadZip } = useDriveActions();
+  const { item, inTrash, refresh, children, loading } = useDriveItem(parentId);
   const { item: trash, refresh: refreshTrash } = useDriveItem('trash');
   const { uploadTree } = useDriveUpload();
   const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
@@ -41,8 +42,9 @@ export default () => {
   const setCreationModalState = useSetRecoilState(CreateModalAtom);
 
   useEffect(() => {
-    refresh();
-    if (parentId === 'root' || parentId === 'trash') refreshTrash();
+    setChecked({});
+    refresh(parentId);
+    if (parentId === 'root' || parentId === 'trash') refreshTrash(parentId);
   }, [parentId, refresh, refreshTrash]);
 
   const openItemModal = useCallback(() => {
@@ -91,7 +93,10 @@ export default () => {
                     {
                       type: 'menu',
                       text: 'Download ' + selectedCount + ' items',
-                      onClick: () => console.log('Download ' + selectedCount + ' items'),
+                      onClick: () =>
+                        selectedCount === 1
+                          ? download(Object.keys(checked)[0])
+                          : downloadZip(Object.keys(checked)),
                     },
                     {
                       type: 'menu',
@@ -197,7 +202,7 @@ export default () => {
                     return setParentId(item.id);
                   }}
                   checked={checked[item.id] || false}
-                  onCheck={v => setChecked({ ...checked, [item.id]: v })}
+                  onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
                 />
               ))}
               <div className="my-6" />
@@ -233,7 +238,7 @@ export default () => {
               onClick={() => {}}
               item={item}
               checked={checked[item.id] || false}
-              onCheck={v => setChecked({ ...checked, [item.id]: v })}
+              onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
             />
           ))}
         </div>

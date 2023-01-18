@@ -3,7 +3,7 @@ import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import FileUploadService from 'app/features/files/services/file-upload-service';
 import { FileType } from 'app/features/files/types/file';
 import { DriveApiClient } from '../api-client/api-client';
-import { useDriveChildren } from './use-drive-children';
+import { useDriveActions } from './use-drive-actions';
 
 /**
  * Returns the children of a drive item
@@ -11,7 +11,7 @@ import { useDriveChildren } from './use-drive-children';
  * @returns
  */
 export const useDriveUpload = () => {
-  const { create } = useDriveChildren();
+  const { create } = useDriveActions();
 
   const uploadTree = async (
     tree: FileTreeObject,

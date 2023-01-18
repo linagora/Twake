@@ -41,4 +41,15 @@ export class DriveApiClient {
       version,
     );
   }
+
+  static async getDownloadUrl(companyId: string, id: string) {
+    return `/internal/services/documents/v1/companies/${companyId}/item/${id}/download`;
+  }
+
+  static async getDownloadZipUrl(companyId: string, ids: string[]) {
+    return (
+      `/internal/services/documents/v1/companies/${companyId}/item/download/zip` +
+      `?items=${ids.join(',')}}`
+    );
+  }
 }
