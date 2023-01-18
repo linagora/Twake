@@ -14,6 +14,8 @@ import Repository from "../../core/platform/services/database/services/orm/repos
 import archiver from "archiver";
 import { Readable } from "stream";
 import { stopWords } from "./const";
+import unoconv from "unoconv-promise";
+import { writeToTemporaryFile, cleanFiles } from "../../utils/files";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -466,4 +468,48 @@ export const extractKeywords = (data: string): string => {
     }, {});
 
   return Object.keys(sortedFrequency).slice(0, 250).join(" ");
+};
+
+/**
+ * Converts an office file stream into a human readable string.
+ *
+ * @param {Readable} file - the input file stream.
+ * @param {string} extension - the file extension.
+ * @returns {Promise<string>}
+ */
+export const officeFileToString = async (file: Readable, extension: string): Promise<string> => {
+  const officeFilePath = await writeToTemporaryFile(file, extension);
+  try {
+    const pdfBuffer: Buffer = await unoconv.convert(officeFilePath);
+    const pdfReadable = Readable.from(pdfBuffer);
+
+    // cleanFiles([officeFilePath]);
+
+    return await pdfFileToString(pdfReadable, "pdf");
+  } catch (error) {
+    // cleanFiles([officeFilePath]);
+    throw Error(error);
+  }
+};
+
+/**
+ * Converts a PDF file stream into a human readable string.
+ *
+ * @param {Readable} file - the input file.
+ * @param {string} extension - the file extension.
+ * @returns {Promise<string>}
+ */
+export const pdfFileToString = async (file: Readable, extension: string): Promise<string> => {
+  const pdfFilePath = await writeToTemporaryFile(file, extension);
+  try {
+    const textBuffer: Buffer = await unoconv.convert(pdfFilePath, { format: "txt" });
+    const textReadable = Readable.from(textBuffer);
+
+    // cleanFiles([pdfFilePath]);
+
+    return await readableToString(textReadable);
+  } catch (error) {
+    cleanFiles([pdfFilePath]);
+    throw Error(error);
+  }
 };

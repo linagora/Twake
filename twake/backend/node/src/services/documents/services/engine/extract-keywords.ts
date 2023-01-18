@@ -2,7 +2,15 @@ import globalResolver from "../../../../services/global-resolver";
 import { logger } from "../../../../core/platform/framework";
 import { MessageQueueHandler } from "../../../../core/platform/services/message-queue/api";
 import { DocumentsMessageQueueCallback, DocumentsMessageQueueRequest } from "../../types";
-import { extractKeywords, readableToString } from "../../utils";
+import {
+  extractKeywords,
+  officeFileToString,
+  pdfFileToString,
+  readableToString,
+} from "../../utils";
+import { isFileType } from "../../../../services/previews/utils";
+import { officeExtensions, textExtensions } from "../../../../utils/mime";
+import { pdfExtensions } from "../../../../utils/mime";
 
 export class DocumentsProcessor
   implements MessageQueueHandler<DocumentsMessageQueueRequest, DocumentsMessageQueueCallback>
@@ -39,6 +47,7 @@ export class DocumentsProcessor
 
   async generate(message: DocumentsMessageQueueRequest): Promise<DocumentsMessageQueueCallback> {
     let content_keywords = "";
+    let content_strings = "";
 
     try {
       const storedFile = await globalResolver.services.files.download(
@@ -46,11 +55,27 @@ export class DocumentsProcessor
         message.context,
       );
 
-      const content_strings = await readableToString(storedFile.file);
+      const extension = storedFile.name.split(".").pop();
+
+      if (isFileType(storedFile.mime, storedFile.name, textExtensions)) {
+        logger.info("Processing text file");
+        content_strings = await readableToString(storedFile.file);
+      }
+
+      if (isFileType(storedFile.mime, storedFile.name, pdfExtensions)) {
+        logger.info("Processing PDF file");
+        content_strings = await pdfFileToString(storedFile.file, extension);
+      }
+
+      if (isFileType(storedFile.mime, storedFile.name, officeExtensions)) {
+        logger.info("Processing office file");
+        content_strings = await officeFileToString(storedFile.file, extension);
+      }
+
       content_keywords = extractKeywords(content_strings);
     } catch (error) {
+      console.debug(error);
       logger.error("Failed to generate content keywords", error);
-      throw Error("Failed to generate content keywords");
     }
 
     return { content_keywords, item: message.item };
