@@ -91,6 +91,7 @@ export const useDriveActions = () => {
       try {
         await DriveApiClient.update(companyId, id, update);
         await refresh(parentId || '');
+        if (update?.parent_id !== parentId) await refresh(update?.parent_id || '');
       } catch (e) {
         ToasterService.error('Unable to update this file.');
       }
