@@ -1,8 +1,5 @@
 import { FileTreeObject } from 'app/components/uploads/file-tree-utils';
-import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import FileUploadService from 'app/features/files/services/file-upload-service';
-import { FileType } from 'app/features/files/types/file';
-import { DriveApiClient } from '../api-client/api-client';
 import { useDriveActions } from './use-drive-actions';
 
 /**

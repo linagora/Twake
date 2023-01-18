@@ -25,8 +25,6 @@ export const useDriveItem = (id: string) => {
       setLoading(true);
       try {
         refreshItem(parentId);
-      } catch (e) {
-        throw e;
       } finally {
         setLoading(false);
       }
@@ -38,7 +36,7 @@ export const useDriveItem = (id: string) => {
     setLoading(true);
     try {
       await DriveApiClient.remove(companyId, id);
-      await refresh(item?.item?.parent_id!);
+      await refresh(item?.item?.parent_id || '');
     } catch (e) {
       ToasterService.error('Unable to remove this file.');
     }
@@ -50,7 +48,7 @@ export const useDriveItem = (id: string) => {
       setLoading(true);
       try {
         await DriveApiClient.update(companyId, id, update);
-        await refresh(item?.item?.parent_id!);
+        await refresh(item?.item?.parent_id || '');
       } catch (e) {
         ToasterService.error('Unable to update this file.');
       }
@@ -64,7 +62,7 @@ export const useDriveItem = (id: string) => {
       setLoading(true);
       try {
         await DriveApiClient.createVersion(companyId, id, version);
-        await refresh(item?.item?.parent_id!);
+        await refresh(item?.item?.parent_id || '');
       } catch (e) {
         ToasterService.error('Unable to create a new version of this file.');
       }
