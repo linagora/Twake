@@ -41,4 +41,19 @@ export class DriveApiClient {
       version,
     );
   }
+
+  static async getDownloadUrl(companyId: string, id: string, versionId?: string) {
+    if (versionId)
+      return Api.route(
+        `/internal/services/documents/v1/companies/${companyId}/item/${id}/download?version_id=${versionId}`,
+      );
+    return Api.route(`/internal/services/documents/v1/companies/${companyId}/item/${id}/download`);
+  }
+
+  static async getDownloadZipUrl(companyId: string, ids: string[]) {
+    return Api.route(
+      `/internal/services/documents/v1/companies/${companyId}/item/download/zip` +
+        `?items=${ids.join(',')}`,
+    );
+  }
 }
