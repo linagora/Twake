@@ -483,11 +483,11 @@ export const officeFileToString = async (file: Readable, extension: string): Pro
     const pdfBuffer: Buffer = await unoconv.convert(officeFilePath);
     const pdfReadable = Readable.from(pdfBuffer);
 
-    // cleanFiles([officeFilePath]);
+    cleanFiles([officeFilePath]);
 
     return await pdfFileToString(pdfReadable, "pdf");
   } catch (error) {
-    // cleanFiles([officeFilePath]);
+    cleanFiles([officeFilePath]);
     throw Error(error);
   }
 };
@@ -505,7 +505,7 @@ export const pdfFileToString = async (file: Readable, extension: string): Promis
     const textBuffer: Buffer = await unoconv.convert(pdfFilePath, { format: "txt" });
     const textReadable = Readable.from(textBuffer);
 
-    // cleanFiles([pdfFilePath]);
+    cleanFiles([pdfFilePath]);
 
     return await readableToString(textReadable);
   } catch (error) {
