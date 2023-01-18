@@ -74,5 +74,29 @@ export const useDriveActions = () => {
     [companyId],
   );
 
-  return { create, refresh, download, downloadZip };
+  const remove = useCallback(
+    async (id: string, parentId: string) => {
+      try {
+        await DriveApiClient.remove(companyId, id);
+        await refresh(parentId || '');
+      } catch (e) {
+        ToasterService.error('Unable to remove this file.');
+      }
+    },
+    [refresh],
+  );
+
+  const update = useCallback(
+    async (update: Partial<DriveItem>, id: string, parentId: string) => {
+      try {
+        await DriveApiClient.update(companyId, id, update);
+        await refresh(parentId || '');
+      } catch (e) {
+        ToasterService.error('Unable to update this file.');
+      }
+    },
+    [refresh],
+  );
+
+  return { create, refresh, download, downloadZip, remove, update };
 };

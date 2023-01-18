@@ -19,7 +19,7 @@ export const useDriveItem = (id: string) => {
   const item = useRecoilValue(DriveItemAtom(id));
   const children = useRecoilValue(DriveItemChildrenAtom(id));
   const [loading, setLoading] = useRecoilState(LoadingState('useDriveItem-' + id));
-  const { refresh: refreshItem, create } = useDriveActions();
+  const { refresh: refreshItem, create, update: _update, remove: _remove } = useDriveActions();
   const { uploadVersion: _uploadVersion } = useDriveUpload();
 
   const refresh = useCallback(
@@ -37,8 +37,7 @@ export const useDriveItem = (id: string) => {
   const remove = useCallback(async () => {
     setLoading(true);
     try {
-      await DriveApiClient.remove(companyId, id);
-      await refresh(item?.item?.parent_id || '');
+      await _remove(id, item?.item?.parent_id || '');
     } catch (e) {
       ToasterService.error('Unable to remove this file.');
     }
@@ -49,8 +48,7 @@ export const useDriveItem = (id: string) => {
     async (update: Partial<DriveItem>) => {
       setLoading(true);
       try {
-        await DriveApiClient.update(companyId, id, update);
-        await refresh(item?.item?.parent_id || '');
+        await _update(update, id, item?.item?.parent_id || '');
       } catch (e) {
         ToasterService.error('Unable to update this file.');
       }
