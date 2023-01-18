@@ -58,7 +58,7 @@ export const useDriveItem = (id: string) => {
   );
 
   const uploadVersion = useCallback(
-    async file => {
+    async (file: File) => {
       setLoading(true);
       try {
         await _uploadVersion(file, { companyId, id });
