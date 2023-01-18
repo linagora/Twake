@@ -4,20 +4,20 @@ import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
-import { useDriveChildren } from 'app/features/drive/hooks/use-drive-children';
+import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { formatBytes } from 'app/features/drive/utils';
-import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
-import { FileType } from 'app/features/files/types/file';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
-import { DriveItem } from './drive-item';
 import HeaderPath from './header-path';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
 import { CreateModal, CreateModalAtom } from './modals/create-modal';
+import { SelectorModal, SelectorModalAtom } from './modals/selector';
+import { VersionsModal } from './modals/versions';
 
 export const DriveCurrentFolderAtom = atom<string>({
   key: 'DriveCurrentFolderAtom',
@@ -29,8 +29,8 @@ export default () => {
 
   const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom);
 
-  const { children, refresh, loading } = useDriveChildren(parentId);
-  const { item, inTrash } = useDriveItem(parentId);
+  const { download, downloadZip, update } = useDriveActions();
+  const { item, inTrash, refresh, children, loading } = useDriveItem(parentId);
   const { item: trash, refresh: refreshTrash } = useDriveItem('trash');
   const { uploadTree } = useDriveUpload();
   const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
@@ -39,10 +39,12 @@ export default () => {
   const uploadZoneRef = useRef<UploadZone | null>(null);
 
   const setCreationModalState = useSetRecoilState(CreateModalAtom);
+  const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
 
   useEffect(() => {
-    refresh();
-    if (parentId === 'root' || parentId === 'trash') refreshTrash();
+    setChecked({});
+    refresh(parentId);
+    if (parentId === 'root' || parentId === 'trash') refreshTrash(parentId);
   }, [parentId, refresh, refreshTrash]);
 
   const openItemModal = useCallback(() => {
@@ -73,6 +75,8 @@ export default () => {
       }}
     >
       <CreateModal selectFromDevice={() => uploadZoneRef.current?.open()} />
+      <VersionsModal />
+      <SelectorModal />
 
       <div
         className={
@@ -91,33 +95,60 @@ export default () => {
                     {
                       type: 'menu',
                       text: 'Download ' + selectedCount + ' items',
-                      onClick: () => console.log('Download ' + selectedCount + ' items'),
+                      onClick: () =>
+                        selectedCount === 1
+                          ? download(Object.keys(checked)[0])
+                          : downloadZip(Object.keys(checked)),
                     },
                     {
                       type: 'menu',
                       text: 'Move ' + selectedCount + ' items',
-                      onClick: () => console.log('Download ' + selectedCount + ' items'),
+                      onClick: () =>
+                        setSelectorModalState({
+                          open: true,
+                          parent_id: parentId,
+                          title: 'Move ' + selectedCount + ' items',
+                          mode: 'move',
+                          onSelected: async ids => {
+                            for (const item of children.filter(c => checked[c.id])) {
+                              await update(
+                                {
+                                  parent_id: ids[0],
+                                },
+                                item.id,
+                                item.parent_id,
+                              );
+                            }
+                          },
+                        }),
                     },
                     { type: 'separator' },
-                    {
-                      type: 'menu',
-                      text: 'Restore ' + selectedCount + ' items',
-                      hide: !inTrash,
-                      onClick: () => console.log('Restore ' + selectedCount + ' items'),
-                    },
                     {
                       type: 'menu',
                       text: 'Delete ' + selectedCount + ' items',
                       hide: !inTrash,
                       className: 'error',
-                      onClick: () => console.log('Delete ' + selectedCount + ' items'),
+                      onClick: () => {
+                        console.log('Delete ' + selectedCount + ' items');
+                      },
                     },
                     {
                       type: 'menu',
-                      text: 'More ' + selectedCount + ' items to trash',
+                      text: 'Move ' + selectedCount + ' items to trash',
                       hide: inTrash,
                       className: 'error',
-                      onClick: () => console.log('Delete ' + selectedCount + ' items'),
+                      onClick: async () => {
+                        //TODO add an alert to say that this document may become accessible by not authored users
+                        for (const item of children.filter(c => checked[c.id])) {
+                          await update(
+                            {
+                              parent_id: 'trash',
+                            },
+                            item.id,
+                            item.parent_id,
+                          );
+                        }
+                      },
                     },
                   ]
                 : inTrash
@@ -140,7 +171,7 @@ export default () => {
                       type: 'menu',
                       text: 'Download folder',
                       hide: inTrash,
-                      onClick: () => console.log('Download folder'),
+                      onClick: () => downloadZip([parentId]),
                     },
                     {
                       type: 'menu',
@@ -197,7 +228,7 @@ export default () => {
                     return setParentId(item.id);
                   }}
                   checked={checked[item.id] || false}
-                  onCheck={v => setChecked({ ...checked, [item.id]: v })}
+                  onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
                 />
               ))}
               <div className="my-6" />
@@ -233,7 +264,7 @@ export default () => {
               onClick={() => {}}
               item={item}
               checked={checked[item.id] || false}
-              onCheck={v => setChecked({ ...checked, [item.id]: v })}
+              onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
             />
           ))}
         </div>

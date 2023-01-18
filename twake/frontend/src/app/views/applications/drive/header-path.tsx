@@ -9,6 +9,7 @@ import { DriveCurrentFolderAtom } from '.';
 export default () => {
   const parentId = useRecoilValue(DriveCurrentFolderAtom);
   const { path: livePath, inTrash } = useDriveItem(parentId);
+  const setParentId = useSetRecoilState(DriveCurrentFolderAtom);
 
   const [savedPath, setSavedPath] = useState<DriveItem[]>([]);
   useEffect(() => {
@@ -16,15 +17,28 @@ export default () => {
   }, [livePath]);
   const path = livePath || savedPath;
 
+  return <PathRender inTrash={inTrash || false} path={path} onClick={id => setParentId(id)} />;
+};
+
+export const PathRender = ({
+  path,
+  inTrash,
+  onClick,
+}: {
+  path: DriveItem[];
+  inTrash: boolean;
+  onClick: (id: string) => void;
+}) => {
   return (
     <Title className="overflow-auto whitespace-nowrap mr-2 pl-px">
       <PathItem
         item={inTrash ? { name: 'Trash', id: 'trash' } : { name: 'Home', id: 'root' }}
         first
         last={!path?.length}
+        onClick={onClick}
       />
       {(path || [])?.map((a, i) => (
-        <PathItem key={a.id} item={a} last={i + 1 === path?.length} />
+        <PathItem key={a.id} item={a} last={i + 1 === path?.length} onClick={onClick} />
       ))}
     </Title>
   );
@@ -34,18 +48,19 @@ const PathItem = ({
   item,
   first,
   last,
+  onClick,
 }: {
   item: Partial<DriveItem>;
   last?: boolean;
   first?: boolean;
+  onClick: (id: string) => void;
 }) => {
-  const setParentId = useSetRecoilState(DriveCurrentFolderAtom);
   return (
     <Button
       theme={last ? 'primary' : 'default'}
       className={'-ml-px ' + (!first ? 'rounded-l-none ' : '') + (!last ? 'rounded-r-none ' : '')}
       onClick={() => {
-        setParentId(item?.id || '');
+        onClick(item?.id || '');
       }}
     >
       {item?.name || ''}

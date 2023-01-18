@@ -3,13 +3,19 @@ import { DocumentIcon } from '@heroicons/react/solid';
 import { Button } from 'app/atoms/button/button';
 import { Base, BaseSmall } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
+import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { formatBytes } from 'app/features/drive/utils';
-import { formatSize } from 'app/features/global/utils/format-file-size';
 import { useState } from 'react';
+import { useSetRecoilState } from 'recoil';
+import { SelectorModalAtom } from '../modals/selector';
+import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
 
 export const DocumentRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
+  const { download, update } = useDriveActions();
+  const setVersionModal = useSetRecoilState(VersionsModalAtom);
+  const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
 
   return (
     <div
@@ -53,7 +59,7 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
             {
               type: 'menu',
               text: 'Download',
-              onClick: () => console.log('Download'),
+              onClick: () => download(item.id),
             },
             { type: 'separator' },
             {
@@ -69,19 +75,42 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
             {
               type: 'menu',
               text: 'Versions',
-              onClick: () => console.log('Versions'),
+              onClick: () => setVersionModal({ open: true, id: item.id }),
             },
             {
               type: 'menu',
               text: 'Move',
-              onClick: () => console.log('Move'),
+              onClick: () =>
+                setSelectorModalState({
+                  open: true,
+                  parent_id: item.parent_id,
+                  mode: 'move',
+                  title: `Move '${item.name}'`,
+                  onSelected: async ids => {
+                    await update(
+                      {
+                        parent_id: ids[0],
+                      },
+                      item.id,
+                      item.parent_id,
+                    );
+                  },
+                }),
             },
             { type: 'separator' },
             {
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
-              onClick: () => console.log('Move to trash'),
+              onClick: () => {
+                update(
+                  {
+                    parent_id: 'trash',
+                  },
+                  item.id,
+                  item.parent_id,
+                );
+              },
             },
           ]}
         >

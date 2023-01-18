@@ -21,53 +21,55 @@ Used to fetch a drive item
 ```javascript
 {
   item: {
-      id: string;
-      company_id: string;
+    id: string;
+    company_id: string;
 
-      parent_id: string;
-      in_trash: boolean;
-      is_directory: string;
-      name: string;
-      extension: string;
-      description: string;
-      tags: [];
+    parent_id: string;
+    in_trash: boolean;
+    is_directory: string;
+    name: string;
+    extension: string;
+    description: string;
+    tags: [];
 
-      added: string;
-      last_modified: string;
-      last_version_cache: DriveItemVersion;
+    added: string;
+    last_modified: string;
+    last_version_cache: DriveItemVersion;
 
-      access_info: DriveItemAccessInfo;
-  };
+    access_info: DriveItemAccessInfo;
+  }
   versions: {
-      id: string;
+    id: string;
 
-      provider: string | 'drive' | 'internal';
-      file_id: string;
-      file_metadata: FileMetadata;
+    provider: string | "drive" | "internal";
+    file_id: string;
+    file_metadata: FileMetadata;
 
-      date_added: number;
-      creator_id: string;
-      application_id: string;
-  }[];
+    date_added: number;
+    creator_id: string;
+    application_id: string;
+  }
+  [];
   children: {
-      id: string;
-      company_id: string;
+    id: string;
+    company_id: string;
 
-      parent_id: string;
-      in_trash: boolean;
-      is_directory: string;
-      name: string;
-      extension: string;
-      description: string;
-      tags: [];
+    parent_id: string;
+    in_trash: boolean;
+    is_directory: string;
+    name: string;
+    extension: string;
+    description: string;
+    tags: [];
 
-      added: string;
-      last_modified: string;
-      last_version_cache: DriveItemVersion;
+    added: string;
+    last_modified: string;
+    last_version_cache: DriveItemVersion;
 
-      access_info: DriveItemAccessInfo;
-  }[];
-};
+    access_info: DriveItemAccessInfo;
+  }
+  [];
+}
 ```
 
 ## Create a drive item
@@ -134,7 +136,6 @@ Used to update a drive item
 
 ```javascript
 {
-
   id: string;
   company_id: string;
 
@@ -171,7 +172,6 @@ Used to delete a drive item
 ### Success Response
 
 **Code** : `200 OK`
-
 
 ## Create a drive item version
 
@@ -222,20 +222,23 @@ Used to create a drive item version
 
 **Code** : `200 OK`
 
-## zip download
+## Download
 
-Used to create a zip archive containing the requested drive items ( files and folders ).
+Shortcut to download a file (you can also use the file-service directly).
+If the item is a folder, a zip will be automatically generated.
 
-**URL** : `/internal/services/documents/v1/companies/:company_id/item/:id/download/zip`
+**URL** : `/internal/services/documents/v1/companies/:company_id/item/:id/download?version_id=:optional_id`
 
-**Method** : `POST`
+**Method** : `GET`
 
 **Auth required** : Yes
 
-**Data constraints**
+## Zip download
 
-```javascript
-{
-  items: string[]
-}
-```
+Used to create a zip archive containing the requested drive items ( files and folders ).
+
+**URL** : `/internal/services/documents/v1/companies/:company_id/item/download/zip?items=id1,id2,id3`
+
+**Method** : `GET`
+
+**Auth required** : Yes

@@ -134,17 +134,68 @@ export class DocumentsController {
   };
 
   /**
+   * Shortcut to download a file (you can also use the file-service directly).
+   * If the item is a folder, a zip will be automatically generated.
+   *
+   * @param {FastifyRequest} request
+   * @param {FastifyReply} reply
+   */
+  download = async (
+    request: FastifyRequest<{ Params: ItemRequestParams; Querystring: { version_id?: string } }>,
+    response: FastifyReply,
+  ): Promise<void> => {
+    const context = getCompanyExecutionContext(request);
+    const id = request.params.id || "";
+    const versionId = request.query.version_id || null;
+
+    try {
+      const archiveOrFile = await globalResolver.services.documents.download(
+        id,
+        versionId,
+        context,
+      );
+
+      if (archiveOrFile.archive) {
+        const archive = archiveOrFile.archive;
+
+        archive.on("finish", () => {
+          response.status(200);
+        });
+
+        archive.on("error", () => {
+          response.internalServerError();
+        });
+
+        archive.pipe(response.raw);
+
+        archive.finalize();
+      } else if (archiveOrFile.file) {
+        const data = archiveOrFile.file;
+        const filename = data.name.replace(/[^a-zA-Z0-9 -_.]/g, "");
+
+        response.header("Content-disposition", `attachment; filename="${filename}"`);
+        if (data.size) response.header("Content-Length", data.size);
+        response.type(data.mime);
+        response.send(data.file);
+      }
+    } catch (error) {
+      logger.error("failed to download file", error);
+      throw new CrudException("Failed to download file", 500);
+    }
+  };
+
+  /**
    * Downloads a zip archive containing the drive items.
    *
    * @param {FastifyRequest} request
    * @param {FastifyReply} reply
    */
   downloadZip = async (
-    request: FastifyRequest<{ Params: RequestParams; Body: DownloadZipBodyRequest }>,
+    request: FastifyRequest<{ Params: RequestParams & { items: string } }>,
     reply: FastifyReply,
   ): Promise<void> => {
     const context = getCompanyExecutionContext(request);
-    const ids = request.body.items;
+    const ids = (request.params.items || "").split(",");
 
     try {
       const archive = await globalResolver.services.documents.createZip(ids, context);

@@ -1,9 +1,7 @@
 import { FileTreeObject } from 'app/components/uploads/file-tree-utils';
-import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import FileUploadService from 'app/features/files/services/file-upload-service';
-import { FileType } from 'app/features/files/types/file';
 import { DriveApiClient } from '../api-client/api-client';
-import { useDriveChildren } from './use-drive-children';
+import { useDriveActions } from './use-drive-actions';
 
 /**
  * Returns the children of a drive item
@@ -11,7 +9,37 @@ import { useDriveChildren } from './use-drive-children';
  * @returns
  */
 export const useDriveUpload = () => {
-  const { create } = useDriveChildren();
+  const { create } = useDriveActions();
+
+  const uploadVersion = async (file: File, context: { companyId: string; id: string }) => {
+    return new Promise(r => {
+      FileUploadService.upload([file], {
+        context: {
+          companyId: context.companyId,
+          id: context.id,
+        },
+        callback: async (file, context) => {
+          if (file) {
+            const version = {
+              file_id: file.id,
+              provider: 'internal',
+              application_id: '',
+              file_metadata: {
+                name: file.metadata?.name,
+                size: file.upload_data?.size,
+                mime: file.metadata?.mime,
+                thumbnails: file?.thumbnails,
+                source: 'internal',
+                external_id: { id: file.id, company_id: file.company_id },
+              },
+            };
+            await DriveApiClient.createVersion(context.companyId, context.id, version);
+          }
+          r(true);
+        },
+      });
+    });
+  };
 
   const uploadTree = async (
     tree: FileTreeObject,
@@ -83,5 +111,5 @@ export const useDriveUpload = () => {
     }
   };
 
-  return { uploadTree };
+  return { uploadTree, uploadVersion };
 };
