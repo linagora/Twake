@@ -7,7 +7,11 @@ import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { formatBytes } from 'app/features/drive/utils';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
+import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
+import { ConfirmDeleteModalAtom } from '../modals/confirm-delete';
+import { PropertiesModalAtom } from '../modals/properties';
 import { SelectorModalAtom } from '../modals/selector';
+import { AccessModalAtom } from '../modals/update-access';
 import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
 
@@ -16,6 +20,10 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
   const { download, update } = useDriveActions();
   const setVersionModal = useSetRecoilState(VersionsModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
+  const setAccessModalState = useSetRecoilState(AccessModalAtom);
+  const setPropertiesModalState = useSetRecoilState(PropertiesModalAtom);
+  const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
+  const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
 
   return (
     <div
@@ -54,6 +62,7 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
             {
               type: 'menu',
               text: 'Preview',
+              hide: true,
               onClick: () => console.log('Preview'),
             },
             {
@@ -65,12 +74,12 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
             {
               type: 'menu',
               text: 'Modify properties',
-              onClick: () => console.log('Modify properties'),
+              onClick: () => setPropertiesModalState({ open: true, id: item.id }),
             },
             {
               type: 'menu',
               text: 'Manage access',
-              onClick: () => console.log('Manage access'),
+              onClick: () => setAccessModalState({ open: true, id: item.id }),
             },
             {
               type: 'menu',
@@ -102,15 +111,7 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
-              onClick: () => {
-                update(
-                  {
-                    parent_id: 'trash',
-                  },
-                  item.id,
-                  item.parent_id,
-                );
-              },
+              onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
             },
           ]}
         >

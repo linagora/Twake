@@ -15,8 +15,12 @@ import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import HeaderPath from './header-path';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
-import { CreateModal, CreateModalAtom } from './modals/create-modal';
+import { ConfirmDeleteModal, ConfirmDeleteModalAtom } from './modals/confirm-delete';
+import { ConfirmTrashModal, ConfirmTrashModalAtom } from './modals/confirm-trash';
+import { CreateModal, CreateModalAtom } from './modals/create';
+import { PropertiesModal } from './modals/properties';
 import { SelectorModal, SelectorModalAtom } from './modals/selector';
+import { AccessModal } from './modals/update-access';
 import { VersionsModal } from './modals/versions';
 
 export const DriveCurrentFolderAtom = atom<string>({
@@ -40,6 +44,8 @@ export default () => {
 
   const setCreationModalState = useSetRecoilState(CreateModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
+  const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
+  const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
 
   useEffect(() => {
     setChecked({});
@@ -77,6 +83,10 @@ export default () => {
       <CreateModal selectFromDevice={() => uploadZoneRef.current?.open()} />
       <VersionsModal />
       <SelectorModal />
+      <AccessModal />
+      <PropertiesModal />
+      <ConfirmDeleteModal />
+      <ConfirmTrashModal />
 
       <div
         className={
@@ -129,7 +139,10 @@ export default () => {
                       hide: !inTrash,
                       className: 'error',
                       onClick: () => {
-                        console.log('Delete ' + selectedCount + ' items');
+                        setConfirmDeleteModalState({
+                          open: true,
+                          items: children.filter(a => checked[a.id]),
+                        });
                       },
                     },
                     {
@@ -137,18 +150,11 @@ export default () => {
                       text: 'Move ' + selectedCount + ' items to trash',
                       hide: inTrash,
                       className: 'error',
-                      onClick: async () => {
-                        //TODO add an alert to say that this document may become accessible by not authored users
-                        for (const item of children.filter(c => checked[c.id])) {
-                          await update(
-                            {
-                              parent_id: 'trash',
-                            },
-                            item.id,
-                            item.parent_id,
-                          );
-                        }
-                      },
+                      onClick: async () =>
+                        setConfirmTrashModalState({
+                          open: true,
+                          items: children.filter(a => checked[a.id]),
+                        }),
                     },
                   ]
                 : inTrash
@@ -163,7 +169,13 @@ export default () => {
                       type: 'menu',
                       text: 'Empty trash',
                       className: 'error',
-                      onClick: () => console.log('Empty trash'),
+                      hide: parentId != 'trash',
+                      onClick: () => {
+                        setConfirmDeleteModalState({
+                          open: true,
+                          items: children, //Fixme: Here it works because this menu is displayed only in the trash root folder
+                        });
+                      },
                     },
                   ]
                 : [
