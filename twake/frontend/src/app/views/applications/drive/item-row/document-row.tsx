@@ -14,16 +14,26 @@ import { SelectorModalAtom } from '../modals/selector';
 import { AccessModalAtom } from '../modals/update-access';
 import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
+import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 
 export const DocumentRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
+  const { open } = useFileViewerModal();
+
   const setVersionModal = useSetRecoilState(VersionsModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
   const setAccessModalState = useSetRecoilState(AccessModalAtom);
   const setPropertiesModalState = useSetRecoilState(PropertiesModalAtom);
   const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
   const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
+
+  const preview = () => {
+    open({
+      ...item.last_version_cache,
+      metadata: item.last_version_cache.file_metadata,
+    });
+  };
 
   return (
     <div
@@ -62,8 +72,7 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
             {
               type: 'menu',
               text: 'Preview',
-              hide: true,
-              onClick: () => console.log('Preview'),
+              onClick: () => preview(),
             },
             {
               type: 'menu',
