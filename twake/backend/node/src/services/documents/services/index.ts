@@ -145,6 +145,7 @@ export class DocumentsService {
         } as DriveFile),
       versions: versions,
       children: children,
+      access: "none", //TODO return current user access
     };
   };
 
