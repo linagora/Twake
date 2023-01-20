@@ -59,6 +59,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     });
 
     this.server.addHook("preHandler", (request, reply, done) => {
+      reply.header("Cache-Control", "no-cache");
       if (reply.statusCode === 500) {
         logger.error("An error occured with the preHandler of ", request.routerPath);
       }
