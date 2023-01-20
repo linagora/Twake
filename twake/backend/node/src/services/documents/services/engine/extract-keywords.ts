@@ -2,15 +2,10 @@ import globalResolver from "../../../../services/global-resolver";
 import { logger } from "../../../../core/platform/framework";
 import { MessageQueueHandler } from "../../../../core/platform/services/message-queue/api";
 import { DocumentsMessageQueueCallback, DocumentsMessageQueueRequest } from "../../types";
-import {
-  extractKeywords,
-  officeFileToString,
-  pdfFileToString,
-  readableToString,
-} from "../../utils";
+import { extractKeywords, officeFileToString, pdfFileToString } from "../../utils";
 import { isFileType } from "../../../../services/previews/utils";
-import { officeExtensions, textExtensions } from "../../../../utils/mime";
-import { pdfExtensions } from "../../../../utils/mime";
+import { officeExtensions, textExtensions, pdfExtensions } from "../../../../utils/mime";
+import { readableToString } from "../../../../utils/files";
 
 export class DocumentsProcessor
   implements MessageQueueHandler<DocumentsMessageQueueRequest, DocumentsMessageQueueCallback>

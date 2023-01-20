@@ -427,30 +427,6 @@ export const addDriveItemToArchive = async (
 };
 
 /**
- * Converts a file readable stream to string
- *
- * @param {Readable} readable - the file stream
- * @returns {Promise<string>}
- */
-export const readableToString = async (readable: Readable): Promise<string> => {
-  let content = "";
-
-  return new Promise((resolve, reject) => {
-    readable.on("data", data => {
-      content += data.toString();
-    });
-
-    readable.on("end", () => {
-      resolve(content);
-    });
-
-    readable.on("error", error => {
-      reject(error);
-    });
-  });
-};
-
-/**
  * Extracts the most popular 250 keywords from a text.
  *
  * @param {string} data - file data string.
