@@ -17,9 +17,11 @@ import {
   getPath,
   updateItemSize,
 } from "../utils";
+import { websocketEventBus } from "../../../core/platform/services/realtime/bus";
 
 import archiver from "archiver";
 import internal from "stream";
+import { RealtimeEntityActionType, ResourcePath } from "src/core/platform/services/realtime/types";
 
 export class DocumentsService {
   version: "1";
@@ -194,6 +196,8 @@ export class DocumentsService {
       await this.repository.save(driveItem);
       await updateItemSize(driveItem.parent_id, this.repository, context);
 
+      this.notifyWebsocket(driveItem.parent_id, context);
+
       return driveItem;
     } catch (error) {
       this.logger.error("Failed to create drive item", error);
@@ -240,6 +244,8 @@ export class DocumentsService {
       const driveItem = getDefaultDriveItem(content, context);
       await this.repository.save(driveItem);
       await updateItemSize(driveItem.parent_id, this.repository, context);
+
+      this.notifyWebsocket(driveItem.parent_id, context);
 
       return driveItem;
     } catch (error) {
@@ -361,7 +367,11 @@ export class DocumentsService {
         await this.repository.save(item);
       }
       await updateItemSize(previousParentId, this.repository, context);
+
+      this.notifyWebsocket(previousParentId, context);
     }
+
+    this.notifyWebsocket("trash", context);
   };
 
   /**
@@ -412,6 +422,8 @@ export class DocumentsService {
       item.last_version_cache = driveItemVersion;
 
       await this.repository.save(item);
+
+      this.notifyWebsocket(item.parent_id, context);
 
       return driveItemVersion;
     } catch (error) {
@@ -488,5 +500,18 @@ export class DocumentsService {
     );
 
     return archive;
+  };
+
+  notifyWebsocket = async (id: string, context: CompanyExecutionContext) => {
+    websocketEventBus.publish(RealtimeEntityActionType.Event, {
+      type: "documents:updated",
+      room: ResourcePath.get(`/companies/${context.company.id}/documents/item/${id}`),
+      entity: {
+        companyId: context.company.id,
+        id: id,
+      },
+      resourcePath: null,
+      result: null,
+    });
   };
 }
