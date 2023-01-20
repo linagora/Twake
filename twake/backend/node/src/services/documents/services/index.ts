@@ -284,7 +284,7 @@ export class DocumentsService {
       await this.repository.save(item);
       await updateItemSize(item.parent_id, this.repository, context);
 
-      this.notifyWebsocket(driveItem.parent_id, context);
+      this.notifyWebsocket(item.parent_id, context);
 
       return item;
     } catch (error) {
@@ -552,6 +552,7 @@ export class DocumentsService {
       resourcePath: null,
       result: null,
     });
+  };
 
   /**
    * Search for Drive items.
