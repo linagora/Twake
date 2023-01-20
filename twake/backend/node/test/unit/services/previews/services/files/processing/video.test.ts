@@ -5,7 +5,7 @@ import { cleanFiles, getTmpFile } from "../../../../../../../src/utils/files";
 import fs from "fs";
 
 jest.mock("fluent-ffmpeg");
-jest.mock("../../../../../../../src/services/previews/utils");
+jest.mock("../../../../../../../src/utils/files");
 
 const ffmpegMock = {
   screenshot: jest.fn().mockReturnValue({
