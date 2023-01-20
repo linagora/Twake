@@ -45,11 +45,13 @@ const ConfirmTrashModalContent = ({ items }: { items: DriveItem[] }) => {
         items.length === 1 ? `Move ${item?.name} to trash` : `Move ${items.length} items to trash`
       }
     >
-      <Base>
+      <Base className="block my-3">
         Click 'Move to trash' to move the selected items to the trash folder. You can restore them
         later from the trash.
       </Base>
+      <br />
       <Button
+        className="float-right"
         loading={loading}
         onClick={async () => {
           setLoading(true);

@@ -6,6 +6,7 @@ import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
+import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { formatBytes } from 'app/features/drive/utils';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
@@ -37,10 +38,11 @@ export default () => {
   const { item, inTrash, refresh, children, loading } = useDriveItem(parentId);
   const { item: trash, refresh: refreshTrash } = useDriveItem('trash');
   const { uploadTree } = useDriveUpload();
-  const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
+  useDriveRealtime(parentId);
 
   const uploadZone = 'drive_' + companyId;
   const uploadZoneRef = useRef<UploadZone | null>(null);
+  const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
 
   const setCreationModalState = useSetRecoilState(CreateModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);

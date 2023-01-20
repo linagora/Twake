@@ -47,10 +47,12 @@ const ConfirmDeleteModalContent = ({ items }: { items: DriveItem[] }) => {
           : `Definitively delete ${items.length} items`
       }
     >
-      <Base>
+      <Base className="block my-3">
         Click 'Delete' to definitively remove the selected items. You can't restore them later.
       </Base>
+      <br />
       <Button
+        className="float-right"
         theme="danger"
         loading={loading}
         onClick={async () => {
