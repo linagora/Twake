@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { DriveFile } from "./entities/drive-file";
+import { AccessInformation, DriveFile } from "./entities/drive-file";
 import {
   CompanyExecutionContext,
   DriveFileAccessLevel,
@@ -40,9 +40,24 @@ export const getDefaultDriveItem = (
     access_info: item.access_info || {
       entities: [
         {
+          id: "parent",
+          type: "folder",
+          level: "manage",
+        },
+        //Folders created in root give access by default to the whole company
+        ...((item.parent_id === "root"
+          ? [
+              {
+                id: item.company_id,
+                type: "company",
+                level: "manage",
+              },
+            ]
+          : []) as AccessInformation["entities"]),
+        {
           id: context.user.id,
           type: "user",
-          level: "write",
+          level: "manage",
         },
       ],
       public: {

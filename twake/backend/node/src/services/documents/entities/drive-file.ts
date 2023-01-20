@@ -115,7 +115,7 @@ export class DriveFile {
   last_version_cache: Partial<FileVersion>;
 }
 
-type AccessInformation = {
+export type AccessInformation = {
   public?: {
     token: string;
     level: publicAccessLevel;
