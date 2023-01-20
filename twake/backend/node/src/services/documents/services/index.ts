@@ -21,7 +21,10 @@ import { websocketEventBus } from "../../../core/platform/services/realtime/bus"
 
 import archiver from "archiver";
 import internal from "stream";
-import { RealtimeEntityActionType, ResourcePath } from "../../../core/platform/services/realtime/types";
+import {
+  RealtimeEntityActionType,
+  ResourcePath,
+} from "../../../core/platform/services/realtime/types";
 
 export class DocumentsService {
   version: "1";
