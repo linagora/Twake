@@ -3,19 +3,29 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "tags";
 /**
- * Table user-notification-badges
+ * Table tags
  */
 @Entity(TYPE, {
-  primaryKey: [["company_id"], "name", "colour"],
+  primaryKey: [["company_id"], "tag_id"],
   type: TYPE,
 })
 export class Tags {
   /**
    * UUIDv4
    * Primary key / partition key
+   * Company ID
    */
   @Type(() => String)
-  @Column("tag_id", "uuid")
+  @Column("company_id", "uuid")
+  company_id: string;
+
+  /**
+   * UUIDv4
+   * Primary key / sort key
+   * Tag id
+   */
+  @Type(() => String)
+  @Column("tag_id", "string")
   tag_id: string;
 
   /**
@@ -32,3 +42,11 @@ export class Tags {
   @Column("colour", "string")
   colour: string;
 }
+
+export type TagsPrimaryKey = Pick<Tags, "company_id" | "tag_id">;
+
+export const createTagEntity = (tag?: Partial<Tags>): Tags => {
+  return Object.assign(new Tags(), {
+    ...tag,
+  });
+};

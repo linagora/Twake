@@ -1,8 +1,17 @@
-import { TwakeServiceProvider, Initializable, logger } from "src/core/platform/framework";
+import { TwakeServiceProvider, Initializable } from "src/core/platform/framework/api";
 import Repository from "src/core/platform/services/database/services/orm/repository/repository";
-import { Tags } from "src/services/tags/entities";
+import { Tags, TagsType, TagsPrimaryKey } from "../entities";
 import gr from "../../global-resolver";
-import { TYPE } from "src/services/tags/entities/tags";
+import {
+  DeleteResult,
+  ExecutionContext,
+  ListResult,
+  OperationType,
+  SaveResult,
+} from "../../../core/platform/framework/api/crud-service";
+import { plainToClass } from "class-transformer";
+import { createTagEntity, TYPE } from "../entities/tags";
+import { logger } from "../../../core/platform/framework";
 
 export class TagsService implements TwakeServiceProvider, Initializable {
   version: "1";
@@ -13,24 +22,55 @@ export class TagsService implements TwakeServiceProvider, Initializable {
       this.repository = await gr.database.getRepository<Tags>(TYPE, Tags);
     } catch (err) {
       console.log(err);
-      logger.error("Error while initializing applications service");
+      logger.error("Error while initializing tags service");
     }
     return this;
   }
 
-  async get() {
-    throw new Error("Not implemented");
+  async get(pk: TagsPrimaryKey): Promise<Tags> {
+    return await this.repository.findOne({ company_id: pk.company_id, tag_id: pk.tag_id });
   }
 
-  async save() {
-    throw new Error("Not implemented");
+  async save(tag: Tags, context: ExecutionContext): Promise<SaveResult<Tags>> {
+    /*
+    //Creation
+    {
+      name: "Tag principal",
+      colour: "#F0AF23",
+      tag_id: undefined
+    }
+    -> tag_id: "super_tag"
+
+    //Update
+    {
+      name: "Tag principal",
+      colour: "#F0AF23",
+      tag_id: "super_tag"
+    }
+    -> tag_id: "super_tag"
+    */
+    const tagToSave = createTagEntity(tag);
+    tagToSave.tag_id = tag.name.split(" ").join("_");
+    await this.repository.save(tagToSave, context);
+    return new SaveResult(TagsType, tagToSave, OperationType.CREATE);
   }
 
-  async delete() {
-    throw new Error("Not implemented");
+  async delete(pk: TagsPrimaryKey, context: ExecutionContext): Promise<DeleteResult<Tags>> {
+    const tag = await this.get(pk);
+    const entity = createTagEntity(tag);
+    await this.repository.remove(entity, context);
+    return new DeleteResult(TagsType, entity, true);
   }
 
-  list() {
-    throw new Error("Not implemented");
+  async list(pk: { company_id: string }): Promise<ListResult<Tags>> {
+    const result = await this.repository.find({
+      company_id: pk.company_id,
+    });
+
+    return new ListResult<Tags>(
+      "tags",
+      result.getEntities().map(tag => plainToClass(Tags, { tag_id: tag.tag_id, ...tag })),
+      result.nextPage,
+    );
   }
 }

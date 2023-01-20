@@ -7,14 +7,14 @@ export default class TagsService extends TwakeService<undefined> {
   version = "1";
   name = "tags";
 
-  public async doInit(): Promise<this> {
+  public doInit: () => Promise<this> = async () => {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix });
       next();
     });
     return this;
-  }
+  };
 
   // TODO: remove
   api(): undefined {

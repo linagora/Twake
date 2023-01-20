@@ -54,6 +54,7 @@ import { LinkPreviewEngine } from "./previews/services/links/engine";
 import { UserNotificationDigestService } from "./notifications/services/digest";
 import { DocumentsService } from "./documents/services";
 import { DocumentsEngine } from "./documents/services/engine";
+import { TagsService } from "./tags/services/tags";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -117,6 +118,7 @@ type TwakeServices = {
     documents: DocumentsService;
     engine: DocumentsEngine;
   };
+  tags: TagsService;
 };
 
 class GlobalResolver {
@@ -206,6 +208,7 @@ class GlobalResolver {
         documents: await new DocumentsService().init(),
         engine: await new DocumentsEngine().init(),
       },
+      tags: await new TagsService().init(),
     };
 
     Object.keys(this.services).forEach((key: keyof TwakeServices) => {
