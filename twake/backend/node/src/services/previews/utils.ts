@@ -1,6 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
-import mimes from "./services/files/processing/mime";
-import fs, { existsSync, promises as fsPromise } from "fs";
+import mimes from "../../utils/mime";
 import getFavicons from "get-website-favicon";
 import { logger } from "../../core/platform/framework";
 import axios from "axios";
@@ -8,25 +6,11 @@ import axios from "axios";
 export const TIMEOUT = 5 * 1000;
 export const MAX_SIZE = 5 * 1024 * 1024;
 
-const { unlink } = fsPromise;
-
-export function getTmpFile(): string {
-  const targetDir = "/tmp/";
-  fs.mkdirSync(targetDir, { recursive: true });
-  return `${targetDir}${uuidv4()}`;
-}
-
 export function isFileType(fileMime: string, fileName: string, requiredExtensions: string[]): any {
   const extension = fileName.split(".").pop();
   const secondaryExtensions = Object.keys(mimes).filter(k => mimes[k] === fileMime);
   const fileExtensions = [extension, ...secondaryExtensions];
   return fileExtensions.some(e => requiredExtensions.includes(e));
-}
-
-export async function cleanFiles(paths: string[]) {
-  for (const path of paths) {
-    if (existsSync(path)) await unlink(path);
-  }
 }
 
 /**

@@ -5,9 +5,9 @@ import {
   PreviewMessageQueueRequest,
   ThumbnailResult,
 } from "../../../types";
-import { getTmpFile } from "../../../utils";
 import gr from "../../../../global-resolver";
 import { MessageQueueHandler } from "../../../../../core/platform/services/message-queue/api";
+import { getTmpFile } from "../../../../../utils/files";
 
 const { unlink } = fsPromise;
 /**

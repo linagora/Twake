@@ -12,6 +12,17 @@ import { FileVersion } from "./entities/file-version";
 import globalResolver from "../global-resolver";
 import Repository from "../../core/platform/services/database/services/orm/repository/repository";
 import archiver from "archiver";
+import { Readable } from "stream";
+import { stopWords } from "./const";
+import unoconv from "unoconv-promise";
+import {
+  writeToTemporaryFile,
+  cleanFiles,
+  getTmpFile,
+  readFromTemporaryFile,
+  readableToBuffer,
+} from "../../utils/files";
+import PdfParse from "pdf-parse";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -412,5 +423,87 @@ export const addDriveItemToArchive = async (
     items.getEntities().forEach(child => {
       addDriveItemToArchive(child.id, child, archive, repository, context, `${item.name}/`);
     });
+  }
+};
+
+/**
+ * Extracts the most popular 250 keywords from a text.
+ *
+ * @param {string} data - file data string.
+ * @returns {string}
+ */
+export const extractKeywords = (data: string): string => {
+  const words = data.toLowerCase().split(/[^a-zA-Z']+/);
+  const filteredWords = words.filter(word => !stopWords.includes(word) && word.length > 3);
+
+  const wordFrequency = filteredWords.reduce((acc: Record<string, number>, word: string) => {
+    acc[word] = (acc[word] || 0) + 1;
+
+    return acc;
+  }, {});
+
+  const sortedFrequency = Object.entries(wordFrequency)
+    .sort((a, b) => b[1] - a[1])
+    .reduce((acc: Record<string, number>, [key, val]) => {
+      acc[key] = val;
+
+      return acc;
+    }, {});
+
+  return Object.keys(sortedFrequency).slice(0, 250).join(" ");
+};
+
+/**
+ * Converts an office file stream into a human readable string.
+ *
+ * @param {Readable} file - the input file stream.
+ * @param {string} extension - the file extension.
+ * @returns {Promise<string>}
+ */
+export const officeFileToString = async (file: Readable, extension: string): Promise<string> => {
+  const officeFilePath = await writeToTemporaryFile(file, extension);
+  const outputPath = getTmpFile(".pdf");
+
+  try {
+    await unoconv.run({
+      file: officeFilePath,
+      output: outputPath,
+    });
+
+    cleanFiles([officeFilePath]);
+
+    return await pdfFileToString(outputPath);
+  } catch (error) {
+    cleanFiles([officeFilePath]);
+    throw Error(error);
+  }
+};
+
+/**
+ * Converts a PDF file stream into a human readable string.
+ *
+ * @param {Readable | string} file - the input file stream or path.
+ * @returns {Promise<string>}
+ */
+export const pdfFileToString = async (file: Readable | string): Promise<string> => {
+  let inputBuffer: Buffer;
+
+  try {
+    if (typeof file === "string") {
+      inputBuffer = await readFromTemporaryFile(file);
+      cleanFiles([file]);
+    } else {
+      inputBuffer = await readableToBuffer(file);
+    }
+
+    const result = await PdfParse(inputBuffer);
+
+    return result.text;
+  } catch (error) {
+    if (typeof file === "string") {
+      cleanFiles([file]);
+    }
+
+    throw Error(error);
   }
 };
