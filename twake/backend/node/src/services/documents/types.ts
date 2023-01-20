@@ -31,3 +31,33 @@ export type TrashType = "trash";
 export type DownloadZipBodyRequest = {
   items: string[];
 };
+
+export type SearchDocumentsOptions = {
+  search?: string;
+  company_id?: string;
+  creator?: string;
+  added?: string;
+};
+
+export type SearchDocumentsBody = {
+  search?: string;
+  company_id?: string;
+  creator?: string;
+  added?: string;
+};
+
+export type DocumentsMessageQueueRequest = {
+  item: DriveFile;
+  version: FileVersion;
+  context: CompanyExecutionContext;
+};
+
+export type DocumentsMessageQueueCallback = {
+  item: DriveFile;
+  content_keywords: string;
+};
+
+export type exportKeywordPayload = {
+  file_id: string;
+  company_id: string;
+};

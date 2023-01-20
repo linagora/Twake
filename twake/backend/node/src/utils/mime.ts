@@ -59,6 +59,7 @@ export const videoExtensions = [
   "mpeg",
   "m4v",
 ];
+export const textExtensions = ["txt"];
 
 const mimes: any = {
   "123": "application/vnd.lotus-1-2-3",

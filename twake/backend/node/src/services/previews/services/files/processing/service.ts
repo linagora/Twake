@@ -1,11 +1,17 @@
 import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
-import { cleanFiles, isFileType } from "../../../utils";
-import { imageExtensions, officeExtensions, pdfExtensions, videoExtensions } from "./mime";
+import { isFileType } from "../../../utils";
+import {
+  imageExtensions,
+  officeExtensions,
+  pdfExtensions,
+  videoExtensions,
+} from "../../../../../utils/mime";
 import { PreviewMessageQueueRequest, ThumbnailResult } from "../../../types";
 import { generateVideoPreview } from "./video";
 import { Initializable, TwakeServiceProvider } from "../../../../../core/platform/framework";
+import { cleanFiles } from "../../../../../utils/files";
 
 export class PreviewProcessService implements TwakeServiceProvider, Initializable {
   name: "PreviewProcessService";

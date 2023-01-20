@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const unoconv = require("unoconv-promise");
+import { cleanFiles } from "../../../../../utils/files";
 import { logger } from "../../../../../core/platform/framework/logger";
-import { cleanFiles } from "../../../utils";
 
 export async function convertFromOffice(
   path: string,

@@ -2,6 +2,7 @@ import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { DriveFileAccessLevel, publicAccessLevel } from "../types";
 import { FileVersion } from "./file-version";
+import search from "./drive-file.search";
 
 export const TYPE = "drive_files";
 
@@ -9,6 +10,7 @@ export const TYPE = "drive_files";
   globalIndexes: [["company_id", "parent_id"]],
   primaryKey: [["company_id"], "id"],
   type: TYPE,
+  search,
 })
 export class DriveFile {
   @Type(() => String)
