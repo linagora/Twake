@@ -75,6 +75,8 @@ export const useEditors = (
   const getFileUrl = (url: string, file_id: string): string => {
     const jwt = jwtStorageService.getJWT();
 
+    if (!url) return '';
+
     return `${url}${url.indexOf('?') > 0 ? '&' : '?'}token=${jwt}&workspace_id=${
       workspace?.id
     }&company_id=${workspace?.company_id}&file_id=${file_id}`;

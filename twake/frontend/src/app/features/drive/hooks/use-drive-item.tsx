@@ -1,5 +1,5 @@
 import { ToasterService } from 'app/features/global/services/toaster-service';
-import { LoadingState } from 'app/features/global/state/atoms/Loading';
+import { LoadingState, LoadingStateInitTrue } from 'app/features/global/state/atoms/Loading';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { useCallback } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -18,7 +18,7 @@ export const useDriveItem = (id: string) => {
   const companyId = useRouterCompany();
   const item = useRecoilValue(DriveItemAtom(id));
   const children = useRecoilValue(DriveItemChildrenAtom(id));
-  const [loading, setLoading] = useRecoilState(LoadingState('useDriveItem-' + id));
+  const [loading, setLoading] = useRecoilState(LoadingStateInitTrue('useDriveItem-' + id));
   const { refresh: refreshItem, create, update: _update, remove: _remove } = useDriveActions();
   const { uploadVersion: _uploadVersion } = useDriveUpload();
 
@@ -26,7 +26,7 @@ export const useDriveItem = (id: string) => {
     async (parentId: string) => {
       setLoading(true);
       try {
-        refreshItem(parentId);
+        await refreshItem(parentId);
       } finally {
         setLoading(false);
       }
@@ -78,6 +78,7 @@ export const useDriveItem = (id: string) => {
     children: children || [],
     path: item?.path,
     item: item?.item,
+    websockets: item?.websockets,
     versions: item?.versions,
     uploadVersion,
     create,

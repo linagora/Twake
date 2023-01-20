@@ -106,7 +106,7 @@ const Navigation = () => {
 
       <Transition
         as="div"
-        show={!!status.details?.navigation.previous && isMedia}
+        show={!!status.details?.navigation?.previous && isMedia}
         className="z-10 absolute left-5 top-0 bottom-0 m-auto w-12 h-12 rounded-full p-1 hover:bg-black hover:bg-opacity-25"
         {...fadeZoomTransition}
       >
@@ -118,7 +118,7 @@ const Navigation = () => {
 
       <Transition
         as="div"
-        show={!!status.details?.navigation.next && isMedia}
+        show={!!status.details?.navigation?.next && isMedia}
         className="z-10 absolute right-5 top-0 bottom-0 m-auto w-12 h-12 rounded-full p-1 hover:bg-black hover:bg-opacity-25"
         {...fadeZoomTransition}
       >

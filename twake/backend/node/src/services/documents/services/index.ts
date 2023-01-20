@@ -25,9 +25,14 @@ import {
   getPath,
   updateItemSize,
 } from "../utils";
+import { websocketEventBus } from "../../../core/platform/services/realtime/bus";
 
 import archiver from "archiver";
 import internal from "stream";
+import {
+  RealtimeEntityActionType,
+  ResourcePath,
+} from "../../../core/platform/services/realtime/types";
 
 export class DocumentsService {
   version: "1";
@@ -156,6 +161,7 @@ export class DocumentsService {
         } as DriveFile),
       versions: versions,
       children: children,
+      access: "none", //TODO return current user access
     };
   };
 
@@ -207,6 +213,8 @@ export class DocumentsService {
       await this.repository.save(driveItem);
       await updateItemSize(driveItem.parent_id, this.repository, context);
 
+      this.notifyWebsocket(driveItem.parent_id, context);
+
       globalResolver.platformServices.messageQueue.publish<DocumentsMessageQueueRequest>(
         "services:documents:process",
         {
@@ -217,7 +225,6 @@ export class DocumentsService {
           },
         },
       );
-
       return driveItem;
     } catch (error) {
       this.logger.error("Failed to create drive item", error);
@@ -276,6 +283,8 @@ export class DocumentsService {
 
       await this.repository.save(item);
       await updateItemSize(item.parent_id, this.repository, context);
+
+      this.notifyWebsocket(item.parent_id, context);
 
       return item;
     } catch (error) {
@@ -397,7 +406,11 @@ export class DocumentsService {
         await this.repository.save(item);
       }
       await updateItemSize(previousParentId, this.repository, context);
+
+      this.notifyWebsocket(previousParentId, context);
     }
+
+    this.notifyWebsocket("trash", context);
   };
 
   /**
@@ -448,6 +461,8 @@ export class DocumentsService {
       item.last_version_cache = driveItemVersion;
 
       await this.repository.save(item);
+
+      this.notifyWebsocket(item.parent_id, context);
 
       return driveItemVersion;
     } catch (error) {
@@ -524,6 +539,19 @@ export class DocumentsService {
     );
 
     return archive;
+  };
+
+  notifyWebsocket = async (id: string, context: CompanyExecutionContext) => {
+    websocketEventBus.publish(RealtimeEntityActionType.Event, {
+      type: "documents:updated",
+      room: ResourcePath.get(`/companies/${context.company.id}/documents/item/${id}`),
+      entity: {
+        companyId: context.company.id,
+        id: id,
+      },
+      resourcePath: null,
+      result: null,
+    });
   };
 
   /**
