@@ -237,11 +237,23 @@ export class DocumentsService {
         throw Error("Item not found");
       }
 
-      const driveItem = getDefaultDriveItem(content, context);
-      await this.repository.save(driveItem);
-      await updateItemSize(driveItem.parent_id, this.repository, context);
+      if (content.id && content.id !== id) {
+        this.logger.error("content mismatch");
+        throw Error("content mismatch");
+      }
 
-      return driveItem;
+      const updatable = ["access_info", "name", "tags", "parent_id", "description"];
+
+      updatable.forEach(key => {
+        if ((content as any)[key]) {
+          (item as any)[key] = (content as any)[key];
+        }
+      });
+
+      await this.repository.save(item);
+      await updateItemSize(item.parent_id, this.repository, context);
+
+      return item;
     } catch (error) {
       this.logger.error("Failed to update drive item", error);
       throw new CrudException("Failed to update item", 500);

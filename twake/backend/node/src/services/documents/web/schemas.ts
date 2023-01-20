@@ -98,15 +98,6 @@ export const createDocumentSchema = {
   },
 };
 
-export const updateDocumentSchema = {
-  body: {
-    type: "object",
-  },
-  response: {
-    "2xx": documentSchema,
-  },
-};
-
 export const createVersionSchema = {
   body: {
     type: "object",
