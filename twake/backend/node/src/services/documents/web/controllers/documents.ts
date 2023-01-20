@@ -9,7 +9,6 @@ import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import {
   CompanyExecutionContext,
-  DownloadZipBodyRequest,
   DriveItemDetails,
   ItemRequestParams,
   RequestParams,
@@ -160,7 +159,7 @@ export class DocumentsController {
     const versionId = request.query.version_id || null;
 
     try {
-      const archiveOrFile = await globalResolver.services.documents.download(
+      const archiveOrFile = await globalResolver.services.documents.documents.download(
         id,
         versionId,
         context,
