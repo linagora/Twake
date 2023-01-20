@@ -5,6 +5,10 @@ export type DriveItemDetails = {
   versions: DriveItemVersion[];
   children: DriveItem[];
   path: DriveItem[];
+  websockets: {
+    room: string;
+    token?: string;
+  }[];
 };
 
 export type DriveItem = {

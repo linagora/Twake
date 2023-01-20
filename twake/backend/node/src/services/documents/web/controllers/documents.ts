@@ -4,7 +4,7 @@ import { CrudException, ListResult } from "../../../../core/platform/framework/a
 import { File } from "../../../../services/files/entities/file";
 import { UploadOptions } from "../../../../services/files/types";
 import globalResolver from "../../../../services/global-resolver";
-import { PaginationQueryParameters } from "../../../../utils/types";
+import { PaginationQueryParameters, ResourceWebsocket } from "../../../../utils/types";
 import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import {
@@ -104,11 +104,17 @@ export class DocumentsController {
    */
   get = async (
     request: FastifyRequest<{ Params: ItemRequestParams; Querystring: PaginationQueryParameters }>,
-  ): Promise<DriveItemDetails> => {
+  ): Promise<DriveItemDetails & { websockets: ResourceWebsocket[] }> => {
     const context = getCompanyExecutionContext(request);
     const { id } = request.params;
 
-    return await globalResolver.services.documents.documents.get(id, context);
+    return {
+      ...(await globalResolver.services.documents.documents.get(id, context)),
+      websockets: globalResolver.platformServices.realtime.sign(
+        [{ room: `/companies/${context.company.id}/documents/item/${id}` }],
+        request.currentUser.id,
+      ),
+    };
   };
 
   /**

@@ -7,16 +7,18 @@ export default (props: { download: string; name: string; id: string }) => {
   const [previewUrl, setPreviewUrl] = useState('');
 
   useEffect(() => {
-      if (!previewUrl) setPreviewUrl(getPreviewUrl(props.id)|| '');
+    if (!previewUrl) setPreviewUrl(getPreviewUrl(props.id) || '');
   }, [previewUrl, setPreviewUrl]);
 
   return (
     <>
-      <iframe
-        className="w-full h-full left-0 right-0 absolute bottom-0 top-0"
-        title={props.name}
-        src={previewUrl}
-      />
+      {props.id && previewUrl && (
+        <iframe
+          className="w-full h-full left-0 right-0 absolute bottom-0 top-0"
+          title={props.name}
+          src={previewUrl}
+        />
+      )}
     </>
   );
 };

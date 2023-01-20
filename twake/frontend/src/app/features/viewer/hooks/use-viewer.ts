@@ -63,7 +63,7 @@ export const useFileViewer = () => {
     status,
     loading: status.loading,
     next: () => {
-      if (status.details?.navigation.next && !status.loading)
+      if (status.details?.navigation?.next && !status.loading)
         setStatus({
           ...status,
           file: {
@@ -74,7 +74,7 @@ export const useFileViewer = () => {
         });
     },
     previous: () => {
-      if (status.details?.navigation.previous && !status.loading)
+      if (status.details?.navigation?.previous && !status.loading)
         setStatus({
           ...status,
           file: {
