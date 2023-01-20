@@ -1,5 +1,4 @@
-import { mkdirSync, existsSync, promises as fsPromise } from "fs";
-import globalResolver from "../services/global-resolver";
+import { mkdirSync, existsSync, promises as fsPromise, createWriteStream, readFileSync } from "fs";
 import { Readable } from "stream";
 import { v4 as uuidv4 } from "uuid";
 
@@ -39,7 +38,15 @@ export const writeToTemporaryFile = async (input: Readable, extension: string): 
   try {
     const temporaryFilePath = getTmpFile(`.${extension}`);
 
-    await globalResolver.platformServices.storage.write(temporaryFilePath, input);
+    const writable = createWriteStream(temporaryFilePath);
+
+    input.pipe(writable);
+
+    await new Promise(r => {
+      writable.on("finish", r);
+    });
+
+    writable.end();
 
     return temporaryFilePath;
   } catch (error) {
@@ -52,8 +59,24 @@ export const writeToTemporaryFile = async (input: Readable, extension: string): 
 /**
  * Reads a file from the disk
  *
- * @returns {Promise<Readable>} - the file readable stream.
+ * @returns {Promise<Buffer>} - the file readable stream.
  */
-export const readFromTemporaryFile = async (path: string): Promise<Readable> => {
-  return await globalResolver.platformServices.storage.read(path);
+export const readFromTemporaryFile = async (path: string): Promise<Buffer> => {
+  return readFileSync(path);
+};
+
+/**
+ * Converts a readable stream into a Buffer.
+ *
+ * @param {Readable} input - the input stream.
+ * @returns {Promise<Buffer>}
+ */
+export const readableToBuffer = async (input: Readable): Promise<Buffer> => {
+  return new Promise((resolve, reject) => {
+    const buffer: Uint8Array[] = [];
+
+    input.on("data", chunk => buffer.push(chunk));
+    input.on("end", () => resolve(Buffer.concat(buffer)));
+    input.on("error", err => reject(err));
+  });
 };

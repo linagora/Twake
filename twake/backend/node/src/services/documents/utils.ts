@@ -15,7 +15,14 @@ import archiver from "archiver";
 import { Readable } from "stream";
 import { stopWords } from "./const";
 import unoconv from "unoconv-promise";
-import { writeToTemporaryFile, cleanFiles } from "../../utils/files";
+import {
+  writeToTemporaryFile,
+  cleanFiles,
+  getTmpFile,
+  readFromTemporaryFile,
+  readableToBuffer,
+} from "../../utils/files";
+import PdfParse from "pdf-parse";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -479,13 +486,17 @@ export const extractKeywords = (data: string): string => {
  */
 export const officeFileToString = async (file: Readable, extension: string): Promise<string> => {
   const officeFilePath = await writeToTemporaryFile(file, extension);
+  const outputPath = getTmpFile(".pdf");
+
   try {
-    const pdfBuffer: Buffer = await unoconv.convert(officeFilePath);
-    const pdfReadable = Readable.from(pdfBuffer);
+    await unoconv.run({
+      file: officeFilePath,
+      output: outputPath,
+    });
 
     cleanFiles([officeFilePath]);
 
-    return await pdfFileToString(pdfReadable, "pdf");
+    return await pdfFileToString(outputPath);
   } catch (error) {
     cleanFiles([officeFilePath]);
     throw Error(error);
@@ -495,21 +506,28 @@ export const officeFileToString = async (file: Readable, extension: string): Pro
 /**
  * Converts a PDF file stream into a human readable string.
  *
- * @param {Readable} file - the input file.
- * @param {string} extension - the file extension.
+ * @param {Readable | string} file - the input file stream or path.
  * @returns {Promise<string>}
  */
-export const pdfFileToString = async (file: Readable, extension: string): Promise<string> => {
-  const pdfFilePath = await writeToTemporaryFile(file, extension);
+export const pdfFileToString = async (file: Readable | string): Promise<string> => {
+  let inputBuffer: Buffer;
+
   try {
-    const textBuffer: Buffer = await unoconv.convert(pdfFilePath, { format: "txt" });
-    const textReadable = Readable.from(textBuffer);
+    if (typeof file === "string") {
+      inputBuffer = await readFromTemporaryFile(file);
+      cleanFiles([file]);
+    } else {
+      inputBuffer = await readableToBuffer(file);
+    }
 
-    cleanFiles([pdfFilePath]);
+    const result = await PdfParse(inputBuffer);
 
-    return await readableToString(textReadable);
+    return result.text;
   } catch (error) {
-    cleanFiles([pdfFilePath]);
+    if (typeof file === "string") {
+      cleanFiles([file]);
+    }
+
     throw Error(error);
   }
 };

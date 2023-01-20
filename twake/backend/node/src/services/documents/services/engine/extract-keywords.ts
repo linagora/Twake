@@ -64,7 +64,7 @@ export class DocumentsProcessor
 
       if (isFileType(storedFile.mime, storedFile.name, pdfExtensions)) {
         logger.info("Processing PDF file");
-        content_strings = await pdfFileToString(storedFile.file, extension);
+        content_strings = await pdfFileToString(storedFile.file);
       }
 
       if (isFileType(storedFile.mime, storedFile.name, officeExtensions)) {
