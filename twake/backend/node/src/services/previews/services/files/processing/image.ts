@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { cleanFiles, getTmpFile } from "../../../utils";
+import { cleanFiles, getTmpFile } from "../../../../../utils/files";
 import { PreviewMessageQueueRequest, ThumbnailResult } from "../../../types";
 import { logger } from "../../../../../core/platform/framework/logger";
 

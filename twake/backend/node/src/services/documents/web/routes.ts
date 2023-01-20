@@ -2,7 +2,8 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { DocumentsController } from "./controllers";
 import { createDocumentSchema, createVersionSchema } from "./schemas";
 
-const serviceUrl = "/companies/:company_id/item";
+const baseUrl = "/companies/:company_id";
+const serviceUrl = `${baseUrl}/item`;
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next) => {
   const documentsController = new DocumentsController();
@@ -63,6 +64,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
     url: `${serviceUrl}/download/zip`,
     preValidation: [fastify.authenticate],
     handler: documentsController.downloadZip.bind(documentsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${baseUrl}/search`,
+    preValidation: [fastify.authenticate],
+    handler: documentsController.search.bind(documentsController),
   });
 
   return next();

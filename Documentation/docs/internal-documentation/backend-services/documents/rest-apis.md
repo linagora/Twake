@@ -72,6 +72,12 @@ Used to fetch a drive item
 }
 ```
 
+### Error Responses
+If the item cannot be fetched the server will return an error with one of the following status codes:
+
+- 401 Unauthorized - The user is not authorized.
+- 500 Internal Server Error - An error occurred while performing the operation.
+
 ## Create a drive item
 
 Used to create a drive item
@@ -79,6 +85,8 @@ Used to create a drive item
 **URL** : `/internal/services/documents/v1/companies/:company_id/item`
 
 **Method** : `POST`
+
+**Headers**:  `Content-Type: application/json` OR `Content-Type: multipart/form-data`
 
 **Auth required** : Yes
 
@@ -115,12 +123,20 @@ Used to create a drive item
       creator_id: string;
       application_id: string;
   },
+  file?: File // The multipart/form-data file to be uploaded ( optional )
 }
 ```
 
 ### Success Response
 
 **Code** : `200 OK`
+
+### Error Responses
+If the request is missing required fields or the item cannot be created, the server will return an error with one of the following status codes:
+
+- 400 Bad Request - The request is missing required fields.
+- 401 Unauthorized - The user is not authorized.
+- 500 Internal Server Error - An error occurred while performing the operation.
 
 ## Update a drive item
 
@@ -158,6 +174,13 @@ Used to update a drive item
 ### Success Response
 
 **Code** : `200 OK`
+
+### Error Responses
+If the request is missing required fields or the item cannot be updated, the server will return an error with one of the following status codes:
+
+- 400 Bad Request - The request is missing required fields.
+- 401 Unauthorized - The user is not authorized.
+- 500 Internal Server Error - An error occurred while performing the operation.
 
 ## Delete a drive item
 

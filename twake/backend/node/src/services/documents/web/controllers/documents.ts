@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { logger } from "../../../../core/platform/framework";
-import { CrudException } from "../../../../core/platform/framework/api/crud-service";
+import { CrudException, ListResult } from "../../../../core/platform/framework/api/crud-service";
 import { File } from "../../../../services/files/entities/file";
 import { UploadOptions } from "../../../../services/files/types";
 import globalResolver from "../../../../services/global-resolver";
@@ -9,10 +9,11 @@ import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import {
   CompanyExecutionContext,
-  DownloadZipBodyRequest,
   DriveItemDetails,
   ItemRequestParams,
   RequestParams,
+  SearchDocumentsBody,
+  SearchDocumentsOptions,
 } from "../../types";
 
 export class DocumentsController {
@@ -53,7 +54,12 @@ export class DocumentsController {
 
       const { item, version } = request.body;
 
-      return await globalResolver.services.documents.create(createdFile, item, version, context);
+      return await globalResolver.services.documents.documents.create(
+        createdFile,
+        item,
+        version,
+        context,
+      );
     } catch (error) {
       logger.error("Failed to create Drive item", error);
       throw new CrudException("Failed to create Drive item", 500);
@@ -69,7 +75,11 @@ export class DocumentsController {
   delete = async (request: FastifyRequest<{ Params: ItemRequestParams }>): Promise<void> => {
     const context = getCompanyExecutionContext(request);
 
-    return await globalResolver.services.documents.delete(request.params.id, null, context);
+    return await globalResolver.services.documents.documents.delete(
+      request.params.id,
+      null,
+      context,
+    );
   };
 
   /**
@@ -83,7 +93,7 @@ export class DocumentsController {
   ): Promise<DriveItemDetails> => {
     const context = getCompanyExecutionContext(request);
 
-    return await globalResolver.services.documents.get("", context);
+    return await globalResolver.services.documents.documents.get("", context);
   };
 
   /**
@@ -98,7 +108,7 @@ export class DocumentsController {
     const context = getCompanyExecutionContext(request);
     const { id } = request.params;
 
-    return await globalResolver.services.documents.get(id, context);
+    return await globalResolver.services.documents.documents.get(id, context);
   };
 
   /**
@@ -114,7 +124,7 @@ export class DocumentsController {
     const { id } = request.params;
     const update = request.body;
 
-    return await globalResolver.services.documents.update(id, update, context);
+    return await globalResolver.services.documents.documents.update(id, update, context);
   };
 
   /**
@@ -130,7 +140,7 @@ export class DocumentsController {
     const { id } = request.params;
     const version = request.body;
 
-    return await globalResolver.services.documents.createVersion(id, version, context);
+    return await globalResolver.services.documents.documents.createVersion(id, version, context);
   };
 
   /**
@@ -149,7 +159,7 @@ export class DocumentsController {
     const versionId = request.query.version_id || null;
 
     try {
-      const archiveOrFile = await globalResolver.services.documents.download(
+      const archiveOrFile = await globalResolver.services.documents.documents.download(
         id,
         versionId,
         context,
@@ -198,7 +208,7 @@ export class DocumentsController {
     const ids = (request.params.items || "").split(",");
 
     try {
-      const archive = await globalResolver.services.documents.createZip(ids, context);
+      const archive = await globalResolver.services.documents.documents.createZip(ids, context);
 
       archive.on("finish", () => {
         reply.status(200);
@@ -214,6 +224,36 @@ export class DocumentsController {
     } catch (error) {
       logger.error("failed to send zip file", error);
       throw new CrudException("Failed to create zip file", 500);
+    }
+  };
+  /**
+   * Search for documents.
+   *
+   * @param {FastifyRequest} request
+   * @returns {Promise<ListResult<DriveFile>>}
+   */
+  search = async (
+    request: FastifyRequest<{ Params: RequestParams; Body: SearchDocumentsBody }>,
+  ): Promise<ListResult<DriveFile>> => {
+    try {
+      const context = getCompanyExecutionContext(request);
+      const { search = "", added = "", company_id = "", creator = "" } = request.body;
+
+      const options: SearchDocumentsOptions = {
+        ...(search ? { search } : {}),
+        ...(added ? { added } : {}),
+        ...(company_id ? { company_id } : {}),
+        ...(creator ? { creator } : {}),
+      };
+
+      if (!Object.keys(options).length) {
+        throw Error("Search options are empty");
+      }
+
+      return await globalResolver.services.documents.documents.search(options, context);
+    } catch (error) {
+      logger.error("error while searching for document", error);
+      throw new CrudException("Failed to search for documents", 500);
     }
   };
 }

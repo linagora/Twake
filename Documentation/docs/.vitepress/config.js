@@ -46,6 +46,43 @@ export default {
             text: "Knowledge graph",
             link: "/internal-documentation/knowledge-graph",
           },
+          {
+            text: "Backend services",
+            items: [
+              {
+                text: "Get started with backend development",
+                link: "/internal-documentation/backend-services/get-started-with-backend-development"
+              },
+              {
+                text: "Applications",
+                link: "/internal-documentation/backend-services/applications"
+              },
+              {
+                text: "Channels",
+                link: "/internal-documentation/backend-services/channels-service"
+              },
+              {
+                text: "Documents",
+                link: "/internal-documentation/backend-services/documents/README.md"
+              },
+              {
+                text: "Files",
+                link: "/internal-documentation/backend-services/files-service"
+              },
+              {
+                text: "Knowledge graph",
+                link: "/internal-documentation/backend-services/knowledge-graph"
+              },
+              {
+                text: "Notifications",
+                link: "/internal-documentation/backend-services/notifications"
+              },
+              {
+                text: "Twake service Development",
+                link: "/internal-documentation/backend-services/twake-service-development"
+              }
+            ]
+          }
         ],
       },
     ],

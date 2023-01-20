@@ -53,6 +53,7 @@ import { LinkPreviewProcessService } from "./previews/services/links/processing/
 import { LinkPreviewEngine } from "./previews/services/links/engine";
 import { UserNotificationDigestService } from "./notifications/services/digest";
 import { DocumentsService } from "./documents/services";
+import { DocumentsEngine } from "./documents/services/engine";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -112,7 +113,10 @@ type TwakeServices = {
   channelPendingEmail: ChannelPendingEmailServiceImpl;
   tab: TabServiceImpl;
   online: OnlineServiceImpl;
-  documents: DocumentsService;
+  documents: {
+    documents: DocumentsService;
+    engine: DocumentsEngine;
+  };
 };
 
 class GlobalResolver {
@@ -198,7 +202,10 @@ class GlobalResolver {
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
       online: await new OnlineServiceImpl().init(),
-      documents: await new DocumentsService().init(),
+      documents: {
+        documents: await new DocumentsService().init(),
+        engine: await new DocumentsEngine().init(),
+      },
     };
 
     Object.keys(this.services).forEach((key: keyof TwakeServices) => {

@@ -1,5 +1,6 @@
+import SearchRepository from "../../../core/platform/services/search/repository";
 import { getLogger, logger, TwakeLogger } from "../../../core/platform/framework";
-import { CrudException } from "../../../core/platform/framework/api/crud-service";
+import { CrudException, ListResult } from "../../../core/platform/framework/api/crud-service";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { PublicFile } from "../../../services/files/entities/file";
 import globalResolver from "../../../services/global-resolver";
@@ -7,7 +8,14 @@ import { hasCompanyAdminLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
 import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
-import { CompanyExecutionContext, DriveItemDetails, RootType, TrashType } from "../types";
+import {
+  CompanyExecutionContext,
+  DocumentsMessageQueueRequest,
+  DriveItemDetails,
+  RootType,
+  SearchDocumentsOptions,
+  TrashType,
+} from "../types";
 import {
   addDriveItemToArchive,
   calculateItemSize,
@@ -24,6 +32,7 @@ import internal from "stream";
 export class DocumentsService {
   version: "1";
   repository: Repository<DriveFile>;
+  searchRepository: SearchRepository<DriveFile>;
   fileVersionRepository: Repository<FileVersion>;
   ROOT: RootType = "root";
   TRASH: TrashType = "trash";
@@ -32,6 +41,10 @@ export class DocumentsService {
   async init(): Promise<this> {
     try {
       this.repository = await globalResolver.database.getRepository<DriveFile>(TYPE, DriveFile);
+      this.searchRepository = globalResolver.platformServices.search.getRepository<DriveFile>(
+        TYPE,
+        DriveFile,
+      );
       this.fileVersionRepository = await globalResolver.database.getRepository<FileVersion>(
         FileVersionType,
         FileVersion,
@@ -193,6 +206,17 @@ export class DocumentsService {
 
       await this.repository.save(driveItem);
       await updateItemSize(driveItem.parent_id, this.repository, context);
+
+      globalResolver.platformServices.messageQueue.publish<DocumentsMessageQueueRequest>(
+        "services:documents:process",
+        {
+          data: {
+            item: driveItem,
+            version: driveItemVersion,
+            context,
+          },
+        },
+      );
 
       return driveItem;
     } catch (error) {
@@ -500,5 +524,33 @@ export class DocumentsService {
     );
 
     return archive;
+  };
+
+  /**
+   * Search for Drive items.
+   *
+   * @param {SearchDocumentsOptions} options - the search optins.
+   * @param {CompanyExecutionContext} context - the execution context.
+   * @returns {Promise<ListResult<DriveFile>>} - the search result.
+   */
+  search = async (
+    options: SearchDocumentsOptions,
+    context?: CompanyExecutionContext,
+  ): Promise<ListResult<DriveFile>> => {
+    return await this.searchRepository.search(
+      {},
+      {
+        pagination: {
+          limitStr: "100",
+        },
+        ...(options.company_id ? { $in: [["company_id", [options.company_id]]] } : {}),
+        ...(options.creator ? { $in: [["creator", [options.creator]]] } : {}),
+        ...(options.added ? { $in: [["added", [options.added]]] } : {}),
+        $text: {
+          $search: options.search,
+        },
+      },
+      context,
+    );
   };
 }
