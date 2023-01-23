@@ -8,7 +8,7 @@ import {
   TrashType,
 } from "./types";
 import crypto from "crypto";
-import { FileVersion } from "./entities/file-version";
+import { FileVersion, DriveFileMetadata } from "./entities/file-version";
 import globalResolver from "../global-resolver";
 import Repository from "../../core/platform/services/database/services/orm/repository/repository";
 import archiver from "archiver";
@@ -502,4 +502,32 @@ export const pdfFileToString = async (file: Readable | string): Promise<string> 
 
     throw Error(error);
   }
+};
+
+/**
+ * returns the file metadata.
+ *
+ * @param {string} fileId - the file id
+ * @param {CompanyExecutionContext} context - the execution context
+ * @returns {DriveFileMetadata}
+ */
+export const getFileMetadata = async (
+  fileId: string,
+  context: CompanyExecutionContext,
+): Promise<DriveFileMetadata> => {
+  const file = await globalResolver.services.files.getFile({
+    id: fileId,
+    company_id: context.company.id,
+  });
+
+  if (!file) {
+    throw Error("File doesn't exist");
+  }
+
+  return {
+    external_id: fileId,
+    mime: file.metadata.mime,
+    name: file.metadata.name,
+    size: file.upload_data.size,
+  };
 };

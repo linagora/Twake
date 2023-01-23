@@ -59,8 +59,8 @@ export class FileVersion {
   data: unknown;
 }
 
-type DriveFileMetadata = {
-  source: "internal" | "drive" | string;
+export type DriveFileMetadata = {
+  source?: "internal" | "drive" | string;
   external_id: string;
 
   name?: string;

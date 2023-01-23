@@ -22,6 +22,7 @@ import {
   checkAccess,
   getDefaultDriveItem,
   getDefaultDriveItemVersion,
+  getFileMetadata,
   getPath,
   updateItemSize,
 } from "../utils";
@@ -476,9 +477,17 @@ export class DocumentsService {
       }
 
       const driveItemVersion = getDefaultDriveItemVersion(version, context);
+      const metadata = await getFileMetadata(driveItemVersion.file_metadata.external_id, context);
+
+      driveItemVersion.file_size = metadata.size;
+      driveItemVersion.file_metadata.size = metadata.size;
+      driveItemVersion.file_metadata.name = metadata.name;
+      driveItemVersion.file_metadata.mime = metadata.mime;
+
       await this.fileVersionRepository.save(driveItemVersion);
 
       item.last_version_cache = driveItemVersion;
+      item.size = driveItemVersion.file_size;
 
       await this.repository.save(item);
 
