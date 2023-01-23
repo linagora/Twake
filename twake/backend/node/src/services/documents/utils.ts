@@ -199,18 +199,13 @@ export const calculateItemSize = async (
   context: CompanyExecutionContext,
 ): Promise<number> => {
   if (item === "trash") {
-    let trashSize = 0;
     const trashedItems = await repository.find(
       { company_id: context.company.id, parent_id: "trash" },
       {},
       context,
     );
 
-    trashedItems.getEntities().forEach(child => {
-      trashSize += child.size;
-    });
-
-    return trashSize;
+    return trashedItems.getEntities().reduce((acc, curr) => acc + curr.size, 0);
   }
 
   if (item === "root" || !item) {
@@ -220,13 +215,7 @@ export const calculateItemSize = async (
       context,
     );
 
-    const sizes = await Promise.all(
-      rootFolderItems.getEntities().map(async child => {
-        return await calculateItemSize(child, repository, context);
-      }),
-    );
-
-    return sizes.reduce((acc, curr) => acc + curr, 0);
+    return rootFolderItems.getEntities().reduce((acc, curr) => acc + curr.size, 0);
   }
 
   if (item.is_directory) {
@@ -239,15 +228,7 @@ export const calculateItemSize = async (
       context,
     );
 
-    const sizes = await Promise.all(
-      children.getEntities().map(async child => {
-        return await calculateItemSize(child, repository, context);
-      }),
-    );
-
-    const finalSize = sizes.reduce((acc, curr) => acc + curr, 0);
-
-    return finalSize;
+    return children.getEntities().reduce((acc, curr) => acc + curr.size, 0);
   }
 
   return item.size;
