@@ -4,6 +4,7 @@ import {
   FileTypeArchiveIcon,
   FileTypeDocumentIcon,
   FileTypePdfIcon,
+  FileTypeSlidesIcon,
   FileTypeSpreadsheetIcon,
   FileTypeUnknownIcon,
 } from 'app/atoms/icons-colored';
@@ -71,6 +72,8 @@ const ChannelFile = ({ file }: FilePreviewType): React.ReactElement => {
             ) : fileType === 'document' ? (
               <FileTypeDocumentIcon className={iconClassName} />
             ) : fileType === 'slides' ? (
+              <FileTypeSlidesIcon className={iconClassName} />
+            ) : fileType === 'spreadsheet' ? (
               <FileTypeSpreadsheetIcon className={iconClassName} />
             ) : (
               <FileTypeUnknownIcon className={iconClassName} />

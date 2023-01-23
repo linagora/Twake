@@ -62,8 +62,17 @@ export default () => {
   const canWrite = true; // TODO get write permission from backend
 
   const selectedCount = Object.values(checked).filter(v => v).length;
-  const folders = children.filter(i => i.is_directory);
-  const documents = children.filter(i => !i.is_directory);
+  const folders = children.filter(i => i.is_directory).sort((a, b) => a.name.localeCompare(b.name));
+  const documents = (
+    item?.is_directory === false
+      ? //We use this hack for public shared single file
+        item
+        ? [item]
+        : []
+      : children
+  )
+    .filter(i => !i.is_directory)
+    .sort((a, b) => a.name.localeCompare(b.name));
   return (
     <UploadZone
       overClassName={'!m-4'}
@@ -118,7 +127,7 @@ export default () => {
                       onClick: () =>
                         setSelectorModalState({
                           open: true,
-                          parent_id: parentId,
+                          parent_id: inTrash ? 'root' : parentId,
                           title: 'Move ' + selectedCount + ' items',
                           mode: 'move',
                           onSelected: async ids => {
@@ -212,6 +221,16 @@ export default () => {
           </Menu>
         </div>
 
+        {item?.id === 'trash' && (
+          <div className="bg-zinc-500 bg-opacity-10 rounded-md p-4 my-4 w-auto max-w-md">
+            <BaseSmall>You are in the trash</BaseSmall>
+            <div className="w-full mt-2">
+              <Button theme="outline" onClick={() => setParentId('root')}>
+                Exit trash
+              </Button>
+            </div>
+          </div>
+        )}
         {item?.id === 'root' && (
           <div className="bg-zinc-500 bg-opacity-10 rounded-md p-4 my-4 w-auto max-w-md">
             <BaseSmall>Welcome to your company drive.</BaseSmall>
@@ -223,7 +242,7 @@ export default () => {
             </div>
           </div>
         )}
-        {item?.id !== 'root' && <div className="mt-4" />}
+        {item?.id !== 'root' && item?.id !== 'trash' && <div className="mt-4" />}
 
         <div className="grow">
           {folders.length > 0 && (
@@ -233,6 +252,7 @@ export default () => {
               {folders.map((item, index) => (
                 <FolderRow
                   key={index}
+                  inTrash={inTrash}
                   className={
                     (index === 0 ? 'rounded-t-md ' : '') +
                     (index === folders.length - 1 ? 'rounded-b-md ' : '')
@@ -271,6 +291,7 @@ export default () => {
           {documents.map((item, index) => (
             <DocumentRow
               key={index}
+              inTrash={inTrash}
               className={
                 (index === 0 ? 'rounded-t-md ' : '') +
                 (index === documents.length - 1 ? 'rounded-b-md ' : '')

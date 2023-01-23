@@ -34,6 +34,7 @@ const ConfirmTrashModalContent = ({ items }: { items: DriveItem[] }) => {
   const { item, refresh } = useDriveItem(items[0].id);
   const { update } = useDriveActions();
   const [loading, setLoading] = useState(false);
+  const [state, setState] = useRecoilState(ConfirmTrashModalAtom);
 
   useEffect(() => {
     refresh(items[0].id);
@@ -65,6 +66,7 @@ const ConfirmTrashModalContent = ({ items }: { items: DriveItem[] }) => {
             );
           }
           setLoading(false);
+          setState({ ...state, open: false });
         }}
       >
         Move to trash

@@ -1,13 +1,9 @@
-import { Button } from 'app/atoms/button/button';
 import { Modal, ModalContent } from 'app/atoms/modal';
-import { Base, BaseSmall, Title } from 'app/atoms/text';
-import UploadZone from 'app/components/uploads/upload-zone';
-import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
-import { formatBytes } from 'app/features/drive/utils';
-import { formatDate } from 'app/features/global/utils/format-date';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
+import { InternalAccessManager } from './internal-access';
+import { PublicLinkManager } from './public-link-access';
 
 export type AccessModalType = {
   open: boolean;
@@ -33,11 +29,16 @@ export const AccessModal = () => {
 };
 
 const AccessModalContent = ({ id }: { id: string }) => {
-  const { item, refresh, loading } = useDriveItem(id);
+  const { item, refresh } = useDriveItem(id);
 
   useEffect(() => {
     refresh(id);
   }, []);
 
-  return <ModalContent title={'Manage access to ' + item?.name}>TODO</ModalContent>;
+  return (
+    <ModalContent title={'Manage access to ' + item?.name}>
+      <PublicLinkManager id={id} />
+      <InternalAccessManager id={id} />
+    </ModalContent>
+  );
 };

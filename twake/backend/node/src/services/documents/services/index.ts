@@ -33,6 +33,7 @@ import {
   RealtimeEntityActionType,
   ResourcePath,
 } from "../../../core/platform/services/realtime/types";
+import jwt from "jsonwebtoken";
 
 export class DocumentsService {
   version: "1";
@@ -468,6 +469,53 @@ export class DocumentsService {
     } catch (error) {
       this.logger.error("Failed to create Drive item version", error);
       throw new CrudException("Failed to create Drive item version", 500);
+    }
+  };
+
+  downloadGetToken = async (
+    ids: string[],
+    versionId: string | null,
+    context: CompanyExecutionContext,
+  ): Promise<string> => {
+    for (const id of ids) {
+      const item = await this.get(id, context);
+      if (!item) {
+        throw new CrudException("Drive item not found", 404);
+      }
+    }
+
+    return globalResolver.platformServices.auth.sign({
+      ids,
+      version_id: versionId,
+      company_id: context.company.id,
+      user_id: context.user.id,
+    });
+  };
+
+  applyDownloadTokenToContext = async (
+    ids: string[],
+    versionId: string | null,
+    token: string,
+    context: CompanyExecutionContext,
+  ): Promise<void> => {
+    try {
+      const v = globalResolver.platformServices.auth.verifyTokenObject<{
+        ids: string[];
+        version_id: string;
+        company_id: string;
+        user_id: string;
+      }>(token);
+      if (
+        ids.some(a => !(v?.ids || [])?.includes(a)) ||
+        (v?.version_id && v?.version_id !== versionId)
+      ) {
+        return;
+      }
+
+      context.company.id = v.company_id;
+      context.user.id = v.user_id;
+    } catch (e) {
+      if (token) throw new CrudException("Invalid token", 401);
     }
   };
 

@@ -54,6 +54,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
 
   fastify.route({
     method: "GET",
+    url: `${serviceUrl}/download/token`,
+    preValidation: [fastify.authenticate],
+    handler: documentsController.downloadGetToken.bind(documentsController),
+  });
+
+  fastify.route({
+    method: "GET",
     url: `${serviceUrl}/:id/download`,
     preValidation: [fastify.authenticate],
     handler: documentsController.download.bind(documentsController),

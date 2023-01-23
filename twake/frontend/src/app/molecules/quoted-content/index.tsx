@@ -2,6 +2,7 @@ import {
   FileTypeArchiveIcon,
   FileTypeDocumentIcon,
   FileTypePdfIcon,
+  FileTypeSlidesIcon,
   FileTypeSpreadsheetIcon,
   FileTypeUnknownIcon,
 } from 'app/atoms/icons-colored';
@@ -97,6 +98,8 @@ export default ({ message }: PropsType): React.ReactElement => {
                 <FileTypeDocumentIcon className="w-5 h-5 mr-1" />
               ) : attachmentType === 'spreadsheet' ? (
                 <FileTypeSpreadsheetIcon className="w-5 h-5 mr-1" />
+              ) : attachmentType === 'slides' ? (
+                <FileTypeSlidesIcon className={'h-5 w-5 mr-1'} />
               ) : (
                 <FileTypeUnknownIcon className="w-5 h-5 mr-1" />
               )}

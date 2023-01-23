@@ -1,3 +1,4 @@
+import { CloudIcon } from '@heroicons/react/solid';
 import { Button } from 'app/atoms/button/button';
 import { Title } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
@@ -5,6 +6,7 @@ import { DriveItem } from 'app/features/drive/types';
 import { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { DriveCurrentFolderAtom } from '.';
+import { PublicIcon } from './components/public-icon';
 
 export default () => {
   const parentId = useRecoilValue(DriveCurrentFolderAtom);
@@ -64,6 +66,9 @@ const PathItem = ({
       }}
     >
       {item?.name || ''}
+      {item?.access_info?.public?.level && item?.access_info?.public?.level !== 'none' && (
+        <PublicIcon className="h-5 w-5 ml-2" />
+      )}
     </Button>
   );
 };

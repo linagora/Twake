@@ -8,6 +8,7 @@ export type DriveItemProps = {
   onCheck: (status: boolean) => void;
   checked: boolean;
   onClick: () => void;
+  inTrash?: boolean;
 };
 
 export const CheckableIcon = ({

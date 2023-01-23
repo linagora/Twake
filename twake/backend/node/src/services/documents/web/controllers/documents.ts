@@ -149,6 +149,23 @@ export class DocumentsController {
     return await globalResolver.services.documents.documents.createVersion(id, version, context);
   };
 
+  downloadGetToken = async (
+    request: FastifyRequest<{
+      Params: ItemRequestParams;
+      Querystring: { version_id?: string; items?: string };
+    }>,
+  ): Promise<{ token: string }> => {
+    const ids = (request.query.items || "").split(",");
+    const context = getCompanyExecutionContext(request);
+    return {
+      token: await globalResolver.services.documents.documents.downloadGetToken(
+        ids,
+        request.query.version_id,
+        context,
+      ),
+    };
+  };
+
   /**
    * Shortcut to download a file (you can also use the file-service directly).
    * If the item is a folder, a zip will be automatically generated.
@@ -157,12 +174,22 @@ export class DocumentsController {
    * @param {FastifyReply} reply
    */
   download = async (
-    request: FastifyRequest<{ Params: ItemRequestParams; Querystring: { version_id?: string } }>,
+    request: FastifyRequest<{
+      Params: ItemRequestParams;
+      Querystring: { version_id?: string; token?: string };
+    }>,
     response: FastifyReply,
   ): Promise<void> => {
     const context = getCompanyExecutionContext(request);
     const id = request.params.id || "";
     const versionId = request.query.version_id || null;
+    const token = request.query.token;
+    await globalResolver.services.documents.documents.applyDownloadTokenToContext(
+      [id],
+      versionId,
+      token,
+      context,
+    );
 
     try {
       const archiveOrFile = await globalResolver.services.documents.documents.download(
@@ -207,11 +234,22 @@ export class DocumentsController {
    * @param {FastifyReply} reply
    */
   downloadZip = async (
-    request: FastifyRequest<{ Params: RequestParams & { items: string } }>,
+    request: FastifyRequest<{
+      Params: RequestParams;
+      Querystring: { token?: string; items: string };
+    }>,
     reply: FastifyReply,
   ): Promise<void> => {
     const context = getCompanyExecutionContext(request);
-    const ids = (request.params.items || "").split(",");
+    const ids = (request.query.items || "").split(",");
+    const token = request.query.token;
+
+    await globalResolver.services.documents.documents.applyDownloadTokenToContext(
+      ids,
+      null,
+      token,
+      context,
+    );
 
     try {
       const archive = await globalResolver.services.documents.documents.createZip(ids, context);
