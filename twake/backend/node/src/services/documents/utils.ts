@@ -8,7 +8,7 @@ import {
   TrashType,
 } from "./types";
 import crypto from "crypto";
-import { FileVersion } from "./entities/file-version";
+import { FileVersion, DriveFileMetadata } from "./entities/file-version";
 import globalResolver from "../global-resolver";
 import Repository from "../../core/platform/services/database/services/orm/repository/repository";
 import archiver from "archiver";
@@ -115,7 +115,7 @@ export const getDefaultDriveItemVersion = (
     data: version.data || {},
     date_added: version.date_added || new Date().getTime(),
     file_id: version.file_id || "",
-    file_metadata: version.file_metadata,
+    file_metadata: version.file_metadata || {},
     file_size: version.file_size || 0,
     filename: version.filename || "",
     key: version.key || "",
@@ -199,39 +199,26 @@ export const calculateItemSize = async (
   context: CompanyExecutionContext,
 ): Promise<number> => {
   if (item === "trash") {
-    let trashSize = 0;
     const trashedItems = await repository.find(
       { company_id: context.company.id, parent_id: "trash" },
       {},
       context,
     );
 
-    trashedItems.getEntities().forEach(child => {
-      trashSize += child.size;
-    });
-
-    return trashSize;
+    return trashedItems.getEntities().reduce((acc, curr) => acc + curr.size, 0);
   }
 
   if (item === "root" || !item) {
-    let rootSize = 0;
     const rootFolderItems = await repository.find(
       { company_id: context.company.id, parent_id: "root" },
       {},
       context,
     );
 
-    await Promise.all(
-      rootFolderItems.getEntities().map(async child => {
-        rootSize += await calculateItemSize(child, repository, context);
-      }),
-    );
-
-    return rootSize;
+    return rootFolderItems.getEntities().reduce((acc, curr) => acc + curr.size, 0);
   }
 
   if (item.is_directory) {
-    let initialSize = 0;
     const children = await repository.find(
       {
         company_id: context.company.id,
@@ -241,13 +228,7 @@ export const calculateItemSize = async (
       context,
     );
 
-    Promise.all(
-      children.getEntities().map(async child => {
-        initialSize += await calculateItemSize(child, repository, context);
-      }),
-    );
-
-    return initialSize;
+    return children.getEntities().reduce((acc, curr) => acc + curr.size, 0);
   }
 
   return item.size;
@@ -421,7 +402,7 @@ export const addDriveItemToArchive = async (
   }
 
   if (!item.is_directory) {
-    const file_id = item.last_version_cache.file_id;
+    const file_id = item.last_version_cache.file_metadata.external_id;
     const file = await globalResolver.services.files.download(file_id, context);
 
     if (!file) {
@@ -521,4 +502,32 @@ export const pdfFileToString = async (file: Readable | string): Promise<string> 
 
     throw Error(error);
   }
+};
+
+/**
+ * returns the file metadata.
+ *
+ * @param {string} fileId - the file id
+ * @param {CompanyExecutionContext} context - the execution context
+ * @returns {DriveFileMetadata}
+ */
+export const getFileMetadata = async (
+  fileId: string,
+  context: CompanyExecutionContext,
+): Promise<DriveFileMetadata> => {
+  const file = await globalResolver.services.files.getFile({
+    id: fileId,
+    company_id: context.company.id,
+  });
+
+  if (!file) {
+    throw Error("File doesn't exist");
+  }
+
+  return {
+    external_id: fileId,
+    mime: file.metadata.mime,
+    name: file.metadata.name,
+    size: file.upload_data.size,
+  };
 };
