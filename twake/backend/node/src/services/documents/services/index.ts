@@ -197,17 +197,30 @@ export class DocumentsService {
         throw Error("user does not have access to this item parent");
       }
 
-      if (file) {
-        driveItem.size = file.upload_data.size;
-        driveItem.is_directory = false;
-        driveItem.has_preview = true;
-        driveItem.extension = file.metadata.name.split(".").pop();
-        driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
-        driveItemVersion.file_size = file.upload_data.size;
-        driveItemVersion.file_metadata.external_id = file.id;
-        driveItemVersion.file_metadata.mime = file.metadata.mime;
-        driveItemVersion.file_metadata.size = file.upload_data.size;
-        driveItemVersion.file_metadata.name = file.metadata.name;
+      if (file || driveItem.is_directory === false) {
+        let fileToProcess;
+
+        if (file) {
+          fileToProcess = file;
+        } else if (driveItemVersion.file_metadata.external_id) {
+          fileToProcess = await globalResolver.services.files.getFile({
+            id: driveItemVersion.file_metadata.external_id,
+            company_id: driveItem.company_id,
+          });
+        }
+
+        if (fileToProcess) {
+          driveItem.size = fileToProcess.upload_data.size;
+          driveItem.is_directory = false;
+          driveItem.has_preview = true;
+          driveItem.extension = fileToProcess.metadata.name.split(".").pop();
+          driveItemVersion.filename = driveItemVersion.filename || fileToProcess.metadata.name;
+          driveItemVersion.file_size = fileToProcess.upload_data.size;
+          driveItemVersion.file_metadata.external_id = fileToProcess.id;
+          driveItemVersion.file_metadata.mime = fileToProcess.metadata.mime;
+          driveItemVersion.file_metadata.size = fileToProcess.upload_data.size;
+          driveItemVersion.file_metadata.name = fileToProcess.metadata.name;
+        }
       }
 
       await this.repository.save(driveItem);

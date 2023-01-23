@@ -214,24 +214,22 @@ export const calculateItemSize = async (
   }
 
   if (item === "root" || !item) {
-    let rootSize = 0;
     const rootFolderItems = await repository.find(
       { company_id: context.company.id, parent_id: "root" },
       {},
       context,
     );
 
-    await Promise.all(
+    const sizes = await Promise.all(
       rootFolderItems.getEntities().map(async child => {
-        rootSize += await calculateItemSize(child, repository, context);
+        return await calculateItemSize(child, repository, context);
       }),
     );
 
-    return rootSize;
+    return sizes.reduce((acc, curr) => acc + curr, 0);
   }
 
   if (item.is_directory) {
-    let initialSize = 0;
     const children = await repository.find(
       {
         company_id: context.company.id,
@@ -241,13 +239,15 @@ export const calculateItemSize = async (
       context,
     );
 
-    Promise.all(
+    const sizes = await Promise.all(
       children.getEntities().map(async child => {
-        initialSize += await calculateItemSize(child, repository, context);
+        return await calculateItemSize(child, repository, context);
       }),
     );
 
-    return initialSize;
+    const finalSize = sizes.reduce((acc, curr) => acc + curr, 0);
+
+    return finalSize;
   }
 
   return item.size;
