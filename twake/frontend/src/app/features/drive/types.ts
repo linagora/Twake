@@ -33,18 +33,20 @@ export type DriveItem = {
   size: number;
 };
 
+export type DriveFileAccessLevel = 'none' | 'read' | 'write' | 'manage';
+
 export type DriveItemAccessInfo = {
-  public_access_token: string; //If set then it is possible to access this drive / folder using this token + IT IS ALWAYS A READONLY ACCESS
-  authorized_entities: {
-    // If empty list, look at parent for access information
-    type: 'user';
-    id: string;
-  }[];
-  unauthorized_entities: {
-    // Has priority over authorized_entities but not on public_access_token
-    type: 'user';
-    id: string;
-  }[];
+  public?: {
+    token: string;
+    level: DriveFileAccessLevel;
+  };
+  entities: AuthEntity[];
+};
+
+type AuthEntity = {
+  type: 'user' | 'channel' | 'company' | 'folder';
+  id: string | 'parent';
+  level: DriveFileAccessLevel;
 };
 
 export type DriveItemVersion = {

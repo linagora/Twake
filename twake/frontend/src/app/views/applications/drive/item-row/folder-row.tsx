@@ -7,14 +7,22 @@ import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { formatBytes } from 'app/features/drive/utils';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
+import { PublicIcon } from '../components/public-icon';
 import { ConfirmDeleteModalAtom } from '../modals/confirm-delete';
+import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
 import { PropertiesModalAtom } from '../modals/properties';
 import { SelectorModalAtom } from '../modals/selector';
 import { AccessModalAtom } from '../modals/update-access';
 import { CheckableIcon, DriveItemProps } from './common';
 
-export const FolderRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
+export const FolderRow = ({
+  item,
+  inTrash,
+  className,
+  onCheck,
+  checked,
+  onClick,
+}: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
@@ -53,6 +61,11 @@ export const FolderRow = ({ item, className, onCheck, checked, onClick }: DriveI
         <Base className="!font-semibold">{item.name}</Base>
       </div>
       <div className="shrink-0 ml-4">
+        {item?.access_info?.public?.level !== 'none' && (
+          <PublicIcon className="h-5 w-5 text-blue-500" />
+        )}
+      </div>
+      <div className="shrink-0 ml-4 text-right" style={{ minWidth: 80 }}>
         <BaseSmall>{formatBytes(item.size)}</BaseSmall>
       </div>
       <div className="shrink-0 ml-4">
@@ -80,7 +93,7 @@ export const FolderRow = ({ item, className, onCheck, checked, onClick }: DriveI
               onClick: () =>
                 setSelectorModalState({
                   open: true,
-                  parent_id: item.parent_id,
+                  parent_id: inTrash ? 'root' : item.parent_id,
                   mode: 'move',
                   title: `Move '${item.name}'`,
                   onSelected: async ids => {
@@ -99,7 +112,15 @@ export const FolderRow = ({ item, className, onCheck, checked, onClick }: DriveI
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
+              hide: inTrash,
               onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
+            },
+            {
+              type: 'menu',
+              text: 'Delete',
+              className: 'error',
+              hide: !inTrash,
+              onClick: () => setConfirmDeleteModalState({ open: true, items: [item] }),
             },
           ]}
         >

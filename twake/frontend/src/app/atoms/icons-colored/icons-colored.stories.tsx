@@ -8,6 +8,8 @@ import {
   FileTypePdfIcon,
   FileTypeSpreadsheetIcon,
   FileTypeUnknownIcon,
+  FileTypeMediaIcon,
+  FileTypeSlidesIcon,
   NotFoundIcon,
   RemoveIcon,
   SentIcon,
@@ -48,6 +50,8 @@ const Template: ComponentStory<any> = () => {
         <Icon icon={<FileTypeDocumentIcon />} title="FileTypeDocument" />
         <Icon icon={<FileTypeSpreadsheetIcon />} title="FileTypeSpreadsheet" />
         <Icon icon={<FileTypeUnknownIcon />} title="FileTypeUnknown" />
+        <Icon icon={<FileTypeMediaIcon />} title="FileTypeMedia" />
+        <Icon icon={<FileTypeSlidesIcon />} title="FileTypeSlides" />
       </div>
       <h1>Component specific</h1>
       <div className="flex flex-wrap mb-2">

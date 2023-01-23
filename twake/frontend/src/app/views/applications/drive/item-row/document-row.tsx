@@ -1,22 +1,39 @@
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
-import { DocumentIcon } from '@heroicons/react/solid';
 import { Button } from 'app/atoms/button/button';
+import {
+  FileTypeArchiveIcon,
+  FileTypeDocumentIcon,
+  FileTypeMediaIcon,
+  FileTypePdfIcon,
+  FileTypeSlidesIcon,
+  FileTypeSpreadsheetIcon,
+  FileTypeUnknownIcon,
+} from 'app/atoms/icons-colored';
 import { Base, BaseSmall } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { formatBytes } from 'app/features/drive/utils';
+import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
+import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
+import { PublicIcon } from '../components/public-icon';
 import { ConfirmDeleteModalAtom } from '../modals/confirm-delete';
+import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
 import { PropertiesModalAtom } from '../modals/properties';
 import { SelectorModalAtom } from '../modals/selector';
 import { AccessModalAtom } from '../modals/update-access';
 import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
-import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 
-export const DocumentRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
+export const DocumentRow = ({
+  item,
+  className,
+  inTrash,
+  onCheck,
+  checked,
+  onClick,
+}: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
   const { open } = useFileViewerModal();
@@ -27,6 +44,10 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
   const setPropertiesModalState = useSetRecoilState(PropertiesModalAtom);
   const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
   const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
+
+  const fileType = fileUploadApiClient.mimeToType(
+    item?.last_version_cache?.file_metadata?.mime || '',
+  );
 
   const preview = () => {
     open({
@@ -57,13 +78,36 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
           show={hover || checked}
           checked={checked}
           onCheck={onCheck}
-          fallback={<DocumentIcon className="h-5 w-5 shrink-0 text-gray-400" />}
+          fallback={
+            <>
+              {fileType === 'image' || fileType === 'video' ? (
+                <FileTypeMediaIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'archive' ? (
+                <FileTypeArchiveIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'pdf' ? (
+                <FileTypePdfIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'document' ? (
+                <FileTypeDocumentIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'spreadsheet' ? (
+                <FileTypeSpreadsheetIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'slides' ? (
+                <FileTypeSlidesIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : (
+                <FileTypeUnknownIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              )}
+            </>
+          }
         />
       </div>
       <div className="grow text-ellipsis whitespace-nowrap overflow-hidden">
         <Base>{item.name}</Base>
       </div>
       <div className="shrink-0 ml-4">
+        {item?.access_info?.public?.level !== 'none' && (
+          <PublicIcon className="h-5 w-5 text-blue-500" />
+        )}
+      </div>
+      <div className="shrink-0 ml-4 text-right" style={{ minWidth: 80 }}>
         <BaseSmall>{formatBytes(item.size)}</BaseSmall>
       </div>
       <div className="shrink-0 ml-4">
@@ -101,7 +145,7 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
               onClick: () =>
                 setSelectorModalState({
                   open: true,
-                  parent_id: item.parent_id,
+                  parent_id: inTrash ? 'root' : item.parent_id,
                   mode: 'move',
                   title: `Move '${item.name}'`,
                   onSelected: async ids => {
@@ -120,7 +164,15 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
+              hide: inTrash,
               onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
+            },
+            {
+              type: 'menu',
+              text: 'Delete',
+              className: 'error',
+              hide: !inTrash,
+              onClick: () => setConfirmDeleteModalState({ open: true, items: [item] }),
             },
           ]}
         >
