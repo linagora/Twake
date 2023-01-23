@@ -51,8 +51,12 @@ const SelectorModalContent = () => {
     refresh(parentId);
   }, [parentId, parent?.id]);
 
-  const folders = children?.filter(i => i.is_directory) || [];
-  const files = children?.filter(i => !i.is_directory) || [];
+  const folders = (children?.filter(i => i.is_directory) || []).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+  const files = (children?.filter(i => !i.is_directory) || []).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
 
   return (
     <ModalContent title={state.title}>

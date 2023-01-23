@@ -1,3 +1,4 @@
+import { CloudIcon } from '@heroicons/react/solid';
 import { Button } from 'app/atoms/button/button';
 import { Title } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
@@ -64,6 +65,9 @@ const PathItem = ({
       }}
     >
       {item?.name || ''}
+      {item?.access_info?.public?.level && item?.access_info?.public?.level !== 'none' && (
+        <CloudIcon className="h-5 w-5 ml-2" />
+      )}
     </Button>
   );
 };

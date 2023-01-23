@@ -62,8 +62,10 @@ export default () => {
   const canWrite = true; // TODO get write permission from backend
 
   const selectedCount = Object.values(checked).filter(v => v).length;
-  const folders = children.filter(i => i.is_directory);
-  const documents = children.filter(i => !i.is_directory);
+  const folders = children.filter(i => i.is_directory).sort((a, b) => a.name.localeCompare(b.name));
+  const documents = (item?.is_directory ? children : item ? [item] : [])
+    .filter(i => !i.is_directory)
+    .sort((a, b) => a.name.localeCompare(b.name));
   return (
     <UploadZone
       overClassName={'!m-4'}
