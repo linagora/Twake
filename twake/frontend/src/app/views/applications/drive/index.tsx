@@ -118,7 +118,7 @@ export default () => {
                       onClick: () =>
                         setSelectorModalState({
                           open: true,
-                          parent_id: parentId,
+                          parent_id: inTrash ? 'root' : parentId,
                           title: 'Move ' + selectedCount + ' items',
                           mode: 'move',
                           onSelected: async ids => {
@@ -233,6 +233,7 @@ export default () => {
               {folders.map((item, index) => (
                 <FolderRow
                   key={index}
+                  inTrash={inTrash}
                   className={
                     (index === 0 ? 'rounded-t-md ' : '') +
                     (index === folders.length - 1 ? 'rounded-b-md ' : '')
@@ -271,6 +272,7 @@ export default () => {
           {documents.map((item, index) => (
             <DocumentRow
               key={index}
+              inTrash={inTrash}
               className={
                 (index === 0 ? 'rounded-t-md ' : '') +
                 (index === documents.length - 1 ? 'rounded-b-md ' : '')

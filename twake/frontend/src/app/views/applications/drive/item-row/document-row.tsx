@@ -16,7 +16,14 @@ import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
 import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 
-export const DocumentRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
+export const DocumentRow = ({
+  item,
+  className,
+  inTrash,
+  onCheck,
+  checked,
+  onClick,
+}: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
   const { open } = useFileViewerModal();
@@ -101,7 +108,7 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
               onClick: () =>
                 setSelectorModalState({
                   open: true,
-                  parent_id: item.parent_id,
+                  parent_id: inTrash ? 'root' : item.parent_id,
                   mode: 'move',
                   title: `Move '${item.name}'`,
                   onSelected: async ids => {
@@ -120,7 +127,15 @@ export const DocumentRow = ({ item, className, onCheck, checked, onClick }: Driv
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
+              hide: inTrash,
               onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
+            },
+            {
+              type: 'menu',
+              text: 'Delete',
+              className: 'error',
+              hide: !inTrash,
+              onClick: () => setConfirmDeleteModalState({ open: true, items: [item] }),
             },
           ]}
         >

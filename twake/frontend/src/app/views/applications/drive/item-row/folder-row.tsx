@@ -14,7 +14,14 @@ import { SelectorModalAtom } from '../modals/selector';
 import { AccessModalAtom } from '../modals/update-access';
 import { CheckableIcon, DriveItemProps } from './common';
 
-export const FolderRow = ({ item, className, onCheck, checked, onClick }: DriveItemProps) => {
+export const FolderRow = ({
+  item,
+  inTrash,
+  className,
+  onCheck,
+  checked,
+  onClick,
+}: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
@@ -80,7 +87,7 @@ export const FolderRow = ({ item, className, onCheck, checked, onClick }: DriveI
               onClick: () =>
                 setSelectorModalState({
                   open: true,
-                  parent_id: item.parent_id,
+                  parent_id: inTrash ? 'root' : item.parent_id,
                   mode: 'move',
                   title: `Move '${item.name}'`,
                   onSelected: async ids => {
@@ -99,7 +106,15 @@ export const FolderRow = ({ item, className, onCheck, checked, onClick }: DriveI
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
+              hide: inTrash,
               onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
+            },
+            {
+              type: 'menu',
+              text: 'Delete',
+              className: 'error',
+              hide: !inTrash,
+              onClick: () => setConfirmDeleteModalState({ open: true, items: [item] }),
             },
           ]}
         >

@@ -5,7 +5,7 @@ import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { DriveItem } from 'app/features/drive/types';
 import { useEffect, useState } from 'react';
-import { atom, useRecoilState } from 'recoil';
+import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 
 export type ConfirmDeleteModalType = {
   open: boolean;
@@ -34,6 +34,7 @@ const ConfirmDeleteModalContent = ({ items }: { items: DriveItem[] }) => {
   const { item, refresh } = useDriveItem(items[0].id);
   const { remove } = useDriveActions();
   const [loading, setLoading] = useState(false);
+  const [state, setState] = useRecoilState(ConfirmDeleteModalAtom);
 
   useEffect(() => {
     refresh(items[0].id);
@@ -61,6 +62,7 @@ const ConfirmDeleteModalContent = ({ items }: { items: DriveItem[] }) => {
             await remove(item.id, item.parent_id);
           }
           setLoading(false);
+          setState({ ...state, open: false });
         }}
       >
         Delete
