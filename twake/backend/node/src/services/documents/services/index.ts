@@ -204,11 +204,16 @@ export class DocumentsService {
         driveItem.extension = file.metadata.name.split(".").pop();
         driveItemVersion.filename = driveItemVersion.filename || file.metadata.name;
         driveItemVersion.file_size = file.upload_data.size;
-        driveItemVersion.file_id = file.id;
+        driveItemVersion.file_metadata.external_id = file.id;
+        driveItemVersion.file_metadata.mime = file.metadata.mime;
+        driveItemVersion.file_metadata.size = file.upload_data.size;
+        driveItemVersion.file_metadata.name = file.metadata.name;
       }
 
-      await this.fileVersionRepository.save(driveItemVersion);
+      await this.repository.save(driveItem);
+      driveItemVersion.file_id = driveItem.id;
 
+      await this.fileVersionRepository.save(driveItemVersion);
       driveItem.last_version_cache = driveItemVersion;
 
       await this.repository.save(driveItem);
@@ -226,6 +231,7 @@ export class DocumentsService {
           },
         },
       );
+
       return driveItem;
     } catch (error) {
       this.logger.error("Failed to create drive item", error);
@@ -544,7 +550,7 @@ export class DocumentsService {
       throw new CrudException("Version not found", 404);
     }
 
-    const fileId = version.file_id;
+    const fileId = version.file_metadata.external_id;
     const file = await globalResolver.services.files.download(fileId, context);
 
     return { file };

@@ -115,7 +115,7 @@ export const getDefaultDriveItemVersion = (
     data: version.data || {},
     date_added: version.date_added || new Date().getTime(),
     file_id: version.file_id || "",
-    file_metadata: version.file_metadata,
+    file_metadata: version.file_metadata || {},
     file_size: version.file_size || 0,
     filename: version.filename || "",
     key: version.key || "",
@@ -421,7 +421,7 @@ export const addDriveItemToArchive = async (
   }
 
   if (!item.is_directory) {
-    const file_id = item.last_version_cache.file_id;
+    const file_id = item.last_version_cache.file_metadata.external_id;
     const file = await globalResolver.services.files.download(file_id, context);
 
     if (!file) {

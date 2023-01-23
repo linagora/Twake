@@ -29,7 +29,8 @@ export class DocumentsProcessor
       message.item &&
       message.item.id &&
       message.version &&
-      message.version.file_id &&
+      message.version.file_metadata &&
+      message.version.file_metadata.external_id &&
       !message.item.is_directory
     );
   }
@@ -46,7 +47,7 @@ export class DocumentsProcessor
 
     try {
       const storedFile = await globalResolver.services.files.download(
-        message.version.file_id,
+        message.version.file_metadata.external_id,
         message.context,
       );
 

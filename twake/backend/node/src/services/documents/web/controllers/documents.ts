@@ -93,7 +93,7 @@ export class DocumentsController {
   ): Promise<DriveItemDetails> => {
     const context = getCompanyExecutionContext(request);
 
-    return await globalResolver.services.documents.documents.get("", context);
+    return await globalResolver.services.documents.documents.get(null, context);
   };
 
   /**
