@@ -1,5 +1,5 @@
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
-import { CloudIcon, FolderIcon } from '@heroicons/react/solid';
+import { FolderIcon } from '@heroicons/react/solid';
 import { Button } from 'app/atoms/button/button';
 import { Base, BaseSmall } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
@@ -7,8 +7,9 @@ import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { formatBytes } from 'app/features/drive/utils';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
+import { PublicIcon } from '../components/public-icon';
 import { ConfirmDeleteModalAtom } from '../modals/confirm-delete';
+import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
 import { PropertiesModalAtom } from '../modals/properties';
 import { SelectorModalAtom } from '../modals/selector';
 import { AccessModalAtom } from '../modals/update-access';
@@ -61,7 +62,7 @@ export const FolderRow = ({
       </div>
       <div className="shrink-0 ml-4">
         {item?.access_info?.public?.level !== 'none' && (
-          <CloudIcon className="h-5 w-5 text-blue-500" />
+          <PublicIcon className="h-5 w-5 text-blue-500" />
         )}
       </div>
       <div className="shrink-0 ml-4 text-right" style={{ minWidth: 80 }}>

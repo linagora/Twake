@@ -6,6 +6,7 @@ import { DriveItem } from 'app/features/drive/types';
 import { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { DriveCurrentFolderAtom } from '.';
+import { PublicIcon } from './components/public-icon';
 
 export default () => {
   const parentId = useRecoilValue(DriveCurrentFolderAtom);
@@ -66,7 +67,7 @@ const PathItem = ({
     >
       {item?.name || ''}
       {item?.access_info?.public?.level && item?.access_info?.public?.level !== 'none' && (
-        <CloudIcon className="h-5 w-5 ml-2" />
+        <PublicIcon className="h-5 w-5 ml-2" />
       )}
     </Button>
   );
