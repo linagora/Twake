@@ -1,10 +1,12 @@
 import Avatar from 'app/atoms/avatar';
 import { Base, Info } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
+import { DriveFileAccessLevel } from 'app/features/drive/types';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import { useUser } from 'app/features/users/hooks/use-user';
 import currentUserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';
+import { useState } from 'react';
 import SelectUsers from '../../components/select-users';
 import { AccessLevel } from './common';
 
@@ -24,9 +26,7 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
 
   return (
     <>
-      <Base className="block mt-4 mb-1">
-        <b>Manage access</b>
-      </Base>
+      <Base className="block mt-4 mb-1">General access management</Base>
 
       <div className="rounded-md border overflow-hidden">
         {folderEntity && (
@@ -136,22 +136,55 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
 
         <div className="-mb-px" />
       </div>
-      <div className="rounded-md border overflow-hidden mt-2">
-        <div className="p-4 border-b flex flex-row items-center justify-center">
-          <SelectUsers
-            onChange={function (users: UserType[]): void {
-              //TODO
-            }}
-            initialUsers={[]}
-          />
-        </div>
+      <div className="rounded-md border mt-2">
+        <UserAccessSelector id={id} />
 
-        {userEntities?.map(user => (
-          <UserAccessLevel key={user.id} id={id} userId={user?.id} />
-        ))}
+        {userEntities
+          ?.sort((a, b) => a?.id?.localeCompare(b?.id))
+          ?.map(user => (
+            <UserAccessLevel key={user.id} id={id} userId={user?.id} />
+          ))}
         <div className="-mb-px" />
       </div>
     </>
+  );
+};
+
+const UserAccessSelector = ({ id }: { id: string }) => {
+  const { item, loading, update } = useDriveItem(id);
+  const [level, setLevel] = useState<DriveFileAccessLevel>('manage');
+
+  return (
+    <div className="p-4 flex flex-row items-center justify-center">
+      <div className="grow">
+        <SelectUsers
+          className="rounded-r-none"
+          onChange={(users: UserType[]) => {
+            const id = users[0]?.id;
+            update({
+              access_info: {
+                entities: [
+                  //Add or replace existing user
+                  ...(item?.access_info.entities.filter(a => a.type !== 'user' || a.id !== id) ||
+                    []),
+                  ...((id ? [{ type: 'user', id, level }] : []) as any),
+                ],
+                public: item?.access_info.public,
+              },
+            });
+          }}
+          initialUsers={[]}
+        />
+      </div>
+      <div className="shrink-0">
+        <AccessLevel
+          className="rounded-l-none"
+          disabled={loading}
+          level={level}
+          onChange={level => setLevel(level)}
+        />
+      </div>
+    </div>
   );
 };
 
@@ -163,7 +196,7 @@ const UserAccessLevel = ({ id, userId }: { id: string; userId: string }) => {
     'none';
 
   return (
-    <div className="p-4 border-b flex flex-row items-center justify-center">
+    <div className="p-4 border-t flex flex-row items-center justify-center">
       <div className="shrink-0">
         <Avatar
           avatar={user?.thumbnail || ''}

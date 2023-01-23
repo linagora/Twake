@@ -7,21 +7,27 @@ export const AccessLevel = ({
   onChange,
   canRemove,
   hiddenLevels,
+  className,
 }: {
   disabled?: boolean;
   level: DriveFileAccessLevel | null;
   onChange: (level: DriveFileAccessLevel & 'remove') => void;
   canRemove?: boolean;
+  className?: string;
   hiddenLevels?: string[];
 }) => {
   return (
     <Select
       disabled={disabled}
-      className={'w-auto ' + (level === 'none' ? '!text-red-500 !bg-red-100 dark-bg-red-800' : '')}
+      className={
+        className +
+        ' w-auto ' +
+        (level === 'none' ? '!text-red-500 !bg-red-100 dark-bg-red-800' : '')
+      }
       value={level || 'none'}
       onChange={e => onChange(e.target.value as DriveFileAccessLevel & 'remove')}
     >
-      {!hiddenLevels?.includes('manage') && <option value={'manage'}>Manage</option>}
+      {!hiddenLevels?.includes('manage') && <option value={'manage'}>Full access</option>}
       {!hiddenLevels?.includes('write') && <option value={'write'}>Write</option>}
       {!hiddenLevels?.includes('read') && <option value={'read'}>Read</option>}
       {!hiddenLevels?.includes('none') && <option value={'none'}>No access</option>}

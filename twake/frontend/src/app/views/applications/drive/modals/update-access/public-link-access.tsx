@@ -21,9 +21,7 @@ export const PublicLinkManager = ({ id }: { id: string }) => {
 
   return (
     <>
-      <Base className="block mt-2 mb-1">
-        <b>Public link access</b>
-      </Base>
+      <Base className="block mt-2 mb-1">Public link access</Base>
       <div className="flex flex-row p-4 rounded-md border overflow-hidden">
         <div className="grow">
           {item?.access_info?.public?.level !== 'none' && (
