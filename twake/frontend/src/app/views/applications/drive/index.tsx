@@ -63,7 +63,14 @@ export default () => {
 
   const selectedCount = Object.values(checked).filter(v => v).length;
   const folders = children.filter(i => i.is_directory).sort((a, b) => a.name.localeCompare(b.name));
-  const documents = (item?.is_directory ? children : item ? [item] : [])
+  const documents = (
+    item?.is_directory === false
+      ? //We use this hack for public shared single file
+        item
+        ? [item]
+        : []
+      : children
+  )
     .filter(i => !i.is_directory)
     .sort((a, b) => a.name.localeCompare(b.name));
   return (
