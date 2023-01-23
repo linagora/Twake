@@ -65,7 +65,7 @@ export type DriveItemVersion = {
 
 export type FileMetadata = {
   source: 'internal' | 'drive' | string; //Uuid of the corresponding connector
-  external_id: string | any;
+  external_id: string;
 
   name?: string; //Original file name
   mime?: string; //Original file mime

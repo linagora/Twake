@@ -21,7 +21,7 @@ export const useDriveUpload = () => {
         callback: async (file, context) => {
           if (file) {
             const version = {
-              file_id: file.id,
+              file_id: context.id,
               provider: 'internal',
               application_id: '',
               file_metadata: {
@@ -30,7 +30,7 @@ export const useDriveUpload = () => {
                 mime: file.metadata?.mime,
                 thumbnails: file?.thumbnails,
                 source: 'internal',
-                external_id: { id: file.id, company_id: file.company_id },
+                external_id: file.id,
               },
             };
             await DriveApiClient.createVersion(context.companyId, context.id, version);
@@ -92,7 +92,6 @@ export const useDriveUpload = () => {
                 size: file.upload_data?.size,
               },
               {
-                file_id: file.id,
                 provider: 'internal',
                 application_id: '',
                 file_metadata: {
@@ -101,7 +100,7 @@ export const useDriveUpload = () => {
                   mime: file.metadata?.mime,
                   thumbnails: file?.thumbnails,
                   source: 'internal',
-                  external_id: { id: file.id, company_id: file.company_id },
+                  external_id: file.id,
                 },
               },
             );
