@@ -15,6 +15,16 @@ import { AccessModalAtom } from '../modals/update-access';
 import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
 import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
+import {
+  FileTypeArchiveIcon,
+  FileTypeDocumentIcon,
+  FileTypeMediaIcon,
+  FileTypePdfIcon,
+  FileTypeSlidesIcon,
+  FileTypeSpreadsheetIcon,
+  FileTypeUnknownIcon,
+} from 'app/atoms/icons-colored';
+import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
 
 export const DocumentRow = ({
   item,
@@ -34,6 +44,10 @@ export const DocumentRow = ({
   const setPropertiesModalState = useSetRecoilState(PropertiesModalAtom);
   const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
   const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
+
+  const fileType = fileUploadApiClient.mimeToType(
+    item?.last_version_cache?.file_metadata?.mime || '',
+  );
 
   const preview = () => {
     open({
@@ -64,7 +78,25 @@ export const DocumentRow = ({
           show={hover || checked}
           checked={checked}
           onCheck={onCheck}
-          fallback={<DocumentIcon className="h-5 w-5 shrink-0 text-gray-400" />}
+          fallback={
+            <>
+              {fileType === 'image' || fileType === 'video' ? (
+                <FileTypeMediaIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'archive' ? (
+                <FileTypeArchiveIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'pdf' ? (
+                <FileTypePdfIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'document' ? (
+                <FileTypeDocumentIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'spreadsheet' ? (
+                <FileTypeSpreadsheetIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : fileType === 'slides' ? (
+                <FileTypeSlidesIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              ) : (
+                <FileTypeUnknownIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
+              )}
+            </>
+          }
         />
       </div>
       <div className="grow text-ellipsis whitespace-nowrap overflow-hidden">

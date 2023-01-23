@@ -212,6 +212,16 @@ export default () => {
           </Menu>
         </div>
 
+        {item?.id === 'trash' && (
+          <div className="bg-zinc-500 bg-opacity-10 rounded-md p-4 my-4 w-auto max-w-md">
+            <BaseSmall>You are in the trash</BaseSmall>
+            <div className="w-full mt-2">
+              <Button theme="outline" onClick={() => setParentId('root')}>
+                Exit trash
+              </Button>
+            </div>
+          </div>
+        )}
         {item?.id === 'root' && (
           <div className="bg-zinc-500 bg-opacity-10 rounded-md p-4 my-4 w-auto max-w-md">
             <BaseSmall>Welcome to your company drive.</BaseSmall>
@@ -223,7 +233,7 @@ export default () => {
             </div>
           </div>
         )}
-        {item?.id !== 'root' && <div className="mt-4" />}
+        {item?.id !== 'root' && item?.id !== 'trash' && <div className="mt-4" />}
 
         <div className="grow">
           {folders.length > 0 && (

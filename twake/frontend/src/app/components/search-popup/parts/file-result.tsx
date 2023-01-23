@@ -6,6 +6,7 @@ import {
   FileTypeArchiveIcon,
   FileTypeDocumentIcon,
   FileTypePdfIcon,
+  FileTypeSlidesIcon,
   FileTypeSpreadsheetIcon,
   FileTypeUnknownIcon,
 } from 'app/atoms/icons-colored';
@@ -124,8 +125,10 @@ export const FileResultMedia = (props: {
             <FileTypePdfIcon className={iconClassName} />
           ) : type === 'document' ? (
             <FileTypeDocumentIcon className={iconClassName} />
-          ) : type === 'slides' ? (
+          ) : type === 'spreadsheet' ? (
             <FileTypeSpreadsheetIcon className={iconClassName} />
+          ) : type === 'slides' ? (
+            <FileTypeSlidesIcon className={iconClassName} />
           ) : (
             <FileTypeUnknownIcon className={iconClassName} />
           )}
