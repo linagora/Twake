@@ -197,8 +197,8 @@ export class DocumentsService {
         context,
       );
       if (!hasAccess) {
-        this.logger.error("user does not have access drive item parent", driveItem.parent_id);
-        throw Error("user does not have access to this item parent");
+        this.logger.error("User does not have access to parent drive item", driveItem.parent_id);
+        throw Error("User does not have access to this item parent");
       }
 
       if (file || driveItem.is_directory === false) {

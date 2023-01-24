@@ -25,6 +25,7 @@ import {
 } from "../../utils/files";
 import PdfParse from "pdf-parse";
 import _ from "lodash";
+import { logger } from "../../core/platform/framework";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -325,7 +326,11 @@ export const checkAccess = async (
   context: CompanyExecutionContext & { public_token?: string },
 ): Promise<boolean> => {
   const grantedLevel = await getAccessLevel(id, item, repository, context);
-  return hasAccessLevel(level, grantedLevel);
+  const hasAccess = hasAccessLevel(level, grantedLevel);
+  logger.info(
+    `Got level ${grantedLevel} for drive item ${id} and required ${level} - returning ${hasAccess}`,
+  );
+  return hasAccess;
 };
 
 /**
