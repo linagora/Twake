@@ -56,16 +56,11 @@ export const getDefaultDriveItem = (
           type: "folder",
           level: "manage",
         },
-        //Folders created in root give access by default to the whole company
-        ...((item.parent_id === "root"
-          ? [
-              {
-                id: item.company_id,
-                type: "company",
-                level: "manage",
-              },
-            ]
-          : []) as AccessInformation["entities"]),
+        {
+          id: item.company_id,
+          type: "company",
+          level: "none",
+        },
         {
           id: context.user.id,
           type: "user",

@@ -26,6 +26,7 @@ import {
   getDefaultDriveItemVersion,
   getFileMetadata,
   getPath,
+  hasAccessLevel,
   makeStandaloneAccessLevel,
   updateItemSize,
 } from "../utils";
@@ -274,7 +275,8 @@ export class DocumentsService {
     }
 
     try {
-      const hasAccess = await checkAccess(id, null, "write", this.repository, context);
+      const level = await getAccessLevel(id, null, this.repository, context);
+      const hasAccess = hasAccessLevel("write", level);
 
       if (!hasAccess) {
         this.logger.error("user does not have access drive item ", id);
@@ -303,6 +305,14 @@ export class DocumentsService {
           (item as any)[key] = (content as any)[key];
         }
       });
+
+      //We cannot do a change that would make the item unreachable
+      if (
+        level === "manage" &&
+        !(await checkAccess(item.id, item, "manage", this.repository, context))
+      ) {
+        throw new Error("Cannot change access level to make the item unreachable");
+      }
 
       await this.repository.save(item);
       await updateItemSize(item.parent_id, this.repository, context);
