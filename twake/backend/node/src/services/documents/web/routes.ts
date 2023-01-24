@@ -11,21 +11,21 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
   fastify.route({
     method: "GET",
     url: `${serviceUrl}`,
-    preValidation: [fastify.authenticate],
+    preValidation: [fastify.authenticateOptional],
     handler: documentsController.listRootFolder.bind(documentsController),
   });
 
   fastify.route({
     method: "GET",
     url: `${serviceUrl}/:id`,
-    preValidation: [fastify.authenticate],
+    preValidation: [fastify.authenticateOptional],
     handler: documentsController.get.bind(documentsController),
   });
 
   fastify.route({
     method: "POST",
     url: serviceUrl,
-    preValidation: [fastify.authenticate],
+    preValidation: [fastify.authenticateOptional],
     schema: createDocumentSchema,
     handler: documentsController.create.bind(documentsController),
   });
@@ -33,21 +33,21 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
   fastify.route({
     method: "POST",
     url: `${serviceUrl}/:id`,
-    preValidation: [fastify.authenticate],
+    preValidation: [fastify.authenticateOptional],
     handler: documentsController.update.bind(documentsController),
   });
 
   fastify.route({
     method: "DELETE",
     url: `${serviceUrl}/:id`,
-    preValidation: [fastify.authenticate],
+    preValidation: [fastify.authenticateOptional],
     handler: documentsController.delete.bind(documentsController),
   });
 
   fastify.route({
     method: "POST",
     url: `${serviceUrl}/:id/version`,
-    preValidation: [fastify.authenticate],
+    preValidation: [fastify.authenticateOptional],
     schema: createVersionSchema,
     handler: documentsController.createVersion.bind(documentsController),
   });
