@@ -1,6 +1,7 @@
 import { describe, beforeEach, afterEach, it, expect } from "@jest/globals";
 import { deserialize } from "class-transformer";
 import { init, TestPlatform } from "../setup";
+import { TestDbService } from "../utils.prepare.db";
 import { e2e_createDocument, e2e_getDocument } from "./utils";
 
 describe("the Documents feature", () => {
@@ -51,6 +52,8 @@ describe("the Documents feature", () => {
 
   describe("On user send Drive item", () => {
     it("did create the drive item", async done => {
+      await TestDbService.getInstance(platform, true);
+
       const item = {
         name: "new test file",
         parent_id: "root",
