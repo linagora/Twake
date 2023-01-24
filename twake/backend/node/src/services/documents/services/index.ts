@@ -10,6 +10,7 @@ import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import {
   CompanyExecutionContext,
+  DriveExecutionContext,
   DocumentsMessageQueueRequest,
   DriveItemDetails,
   RootType,
@@ -20,6 +21,7 @@ import {
   addDriveItemToArchive,
   calculateItemSize,
   checkAccess,
+  getAccessLevel,
   getDefaultDriveItem,
   getDefaultDriveItemVersion,
   getFileMetadata,
@@ -34,7 +36,6 @@ import {
   RealtimeEntityActionType,
   ResourcePath,
 } from "../../../core/platform/services/realtime/types";
-import jwt from "jsonwebtoken";
 
 export class DocumentsService {
   version: "1";
@@ -67,10 +68,10 @@ export class DocumentsService {
    * Fetches a drive element
    *
    * @param {string} id - the id of the DriveFile to fetch or "trash" or an empty string for root folder.
-   * @param {CompanyExecutionContext} context
+   * @param {DriveExecutionContext} context
    * @returns {Promise<DriveItemDetails>}
    */
-  get = async (id: string, context: CompanyExecutionContext): Promise<DriveItemDetails> => {
+  get = async (id: string, context: DriveExecutionContext): Promise<DriveItemDetails> => {
     if (!context) {
       this.logger.error("invalid context");
       return null;
@@ -163,7 +164,7 @@ export class DocumentsService {
         } as DriveFile),
       versions: versions,
       children: children,
-      access: "none", //TODO return current user access
+      access: await getAccessLevel(id, entity, this.repository, context),
     };
   };
 
@@ -173,14 +174,14 @@ export class DocumentsService {
    * @param {PublicFile} file - the multipart file
    * @param {Partial<DriveFile>} content - the DriveFile item to create
    * @param {Partial<FileVersion>} version - the DriveFile version.
-   * @param {CompanyExecutionContext} context - the company execution context.
+   * @param {DriveExecutionContext} context - the company execution context.
    * @returns {Promise<DriveFile>} - the created DriveFile
    */
   create = async (
     file: PublicFile | null,
     content: Partial<DriveFile>,
     version: Partial<FileVersion>,
-    context: CompanyExecutionContext,
+    context: DriveExecutionContext,
   ): Promise<DriveFile> => {
     try {
       const driveItem = getDefaultDriveItem(content, context);
@@ -258,13 +259,13 @@ export class DocumentsService {
    *
    * @param {string} id - the id of the DriveFile to update.
    * @param {Partial<DriveFile>} content - the updated content
-   * @param {CompanyExecutionContext} context - the company execution context
+   * @param {DriveExecutionContext} context - the company execution context
    * @returns {Promise<DriveFile>} - the updated DriveFile
    */
   update = async (
     id: string,
     content: Partial<DriveFile>,
-    context: CompanyExecutionContext,
+    context: DriveExecutionContext,
   ): Promise<DriveFile> => {
     if (!context) {
       this.logger.error("invalid execution context");
@@ -318,13 +319,13 @@ export class DocumentsService {
    * deletes or moves to Trash a Drive Document and its children
    *
    * @param {string} id - the item id
-   * @param {CompanyExecutionContext} context - the execution context
+   * @param {DriveExecutionContext} context - the execution context
    * @returns {Promise<void>}
    */
   delete = async (
     id: string | RootType | TrashType,
     item?: DriveFile,
-    context?: CompanyExecutionContext,
+    context?: DriveExecutionContext,
   ): Promise<void> => {
     if (!id) {
       //We can't remove the root folder
@@ -439,13 +440,13 @@ export class DocumentsService {
    *
    * @param {string} id - the Drive item id to create a version for.
    * @param {Partial<FileVersion>} version - the version item.
-   * @param {CompanyExecutionContext} context - the company execution context
+   * @param {DriveExecutionContext} context - the company execution context
    * @returns {Promise<FileVersion>} - the created FileVersion
    */
   createVersion = async (
     id: string,
     version: Partial<FileVersion>,
-    context: CompanyExecutionContext,
+    context: DriveExecutionContext,
   ): Promise<FileVersion> => {
     if (!context) {
       this.logger.error("invalid execution context");
@@ -503,7 +504,7 @@ export class DocumentsService {
   downloadGetToken = async (
     ids: string[],
     versionId: string | null,
-    context: CompanyExecutionContext,
+    context: DriveExecutionContext,
   ): Promise<string> => {
     for (const id of ids) {
       const item = await this.get(id, context);
@@ -524,7 +525,7 @@ export class DocumentsService {
     ids: string[],
     versionId: string | null,
     token: string,
-    context: CompanyExecutionContext,
+    context: DriveExecutionContext,
   ): Promise<void> => {
     try {
       const v = globalResolver.platformServices.auth.verifyTokenObject<{
@@ -550,7 +551,7 @@ export class DocumentsService {
   download = async (
     id: string,
     versionId: string | null,
-    context: CompanyExecutionContext,
+    context: DriveExecutionContext,
   ): Promise<{
     archive?: archiver.Archiver;
     file?: {
@@ -582,12 +583,12 @@ export class DocumentsService {
    * Creates a zip archive containing the drive items.
    *
    * @param {string[]} ids - the drive item list
-   * @param {CompanyExecutionContext} context - the execution context
+   * @param {DriveExecutionContext} context - the execution context
    * @returns {Promise<archiver.Archiver>} the created archive.
    */
   createZip = async (
     ids: string[] = [],
-    context: CompanyExecutionContext,
+    context: DriveExecutionContext,
   ): Promise<archiver.Archiver> => {
     if (!context) {
       this.logger.error("invalid execution context");
@@ -617,7 +618,7 @@ export class DocumentsService {
     return archive;
   };
 
-  notifyWebsocket = async (id: string, context: CompanyExecutionContext) => {
+  notifyWebsocket = async (id: string, context: DriveExecutionContext) => {
     websocketEventBus.publish(RealtimeEntityActionType.Event, {
       type: "documents:updated",
       room: ResourcePath.get(`/companies/${context.company.id}/documents/item/${id}`),
@@ -634,12 +635,12 @@ export class DocumentsService {
    * Search for Drive items.
    *
    * @param {SearchDocumentsOptions} options - the search optins.
-   * @param {CompanyExecutionContext} context - the execution context.
+   * @param {DriveExecutionContext} context - the execution context.
    * @returns {Promise<ListResult<DriveFile>>} - the search result.
    */
   search = async (
     options: SearchDocumentsOptions,
-    context?: CompanyExecutionContext,
+    context?: DriveExecutionContext,
   ): Promise<ListResult<DriveFile>> => {
     return await this.searchRepository.search(
       {},

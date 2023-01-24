@@ -150,8 +150,8 @@ const generateAccessToken = (): string => {
  * @returns {boolean}
  */
 export const hasAccessLevel = (
-  requiredLevel: publicAccessLevel | DriveFileAccessLevel,
-  level: DriveFileAccessLevel,
+  requiredLevel: DriveFileAccessLevel | "none",
+  level: DriveFileAccessLevel | "none",
 ): boolean => {
   if (requiredLevel === level) return true;
 
@@ -163,11 +163,7 @@ export const hasAccessLevel = (
     return level === "manage" || level === "write";
   }
 
-  if (requiredLevel === "none") {
-    return level === "manage" || level === "write" || level === "read";
-  }
-
-  return false;
+  return requiredLevel === "none";
 };
 
 /**
@@ -183,6 +179,21 @@ export const isCompanyGuest = async (context: CompanyExecutionContext): Promise<
   );
 
   return userRole === "guest";
+};
+
+/**
+ * checks the current user is a admin
+ *
+ * @param {CompanyExecutionContext} context
+ * @returns {Promise<boolean>}
+ */
+export const isCompanyAdmin = async (context: CompanyExecutionContext): Promise<boolean> => {
+  const userRole = await globalResolver.services.companies.getUserRole(
+    context.company.id,
+    context.user.id,
+  );
+
+  return userRole === "admin";
 };
 
 /**
@@ -306,10 +317,37 @@ export const checkAccess = async (
   item: DriveFile | null,
   level: DriveFileAccessLevel,
   repository: Repository<DriveFile>,
-  context: CompanyExecutionContext,
-  token?: string,
+  context: CompanyExecutionContext & { public_token?: string },
 ): Promise<boolean> => {
-  if (!id || id === "root" || id === "trash") return true;
+  const grantedLevel = await getAccessLevel(id, item, repository, context);
+  return hasAccessLevel(level, grantedLevel);
+};
+
+/**
+ * get maximum level for the drive item
+ *
+ * @param {string} id
+ * @param {DriveFile | null} item
+ * @param {Repository<DriveFile>} repository
+ * @param {CompanyExecutionContext} context
+ * @param {string} token
+ * @returns {Promise<boolean>}
+ */
+export const getAccessLevel = async (
+  id: string,
+  item: DriveFile | null,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext & { public_token?: string },
+): Promise<DriveFileAccessLevel | "none"> => {
+  if (!id || id === "root") return (await isCompanyGuest(context)) ? "read" : "manage";
+  if (id === "trash")
+    return (await isCompanyGuest(context))
+      ? "none"
+      : (await isCompanyAdmin(context))
+      ? "manage"
+      : "write";
+
+  const publicToken = context.public_token;
 
   try {
     item =
@@ -323,54 +361,57 @@ export const checkAccess = async (
       throw Error("Drive item doesn't exist");
     }
 
-    if (token) {
-      if (!item.access_info.public.token) {
-        return false;
-      }
+    /*
+     * Specific user or channel rule is applied first. Then less restrictive level will be chosen
+     * between the parent folder and company accesses.
+     */
 
+    //Public access
+    if (publicToken) {
+      if (!item.access_info.public.token) return "none";
       const { token: itemToken, level: itemLevel } = item.access_info.public;
-
-      if (itemToken === token && hasAccessLevel(itemLevel, level)) {
-        return true;
-      }
+      if (itemToken === publicToken) return itemLevel;
     }
 
-    const entities = (item.access_info.entities || []).sort((a, b): number => {
-      if (a.type === "channel" && b.type === "folder") return 1;
-      if (a.type === "folder" && b.type === "channel") return -1;
-      if (a.type !== "channel" && b.type === "channel") return 1;
-      if (a.type !== "folder" && b.type !== "channel") return -1;
-      if (a.type === "channel" || a.type === "folder") return -1;
-      if (b.type === "channel" || b.type === "folder") return 1;
-      if (a.type === b.type) return 0;
-    });
+    const accessEntities = item.access_info.entities;
 
-    return !!entities.find(async entity => {
-      if (!hasAccessLevel(entity.level, level)) return false;
+    //Users
+    const matchingUser = accessEntities.find(a => a.type === "user" && a.id === context.user.id);
+    if (matchingUser) return matchingUser.level;
 
-      switch (entity.type) {
-        case "user":
-          return entity.id === context.user.id;
+    //Channels
+    //TODO
+    const matchingChannel = accessEntities.find(
+      a => a.type === "channel" && a.id === "TODO for no nothing is set here" && false,
+    );
+    if (matchingChannel) return matchingUser.level;
 
-        case "company":
-          if (entity.id === context.company.id) {
-            return !isCompanyGuest(context);
-          }
+    const otherLevels = [];
 
-          return false;
-        case "folder":
-          return (
-            entity.id !== "root" &&
-            entity.id !== "trash" &&
-            (await checkAccess(entity.id, null, level, repository, context, token))
-          );
-        case "channel":
-          // TODO: implement it
-          return false;
-        default:
-          return false;
-      }
-    });
+    //Companies
+    const matchingCompany = accessEntities.find(
+      a => a.type === "company" && a.id === context.company.id,
+    );
+    if (matchingCompany) otherLevels.push(matchingCompany.level);
+
+    //Parent folder
+    const maxParentFolderLevel =
+      accessEntities.find(a => a.type === "folder" && a.id === "parent")?.level || "none";
+    if (maxParentFolderLevel === "none") {
+      otherLevels.push(maxParentFolderLevel);
+    } else {
+      const parentFolderLevel = await getAccessLevel(item.parent_id, null, repository, context);
+      otherLevels.push(parentFolderLevel);
+    }
+
+    //Return least restrictive level of otherLevels
+    return otherLevels.reduce(
+      (previousValue, b) =>
+        hasAccessLevel(b as DriveFileAccessLevel, previousValue as DriveFileAccessLevel)
+          ? previousValue
+          : b,
+      "none",
+    ) as DriveFileAccessLevel | "none";
   } catch (error) {
     throw Error(error);
   }

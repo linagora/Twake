@@ -1,8 +1,6 @@
-import Select from 'app/atoms/input/input-select';
 import A from 'app/atoms/link';
 import { Base, Info } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
-import { DriveFileAccessLevel } from 'app/features/drive/types';
 import { ToasterService } from 'app/features/global/services/toaster-service';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { useRef } from 'react';
