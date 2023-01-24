@@ -300,6 +300,10 @@ export class DocumentsService {
 
       const updatable = ["access_info", "name", "tags", "parent_id", "description"];
 
+      if (content.parent_id && content.parent_id === item.id) {
+        throw Error("cannot move folder inside itself");
+      }
+
       updatable.forEach(key => {
         if ((content as any)[key]) {
           (item as any)[key] = (content as any)[key];
