@@ -9,6 +9,7 @@ import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import {
   CompanyExecutionContext,
+  DriveExecutionContext,
   DriveItemDetails,
   ItemRequestParams,
   RequestParams,
@@ -34,7 +35,7 @@ export class DocumentsController {
     }>,
   ): Promise<DriveFile> => {
     try {
-      const context = getCompanyExecutionContext(request);
+      const context = getDriveExecutionContext(request);
 
       let createdFile: File = null;
       if (request.isMultipart()) {
@@ -72,8 +73,10 @@ export class DocumentsController {
    * @param {FastifyRequest} request
    * @returns {Promise<void>}
    */
-  delete = async (request: FastifyRequest<{ Params: ItemRequestParams }>): Promise<void> => {
-    const context = getCompanyExecutionContext(request);
+  delete = async (
+    request: FastifyRequest<{ Params: ItemRequestParams; Querystring: { public_token?: string } }>,
+  ): Promise<void> => {
+    const context = getDriveExecutionContext(request);
 
     return await globalResolver.services.documents.documents.delete(
       request.params.id,
@@ -89,9 +92,12 @@ export class DocumentsController {
    * @returns {Promise<DriveItemDetails>}
    */
   listRootFolder = async (
-    request: FastifyRequest<{ Params: RequestParams; Querystring: PaginationQueryParameters }>,
+    request: FastifyRequest<{
+      Params: RequestParams;
+      Querystring: PaginationQueryParameters & { public_token?: string };
+    }>,
   ): Promise<DriveItemDetails> => {
-    const context = getCompanyExecutionContext(request);
+    const context = getDriveExecutionContext(request);
 
     return await globalResolver.services.documents.documents.get(null, context);
   };
@@ -103,9 +109,12 @@ export class DocumentsController {
    * @returns {Promise<DriveItemDetails>}
    */
   get = async (
-    request: FastifyRequest<{ Params: ItemRequestParams; Querystring: PaginationQueryParameters }>,
+    request: FastifyRequest<{
+      Params: ItemRequestParams;
+      Querystring: PaginationQueryParameters & { public_token?: string };
+    }>,
   ): Promise<DriveItemDetails & { websockets: ResourceWebsocket[] }> => {
-    const context = getCompanyExecutionContext(request);
+    const context = getDriveExecutionContext(request);
     const { id } = request.params;
 
     return {
@@ -124,9 +133,13 @@ export class DocumentsController {
    * @returns {Promise<DriveFile>}
    */
   update = async (
-    request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<DriveFile> }>,
+    request: FastifyRequest<{
+      Params: ItemRequestParams;
+      Body: Partial<DriveFile>;
+      Querystring: { public_token?: string };
+    }>,
   ): Promise<DriveFile> => {
-    const context = getCompanyExecutionContext(request);
+    const context = getDriveExecutionContext(request);
     const { id } = request.params;
     const update = request.body;
 
@@ -140,9 +153,13 @@ export class DocumentsController {
    * @returns {Promise<FileVersion>}
    */
   createVersion = async (
-    request: FastifyRequest<{ Params: ItemRequestParams; Body: Partial<FileVersion> }>,
+    request: FastifyRequest<{
+      Params: ItemRequestParams;
+      Body: Partial<FileVersion>;
+      Querystring: { public_token?: string };
+    }>,
   ): Promise<FileVersion> => {
-    const context = getCompanyExecutionContext(request);
+    const context = getDriveExecutionContext(request);
     const { id } = request.params;
     const version = request.body;
 
@@ -152,11 +169,11 @@ export class DocumentsController {
   downloadGetToken = async (
     request: FastifyRequest<{
       Params: ItemRequestParams;
-      Querystring: { version_id?: string; items?: string };
+      Querystring: { version_id?: string; items?: string; public_token?: string };
     }>,
   ): Promise<{ token: string }> => {
     const ids = (request.query.items || "").split(",");
-    const context = getCompanyExecutionContext(request);
+    const context = getDriveExecutionContext(request);
     return {
       token: await globalResolver.services.documents.documents.downloadGetToken(
         ids,
@@ -176,11 +193,11 @@ export class DocumentsController {
   download = async (
     request: FastifyRequest<{
       Params: ItemRequestParams;
-      Querystring: { version_id?: string; token?: string };
+      Querystring: { version_id?: string; token?: string; public_token?: string };
     }>,
     response: FastifyReply,
   ): Promise<void> => {
-    const context = getCompanyExecutionContext(request);
+    const context = getDriveExecutionContext(request);
     const id = request.params.id || "";
     const versionId = request.query.version_id || null;
     const token = request.query.token;
@@ -236,11 +253,11 @@ export class DocumentsController {
   downloadZip = async (
     request: FastifyRequest<{
       Params: RequestParams;
-      Querystring: { token?: string; items: string };
+      Querystring: { token?: string; items: string; public_token?: string };
     }>,
     reply: FastifyReply,
   ): Promise<void> => {
-    const context = getCompanyExecutionContext(request);
+    const context = getDriveExecutionContext(request);
     const ids = (request.query.items || "").split(",");
     const token = request.query.token;
 
@@ -277,10 +294,14 @@ export class DocumentsController {
    * @returns {Promise<ListResult<DriveFile>>}
    */
   search = async (
-    request: FastifyRequest<{ Params: RequestParams; Body: SearchDocumentsBody }>,
+    request: FastifyRequest<{
+      Params: RequestParams;
+      Body: SearchDocumentsBody;
+      Querystring: { public_token?: string };
+    }>,
   ): Promise<ListResult<DriveFile>> => {
     try {
-      const context = getCompanyExecutionContext(request);
+      const context = getDriveExecutionContext(request);
       const { search = "", added = "", company_id = "", creator = "" } = request.body;
 
       const options: SearchDocumentsOptions = {
@@ -308,9 +329,10 @@ export class DocumentsController {
  * @param { FastifyRequest<{ Params: { company_id: string } }>} req
  * @returns {CompanyExecutionContext}
  */
-const getCompanyExecutionContext = (
-  req: FastifyRequest<{ Params: { company_id: string } }>,
-): CompanyExecutionContext => ({
+const getDriveExecutionContext = (
+  req: FastifyRequest<{ Params: { company_id: string }; Querystring: { public_token?: string } }>,
+): DriveExecutionContext => ({
+  public_token: req.query.public_token,
   user: req.currentUser,
   company: { id: req.params.company_id },
   url: req.url,

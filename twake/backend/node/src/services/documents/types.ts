@@ -6,6 +6,10 @@ export interface CompanyExecutionContext extends ExecutionContext {
   company: { id: string };
 }
 
+export type DriveExecutionContext = CompanyExecutionContext & {
+  public_token?: string;
+};
+
 export type RequestParams = {
   company_id: string;
 };

@@ -1,6 +1,12 @@
 import Api from '../../global/framework/api-service';
 import { DriveItem, DriveItemDetails, DriveItemVersion } from '../types';
 
+let publicLinkToken: null | string = null;
+
+export const setPublicLinkToken = (token: string | null) => {
+  publicLinkToken = token;
+};
+
 export class DriveApiClient {
   static async get(companyId: string, id: string | 'trash' | '') {
     return await Api.get<DriveItemDetails>(

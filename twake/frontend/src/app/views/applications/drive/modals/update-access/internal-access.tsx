@@ -28,6 +28,11 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
     <>
       <Base className="block mt-4 mb-1">General access management</Base>
 
+      <Info className="block mb-2">
+        Specific user or channel rule is applied first. Then least restrictive level will be chosen
+        between the parent folder and company accesses.
+      </Info>
+
       <div className="rounded-md border overflow-hidden">
         {folderEntity && (
           <div className="p-4 border-b flex flex-row items-center justify-center">
