@@ -84,7 +84,7 @@ const VersionModalContent = ({ id }: { id: string }) => {
           </div>
         </div>
 
-        {[item.last_version_cache!, ...(versions || [])].map((version, index) => (
+        {[...(versions || [item.last_version_cache])].map((version, index) => (
           <div
             key={index}
             className={
