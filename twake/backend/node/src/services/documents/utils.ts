@@ -1,10 +1,9 @@
 import { merge } from "lodash";
-import { AccessInformation, DriveFile } from "./entities/drive-file";
+import { DriveFile } from "./entities/drive-file";
 import {
   CompanyExecutionContext,
   DriveExecutionContext,
   DriveFileAccessLevel,
-  publicAccessLevel,
   RootType,
   TrashType,
 } from "./types";
@@ -668,6 +667,8 @@ export const getItemName = async (
   context: CompanyExecutionContext,
 ): Promise<string> => {
   try {
+    let newName = name;
+    let exists = true;
     const children = await repository.find(
       {
         parent_id,
@@ -677,11 +678,19 @@ export const getItemName = async (
       context,
     );
 
-    return children
-      .getEntities()
-      .find(child => child.name === name && child.is_directory === is_directory)
-      ? `${name}-2`
-      : name;
+    while (exists) {
+      exists = !!children
+        .getEntities()
+        .find(child => child.name === newName && child.is_directory === is_directory);
+
+      if (exists) {
+        const ext = newName.split(".").pop();
+        newName =
+          ext && ext !== newName ? `${newName.slice(0, -ext.length - 1)}-2.${ext}` : `${newName}-2`;
+      }
+    }
+
+    return newName;
   } catch (error) {
     throw Error("Failed to get item name");
   }
