@@ -695,3 +695,64 @@ export const getItemName = async (
     throw Error("Failed to get item name");
   }
 };
+
+/**
+ * Checks if an item can be moved to its destination
+ * An item cannot be moved to itself or any of its derived chilren.
+ *
+ * @param {string} source - the to be moved item id.
+ * @param {string} target - the to be moved to item id.
+ * @param {string} repository - the Drive item repository.
+ * @param {CompanyExecutionContex} context - the execution context.
+ * @returns {Promise<boolean>} - whether the move is possible or not.
+ */
+export const canMoveItem = async (
+  source: string,
+  target: string,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+): Promise<boolean> => {
+  if (source === target) return false;
+  if (target === "root") return true;
+
+  const item = await repository.findOne({
+    id: source,
+    company_id: context.company.id,
+  });
+
+  const targetItem = await repository.findOne({
+    id: target,
+    company_id: context.company.id,
+  });
+
+  if (!targetItem || !targetItem.is_directory) {
+    throw Error("target item doesn't exist or not a directory");
+  }
+
+  if (!item) {
+    throw Error("Item not found");
+  }
+
+  if (!item.is_directory) {
+    return true;
+  }
+
+  const children = (
+    await repository.find({
+      parent_id: source,
+      company_id: context.company.id,
+    })
+  ).getEntities();
+
+  if (children.some(child => child.id === target)) {
+    return false;
+  }
+
+  for (const child of children) {
+    if (!(await canMoveItem(child.id, target, repository, context))) {
+      return false;
+    }
+  }
+
+  return true;
+};

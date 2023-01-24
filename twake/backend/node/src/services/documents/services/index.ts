@@ -9,7 +9,6 @@ import gr from "../../global-resolver";
 import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import {
-  CompanyExecutionContext,
   DriveExecutionContext,
   DocumentsMessageQueueRequest,
   DriveItemDetails,
@@ -20,6 +19,7 @@ import {
 import {
   addDriveItemToArchive,
   calculateItemSize,
+  canMoveItem,
   checkAccess,
   getAccessLevel,
   getDefaultDriveItem,
@@ -310,8 +310,11 @@ export class DocumentsService {
 
       updatable.forEach(async key => {
         if ((content as any)[key]) {
-          if (key === "parent_id" && content.parent_id === item.id) {
-            throw Error("cannot move folder inside itself");
+          if (
+            key === "parent_id" &&
+            !(await canMoveItem(item.id, content.parent_id, this.repository, context))
+          ) {
+            throw Error("Move operation not permitted");
           }
 
           if (key === "name") {
