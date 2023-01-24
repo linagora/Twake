@@ -23,6 +23,7 @@ import {
   readableToBuffer,
 } from "../../utils/files";
 import PdfParse from "pdf-parse";
+import _ from "lodash";
 
 /**
  * Returns the default DriveFile object using existing data
@@ -415,6 +416,79 @@ export const getAccessLevel = async (
   } catch (error) {
     throw Error(error);
   }
+};
+
+/**
+ * Isolate access level information from parent folder logic
+ * Used when putting folder in the trash
+ * @param id
+ * @param item
+ * @param repository
+ */
+export const makeStandaloneAccessLevel = async (
+  companyId: string,
+  id: string,
+  item: DriveFile | null,
+  repository: Repository<DriveFile>,
+  options: { removePublicAccess?: boolean } = { removePublicAccess: true },
+): Promise<DriveFile["access_info"]> => {
+  item =
+    item ||
+    (await repository.findOne({
+      id,
+      company_id: companyId,
+    }));
+
+  if (!item) {
+    throw Error("Drive item doesn't exist");
+  }
+
+  const accessInfo = _.cloneDeep(item.access_info);
+
+  if (options?.removePublicAccess && accessInfo?.public?.level) accessInfo.public.level = "none";
+
+  const parentFolderAccess = accessInfo.entities.find(
+    a => a.type === "folder" && a.id === "parent",
+  );
+
+  if (!parentFolderAccess || parentFolderAccess.level === "none") {
+    return accessInfo;
+  } else if (item.parent_id !== "root" && item.parent_id !== "trash") {
+    // Get limitations from parent folder
+    const accessEntitiesFromParent = await makeStandaloneAccessLevel(
+      companyId,
+      item.parent_id,
+      null,
+      repository,
+      options,
+    );
+
+    let mostRestrictiveFolderLevel = parentFolderAccess.level as DriveFileAccessLevel | "none";
+
+    const keptEntities = accessEntitiesFromParent.entities.filter(a => {
+      if (["user", "channel"].includes(a.type)) {
+        return !accessInfo.entities.find(b => b.type === a.type && b.id === a.id);
+      } else {
+        if (a.type === "folder" && a.id === "parent") {
+          mostRestrictiveFolderLevel = hasAccessLevel(a.level, mostRestrictiveFolderLevel)
+            ? a.level
+            : mostRestrictiveFolderLevel;
+        }
+        return false;
+      }
+    });
+
+    accessInfo.entities = accessInfo.entities.map(a => {
+      if (a.type === "folder" && a.id === "parent") {
+        a.level = mostRestrictiveFolderLevel;
+      }
+      return a;
+    }) as DriveFile["access_info"]["entities"];
+
+    accessInfo.entities = [...accessInfo.entities, ...keptEntities];
+  }
+
+  return accessInfo;
 };
 
 /**

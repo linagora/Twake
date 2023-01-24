@@ -26,6 +26,7 @@ import {
   getDefaultDriveItemVersion,
   getFileMetadata,
   getPath,
+  makeStandaloneAccessLevel,
   updateItemSize,
 } from "../utils";
 import { websocketEventBus } from "../../../core/platform/services/realtime/bus";
@@ -308,6 +309,16 @@ export class DocumentsService {
 
       this.notifyWebsocket(item.parent_id, context);
 
+      if (item.parent_id === this.TRASH) {
+        //When moving to trash we recompute the access level to make them flat
+        item.access_info = await makeStandaloneAccessLevel(
+          item.company_id,
+          item.id,
+          item,
+          this.repository,
+        );
+      }
+
       return item;
     } catch (error) {
       this.logger.error("Failed to update drive item", error);
@@ -425,7 +436,7 @@ export class DocumentsService {
       } else {
         //This item is not in trash, we move it to trash
         item.parent_id = this.TRASH;
-        await this.repository.save(item);
+        await this.update(item.id, item, context);
       }
       await updateItemSize(previousParentId, this.repository, context);
 
