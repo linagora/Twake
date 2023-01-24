@@ -655,3 +655,39 @@ export const getFileMetadata = async (
     size: file.upload_data.size,
   };
 };
+
+/**
+ * Finds a suitable name for an item based on items inside the same folder.
+ *
+ * @param {string} parent_id - the parent id.
+ * @param {string} name - the item name.
+ * @param {Repository<DriveFile>} repository - the drive repository.
+ * @param {CompanyExecutionContext} context - the execution context.
+ * @returns {Promise<string>} - the drive item name.
+ */
+export const getItemName = async (
+  parent_id: string,
+  name: string,
+  is_directory: boolean,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+): Promise<string> => {
+  try {
+    const children = await repository.find(
+      {
+        parent_id,
+        company_id: context.company.id,
+      },
+      {},
+      context,
+    );
+
+    return children
+      .getEntities()
+      .find(child => child.name === name && child.is_directory === is_directory)
+      ? `${name}-2`
+      : name;
+  } catch (error) {
+    throw Error("Failed to get item name");
+  }
+};

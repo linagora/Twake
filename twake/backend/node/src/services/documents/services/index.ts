@@ -25,6 +25,7 @@ import {
   getDefaultDriveItem,
   getDefaultDriveItemVersion,
   getFileMetadata,
+  getItemName,
   getPath,
   hasAccessLevel,
   makeStandaloneAccessLevel,
@@ -227,6 +228,14 @@ export class DocumentsService {
         }
       }
 
+      driveItem.name = await getItemName(
+        driveItem.parent_id,
+        driveItem.name,
+        driveItem.is_directory,
+        this.repository,
+        context,
+      );
+
       await this.repository.save(driveItem);
       driveItemVersion.file_id = driveItem.id;
 
@@ -300,13 +309,23 @@ export class DocumentsService {
 
       const updatable = ["access_info", "name", "tags", "parent_id", "description"];
 
-      if (content.parent_id && content.parent_id === item.id) {
-        throw Error("cannot move folder inside itself");
-      }
-
-      updatable.forEach(key => {
+      updatable.forEach(async key => {
         if ((content as any)[key]) {
-          (item as any)[key] = (content as any)[key];
+          if (key === "parent_id" && content.parent_id === item.id) {
+            throw Error("cannot move folder inside itself");
+          }
+
+          if (key === "name") {
+            item.name = await getItemName(
+              item.parent_id,
+              content.name,
+              item.is_directory,
+              this.repository,
+              context,
+            );
+          } else {
+            (item as any)[key] = (content as any)[key];
+          }
         }
       });
 
