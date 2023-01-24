@@ -266,7 +266,13 @@ export const updateItemSize = async (
 
   item.size = await calculateItemSize(item, repository, context);
 
-  return await repository.save(item);
+  await repository.save(item);
+
+  if (item.parent_id === "root" || item.parent_id === "trash") {
+    return;
+  }
+
+  await updateItemSize(item.parent_id, repository, context);
 };
 
 /**
