@@ -41,10 +41,10 @@ export const getDefaultDriveItem = (
   const defaultDriveItem = merge<DriveFile, Partial<DriveFile>>(new DriveFile(), {
     company_id: context.company.id,
     added: item.added || new Date().getTime().toString(),
-    creator: item.creator || context.user.id,
+    creator: item.creator || context.user?.id,
     is_directory: item.is_directory || false,
     is_in_trash: false,
-    last_user: item.last_user || context.user.id,
+    last_user: item.last_user || context.user?.id,
     last_modified: new Date().getTime().toString(),
     parent_id: item.parent_id || "root",
     root_group_folder: item.root_group_folder || "",
@@ -64,7 +64,7 @@ export const getDefaultDriveItem = (
           level: "none",
         },
         {
-          id: context.user.id,
+          id: context.user?.id,
           type: "user",
           level: "manage",
         },
@@ -109,7 +109,7 @@ export const getDefaultDriveItemVersion = (
 ): FileVersion => {
   const defaultVersion = merge(new FileVersion(), {
     application_id: version.application_id || "",
-    creator_id: version.creator_id || context.user.id,
+    creator_id: version.creator_id || context.user?.id,
     data: version.data || {},
     date_added: version.date_added || new Date().getTime(),
     file_id: version.file_id || "",
@@ -173,7 +173,7 @@ export const hasAccessLevel = (
 export const isCompanyGuest = async (context: CompanyExecutionContext): Promise<boolean> => {
   const userRole = await globalResolver.services.companies.getUserRole(
     context.company.id,
-    context.user.id,
+    context.user?.id,
   );
 
   return userRole === "guest";
@@ -188,7 +188,7 @@ export const isCompanyGuest = async (context: CompanyExecutionContext): Promise<
 export const isCompanyAdmin = async (context: CompanyExecutionContext): Promise<boolean> => {
   const userRole = await globalResolver.services.companies.getUserRole(
     context.company.id,
-    context.user.id,
+    context.user?.id,
   );
 
   return userRole === "admin";
@@ -386,7 +386,7 @@ export const getAccessLevel = async (
     const accessEntities = item.access_info.entities || [];
 
     //Users
-    const matchingUser = accessEntities.find(a => a.type === "user" && a.id === context.user.id);
+    const matchingUser = accessEntities.find(a => a.type === "user" && a.id === context.user?.id);
     if (matchingUser) return matchingUser.level;
 
     //Channels
