@@ -119,10 +119,12 @@ export class DocumentsController {
 
     return {
       ...(await globalResolver.services.documents.documents.get(id, context)),
-      websockets: globalResolver.platformServices.realtime.sign(
-        [{ room: `/companies/${context.company.id}/documents/item/${id}` }],
-        request.currentUser.id,
-      ),
+      websockets: request.currentUser?.id
+        ? globalResolver.platformServices.realtime.sign(
+            [{ room: `/companies/${context.company.id}/documents/item/${id}` }],
+            request.currentUser?.id,
+          )
+        : [],
     };
   };
 
