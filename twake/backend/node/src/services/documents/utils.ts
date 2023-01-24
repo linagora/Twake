@@ -2,6 +2,7 @@ import { merge } from "lodash";
 import { AccessInformation, DriveFile } from "./entities/drive-file";
 import {
   CompanyExecutionContext,
+  DriveExecutionContext,
   DriveFileAccessLevel,
   publicAccessLevel,
   RootType,
@@ -280,10 +281,18 @@ export const getPath = async (
   id: string,
   repository: Repository<DriveFile>,
   ignoreAccess?: boolean,
-  context?: CompanyExecutionContext,
+  context?: DriveExecutionContext,
 ): Promise<DriveFile[]> => {
   id = id || "root";
-  if (id === "root" || id === "trash") return [];
+  if (id === "root" || id === "trash")
+    return !context.public_token || ignoreAccess
+      ? [
+          {
+            id,
+            name: id === "root" ? "Home" : "Trash",
+          } as DriveFile,
+        ]
+      : [];
 
   const item = await repository.findOne({
     id,

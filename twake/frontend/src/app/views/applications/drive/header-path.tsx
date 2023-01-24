@@ -1,19 +1,22 @@
-import { CloudIcon } from '@heroicons/react/solid';
 import { Button } from 'app/atoms/button/button';
 import { Title } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { DriveItem } from 'app/features/drive/types';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { RecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { DriveCurrentFolderAtom } from '.';
 import { PublicIcon } from './components/public-icon';
 
-export default () => {
-  const { documentId } = useParams() as { documentId?: string };
-  const [parentId, setParentId] = useRecoil(DriveCurrentFolderAtom(documentId || 'root'));
-  const { path: livePath, inTrash } = useDriveItem(parentId);
-
+export default ({
+  path: livePath,
+  inTrash,
+  setParentId,
+}: {
+  path: DriveItem[];
+  inTrash?: boolean;
+  setParentId: (id: string) => void;
+}) => {
   const [savedPath, setSavedPath] = useState<DriveItem[]>([]);
   useEffect(() => {
     if (livePath) setSavedPath(livePath);
@@ -34,14 +37,14 @@ export const PathRender = ({
 }) => {
   return (
     <Title className="overflow-auto whitespace-nowrap mr-2 pl-px">
-      <PathItem
-        item={inTrash ? { name: 'Trash', id: 'trash' } : { name: 'Home', id: 'root' }}
-        first
-        last={!path?.length}
-        onClick={onClick}
-      />
       {(path || [])?.map((a, i) => (
-        <PathItem key={a.id} item={a} last={i + 1 === path?.length} onClick={onClick} />
+        <PathItem
+          key={a.id}
+          item={a}
+          first={i === 0}
+          last={i + 1 === path?.length}
+          onClick={onClick}
+        />
       ))}
     </Title>
   );
@@ -73,6 +76,3 @@ const PathItem = ({
     </Button>
   );
 };
-function useRecoil(arg0: RecoilState<string>): [any, any] {
-  throw new Error('Function not implemented.');
-}

@@ -407,7 +407,7 @@ export class DocumentsService {
       const previousParentId = item.parent_id;
       if (
         item.parent_id === this.TRASH ||
-        (await getPath(item.parent_id, this.repository, true, context))[0].parent_id === this.TRASH
+        (await getPath(item.parent_id, this.repository, true, context))[0].id === this.TRASH
       ) {
         //This item is already in trash, we can delete it definitively
 

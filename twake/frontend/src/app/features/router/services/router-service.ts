@@ -8,7 +8,7 @@ import Login from 'app/views/login/login';
 import Logout from 'app/views/login/logout';
 import Error from 'app/views/error';
 import Join from 'app/views/join';
-import PublicMainView from 'app/views/client/main-view/PublicMainView';
+import PublicMainView from 'app/views/applications/drive/shared';
 import Observable from '../../../deprecated/Observable/Observable';
 import { getWorkspacesByCompany } from 'app/features/workspaces/state/workspace-list';
 
@@ -246,7 +246,7 @@ class RouterServices extends Observable {
 
     if (state.shared) {
       return (
-        `/shared/${state.workspaceId}` +
+        `/shared/${state.companyId}` +
         (state.documentId ? `/${state.appName}/${state.documentId}` : '') +
         (state.token ? `/t/${state.token}` : '') +
         search
