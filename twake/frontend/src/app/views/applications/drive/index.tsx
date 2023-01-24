@@ -4,6 +4,7 @@ import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
+import { setPublicLinkToken } from 'app/features/drive/api-client/api-client';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
@@ -12,7 +13,8 @@ import { formatBytes } from 'app/features/drive/utils';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+import { useParams } from 'react-router-dom';
+import { atom, atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import HeaderPath from './header-path';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
@@ -24,15 +26,19 @@ import { SelectorModal, SelectorModalAtom } from './modals/selector';
 import { AccessModal } from './modals/update-access';
 import { VersionsModal } from './modals/versions';
 
-export const DriveCurrentFolderAtom = atom<string>({
+export const DriveCurrentFolderAtom = atomFamily<string, string>({
   key: 'DriveCurrentFolderAtom',
-  default: 'root',
+  default: startingParentId => startingParentId || 'root',
 });
 
 export default () => {
   const companyId = useRouterCompany();
 
-  const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom);
+  //Public link section
+  const { token, documentId } = useParams() as { token?: string; documentId?: string };
+  setPublicLinkToken(token || null);
+
+  const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom(documentId || 'root'));
 
   const { download, downloadZip, update } = useDriveActions();
   const { item, inTrash, refresh, children, loading } = useDriveItem(parentId);

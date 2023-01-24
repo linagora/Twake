@@ -3,8 +3,9 @@ import { ToasterService } from 'app/features/global/services/toaster-service';
 import { LoadingState, LoadingStateInitTrue } from 'app/features/global/state/atoms/Loading';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
-import { DriveApiClient } from '../api-client/api-client';
+import { DriveApiClient, setPublicLinkToken } from '../api-client/api-client';
 import { DriveItemAtom, DriveItemChildrenAtom } from '../state/store';
 import { DriveItem, DriveItemVersion } from '../types';
 

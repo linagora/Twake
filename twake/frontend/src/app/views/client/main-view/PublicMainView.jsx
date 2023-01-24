@@ -34,16 +34,15 @@ export default class MainView extends Component {
   }
   routeState = RouterService.getStateFromRoute();
   componentDidMount() {
-    Api.post(
-      '/ajax/workspace/get_public_data',
-      { workspace_id: this.routeState.workspaceId },
+    Api.get(
+      '/internal/services/users/v1/companies/' + this.routeState.companyId,
       res => {
         if (res && res.data) {
           this.setState({
             ...this.state,
             group: {
-            name: res.data.group_name,
-            logo: addApiUrlIfNeeded(res.data.group_logo),
+            name: res.resource.name,
+            logo: addApiUrlIfNeeded(res.resource.logo),
           }
           });
         }

@@ -4,14 +4,15 @@ import { Title } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { DriveItem } from 'app/features/drive/types';
 import { useEffect, useState } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useParams } from 'react-router-dom';
+import { RecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { DriveCurrentFolderAtom } from '.';
 import { PublicIcon } from './components/public-icon';
 
 export default () => {
-  const parentId = useRecoilValue(DriveCurrentFolderAtom);
+  const { documentId } = useParams() as { documentId?: string };
+  const [parentId, setParentId] = useRecoil(DriveCurrentFolderAtom(documentId || 'root'));
   const { path: livePath, inTrash } = useDriveItem(parentId);
-  const setParentId = useSetRecoilState(DriveCurrentFolderAtom);
 
   const [savedPath, setSavedPath] = useState<DriveItem[]>([]);
   useEffect(() => {
@@ -72,3 +73,6 @@ const PathItem = ({
     </Button>
   );
 };
+function useRecoil(arg0: RecoilState<string>): [any, any] {
+  throw new Error('Function not implemented.');
+}

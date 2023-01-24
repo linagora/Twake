@@ -61,7 +61,7 @@ class RouterServices extends Observable {
 
   pathnames: Readonly<Pathnames> = {
     CLIENT: '/client',
-    SHARED: '/shared/:workspaceId/:appName/:documentId/t/:token',
+    SHARED: '/shared/:companyId/:appName/:documentId/t/:token',
     LOGIN: '/login',
     LOGOUT: '/logout',
     ERROR: '/error',
