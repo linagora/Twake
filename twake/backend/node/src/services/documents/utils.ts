@@ -44,11 +44,8 @@ export const getDefaultDriveItem = (
     creator: item.creator || context.user?.id,
     is_directory: item.is_directory || false,
     is_in_trash: false,
-    last_user: item.last_user || context.user?.id,
     last_modified: new Date().getTime().toString(),
     parent_id: item.parent_id || "root",
-    root_group_folder: item.root_group_folder || "",
-    attachements: item.attachements || [],
     content_keywords: item.content_keywords || "",
     description: item.description || "",
     access_info: item.access_info || {
@@ -74,19 +71,11 @@ export const getDefaultDriveItem = (
         token: generateAccessToken(),
       },
     },
-    detached_file: item.detached_file || false,
     extension: item.extension || "",
-    external_storage: item.external_storage || false,
-    has_preview: item.has_preview || false,
-    hidden_data: item.hidden_data || {},
     last_version_cache: item.last_version_cache,
-    object_link_cache: item.object_link_cache || "",
     name: item.name || "",
-    preview_link: item.preview_link || "",
-    shared: item.shared || false,
     size: item.size || 0,
     tags: item.tags || [],
-    url: item.url || "",
   });
 
   if (item.id) {

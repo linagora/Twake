@@ -217,7 +217,6 @@ export class DocumentsService {
         if (fileToProcess) {
           driveItem.size = fileToProcess.upload_data.size;
           driveItem.is_directory = false;
-          driveItem.has_preview = true;
           driveItem.extension = fileToProcess.metadata.name.split(".").pop();
           driveItemVersion.filename = driveItemVersion.filename || fileToProcess.metadata.name;
           driveItemVersion.file_size = fileToProcess.upload_data.size;
