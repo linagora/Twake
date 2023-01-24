@@ -356,7 +356,7 @@ export class DocumentsService {
     //In the case of the trash we definitively delete the items
     if (id === "trash") {
       //Only administrators can execute this action
-      const role = await gr.services.companies.getUserRole(context.company.id, context.user.id);
+      const role = await gr.services.companies.getUserRole(context.company.id, context.user?.id);
       if (hasCompanyAdminLevel(role) === false) {
         throw new CrudException("Only administrators can empty the trash", 403);
       }
@@ -538,7 +538,7 @@ export class DocumentsService {
       ids,
       version_id: versionId,
       company_id: context.company.id,
-      user_id: context.user.id,
+      user_id: context.user?.id,
     });
   };
 
