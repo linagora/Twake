@@ -383,7 +383,7 @@ export const getAccessLevel = async (
       if (itemToken === publicToken) return itemLevel;
     }
 
-    const accessEntities = item.access_info.entities;
+    const accessEntities = item.access_info.entities || [];
 
     //Users
     const matchingUser = accessEntities.find(a => a.type === "user" && a.id === context.user.id);
