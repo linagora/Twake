@@ -1,10 +1,9 @@
 import { merge } from "lodash";
-import { AccessInformation, DriveFile } from "./entities/drive-file";
+import { DriveFile } from "./entities/drive-file";
 import {
   CompanyExecutionContext,
   DriveExecutionContext,
   DriveFileAccessLevel,
-  publicAccessLevel,
   RootType,
   TrashType,
 } from "./types";
@@ -44,11 +43,8 @@ export const getDefaultDriveItem = (
     creator: item.creator || context.user?.id,
     is_directory: item.is_directory || false,
     is_in_trash: false,
-    last_user: item.last_user || context.user?.id,
     last_modified: new Date().getTime().toString(),
     parent_id: item.parent_id || "root",
-    root_group_folder: item.root_group_folder || "",
-    attachements: item.attachements || [],
     content_keywords: item.content_keywords || "",
     description: item.description || "",
     access_info: item.access_info || {
@@ -74,19 +70,11 @@ export const getDefaultDriveItem = (
         token: generateAccessToken(),
       },
     },
-    detached_file: item.detached_file || false,
     extension: item.extension || "",
-    external_storage: item.external_storage || false,
-    has_preview: item.has_preview || false,
-    hidden_data: item.hidden_data || {},
     last_version_cache: item.last_version_cache,
-    object_link_cache: item.object_link_cache || "",
     name: item.name || "",
-    preview_link: item.preview_link || "",
-    shared: item.shared || false,
     size: item.size || 0,
     tags: item.tags || [],
-    url: item.url || "",
   });
 
   if (item.id) {
@@ -266,7 +254,13 @@ export const updateItemSize = async (
 
   item.size = await calculateItemSize(item, repository, context);
 
-  return await repository.save(item);
+  await repository.save(item);
+
+  if (item.parent_id === "root" || item.parent_id === "trash") {
+    return;
+  }
+
+  await updateItemSize(item.parent_id, repository, context);
 };
 
 /**
@@ -654,4 +648,115 @@ export const getFileMetadata = async (
     name: file.metadata.name,
     size: file.upload_data.size,
   };
+};
+
+/**
+ * Finds a suitable name for an item based on items inside the same folder.
+ *
+ * @param {string} parent_id - the parent id.
+ * @param {string} name - the item name.
+ * @param {Repository<DriveFile>} repository - the drive repository.
+ * @param {CompanyExecutionContext} context - the execution context.
+ * @returns {Promise<string>} - the drive item name.
+ */
+export const getItemName = async (
+  parent_id: string,
+  name: string,
+  is_directory: boolean,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+): Promise<string> => {
+  try {
+    let newName = name;
+    let exists = true;
+    const children = await repository.find(
+      {
+        parent_id,
+        company_id: context.company.id,
+      },
+      {},
+      context,
+    );
+
+    while (exists) {
+      exists = !!children
+        .getEntities()
+        .find(child => child.name === newName && child.is_directory === is_directory);
+
+      if (exists) {
+        const ext = newName.split(".").pop();
+        newName =
+          ext && ext !== newName ? `${newName.slice(0, -ext.length - 1)}-2.${ext}` : `${newName}-2`;
+      }
+    }
+
+    return newName;
+  } catch (error) {
+    throw Error("Failed to get item name");
+  }
+};
+
+/**
+ * Checks if an item can be moved to its destination
+ * An item cannot be moved to itself or any of its derived chilren.
+ *
+ * @param {string} source - the to be moved item id.
+ * @param {string} target - the to be moved to item id.
+ * @param {string} repository - the Drive item repository.
+ * @param {CompanyExecutionContex} context - the execution context.
+ * @returns {Promise<boolean>} - whether the move is possible or not.
+ */
+export const canMoveItem = async (
+  source: string,
+  target: string,
+  repository: Repository<DriveFile>,
+  context: CompanyExecutionContext,
+): Promise<boolean> => {
+  if (source === target) return false;
+  if (target === "root") return true;
+
+  const item = await repository.findOne({
+    id: source,
+    company_id: context.company.id,
+  });
+
+  if (!item.is_directory) {
+    return true;
+  }
+
+  const targetItem = await repository.findOne({
+    id: target,
+    company_id: context.company.id,
+  });
+
+  if (!targetItem || !targetItem.is_directory) {
+    throw Error("target item doesn't exist or not a directory");
+  }
+
+  if (!checkAccess(target, targetItem, "write", repository, context)) {
+    return false;
+  }
+
+  if (!item) {
+    throw Error("Item not found");
+  }
+
+  const children = (
+    await repository.find({
+      parent_id: source,
+      company_id: context.company.id,
+    })
+  ).getEntities();
+
+  if (children.some(child => child.id === target)) {
+    return false;
+  }
+
+  for (const child of children) {
+    if (child.is_directory && !(await canMoveItem(child.id, target, repository, context))) {
+      return false;
+    }
+  }
+
+  return true;
 };

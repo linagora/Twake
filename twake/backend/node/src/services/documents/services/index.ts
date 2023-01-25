@@ -9,7 +9,6 @@ import gr from "../../global-resolver";
 import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import {
-  CompanyExecutionContext,
   DriveExecutionContext,
   DocumentsMessageQueueRequest,
   DriveItemDetails,
@@ -20,11 +19,13 @@ import {
 import {
   addDriveItemToArchive,
   calculateItemSize,
+  canMoveItem,
   checkAccess,
   getAccessLevel,
   getDefaultDriveItem,
   getDefaultDriveItemVersion,
   getFileMetadata,
+  getItemName,
   getPath,
   hasAccessLevel,
   makeStandaloneAccessLevel,
@@ -216,7 +217,6 @@ export class DocumentsService {
         if (fileToProcess) {
           driveItem.size = fileToProcess.upload_data.size;
           driveItem.is_directory = false;
-          driveItem.has_preview = true;
           driveItem.extension = fileToProcess.metadata.name.split(".").pop();
           driveItemVersion.filename = driveItemVersion.filename || fileToProcess.metadata.name;
           driveItemVersion.file_size = fileToProcess.upload_data.size;
@@ -226,6 +226,14 @@ export class DocumentsService {
           driveItemVersion.file_metadata.name = fileToProcess.metadata.name;
         }
       }
+
+      driveItem.name = await getItemName(
+        driveItem.parent_id,
+        driveItem.name,
+        driveItem.is_directory,
+        this.repository,
+        context,
+      );
 
       await this.repository.save(driveItem);
       driveItemVersion.file_id = driveItem.id;
@@ -275,6 +283,7 @@ export class DocumentsService {
     }
 
     try {
+      let oldParent = null;
       const level = await getAccessLevel(id, null, this.repository, context);
       const hasAccess = hasAccessLevel("write", level);
 
@@ -300,11 +309,30 @@ export class DocumentsService {
 
       const updatable = ["access_info", "name", "tags", "parent_id", "description"];
 
-      updatable.forEach(key => {
+      for (const key of updatable) {
         if ((content as any)[key]) {
-          (item as any)[key] = (content as any)[key];
+          if (
+            key === "parent_id" &&
+            !(await canMoveItem(item.id, content.parent_id, this.repository, context))
+          ) {
+            throw Error("Move operation not permitted");
+          } else {
+            oldParent = item.parent_id;
+          }
+
+          if (key === "name") {
+            item.name = await getItemName(
+              item.parent_id,
+              content.name,
+              item.is_directory,
+              this.repository,
+              context,
+            );
+          } else {
+            (item as any)[key] = (content as any)[key];
+          }
         }
-      });
+      }
 
       //We cannot do a change that would make the item unreachable
       if (
@@ -316,6 +344,11 @@ export class DocumentsService {
 
       await this.repository.save(item);
       await updateItemSize(item.parent_id, this.repository, context);
+
+      if (oldParent) {
+        await updateItemSize(oldParent, this.repository, context);
+        this.notifyWebsocket(oldParent, context);
+      }
 
       this.notifyWebsocket(item.parent_id, context);
 
