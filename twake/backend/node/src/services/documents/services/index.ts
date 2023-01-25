@@ -283,6 +283,7 @@ export class DocumentsService {
     }
 
     try {
+      let oldParent = null;
       const level = await getAccessLevel(id, null, this.repository, context);
       const hasAccess = hasAccessLevel("write", level);
 
@@ -308,13 +309,15 @@ export class DocumentsService {
 
       const updatable = ["access_info", "name", "tags", "parent_id", "description"];
 
-      updatable.forEach(async key => {
+      for (const key of updatable) {
         if ((content as any)[key]) {
           if (
             key === "parent_id" &&
             !(await canMoveItem(item.id, content.parent_id, this.repository, context))
           ) {
             throw Error("Move operation not permitted");
+          } else {
+            oldParent = item.parent_id;
           }
 
           if (key === "name") {
@@ -329,7 +332,7 @@ export class DocumentsService {
             (item as any)[key] = (content as any)[key];
           }
         }
-      });
+      }
 
       //We cannot do a change that would make the item unreachable
       if (
@@ -341,6 +344,11 @@ export class DocumentsService {
 
       await this.repository.save(item);
       await updateItemSize(item.parent_id, this.repository, context);
+
+      if (oldParent) {
+        await updateItemSize(oldParent, this.repository, context);
+        this.notifyWebsocket(oldParent, context);
+      }
 
       this.notifyWebsocket(item.parent_id, context);
 

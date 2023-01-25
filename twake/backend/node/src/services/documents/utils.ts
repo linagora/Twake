@@ -720,6 +720,10 @@ export const canMoveItem = async (
     company_id: context.company.id,
   });
 
+  if (!item.is_directory) {
+    return true;
+  }
+
   const targetItem = await repository.findOne({
     id: target,
     company_id: context.company.id,
@@ -729,12 +733,12 @@ export const canMoveItem = async (
     throw Error("target item doesn't exist or not a directory");
   }
 
-  if (!item) {
-    throw Error("Item not found");
+  if (!checkAccess(target, targetItem, "write", repository, context)) {
+    return false;
   }
 
-  if (!item.is_directory) {
-    return true;
+  if (!item) {
+    throw Error("Item not found");
   }
 
   const children = (
@@ -749,7 +753,7 @@ export const canMoveItem = async (
   }
 
   for (const child of children) {
-    if (!(await canMoveItem(child.id, target, repository, context))) {
+    if (child.is_directory && !(await canMoveItem(child.id, target, repository, context))) {
       return false;
     }
   }
