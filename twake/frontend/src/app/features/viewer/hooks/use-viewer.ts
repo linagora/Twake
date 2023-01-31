@@ -1,14 +1,15 @@
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { MessageFileType } from 'app/features/messages/types/message';
-import ViewerAPIClient, { MessageFileDetails } from '../api/viewer-api-client';
+import ViewerAPIClient, { DriveFileDetails, MessageFileDetails } from '../api/viewer-api-client';
 import { atom, useRecoilState } from 'recoil';
 import FileUploadApiClient from 'app/features/files/api/file-upload-api-client';
 import FileUploadService from 'app/features/files/services/file-upload-service';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 
 export const FileViewerState = atom<{
   file: null | { company_id?: string; message_id?: string; id?: string };
-  details?: MessageFileDetails;
+  details?: MessageFileDetails | DriveFileDetails;
   loading: boolean;
 }>({
   key: 'FileViewerState',
@@ -43,16 +44,37 @@ export const useFileViewer = () => {
           ...status,
           loading: true,
         });
-        const details = await ViewerAPIClient.getMessageFile(
-          status.file.company_id || '',
-          status.file.message_id || '',
-          status.file.id || '',
-        );
-        setStatus({
-          ...status,
-          details: details.resource || (details as unknown as MessageFileDetails),
-          loading: false,
-        });
+
+        if (status.file.message_id) {
+          const details = await ViewerAPIClient.getMessageFile(
+            status.file.company_id || '',
+            status.file.message_id || '',
+            status.file.id || '',
+          );
+
+          setStatus({
+            ...status,
+            details: details.resource || (details as unknown as MessageFileDetails),
+            loading: false,
+          });
+        } else {
+          const details = await ViewerAPIClient.getPublicFile(
+            status.file.company_id || '',
+            status.file.id || '',
+          );
+
+          const user = (await UserAPIClient.list([details.resource.user_id])).pop();
+          
+          setStatus({
+            ...status,
+            details: {
+              ...status.file,
+              ...details.resource,
+              user
+            },
+            loading: false,
+          });
+        }
       }
     },
     [status.file?.id],
@@ -103,13 +125,15 @@ export const useViewerDisplayData = () => {
   const extension = name?.split('.').pop();
 
   const download = FileUploadService.getDownloadRoute({
-    companyId: status?.details?.metadata?.external_id?.company_id,
-    fileId: status?.details?.metadata?.external_id?.id,
+    companyId:
+      (status?.details as MessageFileDetails)?.metadata?.external_id?.company_id ||
+      status.file?.company_id,
+    fileId: (status?.details as MessageFileDetails)?.metadata?.external_id?.id || status.file?.id,
   });
 
   const type = FileUploadApiClient.mimeToType(status?.details?.metadata?.mime || '', extension);
 
-  const id = status?.details?.metadata?.external_id?.id;
+  const id = (status?.details as MessageFileDetails)?.metadata?.external_id?.id || status.file?.id;
 
   return { download, type, name, id };
 };

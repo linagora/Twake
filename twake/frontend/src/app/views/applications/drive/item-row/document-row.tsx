@@ -56,6 +56,8 @@ export const DocumentRow = ({
   const preview = () => {
     open({
       ...item.last_version_cache,
+      company_id: item.company_id,
+      id: metadata.external_id,
       metadata,
     });
   };
