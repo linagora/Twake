@@ -17,6 +17,7 @@ import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
 import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
+import Avatar from '../../../../atoms/avatar';
 import { PublicIcon } from '../components/public-icon';
 import { ConfirmDeleteModalAtom } from '../modals/confirm-delete';
 import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
@@ -49,10 +50,13 @@ export const DocumentRow = ({
     item?.last_version_cache?.file_metadata?.mime || '',
   );
 
+  const metadata = item.last_version_cache?.file_metadata || {};
+  const hasThumbnails = !!metadata.thumbnails?.length || false;
+
   const preview = () => {
     open({
       ...item.last_version_cache,
-      metadata: item.last_version_cache.file_metadata,
+      metadata,
     });
   };
 
@@ -80,7 +84,14 @@ export const DocumentRow = ({
           onCheck={onCheck}
           fallback={
             <>
-              {fileType === 'image' || fileType === 'video' ? (
+              {hasThumbnails ? (
+                <Avatar
+                  avatar={metadata.thumbnails?.[0]?.url}
+                  size="xs"
+                  type="square"
+                  title={metadata.name}
+                />
+              ) : fileType === 'image' || fileType === 'video' ? (
                 <FileTypeMediaIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
               ) : fileType === 'archive' ? (
                 <FileTypeArchiveIcon className={'h-5 w-5 shrink-0 text-gray-400'} />
