@@ -322,7 +322,7 @@ export class DocumentsService {
 
           if (key === "name") {
             item.name = await getItemName(
-              item.parent_id,
+              content.parent_id || item.parent_id,
               content.name,
               item.is_directory,
               this.repository,
@@ -471,7 +471,7 @@ export class DocumentsService {
           await Promise.all(
             itemVersions.getEntities().map(async version => {
               await this.fileVersionRepository.remove(version);
-              await gr.services.files.delete(version.file_id, context);
+              await gr.services.files.delete(version.file_metadata.external_id, context);
             }),
           );
         }
