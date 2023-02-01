@@ -22,22 +22,39 @@ export class TagsController
 {
   async get(
     request: FastifyRequest<{ Params: { company_id: string; tag_id: string } }>,
+    reply: FastifyReply,
   ): Promise<ResourceGetResponse<Tags>> {
-    const tag = await gr.services.tags.get({
-      company_id: request.params.company_id,
-      tag_id: request.params.tag_id,
-    });
-    return { resource: tag };
+    try {
+      const tag = await gr.services.tags.get({
+        company_id: request.params.company_id,
+        tag_id: request.params.tag_id,
+      });
+      if (tag) {
+        reply.code(200);
+      }
+      return { resource: tag };
+    } catch (err) {
+      reply.code(404);
+      handleError(reply, err);
+    }
   }
 
   async list(
     request: FastifyRequest<{ Params: { company_id: string } }>,
+    reply: FastifyReply,
   ): Promise<ResourceListResponse<Tags>> {
     const list = await gr.services.tags.list({
       company_id: request.params.company_id,
     });
-    const resources = list.getEntities();
-    return { resources };
+    try {
+      const resources = list.getEntities();
+      if (resources) {
+        reply.code(200);
+      }
+      return { resources };
+    } catch (err) {
+      handleError(reply, err);
+    }
   }
 
   async save(
@@ -87,7 +104,7 @@ export class TagsController
         context,
       );
 
-      if (deleteResult.deleted) {
+      if (deleteResult) {
         reply.code(204);
         return {
           status: "success",
