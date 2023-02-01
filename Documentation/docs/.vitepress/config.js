@@ -51,38 +51,48 @@ export default {
             items: [
               {
                 text: "Get started with backend development",
-                link: "/internal-documentation/backend-services/get-started-with-backend-development"
+                link: "/internal-documentation/backend-services/intro",
               },
               {
                 text: "Applications",
-                link: "/internal-documentation/backend-services/applications"
+                link: "/internal-documentation/backend-services/applications",
               },
               {
                 text: "Channels",
-                link: "/internal-documentation/backend-services/channels-service"
+                link: "/internal-documentation/backend-services/channels",
               },
               {
                 text: "Documents",
-                link: "/internal-documentation/backend-services/documents/README.md"
+                link: "/internal-documentation/backend-services/documents/README.md",
               },
               {
                 text: "Files",
-                link: "/internal-documentation/backend-services/files-service"
+                link: "/internal-documentation/backend-services/files",
               },
               {
                 text: "Knowledge graph",
-                link: "/internal-documentation/backend-services/knowledge-graph"
+                link: "/internal-documentation/backend-services/knowledge-graph",
               },
               {
                 text: "Notifications",
-                link: "/internal-documentation/backend-services/notifications"
+                link: "/internal-documentation/backend-services/notifications",
               },
               {
                 text: "Twake service Development",
-                link: "/internal-documentation/backend-services/twake-service-development"
-              }
-            ]
-          }
+                link: "/internal-documentation/backend-services/twake-service-development",
+              },
+            ],
+          },
+
+          {
+            text: "Frontend components",
+            items: [
+              {
+                text: "Get started with frontend development",
+                link: "/internal-documentation/frontend-components/intro",
+              },
+            ],
+          },
         ],
       },
     ],
