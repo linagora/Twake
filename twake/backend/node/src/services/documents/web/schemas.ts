@@ -3,7 +3,7 @@ const fileVersionSchema = {
   properties: {
     id: { type: "string" },
     provider: { type: "string" },
-    file_id: { type: "string" },
+    drive_item_id: { type: "string" },
     file_metadata: {
       type: "object",
       properties: {
