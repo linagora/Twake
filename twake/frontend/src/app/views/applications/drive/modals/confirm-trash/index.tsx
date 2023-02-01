@@ -32,7 +32,7 @@ export const ConfirmTrashModal = () => {
 
 const ConfirmTrashModalContent = ({ items }: { items: DriveItem[] }) => {
   const { item, refresh } = useDriveItem(items[0].id);
-  const { update } = useDriveActions();
+  const { remove } = useDriveActions();
   const [loading, setLoading] = useState(false);
   const [state, setState] = useRecoilState(ConfirmTrashModalAtom);
 
@@ -56,15 +56,7 @@ const ConfirmTrashModalContent = ({ items }: { items: DriveItem[] }) => {
         loading={loading}
         onClick={async () => {
           setLoading(true);
-          for (const item of items) {
-            await update(
-              {
-                parent_id: 'trash',
-              },
-              item.id,
-              item.parent_id,
-            );
-          }
+          await Promise.all((items || []).map(async item => await remove(item.id, item.parent_id)));
           setLoading(false);
           setState({ ...state, open: false });
         }}
