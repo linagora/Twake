@@ -8,7 +8,6 @@ import { PaginationQueryParameters, ResourceWebsocket } from "../../../../utils/
 import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import {
-  CompanyExecutionContext,
   DriveExecutionContext,
   DriveItemDetails,
   ItemRequestParams,
@@ -75,14 +74,18 @@ export class DocumentsController {
    */
   delete = async (
     request: FastifyRequest<{ Params: ItemRequestParams; Querystring: { public_token?: string } }>,
+    reply: FastifyReply,
   ): Promise<void> => {
-    const context = getDriveExecutionContext(request);
+    try {
+      const context = getDriveExecutionContext(request);
 
-    return await globalResolver.services.documents.documents.delete(
-      request.params.id,
-      null,
-      context,
-    );
+      await globalResolver.services.documents.documents.delete(request.params.id, null, context);
+
+      reply.status(200).send();
+    } catch (error) {
+      logger.error("Failed to delete drive item", error);
+      throw new CrudException("Failed to delete drive item", 500);
+    }
   };
 
   /**

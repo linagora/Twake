@@ -713,7 +713,7 @@ export const canMoveItem = async (
   context: CompanyExecutionContext,
 ): Promise<boolean> => {
   if (source === target) return false;
-  if (target === "root") return true;
+  if (target === "root" || target === "trash") return true;
 
   const item = await repository.findOne({
     id: source,
