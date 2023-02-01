@@ -1,6 +1,8 @@
----
-description: Knowledge-graph API
----
+# Knowledge-graph
+
+## Knowledge-graph to Twake events
+
+[Send events to Twake](./README.md)
 
 ## Events sent by twake to the knowledge graph
 

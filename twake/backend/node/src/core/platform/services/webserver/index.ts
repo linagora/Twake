@@ -78,7 +78,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
           version: "0.1.0",
         },
         externalDocs: {
-          url: "http://doc.twake.app/",
+          url: "http://linagora.github.io/Twake",
           description: "Find more info here",
         },
         host: "localhost",

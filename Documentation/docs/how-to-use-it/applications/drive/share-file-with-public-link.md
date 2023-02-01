@@ -10,7 +10,7 @@ In Twake, you can share your folders or files to external user. You juste have t
 
 Click on "public access" of what you want to share and "create an access link".
 
-![](../../../assets/sans-titre-2 (1).gif)
+![](../../../assets/sans-titre-2-1.gif)
 
 ###
 

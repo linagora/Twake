@@ -31,7 +31,7 @@ You can <a href="https://twake.app"> try Twake</a> in SaaS.
 Or run your own local Twake instance with :
 
 ```bash
-cd twake 
+cd twake
 export COMPOSE_FILE=docker-compose.onpremise.yml
 docker compose up -d
 ```
@@ -61,7 +61,7 @@ Everyone can contribute at their own level, even if they only give a few minutes
 ## Manual install of Twake
 
 Install Twake on your machine with docker-compose using the install documentation here :
-[doc.twake.app/installation](https://doc.twake.app/installation)
+[linagora.github.io/Twake/onprem/installation.html](https://linagora.github.io/Twake/onprem/installation.html)
 
 `cd twake; docker-compose -f docker-compose.onpremise.mongo.yml up -d`
 
