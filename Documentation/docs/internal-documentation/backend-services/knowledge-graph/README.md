@@ -1,3 +1,13 @@
+# Knowledge-graph
+
+## Twake to Knowledge-graph events
+
+Twake can send events to the knowledge graph following this documentation:
+
+[Events from Twake](./pushed-from-twake.md)
+
+## Knowledge-graph to Twake REST
+
 The knowledge graph can send us event at the following endpoint:
 `POST https://api.twake.app/internal/services/knowledge-graph/v1/push`
 

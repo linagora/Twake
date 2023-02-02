@@ -8,7 +8,7 @@ As user admin, you have access to the user management page.
 
 Open the console : [https://console.twake.app/](https://console.twake.app/) and open the page "Users".
 
-![User management page](../../assets/image (2).png)
+![User management page](../../assets/image-2.png)
 
 ## Add a user
 

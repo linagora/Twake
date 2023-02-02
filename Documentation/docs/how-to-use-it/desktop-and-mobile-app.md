@@ -10,7 +10,7 @@ You can download Twake for Mac, Windows, Linux here: [https://github.com/linagor
 
 Click on the version according your OS, and click on "download" to get the desktop application.
 
-![](../assets/image (3) (1).png)
+![](<../assets/image-(3)-(1).png>)
 
 ### Switch to on-premise servers
 

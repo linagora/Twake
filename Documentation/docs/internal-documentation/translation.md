@@ -18,7 +18,7 @@ At Twake, we use [weblate](https://hosted.weblate.org/), a tool that allow you t
 
 After choosing the language you want to contribute, you can click on categories that need some work \(like `Not translated strings` . Now you can start to translate : you have to fulfill the input You can see `Other languages` tab to give you more context about the string. After, just click on save and it is done !
 
-![](../assets/image (6).png)
+![](<../assets/image-(6).png>)
 
 ## Thank you!
 
