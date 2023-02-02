@@ -41,7 +41,11 @@ describe("The Tags feature", () => {
 
   describe("Create tag", () => {
     it("should 201 if creator is a company admin", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "admin",
+      });
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
 
       for (let i = 0; i < 3; i++) {
         const createTag = await platform.app.inject({
@@ -82,7 +86,10 @@ describe("The Tags feature", () => {
     });
 
     it("should 401 if creator is not a company admin", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "member",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const createTag = await platform.app.inject({
         method: "POST",
         url: `${url}/companies/${platform.workspace.company_id}/tags`,
@@ -100,14 +107,17 @@ describe("The Tags feature", () => {
         ResourceCreateResponse,
         createTag.body,
       );
-      expect(tagResult.resource).toBe(null);
+      expect(tagResult.resource).toBe(undefined);
       done();
     });
   });
 
   describe("Get tag", () => {
     it("should 200 get a tag", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "member",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const getTag = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/tags/${tagIds[0]}`,
@@ -126,9 +136,11 @@ describe("The Tags feature", () => {
       done();
     });
 
-    // TODO
     it("should 200 tag does not exist", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "member",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const getTag = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/tags/NonExistingTag`,
@@ -147,8 +159,10 @@ describe("The Tags feature", () => {
 
   describe("Update tag", () => {
     it("Should 204 if user is admin", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
-
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "admin",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const updateTag = await platform.app.inject({
         method: "POST",
         url: `${url}/companies/${platform.workspace.company_id}/tags`,
@@ -185,7 +199,10 @@ describe("The Tags feature", () => {
     });
 
     it("should 401 if creator is not a company admin", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "member",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const createTag = await platform.app.inject({
         method: "POST",
         url: `${url}/companies/${platform.workspace.company_id}/tags/testNotAdmin`,
@@ -204,7 +221,7 @@ describe("The Tags feature", () => {
         createTag.body,
       );
       console.log("tagResult2", tagResult, jwtToken);
-      expect(tagResult.resource).toBe(null);
+      expect(tagResult.resource).toBe(undefined);
 
       done();
     });
@@ -212,7 +229,10 @@ describe("The Tags feature", () => {
 
   describe("List tags", () => {
     it("should 200 list a tag", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "member",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const listTag = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/tags`,
@@ -236,8 +256,11 @@ describe("The Tags feature", () => {
   });
 
   describe("Delete tag", () => {
-    it("should 204 if admin delete a tag", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+    it("should 200 if admin delete a tag", async done => {
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "admin",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const deleteTag = await platform.app.inject({
         method: "DELETE",
         url: `${url}/companies/${platform.workspace.company_id}/tags/${tagIds[0]}`,
@@ -245,13 +268,16 @@ describe("The Tags feature", () => {
           authorization: `Bearer ${jwtToken}`,
         },
       });
-      expect(deleteTag.statusCode).toBe(204);
+      expect(deleteTag.statusCode).toBe(200);
 
       done();
     });
 
-    it("should 204 if tag does not exist", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+    it("should 200 if tag does not exist", async done => {
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "admin",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const deleteTag = await platform.app.inject({
         method: "DELETE",
         url: `${url}/companies/${platform.workspace.company_id}/tags/NonExistingTag`,
@@ -259,12 +285,15 @@ describe("The Tags feature", () => {
           authorization: `Bearer ${jwtToken}`,
         },
       });
-      expect(deleteTag.statusCode).toBe(204);
+      expect(deleteTag.statusCode).toBe(200);
       done();
     });
 
     it("should 401 if not admin", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+      const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
+        companyRole: "member",
+      });
+      const jwtToken = await platform.auth.getJWTToken({ sub: user.id });
       const deleteTag = await platform.app.inject({
         method: "DELETE",
         url: `${url}/companies/${platform.workspace.company_id}/tags/${tagIds[0]}`,

@@ -105,7 +105,7 @@ export class TagsController
       );
 
       if (deleteResult) {
-        reply.code(204);
+        reply.code(200);
         return {
           status: "success",
         };

@@ -32,25 +32,8 @@ export class TagsService implements TwakeServiceProvider, Initializable {
   }
 
   async save(tag: Tags, context: ExecutionContext): Promise<SaveResult<Tags>> {
-    /*
-    //Creation
-    {
-      name: "Tag principal",
-      colour: "#F0AF23",
-      tag_id: undefined
-    }
-    -> tag_id: "super_tag"
-
-    //Update
-    {
-      name: "Tag principal",
-      colour: "#F0AF23",
-      tag_id: "super_tag"
-    }
-    -> tag_id: "super_tag"
-    */
     const tagToSave = createTagEntity(tag);
-    tagToSave.tag_id = tag.name.split(" ").join("_");
+    tagToSave.tag_id = tag.name.toLocaleLowerCase().replace(/[^a-z0-9]/gm, "_");
     await this.repository.save(tagToSave, context);
     return new SaveResult(TagsType, tagToSave, OperationType.CREATE);
   }
