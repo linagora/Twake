@@ -29,6 +29,11 @@
     "kill": "kill $(lsof -t -i:3000) | exit 0"
   },
   "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ],
     "verbose": true,
     "testEnvironment": "node"
   },

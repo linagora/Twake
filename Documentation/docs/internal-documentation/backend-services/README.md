@@ -13,28 +13,24 @@ As a frontend developer / connector developer to read our APIs, or to understand
 
 If document are empty, check out our Notion documentation: [https://www.notion.so/twake/Backend-documentation-e219323593d2401c9887d0e11b2a597b](https://www.notion.so/twake/Backend-documentation-e219323593d2401c9887d0e11b2a597b)
 
-### General
-
-[authentication](authentication.md)
-
 ### Services
 
-[users-and-workspaces-service](users-and-workspaces-service.md)
+[users/](users/README.md)
 
 [applications/](applications/README.md))
 
-[channels-service/](channels-service/README.md))
+[channels/](channels/README.md))
 
-[messages-service/](messages-service/README.md))
+[messages/](messages/README.md))
 
-[notifications-service/](notifications-service/README.md))
+[notifications/](notifications/README.md))
 
 ## Get started to code in Twake
 
 Want to edit Twake code ? Congratulation ! You participate in the development of a great product 😃
 
-[start-working-into-a-service](twake-service-development/start-working-into-a-service.md)
+[start-working-into-a-service](intro/start-working-into-a-service.md)
 
-[create-a-new-twake-service](twake-service-development/create-a-new-twake-service.md)
+[create-a-new-twake-service](intro/create-a-new-twake-service.md)
 
-[twake-service-development/platform/](twake-service-development/platform/README.md))
+[intro/platform/](intro/platform/README.md))

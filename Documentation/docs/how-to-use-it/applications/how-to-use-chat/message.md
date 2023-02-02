@@ -46,7 +46,7 @@ You can see a thread in a specific view. Hover over in one, the button `Show on 
 
 You can send gif in your channel. Just clic gif icon to open a gif selector.
 
-![](../../../assets/gif (1).gif)
+![](<../../../assets/gif-(1).gif>)
 
 ### Call
 
