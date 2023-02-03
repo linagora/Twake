@@ -120,7 +120,7 @@ export class DocumentsService {
       : (
           await this.fileVersionRepository.find(
             {
-              file_id: entity.id,
+              drive_item_id: entity.id,
             },
             {},
             context,
@@ -236,7 +236,7 @@ export class DocumentsService {
       );
 
       await this.repository.save(driveItem);
-      driveItemVersion.file_id = driveItem.id;
+      driveItemVersion.drive_item_id = driveItem.id;
 
       await this.fileVersionRepository.save(driveItemVersion);
       driveItem.last_version_cache = driveItemVersion;
@@ -463,7 +463,7 @@ export class DocumentsService {
           //Delete the version and stored file
           const itemVersions = await this.fileVersionRepository.find(
             {
-              file_id: item.id,
+              drive_item_id: item.id,
             },
             {},
             context,

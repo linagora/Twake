@@ -21,7 +21,7 @@ export const useDriveUpload = () => {
         callback: async (file, context) => {
           if (file) {
             const version = {
-              file_id: context.id,
+              drive_item_id: context.id,
               provider: 'internal',
               application_id: '',
               file_metadata: {
