@@ -58,6 +58,7 @@ const ConfirmTrashModalContent = ({ items }: { items: DriveItem[] }) => {
           setLoading(true);
           await Promise.all((items || []).map(async item => await remove(item.id, item.parent_id)));
           setLoading(false);
+          refresh("trash");
           setState({ ...state, open: false });
         }}
       >
