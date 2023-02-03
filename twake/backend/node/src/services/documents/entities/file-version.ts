@@ -32,7 +32,7 @@ export class FileVersion {
   creator_id: string;
 
   @Type(() => String)
-  @Column("application_id", "uuid")
+  @Column("application_id", "string")
   application_id: string;
 
   @Type(() => String)
