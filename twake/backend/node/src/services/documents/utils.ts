@@ -100,7 +100,7 @@ export const getDefaultDriveItemVersion = (
     creator_id: version.creator_id || context.user?.id,
     data: version.data || {},
     date_added: version.date_added || new Date().getTime(),
-    file_id: version.file_id || "",
+    drive_item_id: version.drive_item_id || "",
     file_metadata: version.file_metadata || {},
     file_size: version.file_size || 0,
     filename: version.filename || "",

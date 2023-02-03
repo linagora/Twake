@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 export const TYPE = "drive_file_versions";
 
 @Entity(TYPE, {
-  primaryKey: [["file_id"], "id"],
+  primaryKey: [["drive_item_id"], "id"],
   type: TYPE,
 })
 export class FileVersion {
@@ -17,8 +17,8 @@ export class FileVersion {
   provider: "internal" | "drive" | string;
 
   @Type(() => String)
-  @Column("file_id", "uuid")
-  file_id: string;
+  @Column("drive_item_id", "uuid")
+  drive_item_id: string;
 
   @Column("file_metadata", "encoded_json")
   file_metadata: DriveFileMetadata;

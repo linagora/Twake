@@ -103,7 +103,7 @@ const VersionModalContent = ({ id }: { id: string }) => {
               <BaseSmall>{formatBytes(version.file_metadata.size || 0)}</BaseSmall>
             </div>
             <div className="shrink-0 ml-4">
-              <Button theme="outline" onClick={() => download(id, version.file_id)}>
+              <Button theme="outline" onClick={() => download(id, version.drive_item_id)}>
                 Download
               </Button>
             </div>
