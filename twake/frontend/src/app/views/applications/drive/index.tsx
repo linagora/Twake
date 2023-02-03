@@ -9,6 +9,7 @@ import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
+import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import _, { initial } from 'lodash';
@@ -50,12 +51,12 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
 
   const uploadZone = 'drive_' + companyId;
   const uploadZoneRef = useRef<UploadZone | null>(null);
-  const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
 
   const setCreationModalState = useSetRecoilState(CreateModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
   const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
   const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
+  const [checked, setChecked] = useRecoilState(DriveItemSelectedList);
 
   useEffect(() => {
     setChecked({});
@@ -143,6 +144,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                                 item.parent_id,
                               );
                             }
+                            setChecked({});
                           },
                         }),
                     },

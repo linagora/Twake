@@ -1,12 +1,17 @@
-import { atomFamily } from 'recoil';
+import { atomFamily, atom } from 'recoil';
 import { DriveItem, DriveItemDetails } from '../types';
 
 export const DriveItemChildrenAtom = atomFamily<DriveItem[], string>({
   key: 'DriveItemChildrenAtom',
-  default: (_: string) => [],
+  default: () => [],
 });
 
 export const DriveItemAtom = atomFamily<Partial<DriveItemDetails> | null, string>({
   key: 'DriveItemAtom',
-  default: (_: string) => null,
+  default: () => null,
+});
+
+export const DriveItemSelectedList = atom<{[key: string]: boolean }>({
+  key: 'DriveItemSelectedList',
+  default: {}
 });

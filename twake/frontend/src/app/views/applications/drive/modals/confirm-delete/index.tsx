@@ -3,6 +3,7 @@ import { Modal, ModalContent } from 'app/atoms/modal';
 import { Base } from 'app/atoms/text';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
+import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { DriveItem } from 'app/features/drive/types';
 import { useEffect, useState } from 'react';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
@@ -35,6 +36,7 @@ const ConfirmDeleteModalContent = ({ items }: { items: DriveItem[] }) => {
   const { remove } = useDriveActions();
   const [loading, setLoading] = useState(false);
   const [state, setState] = useRecoilState(ConfirmDeleteModalAtom);
+  const [, setSelected] = useRecoilState(DriveItemSelectedList);
 
   useEffect(() => {
     refresh(items[0].id);
@@ -62,6 +64,7 @@ const ConfirmDeleteModalContent = ({ items }: { items: DriveItem[] }) => {
             await remove(item.id, item.parent_id);
           }
           setLoading(false);
+          setSelected({});
           setState({ ...state, open: false });
         }}
       >
