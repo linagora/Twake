@@ -38,8 +38,13 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
   const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom(initialParentId || 'root'));
 
   const { download, downloadZip, update } = useDriveActions();
+<<<<<<< HEAD
   const { access, item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
   const { item: trash, refresh: refreshTrash } = useDriveItem('trash');
+=======
+  const { item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
+  const { item: trash } = useDriveItem('trash');
+>>>>>>> #2712 Fixed trash size not being shown at initial render
   const { uploadTree } = useDriveUpload();
   useDriveRealtime(parentId);
 
@@ -55,8 +60,8 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
   useEffect(() => {
     setChecked({});
     refresh(parentId);
-    if (parentId === 'root' || parentId === 'trash') refreshTrash(parentId);
-  }, [parentId, refresh, refreshTrash]);
+    refresh("trash");
+  }, [parentId, refresh]);
 
   const openItemModal = useCallback(() => {
     if (item?.id) setCreationModalState({ open: true, parent_id: item.id });
