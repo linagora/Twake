@@ -511,8 +511,8 @@ export const addDriveItemToArchive = async (
   archive: archiver.Archiver,
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext,
+  counter: number,
   prefix?: string,
-  counter?: number,
 ): Promise<number> => {
   const item = entity || (await repository.findOne({ id, company_id: context.company.id }));
 
@@ -546,8 +546,8 @@ export const addDriveItemToArchive = async (
           archive,
           repository,
           context,
-          `${item.name}/`,
           currentCounter,
+          `${item.name}/`,
         );
       }),
     );

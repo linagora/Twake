@@ -671,7 +671,6 @@ export class DocumentsService {
             archive,
             this.repository,
             context,
-            undefined,
             counter,
           );
         } catch (error) {
