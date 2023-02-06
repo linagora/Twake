@@ -29,7 +29,7 @@ export const AccessModal = () => {
 };
 
 const AccessModalContent = ({ id }: { id: string }) => {
-  const { item, refresh } = useDriveItem(id);
+  const { item, access, refresh } = useDriveItem(id);
 
   useEffect(() => {
     refresh(id);
@@ -37,8 +37,8 @@ const AccessModalContent = ({ id }: { id: string }) => {
 
   return (
     <ModalContent title={'Manage access to ' + item?.name}>
-      <PublicLinkManager id={id} />
-      <InternalAccessManager id={id} />
+      <PublicLinkManager id={id} disabled={access !== 'manage'} />
+      <InternalAccessManager id={id} disabled={access !== 'manage'} />
     </ModalContent>
   );
 };

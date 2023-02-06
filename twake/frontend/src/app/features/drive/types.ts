@@ -1,10 +1,9 @@
-import { ThumbnailType } from '../messages/types/message';
-
 export type DriveItemDetails = {
   item: DriveItem;
   versions: DriveItemVersion[];
   children: DriveItem[];
   path: DriveItem[];
+  access: 'read' | 'write' | 'manage';
   websockets: {
     room: string;
     token?: string;
