@@ -4,18 +4,16 @@ import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
-import { setPublicLinkToken } from 'app/features/drive/api-client/api-client';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
+import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import _, { initial } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { atom, atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
-import shortUUID from 'short-uuid';
+import _ from 'lodash';
+import { useCallback, useEffect, useRef } from 'react';
+import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import HeaderPath from './header-path';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
@@ -39,24 +37,24 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
 
   const { download, downloadZip, update } = useDriveActions();
   const { access, item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
-  const { item: trash, refresh: refreshTrash } = useDriveItem('trash');
+  const { item: trash } = useDriveItem('trash');
   const { uploadTree } = useDriveUpload();
   useDriveRealtime(parentId);
 
   const uploadZone = 'drive_' + companyId;
   const uploadZoneRef = useRef<UploadZone | null>(null);
-  const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
 
   const setCreationModalState = useSetRecoilState(CreateModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
   const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
   const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
+  const [checked, setChecked] = useRecoilState(DriveItemSelectedList);
 
   useEffect(() => {
     setChecked({});
     refresh(parentId);
-    if (parentId === 'root' || parentId === 'trash') refreshTrash(parentId);
-  }, [parentId, refresh, refreshTrash]);
+    refresh("trash");
+  }, [parentId, refresh]);
 
   const openItemModal = useCallback(() => {
     if (item?.id) setCreationModalState({ open: true, parent_id: item.id });
@@ -138,6 +136,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                                 item.parent_id,
                               );
                             }
+                            setChecked({});
                           },
                         }),
                     },

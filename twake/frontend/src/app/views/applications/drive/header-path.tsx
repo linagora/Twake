@@ -1,11 +1,7 @@
 import { Button } from 'app/atoms/button/button';
 import { Title } from 'app/atoms/text';
-import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { DriveItem } from 'app/features/drive/types';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { DriveCurrentFolderAtom } from '.';
 import { PublicIcon } from './components/public-icon';
 
 export default ({
