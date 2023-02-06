@@ -9,16 +9,16 @@ export const TYPE = "drive_file_versions";
 })
 export class FileVersion {
   @Type(() => String)
-  @Column("id", "uuid")
+  @Column("drive_item_id", "uuid")
+  drive_item_id: string;
+
+  @Type(() => String)
+  @Column("id", "uuid", { generator: "uuid" })
   id: string;
 
   @Type(() => String)
   @Column("provider", "string")
   provider: "internal" | "drive" | string;
-
-  @Type(() => String)
-  @Column("drive_item_id", "uuid")
-  drive_item_id: string;
 
   @Column("file_metadata", "encoded_json")
   file_metadata: DriveFileMetadata;
@@ -32,7 +32,7 @@ export class FileVersion {
   creator_id: string;
 
   @Type(() => String)
-  @Column("application_id", "uuid")
+  @Column("application_id", "string")
   application_id: string;
 
   @Type(() => String)

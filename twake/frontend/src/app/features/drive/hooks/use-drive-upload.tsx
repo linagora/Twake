@@ -23,7 +23,6 @@ export const useDriveUpload = () => {
             const version = {
               drive_item_id: context.id,
               provider: 'internal',
-              application_id: '',
               file_metadata: {
                 name: file.metadata?.name,
                 size: file.upload_data?.size,

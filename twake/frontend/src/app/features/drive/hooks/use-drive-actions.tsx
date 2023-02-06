@@ -1,11 +1,8 @@
-import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { ToasterService } from 'app/features/global/services/toaster-service';
-import { LoadingState, LoadingStateInitTrue } from 'app/features/global/state/atoms/Loading';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
-import { DriveApiClient, setPublicLinkToken } from '../api-client/api-client';
+import { useRecoilCallback } from 'recoil';
+import { DriveApiClient } from '../api-client/api-client';
 import { DriveItemAtom, DriveItemChildrenAtom } from '../state/store';
 import { DriveItem, DriveItemVersion } from '../types';
 
@@ -55,7 +52,7 @@ export const useDriveActions = () => {
     async (id: string, versionId?: string) => {
       try {
         const url = await DriveApiClient.getDownloadUrl(companyId, id, versionId);
-        (window as any).open(url, '_blank').focus().close();
+        (window as any).open(url, '_blank').focus();
       } catch (e) {
         ToasterService.error('Unable to download this file.');
       }
@@ -67,7 +64,7 @@ export const useDriveActions = () => {
     async (ids: string[]) => {
       try {
         const url = await DriveApiClient.getDownloadZipUrl(companyId, ids);
-        (window as any).open(url, '_blank').focus().close();
+        (window as any).open(url, '_blank').focus();
       } catch (e) {
         ToasterService.error('Unable to download this files.');
       }

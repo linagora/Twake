@@ -35,7 +35,7 @@ export const VersionsModal = () => {
 };
 
 const VersionModalContent = ({ id }: { id: string }) => {
-  const { item, versions, refresh, loading, uploadVersion } = useDriveItem(id);
+  const { item, versions, access, refresh, loading, uploadVersion } = useDriveItem(id);
   const { download } = useDriveActions();
 
   const uploadZone = 'drive_versions_' + id;
@@ -57,34 +57,36 @@ const VersionModalContent = ({ id }: { id: string }) => {
         allowPaste={false}
         ref={uploadZoneRef}
         driveCollectionKey={uploadZone}
-        disabled={loading}
+        disabled={loading || access === 'read'}
         onAddFiles={async (files: File[]) => {
           const file = files[0];
           await uploadVersion(file);
           await refresh(id);
         }}
       >
-        <div className={'flex flex-row items-center bg-slate-100 rounded-md mb-4 p-4'}>
-          <div className="flex flex-row">
-            <div className="grow flex items-center">
-              <Base>
-                Manage your document version here: Download older version of this document or upload
-                a new version now.
-              </Base>
-            </div>
-            <div className="shrink-0 ml-4 flex items-center">
-              <Button
-                theme="primary"
-                onClick={() => uploadZoneRef.current?.open()}
-                loading={loading}
-              >
-                Create version
-              </Button>
+        {access !== 'read' && (
+          <div className={'flex flex-row items-center bg-slate-100 rounded-md mb-4 p-4'}>
+            <div className="flex flex-row">
+              <div className="grow flex items-center">
+                <Base>
+                  Manage your document version here: Download older version of this document or
+                  upload a new version now.
+                </Base>
+              </div>
+              <div className="shrink-0 ml-4 flex items-center">
+                <Button
+                  theme="primary"
+                  onClick={() => uploadZoneRef.current?.open()}
+                  loading={loading}
+                >
+                  Create version
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {[...(versions || [item.last_version_cache])].map((version, index) => (
+        {[...(versions?.length ? versions : [item.last_version_cache])].map((version, index) => (
           <div
             key={index}
             className={

@@ -4,18 +4,16 @@ import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
-import { setPublicLinkToken } from 'app/features/drive/api-client/api-client';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
+import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import _, { initial } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { atom, atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
-import shortUUID from 'short-uuid';
+import _ from 'lodash';
+import { useCallback, useEffect, useRef } from 'react';
+import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import HeaderPath from './header-path';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
@@ -38,25 +36,25 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
   const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom(initialParentId || 'root'));
 
   const { download, downloadZip, update } = useDriveActions();
-  const { item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
-  const { item: trash, refresh: refreshTrash } = useDriveItem('trash');
+  const { access, item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
+  const { item: trash } = useDriveItem('trash');
   const { uploadTree } = useDriveUpload();
   useDriveRealtime(parentId);
 
   const uploadZone = 'drive_' + companyId;
   const uploadZoneRef = useRef<UploadZone | null>(null);
-  const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
 
   const setCreationModalState = useSetRecoilState(CreateModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
   const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
   const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
+  const [checked, setChecked] = useRecoilState(DriveItemSelectedList);
 
   useEffect(() => {
     setChecked({});
     refresh(parentId);
-    if (parentId === 'root' || parentId === 'trash') refreshTrash(parentId);
-  }, [parentId, refresh, refreshTrash]);
+    refresh("trash");
+  }, [parentId, refresh]);
 
   const openItemModal = useCallback(() => {
     if (item?.id) setCreationModalState({ open: true, parent_id: item.id });
@@ -111,22 +109,17 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
         <div className="flex flex-row shrink-0 items-center">
           <HeaderPath path={path || []} inTrash={inTrash} setParentId={setParentId} />
           <div className="grow" />
-          <BaseSmall>{formatBytes(item?.size || 0)} used in this folder</BaseSmall>
+          {access !== 'read' && (
+            <BaseSmall>{formatBytes(item?.size || 0)} used in this folder</BaseSmall>
+          )}
           <Menu
             menu={
               selectedCount
                 ? [
                     {
                       type: 'menu',
-                      text: 'Download ' + selectedCount + ' items',
-                      onClick: () =>
-                        selectedCount === 1
-                          ? download(Object.keys(checked)[0])
-                          : downloadZip(Object.keys(checked)),
-                    },
-                    {
-                      type: 'menu',
                       text: 'Move ' + selectedCount + ' items',
+                      hide: access === 'read',
                       onClick: () =>
                         setSelectorModalState({
                           open: true,
@@ -143,14 +136,23 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                                 item.parent_id,
                               );
                             }
+                            setChecked({});
                           },
                         }),
+                    },
+                    {
+                      type: 'menu',
+                      text: 'Download ' + selectedCount + ' items',
+                      onClick: () =>
+                        selectedCount === 1
+                          ? download(Object.keys(checked)[0])
+                          : downloadZip(Object.keys(checked)),
                     },
                     { type: 'separator' },
                     {
                       type: 'menu',
                       text: 'Delete ' + selectedCount + ' items',
-                      hide: !inTrash,
+                      hide: !inTrash || access !== 'manage',
                       className: 'error',
                       onClick: () => {
                         setConfirmDeleteModalState({
@@ -162,7 +164,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                     {
                       type: 'menu',
                       text: 'Move ' + selectedCount + ' items to trash',
-                      hide: inTrash,
+                      hide: inTrash || access === 'read',
                       className: 'error',
                       onClick: async () =>
                         setConfirmTrashModalState({
@@ -183,7 +185,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                       type: 'menu',
                       text: 'Empty trash',
                       className: 'error',
-                      hide: parentId != 'trash',
+                      hide: parentId != 'trash' || access !== 'manage',
                       onClick: () => {
                         setConfirmDeleteModalState({
                           open: true,
@@ -202,14 +204,14 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                     {
                       type: 'menu',
                       text: 'Add document or folder',
-                      hide: inTrash,
+                      hide: inTrash || access === 'read',
                       onClick: () => openItemModal(),
                     },
                     { type: 'separator' },
                     {
                       type: 'menu',
                       text: 'Go to trash',
-                      hide: inTrash,
+                      hide: inTrash || access === 'read',
                       onClick: () => setParentId('trash'),
                     },
                   ]
@@ -234,7 +236,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
             </div>
           </div>
         )}
-        {item?.id === 'root' && (
+        {access !== 'read' && item?.id === 'root' && (
           <div className="bg-zinc-500 bg-opacity-10 rounded-md p-4 my-4 w-auto max-w-md">
             <BaseSmall>Welcome to your company drive.</BaseSmall>
             <div className="w-full">
@@ -266,6 +268,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                   }}
                   checked={checked[item.id] || false}
                   onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
+                  parentAccess={access}
                 />
               ))}
               <div className="my-6" />
@@ -303,6 +306,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
               item={item}
               checked={checked[item.id] || false}
               onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
+              parentAccess={access}
             />
           ))}
         </div>
