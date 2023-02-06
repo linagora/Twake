@@ -7,7 +7,7 @@ import { useRef } from 'react';
 import short from 'short-uuid';
 import { AccessLevel } from './common';
 
-export const PublicLinkManager = ({ id }: { id: string }) => {
+export const PublicLinkManager = ({ id, disabled }: { id: string; disabled?: boolean }) => {
   const { item, loading, update } = useDriveItem(id);
 
   const translator = useRef(short()).current;
@@ -46,7 +46,7 @@ export const PublicLinkManager = ({ id }: { id: string }) => {
         <div className="shrink-0">
           <AccessLevel
             hiddenLevels={['manage']}
-            disabled={loading}
+            disabled={loading || disabled}
             level={item?.access_info?.public?.level || null}
             onChange={level => {
               update({

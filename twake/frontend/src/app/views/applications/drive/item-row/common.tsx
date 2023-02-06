@@ -9,6 +9,7 @@ export type DriveItemProps = {
   checked: boolean;
   onClick: () => void;
   inTrash?: boolean;
+  parentAccess?: 'read' | 'write' | 'manage';
 };
 
 export const CheckableIcon = ({

@@ -10,7 +10,7 @@ import { useState } from 'react';
 import SelectUsers from '../../components/select-users';
 import { AccessLevel } from './common';
 
-export const InternalAccessManager = ({ id }: { id: string }) => {
+export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: boolean }) => {
   const { item, loading, update } = useDriveItem(id);
 
   console.log(item?.access_info.entities);
@@ -43,7 +43,7 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
             </div>
             <div className="shrink-0 ml-2">
               <AccessLevel
-                disabled={loading}
+                disabled={loading || disabled}
                 onChange={level => {
                   update({
                     access_info: {
@@ -68,7 +68,7 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
             </div>
             <div className="shrink-0 ml-2">
               <AccessLevel
-                disabled={loading}
+                disabled={loading || disabled}
                 onChange={level => {
                   update({
                     access_info: {
@@ -97,7 +97,7 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
             </div>
             <div className="shrink-0 ml-2">
               <AccessLevel
-                disabled={loading}
+                disabled={loading || disabled}
                 hiddenLevels={['none']}
                 canRemove
                 onChange={level => {
@@ -142,12 +142,12 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
         <div className="-mb-px" />
       </div>
       <div className="rounded-md border mt-2">
-        <UserAccessSelector id={id} />
+        <UserAccessSelector id={id} disabled={disabled} />
 
         {userEntities
           ?.sort((a, b) => a?.id?.localeCompare(b?.id))
           ?.map(user => (
-            <UserAccessLevel key={user.id} id={id} userId={user?.id} />
+            <UserAccessLevel key={user.id} id={id} userId={user?.id} disabled={disabled} />
           ))}
         <div className="-mb-px" />
       </div>
@@ -155,7 +155,7 @@ export const InternalAccessManager = ({ id }: { id: string }) => {
   );
 };
 
-const UserAccessSelector = ({ id }: { id: string }) => {
+const UserAccessSelector = ({ id, disabled }: { id: string; disabled: boolean }) => {
   const { item, loading, update } = useDriveItem(id);
   const [level, setLevel] = useState<DriveFileAccessLevel>('manage');
 
@@ -184,7 +184,7 @@ const UserAccessSelector = ({ id }: { id: string }) => {
       <div className="shrink-0">
         <AccessLevel
           className="rounded-l-none"
-          disabled={loading}
+          disabled={loading || disabled}
           level={level}
           onChange={level => setLevel(level)}
         />
@@ -193,7 +193,15 @@ const UserAccessSelector = ({ id }: { id: string }) => {
   );
 };
 
-const UserAccessLevel = ({ id, userId }: { id: string; userId: string }) => {
+const UserAccessLevel = ({
+  id,
+  userId,
+  disabled,
+}: {
+  id: string;
+  userId: string;
+  disabled: boolean;
+}) => {
   const { item, loading, update } = useDriveItem(id);
   const user = useUser(userId);
   const level =
@@ -214,7 +222,7 @@ const UserAccessLevel = ({ id, userId }: { id: string; userId: string }) => {
       </div>
       <div className="shrink-0 ml-2">
         <AccessLevel
-          disabled={loading}
+          disabled={loading || disabled}
           level={level}
           canRemove
           onChange={level => {

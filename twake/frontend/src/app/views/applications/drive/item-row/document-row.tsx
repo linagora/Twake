@@ -34,6 +34,7 @@ export const DocumentRow = ({
   onCheck,
   checked,
   onClick,
+  parentAccess,
 }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
@@ -140,11 +141,13 @@ export const DocumentRow = ({
             {
               type: 'menu',
               text: 'Modify properties',
+              hide: parentAccess === 'read',
               onClick: () => setPropertiesModalState({ open: true, id: item.id }),
             },
             {
               type: 'menu',
               text: 'Manage access',
+              hide: parentAccess === 'read',
               onClick: () => setAccessModalState({ open: true, id: item.id }),
             },
             {
@@ -155,6 +158,7 @@ export const DocumentRow = ({
             {
               type: 'menu',
               text: 'Move',
+              hide: parentAccess === 'read',
               onClick: () =>
                 setSelectorModalState({
                   open: true,
@@ -177,14 +181,14 @@ export const DocumentRow = ({
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
-              hide: inTrash,
+              hide: inTrash || parentAccess === 'read',
               onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
             },
             {
               type: 'menu',
               text: 'Delete',
               className: 'error',
-              hide: !inTrash,
+              hide: !inTrash || parentAccess === 'read',
               onClick: () => setConfirmDeleteModalState({ open: true, items: [item] }),
             },
           ]}

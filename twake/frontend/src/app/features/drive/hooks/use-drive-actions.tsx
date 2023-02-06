@@ -55,7 +55,7 @@ export const useDriveActions = () => {
     async (id: string, versionId?: string) => {
       try {
         const url = await DriveApiClient.getDownloadUrl(companyId, id, versionId);
-        (window as any).open(url, '_blank').focus().close();
+        (window as any).open(url, '_blank').focus();
       } catch (e) {
         ToasterService.error('Unable to download this file.');
       }
@@ -67,7 +67,7 @@ export const useDriveActions = () => {
     async (ids: string[]) => {
       try {
         const url = await DriveApiClient.getDownloadZipUrl(companyId, ids);
-        (window as any).open(url, '_blank').focus().close();
+        (window as any).open(url, '_blank').focus();
       } catch (e) {
         ToasterService.error('Unable to download this files.');
       }

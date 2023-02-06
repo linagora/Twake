@@ -78,6 +78,7 @@ export const useDriveItem = (id: string) => {
     children: children || [],
     path: item?.path,
     item: item?.item,
+    access: item?.access,
     websockets: item?.websockets,
     versions: item?.versions,
     uploadVersion,
