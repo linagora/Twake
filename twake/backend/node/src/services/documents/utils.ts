@@ -505,14 +505,15 @@ export const makeStandaloneAccessLevel = async (
  * @param {string} prefix - folder prefix
  * @returns {Promise<void>}
  */
-export const addDriveItemToArchive = async (
+ export const addDriveItemToArchive = async (
   id: string,
   entity: DriveFile | null,
   archive: archiver.Archiver,
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext,
   prefix?: string,
-): Promise<void> => {
+  counter?: number,
+): Promise<number> => {
   const item = entity || (await repository.findOne({ id, company_id: context.company.id }));
 
   if (!item) {
@@ -528,17 +529,34 @@ export const addDriveItemToArchive = async (
     }
 
     archive.append(file.file, { name: file.name, prefix: prefix ?? "" });
+    return counter - 1;
   } else {
     const items = await repository.find({
       parent_id: item.id,
       company_id: context.company.id,
     });
 
-    items.getEntities().forEach(child => {
-      addDriveItemToArchive(child.id, child, archive, repository, context, `${item.name}/`);
-    });
+    const childCounter = items.getEntities().length;
+    let currentCounter = counter;
+
+    await Promise.all(
+      items.getEntities().map(async child => {
+        currentCounter = await addDriveItemToArchive(
+          child.id,
+          child,
+          archive,
+          repository,
+          context,
+          `${item.name}/`,
+          currentCounter,
+        );
+      }),
+    );
+
+    return currentCounter;
   }
 };
+
 
 /**
  * Extracts the most popular 250 keywords from a text.

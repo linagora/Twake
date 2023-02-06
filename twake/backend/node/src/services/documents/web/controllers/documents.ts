@@ -233,7 +233,6 @@ export class DocumentsController {
 
         archive.pipe(response.raw);
 
-        archive.finalize();
       } else if (archiveOrFile.file) {
         const data = archiveOrFile.file;
         const filename = data.name.replace(/[^a-zA-Z0-9 -_.]/g, "");
@@ -286,7 +285,6 @@ export class DocumentsController {
 
       archive.pipe(reply.raw);
 
-      archive.finalize();
     } catch (error) {
       logger.error("failed to send zip file", error);
       throw new CrudException("Failed to create zip file", 500);
