@@ -7,17 +7,20 @@ import { getUserParts } from 'app/components/member/user-parts';
 import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
 import useRouterChannelSelected from 'app/features/router/hooks/use-router-channel-selected';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type Props = {
   channel: ChannelType;
 };
 
 export default (props: Props): JSX.Element => {
-  const channel = props.channel;
-  if (!channel || !channel.user_member?.user_id) return <></>;
+  if (!props.channel || !props.channel.user_member?.user_id) return <></>;
+  const { channel } = useChannel(props.channel.id || '', {
+    companyId: props.channel.company_id || '',
+    workspaceId: props.channel.workspace_id || '',
+  });
 
   const isDirectChannel = props.channel.visibility === 'direct';
-
   const [isActive, setActive] = useState<boolean>(false);
   const selected = useRouterChannelSelected(props.channel.id || '');
   const writingActivity = useChannelWritingActivityState(props.channel.id || '');
@@ -31,7 +34,7 @@ export default (props: Props): JSX.Element => {
 
   const unreadMessages = Math.max(
     0,
-    (channel.stats?.messages || 0) - (channel.user_member.last_increment || 0),
+    (channel.stats?.messages || 0) - (channel?.user_member?.last_increment || 0),
   );
 
   const channelIcon = isDirectChannel ? avatar : channel.icon || '';
