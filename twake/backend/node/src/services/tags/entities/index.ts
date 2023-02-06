@@ -1,1 +1,1 @@
-export { Tags, TYPE as TagsType, TagsPrimaryKey } from "./tags";
+export { Tag, TYPE as TagsType, TagsPrimaryKey } from "./tags";

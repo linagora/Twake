@@ -6,7 +6,7 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../../utils/types";
-import { Tags } from "../../entities";
+import { Tag } from "../../entities";
 import gr from "../../../global-resolver";
 import { ExecutionContext } from "src/core/platform/framework/api/crud-service";
 import { handleError } from "../../../../utils/handleError";
@@ -14,16 +14,16 @@ import { handleError } from "../../../../utils/handleError";
 export class TagsController
   implements
     CrudController<
-      ResourceGetResponse<Tags>,
-      ResourceCreateResponse<Tags>,
-      ResourceListResponse<Tags>,
+      ResourceGetResponse<Tag>,
+      ResourceCreateResponse<Tag>,
+      ResourceListResponse<Tag>,
       ResourceDeleteResponse
     >
 {
   async get(
     request: FastifyRequest<{ Params: { company_id: string; tag_id: string } }>,
     reply: FastifyReply,
-  ): Promise<ResourceGetResponse<Tags>> {
+  ): Promise<ResourceGetResponse<Tag>> {
     try {
       const tag = await gr.services.tags.get({
         company_id: request.params.company_id,
@@ -42,7 +42,7 @@ export class TagsController
   async list(
     request: FastifyRequest<{ Params: { company_id: string } }>,
     reply: FastifyReply,
-  ): Promise<ResourceListResponse<Tags>> {
+  ): Promise<ResourceListResponse<Tag>> {
     const list = await gr.services.tags.list({
       company_id: request.params.company_id,
     });
@@ -63,7 +63,7 @@ export class TagsController
       Body: { name: string; colour: string };
     }>,
     reply: FastifyReply,
-  ): Promise<ResourceCreateResponse<Tags>> {
+  ): Promise<ResourceCreateResponse<Tag>> {
     const context = getExecutionContext(request);
     const tag_id = request.params.tag_id ? request.params.tag_id : "";
 

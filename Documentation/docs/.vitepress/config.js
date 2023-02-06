@@ -145,6 +145,10 @@ export default {
                 link: "/internal-documentation/backend-services/files/README.md",
               },
               {
+                text: "Tags",
+                link: "/internal-documentation/backend-services/tags/README.md",
+              },
+              {
                 text: "Knowledge graph",
                 link: "/internal-documentation/backend-services/knowledge-graph/README.md",
               },

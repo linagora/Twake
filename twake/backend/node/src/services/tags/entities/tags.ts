@@ -9,7 +9,7 @@ export const TYPE = "tags";
   primaryKey: [["company_id"], "tag_id"],
   type: TYPE,
 })
-export class Tags {
+export class Tag {
   /**
    * UUIDv4
    * Primary key / partition key
@@ -43,10 +43,10 @@ export class Tags {
   colour: string;
 }
 
-export type TagsPrimaryKey = Pick<Tags, "company_id" | "tag_id">;
+export type TagsPrimaryKey = Pick<Tag, "company_id" | "tag_id">;
 
-export const createTagEntity = (tag?: Partial<Tags>): Tags => {
-  return Object.assign(new Tags(), {
+export const createTagEntity = (tag?: Partial<Tag>): Tag => {
+  return Object.assign(new Tag(), {
     ...tag,
   });
 };

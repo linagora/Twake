@@ -1,4 +1,4 @@
-export type Tags = {
+export type Tag = {
   company_id: string;
   name: string;
   id: number;

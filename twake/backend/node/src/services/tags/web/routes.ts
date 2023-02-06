@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { checkUserBelongsToCompany } from "../../../utils/company";
-import { Tags } from "../types";
+import { Tag } from "../types";
 import { TagsController } from "./controllers";
 import gr from "../../global-resolver";
 import CompanyUser from "src/services/user/entities/company_user";
@@ -10,11 +10,11 @@ const tagsUrl = "/companies/:company_id/tags";
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
   const tagsController = new TagsController();
 
-  const accessControlCompanyOnly = async (request: FastifyRequest<{ Params: Tags }>) => {
+  const accessControlCompanyOnly = async (request: FastifyRequest<{ Params: Tag }>) => {
     await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
   };
 
-  const accessControlOwnerOrAdmin = async (request: FastifyRequest<{ Params: Tags }>) => {
+  const accessControlOwnerOrAdmin = async (request: FastifyRequest<{ Params: Tag }>) => {
     const user: CompanyUser = await gr.services.companies.getCompanyUser(
       { id: request.params.company_id },
       { id: request.currentUser.id },

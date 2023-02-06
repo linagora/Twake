@@ -52,8 +52,7 @@ Used to get a tag
     tag_id: string,
     name: string,
     colour: string,
-  }
-  [];
+  }[];
 }
 ```
 
@@ -66,6 +65,8 @@ Used to create a tag
 **Method** : `POST`
 
 **Auth required** : Yes
+
+**Owner/admin right required** : Yes
 
 **Data constraints**
 
@@ -90,6 +91,8 @@ Used to update a tag
 
 **Auth required** : Yes
 
+**Owner/admin right required** : Yes
+
 **Data constraints**
 
 ```javascript
@@ -112,6 +115,8 @@ Used to delete a tag
 **Method** : `DELETE`
 
 **Auth required** : Yes
+
+**Owner/admin right required** : Yes
 
 ### Success Response
 
