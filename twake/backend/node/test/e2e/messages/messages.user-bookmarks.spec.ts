@@ -40,7 +40,7 @@ describe("The Messages User Bookmarks feature", () => {
   });
 
   describe("On user manage bookmmarks", () => {
-    it("should create new bookmark", async done => {
+    it("should create new bookmark", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
@@ -74,10 +74,9 @@ describe("The Messages User Bookmarks feature", () => {
       });
       expect(list.getEntities().length).toBe(1);
 
-      done();
     });
 
-    it("should prevent duplicated bookmark", async done => {
+    it("should prevent duplicated bookmark", async () => {
       // const uuid = uuidv4();
 
       const context = getContext(platform);
@@ -125,10 +124,9 @@ describe("The Messages User Bookmarks feature", () => {
       });
       expect(list.getEntities().length).toBe(1);
 
-      done();
     });
 
-    it("should remove bookmark", async done => {
+    it("should remove bookmark", async () => {
       const id = uuidv4();
       const context = getContext(platform);
 
@@ -165,10 +163,9 @@ describe("The Messages User Bookmarks feature", () => {
       });
       expect(list.getEntities().length).toBe(0);
 
-      done();
     });
 
-    it("should list bookmarks", async done => {
+    it("should list bookmarks", async () => {
       const context = getContext(platform);
 
       await gr.services.messages.userBookmarks.save(
@@ -204,7 +201,6 @@ describe("The Messages User Bookmarks feature", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toBe(1);
       expect(result.resources[0].name).toBe("mybookmark");
-      done();
     });
   });
 });

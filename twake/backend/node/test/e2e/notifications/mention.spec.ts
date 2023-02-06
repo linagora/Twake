@@ -110,7 +110,7 @@ describe("The notification for user mentions", () => {
     });
   }
 
-  it("should mention all users when preferences are MENTION", async done => {
+  it("should mention all users when preferences are MENTION", async () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const unknownUser = uuidv1();
@@ -146,10 +146,9 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).toContain(member3.user_id);
     expect(message.data.mentions.users).not.toContain(unknownUser);
 
-    done();
   });
 
-  it("should mention all users when preferences are default ones (ALL)", async done => {
+  it("should mention all users when preferences are default ones (ALL)", async () => {
     const messageId = uuidv1();
     const unknownUser = uuidv1();
     const channel = await createChannel();
@@ -179,10 +178,9 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).toContain(member3.user_id);
     expect(message.data.mentions.users).not.toContain(unknownUser);
 
-    done();
   });
 
-  it("should not mention users with preferences ALL for replies of threads there are not member of", async done => {
+  it("should not mention users with preferences ALL for replies of threads there are not member of", async () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
@@ -213,10 +211,9 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
     expect(message.data.mentions.users).not.toContain(member3.user_id);
 
-    done();
   });
 
-  it("should not mention user when notification level is set to NONE", async done => {
+  it("should not mention user when notification level is set to NONE", async () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const unknownUser = uuidv1();
@@ -253,10 +250,9 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).toContain(member3.user_id);
     expect(message.data.mentions.users).not.toContain(member2.user_id);
 
-    done();
   });
 
-  it("should mention user when notification level is set to channel mention and notification is for @all", async done => {
+  it("should mention user when notification level is set to channel mention and notification is for @all", async () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
@@ -293,10 +289,9 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).toContain(member2.user_id);
     expect(message.data.mentions.users).not.toContain(member3.user_id);
 
-    done();
   });
 
-  it("should mention user when notification level is set to channel mention and notification is for @here", async done => {
+  it("should mention user when notification level is set to channel mention and notification is for @here", async () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
@@ -331,10 +326,9 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).toContain(member2.user_id);
     expect(message.data.mentions.users).not.toContain(member3.user_id);
 
-    done();
   });
 
-  it("should mention user when notification level is set to ME and updated notification later", async done => {
+  it("should mention user when notification level is set to ME and updated notification later", async () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
@@ -376,6 +370,5 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).not.toContain(member3.user_id);
     expect(message.data.mentions.users).toContain(member2.user_id);
 
-    done();
   });
 });

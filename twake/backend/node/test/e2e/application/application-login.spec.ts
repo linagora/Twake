@@ -14,7 +14,7 @@ describe("Applications", () => {
   let private_key: string;
   let accessToken: ApplicationLoginResponse["access_token"];
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init();
     await platform.database.getConnector().drop();
     testDbService = await TestDbService.getInstance(platform, true);
@@ -29,15 +29,14 @@ describe("Applications", () => {
     appId = createdApplication.resource.id;
     private_key = createdApplication.resource.api.private_key;
 
-    ends();
   });
 
-  afterAll(done => {
-    platform.tearDown().then(() => done());
+  afterAll(async () => {
+    await platform.tearDown();
   });
 
   describe("Login", function () {
-    it("Should be ok on valid token", async done => {
+    it("Should be ok on valid token", async () => {
       expect(appId).toBeTruthy();
 
       const response = await api.post("/api/console/v1/login", {
@@ -61,12 +60,11 @@ describe("Applications", () => {
 
       accessToken = resource.access_token;
 
-      done();
     });
   });
 
   describe("Get myself", function () {
-    it("Should be 401 on invalid token", async done => {
+    it("Should be 401 on invalid token", async () => {
       const response = await platform.app.inject({
         method: "GET",
         url: "/api/console/v1/me",
@@ -76,10 +74,9 @@ describe("Applications", () => {
       });
       log.debug(response.json());
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("Should be 403 on auth by users (not company) token", async done => {
+    it("Should be 403 on auth by users (not company) token", async () => {
       const userToken = await platform.auth.getJWTToken();
 
       const response = await platform.app.inject({
@@ -91,10 +88,9 @@ describe("Applications", () => {
       });
       log.debug(response.json());
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("Should be ok on valid token", async done => {
+    it("Should be ok on valid token", async () => {
       const response = await platform.app.inject({
         method: "GET",
         url: "/api/console/v1/me",
@@ -107,7 +103,6 @@ describe("Applications", () => {
       const resource = (await response.json()).resource;
       log.debug(resource);
       expect(resource).toMatchObject(postPayload);
-      done();
     });
   });
 });

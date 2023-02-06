@@ -68,7 +68,7 @@ describe("The /workspaces API (invite tokens)", () => {
   describe("The GET /tokens/ route", () => {
     beforeAll(startup);
     afterAll(shutdown);
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
 
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -78,10 +78,9 @@ describe("The /workspaces API (invite tokens)", () => {
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 403 when user is not a workspace member", async done => {
+    it("should 403 when user is not a workspace member", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userIdFromAnotherWorkspace = platform.currentUser.id;
       const companyId = testDbService.company.id;
@@ -95,10 +94,9 @@ describe("The /workspaces API (invite tokens)", () => {
       });
       expect(response.statusCode).toBe(403);
 
-      done();
     });
 
-    it("should 404 when token doesn't exists yet", async done => {
+    it("should 404 when token doesn't exists yet", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
@@ -113,10 +111,9 @@ describe("The /workspaces API (invite tokens)", () => {
 
       expect(response.statusCode).toBe(404);
 
-      done();
     });
 
-    it("should 200 when user is a workspace member", async done => {
+    it("should 200 when user is a workspace member", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
@@ -141,7 +138,6 @@ describe("The /workspaces API (invite tokens)", () => {
         ],
       });
 
-      done();
     });
   });
 
@@ -149,7 +145,7 @@ describe("The /workspaces API (invite tokens)", () => {
     beforeAll(startup);
     afterAll(shutdown);
 
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
 
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -159,10 +155,9 @@ describe("The /workspaces API (invite tokens)", () => {
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 403 when user is not a workspace member", async done => {
+    it("should 403 when user is not a workspace member", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userIdFromAnotherWorkspace = platform.currentUser.id;
       const companyId = testDbService.company.id;
@@ -179,10 +174,9 @@ describe("The /workspaces API (invite tokens)", () => {
       });
       expect(response.statusCode).toBe(403);
 
-      done();
     });
 
-    it("should 200 when user is a workspace member", async done => {
+    it("should 200 when user is a workspace member", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
@@ -237,10 +231,9 @@ describe("The /workspaces API (invite tokens)", () => {
 
       expect(createToken.t).toEqual(getToken.t);
 
-      done();
     });
 
-    it("should 200 when when recreate token", async done => {
+    it("should 200 when when recreate token", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
@@ -304,7 +297,6 @@ describe("The /workspaces API (invite tokens)", () => {
       expect(responseToken).toEqual(afterResponseToken);
       expect(afterResponseToken).not.toEqual(beforeResponseToken);
 
-      done();
     });
   });
 
@@ -312,7 +304,7 @@ describe("The /workspaces API (invite tokens)", () => {
     beforeAll(startup);
     afterAll(shutdown);
 
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
 
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -322,10 +314,9 @@ describe("The /workspaces API (invite tokens)", () => {
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/fake1-${new Date().getTime()}`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 403 when user is not a workspace member", async done => {
+    it("should 403 when user is not a workspace member", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userIdFromAnotherWorkspace = platform.currentUser.id;
       const companyId = testDbService.company.id;
@@ -340,10 +331,9 @@ describe("The /workspaces API (invite tokens)", () => {
       });
       expect(response.statusCode).toBe(403);
 
-      done();
     });
 
-    it("should 204 when user is a workspace member", async done => {
+    it("should 204 when user is a workspace member", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
@@ -378,10 +368,9 @@ describe("The /workspaces API (invite tokens)", () => {
 
       expect(afterResponse.statusCode).toBe(404);
 
-      done();
     });
 
-    it("should 404 when deleting token that doesn't exists", async done => {
+    it("should 404 when deleting token that doesn't exists", async () => {
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
@@ -396,7 +385,6 @@ describe("The /workspaces API (invite tokens)", () => {
       });
       expect(response.statusCode).toBe(404);
 
-      done();
     });
   });
 
@@ -415,7 +403,7 @@ describe("The /workspaces API (invite tokens)", () => {
     });
     afterAll(shutdown);
 
-    it("should 404 when when token not found", async done => {
+    it("should 404 when when token not found", async () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
@@ -428,10 +416,9 @@ describe("The /workspaces API (invite tokens)", () => {
         },
       });
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 200 when user is not authorized", async done => {
+    it("should 200 when user is not authorized", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}/join`,
@@ -455,10 +442,9 @@ describe("The /workspaces API (invite tokens)", () => {
         auth_required: true,
       });
 
-      done();
     });
 
-    it("should 200 when user is authorized and not joining", async done => {
+    it("should 200 when user is authorized and not joining", async () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
@@ -484,10 +470,9 @@ describe("The /workspaces API (invite tokens)", () => {
         auth_required: false,
       });
 
-      done();
     });
 
-    it("should 200 when user is authorized and joining", async done => {
+    it("should 200 when user is authorized and joining", async () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
@@ -515,7 +500,6 @@ describe("The /workspaces API (invite tokens)", () => {
         auth_required: false,
       });
 
-      done();
     });
   });
 });

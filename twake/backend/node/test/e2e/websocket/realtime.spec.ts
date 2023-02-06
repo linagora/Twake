@@ -8,7 +8,7 @@ describe("The Realtime API", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
-  beforeEach(async ends => {
+  beforeEach(async () => {
     platform = await init({
       services: [
         "webserver",
@@ -30,20 +30,18 @@ describe("The Realtime API", () => {
 
     socket = io.connect("http://localhost:3000", { path: "/socket" });
 
-    ends();
   });
 
-  afterEach(async ends => {
+  afterEach(async () => {
     await platform.tearDown();
     platform = null;
     socket && socket.close();
     socket = null;
 
-    ends();
   });
 
   describe("Joining rooms", () => {
-    it("should fail when token is not defined", async done => {
+    it("should fail when token is not defined", async () => {
       const token = await platform.auth.getJWTToken();
       const name = "/ping";
 
@@ -54,7 +52,6 @@ describe("The Realtime API", () => {
             socket.emit("realtime:join", { name });
             socket.on("realtime:join:error", (event: any) => {
               expect(event.name).toEqual(name);
-              done();
             });
             socket.on("realtime:join:success", () => done(new Error("Should not occur")));
           })
@@ -64,7 +61,7 @@ describe("The Realtime API", () => {
       });
     });
 
-    it("should fail when token is not valid", async done => {
+    it("should fail when token is not valid", async () => {
       const token = await platform.auth.getJWTToken();
       const name = "/ping";
       const roomToken = "invalid token";
@@ -76,7 +73,6 @@ describe("The Realtime API", () => {
             socket.emit("realtime:join", { name, token: roomToken });
             socket.on("realtime:join:error", (event: any) => {
               expect(event.name).toEqual(name);
-              done();
             });
             socket.on("realtime:join:success", () => done(new Error("Should not occur")));
           })
@@ -86,7 +82,7 @@ describe("The Realtime API", () => {
       });
     });
 
-    it("should receive a realtime:join:success when token is valid and room has been joined", async done => {
+    it("should receive a realtime:join:success when token is valid and room has been joined", async () => {
       const token = await platform.auth.getJWTToken();
       const name = "test";
       const roomToken = "twake";
@@ -99,7 +95,6 @@ describe("The Realtime API", () => {
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", (event: any) => {
               expect(event.name).toEqual(name);
-              done();
             });
           })
           .on("unauthorized", () => {
@@ -110,7 +105,7 @@ describe("The Realtime API", () => {
   });
 
   describe("Leaving rooms", () => {
-    it("should not fail when room has not been joined first", async done => {
+    it("should not fail when room has not been joined first", async () => {
       const token = await platform.auth.getJWTToken();
       const name = "roomtest";
 
@@ -122,7 +117,6 @@ describe("The Realtime API", () => {
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
             socket.on("realtime:leave:success", (event: any) => {
               expect(event.name).toEqual(name);
-              done();
             });
           })
           .on("unauthorized", () => {
@@ -131,7 +125,7 @@ describe("The Realtime API", () => {
       });
     });
 
-    it("should send success when room has been joined first", async done => {
+    it("should send success when room has been joined first", async () => {
       const token = await platform.auth.getJWTToken();
       const roomToken = "twake";
       const name = "roomtest";
@@ -145,7 +139,6 @@ describe("The Realtime API", () => {
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
             socket.on("realtime:leave:success", (event: any) => {
               expect(event.name).toEqual(name);
-              done();
             });
           })
           .on("unauthorized", () => {

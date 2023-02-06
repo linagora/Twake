@@ -16,7 +16,7 @@ describe("The /messages API", () => {
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init({
       services: [
         "database",
@@ -56,18 +56,15 @@ describe("The /messages API", () => {
     const user = await testDbService.createUser([workspacePk], {});
 
     platform.currentUser.id = user.id;
-
-    ends();
   });
 
-  afterAll(async ends => {
+  afterAll(async () => {
     platform && (await platform.tearDown());
     platform = null;
-    ends();
   });
 
   describe("The GET /messages/?search=... route", () => {
-    it("Should find the searched messages", async done => {
+    it("Should find the searched messages", async () => {
       // await testDbService.createWorkspace(workspacePk2);
 
       const channel = await createChannel();
@@ -118,9 +115,8 @@ describe("The /messages API", () => {
 
       expect(resources.length).toEqual(1);
 
-      done();
     });
-    it("Filter out messages from channels we are not member of", async done => {
+    it("Filter out messages from channels we are not member of", async () => {
       const anotherUserId = uuidv1();
       const channel = await e2e_createChannel(platform, [platform.currentUser.id, anotherUserId]);
       const anotherChannel = await e2e_createChannel(platform, [anotherUserId], anotherUserId); //Test user is not the owner
@@ -189,7 +185,6 @@ describe("The /messages API", () => {
       const resources5 = await search("Filtered", { sender: anotherUserId, has_files: true });
       expect(resources5.length).toEqual(1);
 
-      done();
     });
   });
 

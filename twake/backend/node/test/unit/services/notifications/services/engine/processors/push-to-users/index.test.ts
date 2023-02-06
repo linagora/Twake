@@ -151,7 +151,7 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
       await expect(processor.process(message)).rejects.toThrowError("Missing required fields");
     });
 
-    it("will do nothing when mentions is not defined", async done => {
+    it("will do nothing when mentions is not defined", async () => {
       const message = getMessage();
       delete message.mentions;
 
@@ -159,10 +159,9 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       expect(gr.services.notifications.channelPreferences.getChannelPreferencesForUsers).not
         .toBeCalled;
-      done();
     });
 
-    it("will do nothing when mentions.users is not defined", async done => {
+    it("will do nothing when mentions.users is not defined", async () => {
       const message = getMessage();
       message.mentions = { users: undefined };
 
@@ -170,10 +169,9 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       expect(gr.services.notifications.channelPreferences.getChannelPreferencesForUsers).not
         .toBeCalled;
-      done();
     });
 
-    it("will do nothing when mentions.users is empty", async done => {
+    it("will do nothing when mentions.users is empty", async () => {
       const message = getMessage();
       message.mentions = { users: [] };
 
@@ -181,10 +179,9 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       expect(gr.services.notifications.channelPreferences.getChannelPreferencesForUsers).not
         .toBeCalled;
-      done();
     });
 
-    it("will keep users who did not read the channel yet", async done => {
+    it("will keep users who did not read the channel yet", async () => {
       const message = getMessage();
 
       setPreferences([
@@ -238,7 +235,6 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
       expect(gr.services.notifications.badges.save).toBeCalledTimes(2);
       expect(pubsubService.publish).toBeCalledTimes(2);
 
-      done();
     });
   });
 });

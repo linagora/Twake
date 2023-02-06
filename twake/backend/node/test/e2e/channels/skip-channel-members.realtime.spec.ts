@@ -59,7 +59,7 @@ describe.skip("The Channels Members Realtime feature", () => {
       );
     });
 
-    it("should notify the client", async done => {
+    it("should notify the client", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
 
@@ -98,7 +98,6 @@ describe.skip("The Channels Members Realtime feature", () => {
                 user_id: platform.currentUser.id,
                 channel_id: createdChannel.entity.id,
               });
-              done();
             });
           })
           .on("unauthorized", () => {
@@ -109,7 +108,7 @@ describe.skip("The Channels Members Realtime feature", () => {
   });
 
   describe("On channel member removal", () => {
-    it("should notify the client", async done => {
+    it("should notify the client", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
 
@@ -151,7 +150,6 @@ describe.skip("The Channels Members Realtime feature", () => {
                 user_id: platform.currentUser.id,
                 channel_id: creationResult.entity.id,
               });
-              done();
             });
             socket.emit("realtime:join", {
               name: getPublicRoomName(creationResult.entity),

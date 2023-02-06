@@ -10,12 +10,11 @@ import { ConsoleServiceImpl } from "../../../src/services/console/service";
 */
 
 export const it = (name: string, cb: (a: any) => void) => {
-  _it(name, async done => {
+  _it(name, async () => {
     if (gr.services.console.consoleType === "remote") {
       cb(done);
     } else {
       console.warn(`[skipped]: ${name} (console-mode only)`);
-      done();
     }
   });
 };
@@ -34,7 +33,7 @@ describe("The console API hooks", () => {
 
   const secret = "ohquoo1fohzeigitochaJeepoowug4Yuqueite6etojieg1oowaeraeshiW8ku8g";
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init({
       services: [
         "database",
@@ -68,12 +67,10 @@ describe("The console API hooks", () => {
 
     const console = platform.platform.getProvider<ConsoleServiceImpl>("console");
 
-    ends();
   });
 
-  afterAll(async ends => {
+  afterAll(async () => {
     await platform.tearDown();
-    ends();
   });
 
   const getPayload = (type: string, content: Record<any, any>) => {
@@ -94,16 +91,15 @@ describe("The console API hooks", () => {
   };
 
   describe("Common checks", () => {
-    it("should 404 when not POST ", async done => {
+    it("should 404 when not POST ", async () => {
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}`,
       });
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 400 when secret key is missing", async done => {
+    it("should 400 when secret key is missing", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}`,
@@ -115,10 +111,9 @@ describe("The console API hooks", () => {
         error: "Bad Request",
         message: "querystring should have required property 'secret_key'",
       });
-      done();
     });
 
-    it("should 403 when secret key is not valid ", async done => {
+    it("should 403 when secret key is not valid ", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}?secret_key=wrongOne`,
@@ -130,23 +125,21 @@ describe("The console API hooks", () => {
         error: "Forbidden",
         message: "Wrong secret",
       });
-      done();
     });
 
-    it("should 501 when type is not implemented", async done => {
+    it("should 501 when type is not implemented", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}?secret_key=${secret}`,
         payload: getPayload("unknown_type", {}),
       });
       expect(response.statusCode).toBe(501);
-      done();
     });
   });
 
   describe("User related hooks", () => {
     describe("User created/updated", () => {
-      it("should 200 when updated existing user", async done => {
+      it("should 200 when updated existing user", async () => {
         const user = testDbService.users[0];
 
         const response = await platform.app.inject({
@@ -200,10 +193,9 @@ describe("The console API hooks", () => {
           }),
         );
 
-        done();
       });
 
-      it("should 200 when creating new user", async done => {
+      it("should 200 when creating new user", async () => {
         const newUserConsoleId = String(testDbService.rand());
 
         const response = await platform.app.inject({
@@ -259,10 +251,9 @@ describe("The console API hooks", () => {
             role: "moderator",
           }),
         );
-        done();
       });
 
-      it("should 200 when creating new user with same username (generating new one)", async done => {
+      it("should 200 when creating new user with same username (generating new one)", async () => {
         const newUserConsoleId = String(testDbService.rand());
 
         const response = await platform.app.inject({
@@ -318,10 +309,9 @@ describe("The console API hooks", () => {
             role: "member",
           }),
         );
-        done();
       });
 
-      it("should 400 when creating user with email that already exists", async done => {
+      it("should 400 when creating user with email that already exists", async () => {
         const newUserConsoleId = String(testDbService.rand());
 
         const response = await platform.app.inject({
@@ -339,11 +329,10 @@ describe("The console API hooks", () => {
         expect(response.json()).toMatchObject({
           error: "Console user not created because email already exists",
         });
-        done();
       });
     });
     describe("User removed", () => {
-      it("should 200 when deleting", async done => {
+      it("should 200 when deleting", async () => {
         const company = testDbService.company;
         let users = await testDbService.getCompanyUsers(company.id);
         let user = users.find(a => a.username_canonical == "consolecreateduser");
@@ -366,10 +355,9 @@ describe("The console API hooks", () => {
         user = users.find(a => a.username_canonical == "consolecreateduser");
         expect(user).toBeFalsy();
 
-        done();
       });
 
-      it("should 400 when user not found", async done => {
+      it("should 400 when user not found", async () => {
         const company = testDbService.company;
 
         const response = await platform.app.inject({
@@ -385,14 +373,13 @@ describe("The console API hooks", () => {
 
         expect(response.statusCode).toBe(400);
 
-        done();
       });
     });
   });
 
   describe("Company related hooks", () => {
     describe("Company added", () => {
-      it("should 200 when company created", async done => {
+      it("should 200 when company created", async () => {
         const newCompanyCode = String(testDbService.rand());
         const response = await platform.app.inject({
           method: "POST",
@@ -432,11 +419,10 @@ describe("The console API hooks", () => {
           }),
         );
 
-        done();
       });
     });
     describe("Company updated", () => {
-      it("should 200 when company updated", async done => {
+      it("should 200 when company updated", async () => {
         const company = testDbService.company;
         expect(company).toBeTruthy();
         expect(company.identity_provider_id).toBeTruthy();
@@ -478,11 +464,10 @@ describe("The console API hooks", () => {
           }),
         );
 
-        done();
       });
     });
     describe("Plan updated", () => {
-      it("should 200 when plan updated", async done => {
+      it("should 200 when plan updated", async () => {
         const company = testDbService.company;
         expect(company).toBeTruthy();
         expect(company.identity_provider_id).toBeTruthy();
@@ -514,12 +499,11 @@ describe("The console API hooks", () => {
           }),
         );
 
-        done();
       });
     });
 
     describe("Company removed", () => {
-      it("should 200 when company removed", async done => {
+      it("should 200 when company removed", async () => {
         const company = testDbService.company;
         expect(company).toBeTruthy();
         expect(company.identity_provider_id).toBeTruthy();
@@ -538,7 +522,6 @@ describe("The console API hooks", () => {
         const deletedCompany = await testDbService.getCompanyFromDb(company.id);
         expect(deletedCompany).toBeFalsy();
 
-        done();
       });
     });
   });

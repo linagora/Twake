@@ -20,28 +20,25 @@ describe("Statistics implementation", () => {
   // let database: DatabaseServiceAPI;
   let channelUtils: ChannelUtils;
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init({
       services: ["database", "statistics", "webserver", "auth"],
     });
 
     expect(gr.services.statistics).toBeTruthy();
 
-    ends();
     channelUtils = getChannelUtils(platform);
   });
 
-  beforeEach(async ends => {
+  beforeEach(async () => {
     await platform.database.getConnector().drop();
-    ends();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await platform.tearDown();
-    done();
   });
 
-  it("Check statistics counters", async done => {
+  it("Check statistics counters", async () => {
     console.log(await gr.services.statistics.get(undefined, "counter-test"));
 
     expect(await gr.services.statistics.get(undefined, "counter-test")).toEqual(0);
@@ -65,7 +62,6 @@ describe("Statistics implementation", () => {
     expect(await gr.services.statistics.get(secondCompanyId, "counter-test2")).toEqual(0);
     expect(await gr.services.statistics.get(undefined, "counter-test2")).toEqual(1);
 
-    done();
   });
 
   function getContext(user?: User): WorkspaceExecutionContext {

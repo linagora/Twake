@@ -5,12 +5,11 @@ import { v1 as uuidv1 } from "uuid";
 import gr from "../../../src/services/global-resolver";
 
 export const itRemote = (name: string, cb: (a: any) => void) => {
-  _it(name, async done => {
+  _it(name, async () => {
     if (gr.services.console.consoleType === "remote") {
       cb(done);
     } else {
       console.warn(`[skipped]: ${name} (console-mode only)`);
-      done();
     }
   });
 };
@@ -28,7 +27,7 @@ describe("The console API auth", () => {
 
   const firstUserPassword = "superPassw0rd";
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init({
       services: [
         "database",
@@ -66,16 +65,14 @@ describe("The console API auth", () => {
 
     await new Promise(r => setTimeout(r, 1000));
 
-    ends();
   });
 
-  afterAll(async ends => {
+  afterAll(async () => {
     await platform.tearDown();
-    ends();
   });
 
   describe("Common checks", () => {
-    it("should 400 when required params are missing ", async done => {
+    it("should 400 when required params are missing ", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${loginUrl}`,
@@ -91,11 +88,10 @@ describe("The console API auth", () => {
         error: "Bad Request",
         message: "remote_access_token or email+password are required",
       });
-      done();
     });
   });
   describe("Auth using token", () => {
-    itRemote("should 403 when token is invalid", async done => {
+    itRemote("should 403 when token is invalid", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${loginUrl}`,
@@ -110,10 +106,9 @@ describe("The console API auth", () => {
       });
       expect(response.statusCode).toBe(403);
 
-      done();
     });
 
-    itRemote("should 200 when token is valid", async done => {
+    itRemote("should 200 when token is valid", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${loginUrl}`,
@@ -134,11 +129,10 @@ describe("The console API auth", () => {
         },
       });
       expect(response.statusCode).toBe(200);
-      done();
     });
   });
   describe("Auth using email/password", () => {
-    it("should 403 when user doesn't exists", async done => {
+    it("should 403 when user doesn't exists", async () => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${loginUrl}`,
@@ -153,10 +147,9 @@ describe("The console API auth", () => {
         message: "User doesn't exists",
         statusCode: 403,
       });
-      done();
     });
 
-    it("should 403 when password doesn't match", async done => {
+    it("should 403 when password doesn't match", async () => {
       const user = testDbService.users[0];
 
       const response = await platform.app.inject({
@@ -173,10 +166,9 @@ describe("The console API auth", () => {
         message: "Password doesn't match",
         statusCode: 403,
       });
-      done();
     });
 
-    it("should 200 when credentials is valid", async done => {
+    it("should 200 when credentials is valid", async () => {
       const user = testDbService.users[0];
 
       const response = await platform.app.inject({
@@ -199,11 +191,10 @@ describe("The console API auth", () => {
         },
       });
 
-      done();
     });
   });
   describe("Token renewal", () => {
-    it("should 200 when refresh from access_token", async done => {
+    it("should 200 when refresh from access_token", async () => {
       const user = testDbService.users[0];
 
       const firstResponse = await platform.app.inject({
@@ -232,11 +223,10 @@ describe("The console API auth", () => {
         expect(secondRes.expiration).toBeGreaterThan(firstRes.expiration);
         expect(secondRes.refresh_expiration).toBeGreaterThan(firstRes.refresh_expiration);
 
-        done();
       }, 2000);
     });
 
-    it("should 200 when refresh from refresh_token", async done => {
+    it("should 200 when refresh from refresh_token", async () => {
       const user = testDbService.users[0];
 
       const firstResponse = await platform.app.inject({
@@ -265,7 +255,6 @@ describe("The console API auth", () => {
         expect(secondRes.expiration).toBeGreaterThan(firstRes.expiration);
         expect(secondRes.refresh_expiration).toBeGreaterThan(firstRes.refresh_expiration);
 
-        done();
       }, 2000);
     });
   });

@@ -138,7 +138,7 @@ describe("The NewChannelMessageProcessor class", () => {
         ]);
       }
 
-      it("should return undefined when there is no one to notify", async done => {
+      it("should return undefined when there is no one to notify", async () => {
         const message = getMessage(true);
         const result = await processor.process(message);
 
@@ -163,10 +163,9 @@ describe("The NewChannelMessageProcessor class", () => {
         });
 
         expect(result).toBeUndefined();
-        done();
       });
 
-      it("without mentions, should get the preferences for all channel members and return only the ones who want to be notified", async done => {
+      it("without mentions, should get the preferences for all channel members and return only the ones who want to be notified", async () => {
         const message = getMessage(true);
         setNewThreadPreferences();
         const result = await processor.process(message);
@@ -192,10 +191,9 @@ describe("The NewChannelMessageProcessor class", () => {
         });
 
         expect(result.mentions.users).toEqual(["1"]);
-        done();
       });
 
-      it("with @all mention, should get the preferences for all channel members and return only the ones who want to be notified", async done => {
+      it("with @all mention, should get the preferences for all channel members and return only the ones who want to be notified", async () => {
         const message = getMessage(true);
         message.mentions.specials = ["all"];
         setNewThreadPreferences();
@@ -222,10 +220,9 @@ describe("The NewChannelMessageProcessor class", () => {
         });
 
         expect(result.mentions.users).toEqual(["1", "2"]);
-        done();
       });
 
-      it("with @here mentions, should get the preferences for all channel members and return only the ones who want to be notified", async done => {
+      it("with @here mentions, should get the preferences for all channel members and return only the ones who want to be notified", async () => {
         const message = getMessage(true);
         message.mentions.specials = ["here"];
         setNewThreadPreferences();
@@ -252,10 +249,9 @@ describe("The NewChannelMessageProcessor class", () => {
         });
 
         expect(result.mentions.users).toEqual(["1", "2"]);
-        done();
       });
 
-      it("with @user mentions, should get the preferences for all channel members and return only the ones who want to be notified", async done => {
+      it("with @user mentions, should get the preferences for all channel members and return only the ones who want to be notified", async () => {
         const message = getMessage(true);
         message.mentions.users = ["1", "2", "3", "4"];
         setNewThreadPreferences();
@@ -306,10 +302,9 @@ describe("The NewChannelMessageProcessor class", () => {
         });
 
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
-        done();
       });
 
-      it("When message is a direct message", async done => {
+      it("When message is a direct message", async () => {
         const message = getMessage(true);
         message.workspace_id = ChannelType.DIRECT;
         message.mentions.users = ["1", "2", "3", "4"];
@@ -361,7 +356,6 @@ describe("The NewChannelMessageProcessor class", () => {
         });
 
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
-        done();
       });
     });
 
@@ -399,7 +393,7 @@ describe("The NewChannelMessageProcessor class", () => {
         ]);
       }
 
-      it("should return undefined when there is no one to notify", async done => {
+      it("should return undefined when there is no one to notify", async () => {
         const message = getMessage();
         setUsersInThread(["1", "2", "3", "4"]);
         const result = await processor.process(message);
@@ -421,10 +415,9 @@ describe("The NewChannelMessageProcessor class", () => {
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
 
         expect(result).toBeUndefined();
-        done();
       });
 
-      it("without mentions, should get the preferences for all members involved and return only the ones with preference !== NONE", async done => {
+      it("without mentions, should get the preferences for all members involved and return only the ones with preference !== NONE", async () => {
         const message = getMessage();
         setUsersInThread(["1", "2", "3", "4"]);
         setThreadResponsePreferences();
@@ -447,10 +440,9 @@ describe("The NewChannelMessageProcessor class", () => {
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
 
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
-        done();
       });
 
-      it("with @user mentions, should get the preferences for all members involved and return only the ones who want to be notified", async done => {
+      it("with @user mentions, should get the preferences for all members involved and return only the ones who want to be notified", async () => {
         const message = getMessage();
         message.mentions.users = ["1", "2", "3", "4"];
         setUsersInThread(["1", "2", "3", "4"]);
@@ -497,7 +489,6 @@ describe("The NewChannelMessageProcessor class", () => {
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
-        done();
       });
     });
   });

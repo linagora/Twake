@@ -37,7 +37,7 @@ describe("The /workspace users API", () => {
     });
   };
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init({
       services: [
         "database",
@@ -76,16 +76,14 @@ describe("The /workspace users API", () => {
     await testDbService.createUser([ws2pk], { workspaceRole: "member" });
     await testDbService.createUser([], { companyRole: "member" });
     await testDbService.createUser([ws3pk], { companyRole: "guest", workspaceRole: "member" });
-    ends();
   });
 
-  afterAll(async ends => {
+  afterAll(async () => {
     await platform.tearDown();
-    ends();
   });
 
   describe("The GET /workspaces/users route", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
 
       const response = await platform.app.inject({
@@ -93,10 +91,9 @@ describe("The /workspace users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 404 when workspace not found", async done => {
+    it("should 404 when workspace not found", async () => {
       const userId = testDbService.users[0].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
@@ -107,10 +104,9 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
       });
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[0].id;
@@ -131,12 +127,11 @@ describe("The /workspace users API", () => {
         checkUserObject(resource);
       }
 
-      done();
     });
   });
 
   describe("The GET /workspaces/users/:user_id route", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
       const userId = testDbService.users[0].id;
 
@@ -145,10 +140,9 @@ describe("The /workspace users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${userId}`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 404 when workspace not found", async done => {
+    it("should 404 when workspace not found", async () => {
       const userId = testDbService.users[0].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
@@ -159,10 +153,9 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
       });
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -177,12 +170,11 @@ describe("The /workspace users API", () => {
 
       const resource = response.json()["resource"];
       checkUserObject(resource);
-      done();
     });
   });
 
   describe("The POST /workspaces/users route (add)", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
 
       const response = await platform.app.inject({
@@ -190,10 +182,9 @@ describe("The /workspace users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 403 user is not workspace moderator", async done => {
+    it("should 403 user is not workspace moderator", async () => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -212,10 +203,9 @@ describe("The /workspace users API", () => {
         },
       });
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should 400 when requested user not in company", async done => {
+    it("should 400 when requested user not in company", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id;
@@ -233,10 +223,9 @@ describe("The /workspace users API", () => {
         },
       });
       expect(response.statusCode).toBe(400);
-      done();
     });
 
-    it("should 201 when requested already in workspace (ignore)", async done => {
+    it("should 201 when requested already in workspace (ignore)", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id;
@@ -254,10 +243,9 @@ describe("The /workspace users API", () => {
         },
       });
       expect(response.statusCode).toBe(201);
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id;
@@ -294,12 +282,11 @@ describe("The /workspace users API", () => {
       expect(workspaceUsersCount).toBe(5);
       // expect(companyUsersCount).toBe(6);
 
-      done();
     });
   });
 
   describe("The POST /workspaces/users/:user_id route (update)", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
       const userId = testDbService.users[0].id;
 
@@ -308,10 +295,9 @@ describe("The /workspace users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${userId}`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 403 user is not workspace moderator", async done => {
+    it("should 403 user is not workspace moderator", async () => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -330,10 +316,9 @@ describe("The /workspace users API", () => {
         },
       });
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should 404 when user not found in workspace", async done => {
+    it("should 404 when user not found in workspace", async () => {
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id;
       const anotherWorkspaceUserId = testDbService.workspaces[3].users[0].id;
@@ -351,10 +336,9 @@ describe("The /workspace users API", () => {
       });
 
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id;
@@ -381,12 +365,11 @@ describe("The /workspace users API", () => {
       const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
       expect(usersCount).toBe(5);
 
-      done();
     });
   });
 
   describe("The DELETE /workspaces/users/:user_id route", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
       const anotherUserId = testDbService.users[1].id;
 
@@ -395,10 +378,9 @@ describe("The /workspace users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${anotherUserId}`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 403 user is not workspace moderator", async done => {
+    it("should 403 user is not workspace moderator", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[3].id;
@@ -415,10 +397,9 @@ describe("The /workspace users API", () => {
       console.log(response.body);
 
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should 404 when user not found in workspace", async done => {
+    it("should 404 when user not found in workspace", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id;
@@ -432,10 +413,9 @@ describe("The /workspace users API", () => {
 
       expect(response.statusCode).toBe(404);
 
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id;
@@ -463,7 +443,6 @@ describe("The /workspace users API", () => {
       const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
       expect(usersCount).toBe(4);
 
-      done();
     });
   });
 });

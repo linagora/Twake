@@ -8,7 +8,7 @@ describe("The Websocket authentication", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
-  beforeEach(async ends => {
+  beforeEach(async () => {
     platform = await init({
       services: [
         "webserver",
@@ -31,15 +31,13 @@ describe("The Websocket authentication", () => {
 
     socket = io.connect("http://localhost:3000", { path: "/socket" });
 
-    ends();
   });
 
-  afterEach(async ends => {
+  afterEach(async () => {
     platform && (await platform.tearDown());
     platform = null;
     socket && socket.close();
     socket = null;
-    ends();
   });
 
   describe("JWT-based Authentication", () => {
@@ -71,7 +69,7 @@ describe("The Websocket authentication", () => {
       });
     });
 
-    it("should be able to connect with a JWT token", async done => {
+    it("should be able to connect with a JWT token", async () => {
       const token = await platform.auth.getJWTToken();
 
       socket.connect();
@@ -79,10 +77,9 @@ describe("The Websocket authentication", () => {
         socket
           .emit("authenticate", { token })
           .on("authenticated", () => {
-            done();
           })
           .on("unauthorized", () => {
-            done(new Error("Should not occur"));
+            new Error("Should not occur");
           });
       });
     });
