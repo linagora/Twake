@@ -538,6 +538,7 @@ export class DocumentsService {
       driveItemVersion.file_metadata.size = metadata.size;
       driveItemVersion.file_metadata.name = metadata.name;
       driveItemVersion.file_metadata.mime = metadata.mime;
+      driveItemVersion.drive_item_id = item.id;
 
       await this.fileVersionRepository.save(driveItemVersion);
 
