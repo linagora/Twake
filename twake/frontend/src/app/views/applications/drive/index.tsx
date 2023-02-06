@@ -36,13 +36,8 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
   const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom(initialParentId || 'root'));
 
   const { download, downloadZip, update } = useDriveActions();
-<<<<<<< HEAD
   const { access, item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
-  const { item: trash, refresh: refreshTrash } = useDriveItem('trash');
-=======
-  const { item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
   const { item: trash } = useDriveItem('trash');
->>>>>>> #2712 Fixed trash size not being shown at initial render
   const { uploadTree } = useDriveUpload();
   useDriveRealtime(parentId);
 
