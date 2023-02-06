@@ -505,7 +505,7 @@ export const makeStandaloneAccessLevel = async (
  * @param {string} prefix - folder prefix
  * @returns {Promise<void>}
  */
- export const addDriveItemToArchive = async (
+export const addDriveItemToArchive = async (
   id: string,
   entity: DriveFile | null,
   archive: archiver.Archiver,
@@ -536,7 +536,6 @@ export const makeStandaloneAccessLevel = async (
       company_id: context.company.id,
     });
 
-    const childCounter = items.getEntities().length;
     let currentCounter = counter;
 
     await Promise.all(
@@ -556,7 +555,6 @@ export const makeStandaloneAccessLevel = async (
     return currentCounter;
   }
 };
-
 
 /**
  * Extracts the most popular 250 keywords from a text.
