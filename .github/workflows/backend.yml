@@ -24,6 +24,19 @@ jobs:
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run build
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
+      - name: copy coverage report from container to host
+        run: docker cp $(docker ps -aq --filter label=com.docker.compose.project=twake):/app/twake/coverage coverage
+      - name: upload test coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report-${{ github.event.pull_request.number }}
+          path: coverage/lcov-report
+      - name: deploy coverage report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: coverage/lcov-report
+          sub_directory: pr-${{ github.event.pull_request.number }} 
       - name: e2e-mongo-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
       - name: e2e-cassandra-test
