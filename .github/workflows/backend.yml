@@ -24,8 +24,6 @@ jobs:
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run build
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
-      - name: copy coverage report from container to host
-        run: docker cp $(docker ps -aq --filter name=node):/usr/src/app/coverage .
       - name: upload test coverage report
         uses: actions/upload-artifact@v2
         with:
