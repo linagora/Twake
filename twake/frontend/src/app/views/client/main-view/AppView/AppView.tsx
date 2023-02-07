@@ -35,7 +35,7 @@ const AppView: FC<PropsType> = props => {
     case 'twake_tasks':
       return <Tasks channel={channel} options={configuration} />;
     case 'messages':
-      return <Messages channel={channel} options={configuration} />;
+      return <Drive />;
     default:
       return <NoApp />;
   }

@@ -7,11 +7,9 @@ import {
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import {
   Initializable,
   logger,
-  RealtimeSaved,
   TwakeContext,
   TwakeServiceProvider,
 } from "../../../core/platform/framework";
@@ -39,7 +37,6 @@ import {
   UpdateDeliveryStatusOperation,
 } from "../types";
 import _ from "lodash";
-import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import { ThreadMessagesOperationsService } from "./messages-operations";
 import { Thread } from "../entities/threads";
 import { UserObject } from "../../user/web/types";
