@@ -654,21 +654,35 @@ export class DocumentsService {
       zlib: { level: 9 },
     });
 
+    let counter = ids.length;
+
     await Promise.all(
       ids.map(async id => {
         if (!(await checkAccess(id, null, "read", this.repository, context))) {
           this.logger.warn(`not enough permissions to download ${id}, skipping`);
+          counter--;
           return;
         }
 
         try {
-          await addDriveItemToArchive(id, null, archive, this.repository, context);
+          counter = await addDriveItemToArchive(
+            id,
+            null,
+            archive,
+            this.repository,
+            context,
+            counter,
+          );
         } catch (error) {
           this.logger.warn("failed to add item to archive", error);
           throw new Error("Failed to add item to archive");
         }
       }),
     );
+
+    if (counter === 0) {
+      archive.finalize();
+    }
 
     return archive;
   };
