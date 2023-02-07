@@ -185,6 +185,7 @@
     "knowledge-graph",
     "knowledge-graph-web",
     "email-pusher",
-    "documents"
+    "documents",
+    "tags"
   ]
 }
