@@ -30,6 +30,8 @@ services:
       context: .
       dockerfile: ./docker/twake-node/Dockerfile
       target: test
+    volumes:
+      - ./coverage/:/usr/src/app/coverage/
     environment:
       - NODE_ENV=test
       - DB_DRIVER
