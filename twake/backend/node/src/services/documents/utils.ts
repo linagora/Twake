@@ -511,8 +511,9 @@ export const addDriveItemToArchive = async (
   archive: archiver.Archiver,
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext,
+  counter: number,
   prefix?: string,
-): Promise<void> => {
+): Promise<number> => {
   const item = entity || (await repository.findOne({ id, company_id: context.company.id }));
 
   if (!item) {
@@ -528,15 +529,30 @@ export const addDriveItemToArchive = async (
     }
 
     archive.append(file.file, { name: file.name, prefix: prefix ?? "" });
+    return counter - 1;
   } else {
     const items = await repository.find({
       parent_id: item.id,
       company_id: context.company.id,
     });
 
-    items.getEntities().forEach(child => {
-      addDriveItemToArchive(child.id, child, archive, repository, context, `${item.name}/`);
-    });
+    let currentCounter = counter;
+
+    await Promise.all(
+      items.getEntities().map(async child => {
+        currentCounter = await addDriveItemToArchive(
+          child.id,
+          child,
+          archive,
+          repository,
+          context,
+          currentCounter,
+          `${item.name}/`,
+        );
+      }),
+    );
+
+    return currentCounter;
   }
 };
 
