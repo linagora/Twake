@@ -32,7 +32,7 @@ jobs:
       - name: deploy coverage report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.DEPLOY_COVERAGE_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: coverage/lcov-report
           destination_dir: test/coverage/pr-${{ github.event.pull_request.number }} 
       - name: e2e-mongo-test
