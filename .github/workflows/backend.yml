@@ -32,9 +32,9 @@ jobs:
       - name: deploy coverage report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          github_token: ${{ secrets.DEPLOY_COVERAGE_TOKEN }}
           publish_dir: coverage/lcov-report
-          sub_directory: pr-${{ github.event.pull_request.number }} 
+          destination_dir: test/coverage/pr-${{ github.event.pull_request.number }} 
       - name: e2e-mongo-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
       - name: e2e-cassandra-test
