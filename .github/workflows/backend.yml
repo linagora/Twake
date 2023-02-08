@@ -34,7 +34,7 @@ jobs:
         uses: slavcodev/coverage-monitor-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          coverage_path: "app/coverage/clover.xml"
+          coverage_path: "twake/coverage/clover.xml"
           threshold_alert: 10
           threshold_warning: 50
           threshold_metric: "lines"
