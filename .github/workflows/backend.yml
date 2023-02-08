@@ -25,19 +25,14 @@ jobs:
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
       - name: Comment
-        if: success()
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const pr_number = context.payload.pull_request.number
-            const pr_comment = `Workflow completed successfully!`
-            
-            github.issues.createComment({
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: pr_number,
-              body: pr_comment
+              body: '👋 Coverage results!'
             })
       - name: upload test coverage report
         uses: actions/upload-artifact@v2
