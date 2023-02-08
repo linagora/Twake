@@ -1,0 +1,32 @@
+name: backend-coverage
+
+on:
+  pull_request_target:
+    types: [assigned, opened, synchronize, reopened]
+    branches: [main, develop, qa, canary]
+    paths:
+      - "twake/backend/core/**"
+      - "twake/backend/node/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+      - name: unit-test
+        run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
+      - name: upload test coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report-${{ github.event.pull_request.number }}
+          path: twake/coverage/
+      - name: Monitor coverage
+        uses: slavcodev/coverage-monitor-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          coverage_path: "twake/coverage/clover.xml"
+          threshold_alert: 10
+          threshold_warning: 50
+          threshold_metric: "lines"
