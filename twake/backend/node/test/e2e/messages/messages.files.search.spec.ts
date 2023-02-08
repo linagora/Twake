@@ -29,10 +29,9 @@ describe("Search files", () => {
     channelUtils = getChannelUtils(platform);
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await platform?.tearDown();
     platform = null;
-    done();
   });
 
   const files = [
@@ -50,7 +49,7 @@ describe("Search files", () => {
     };
   }
 
-  it("should return uploaded files", async done => {
+  it("should return uploaded files", async () => {
     let channel = channelUtils.getChannel();
     channel = (await gr.services.channels.channels.save(channel, {}, getContext())).entity;
     const channelId = channel.id;
@@ -117,7 +116,6 @@ describe("Search files", () => {
     resources = await search("sam");
     expect(resources.length).toEqual(5);
 
-    done();
   });
 
   async function search(

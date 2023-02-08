@@ -19,17 +19,15 @@ describe("The /users API", () => {
 
   const nonExistentId = uuidv1();
 
-  beforeEach(async ends => {
+  beforeEach(async () => {
     platform = await init();
-    ends();
   });
-  afterEach(async ends => {
+  afterEach(async () => {
     await platform.tearDown();
     platform = null;
-    ends();
   });
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     const platform = await init({
       services: [
         "database",
@@ -62,25 +60,19 @@ describe("The /users API", () => {
     });
     await testDbService.createUser([workspacePk]);
 
-    ends();
-  });
-
-  afterAll(async ends => {
-    ends();
   });
 
   describe("The GET /users/:id route", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/users/1`,
       });
 
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 404 when user does not exists", async done => {
+    it("should 404 when user does not exists", async () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: testDbService.users[0].id });
       const response = await platform.app.inject({
         method: "GET",
@@ -96,10 +88,9 @@ describe("The /users API", () => {
         message: `User ${nonExistentId} not found`,
         statusCode: 404,
       });
-      done();
     });
 
-    it("should 200 and big response for myself", async done => {
+    it("should 200 and big response for myself", async () => {
       const myId = testDbService.users[0].id;
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
@@ -150,10 +141,9 @@ describe("The /users API", () => {
         ]),
       );
 
-      done();
     });
 
-    it("should 200 and short response for another user", async done => {
+    it("should 200 and short response for another user", async () => {
       const myId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
 
@@ -191,22 +181,20 @@ describe("The /users API", () => {
         companies: expect.anything(),
       });
 
-      done();
     });
   });
 
   describe("The GET /users route", () => {
-    it("should 401 when user is not authenticated", async done => {
+    it("should 401 when user is not authenticated", async () => {
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/users`,
       });
 
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 200 with array of users", async done => {
+    it("should 200 with array of users", async () => {
       const myId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
 
@@ -228,22 +216,20 @@ describe("The /users API", () => {
       expect(json).toMatchObject({ resources: expect.any(Array) });
       const resources = json.resources;
 
-      done();
     });
   });
 
   describe("The GET /users/:user_id/companies route", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/users/1/companies`,
       });
 
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 404 when user does not exists", async done => {
+    it("should 404 when user does not exists", async () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: testDbService.users[0].id });
       const response = await platform.app.inject({
         method: "GET",
@@ -259,10 +245,9 @@ describe("The /users API", () => {
         message: `User ${nonExistentId} not found`,
         statusCode: 404,
       });
-      done();
     });
 
-    it("should 200 and on correct request", async done => {
+    it("should 200 and on correct request", async () => {
       const myId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
 
@@ -306,21 +291,19 @@ describe("The /users API", () => {
           });
         }
       }
-      done();
     });
   });
 
   describe("The GET /companies/:company_id route", () => {
-    it("should 404 when company does not exists", async done => {
+    it("should 404 when company does not exists", async () => {
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/11111111-1111-1111-1111-111111111111`,
       });
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 200 when company exists", async done => {
+    it("should 200 when company exists", async () => {
       const companyId = testDbService.company.id;
 
       const response = await platform.app.inject({
@@ -354,7 +337,6 @@ describe("The /users API", () => {
         total_messages: expect.any(Number),
       });
 
-      done();
     });
   });
 
@@ -362,7 +344,7 @@ describe("The /users API", () => {
     const deviceToken = "testDeviceToken";
 
     describe("Register device (POST)", () => {
-      it("should 400 when type is not FCM", async done => {
+      it("should 400 when type is not FCM", async () => {
         const myId = testDbService.users[0].id;
 
         const jwtToken = await platform.auth.getJWTToken({ sub: myId });
@@ -388,10 +370,9 @@ describe("The /users API", () => {
           error: "Bad Request",
           message: "Type should be FCM only",
         });
-        done();
       });
 
-      it("should 200 when ok", async done => {
+      it("should 200 when ok", async () => {
         const firstId = testDbService.users[0].id;
 
         const jwtToken = await platform.auth.getJWTToken({ sub: firstId });
@@ -429,10 +410,9 @@ describe("The /users API", () => {
           version: "1",
         });
 
-        done();
       });
 
-      it("should 200 when register token to another person", async done => {
+      it("should 200 when register token to another person", async () => {
         const firstId = testDbService.users[0].id;
         const secondId = testDbService.users[1].id;
 
@@ -477,11 +457,10 @@ describe("The /users API", () => {
         user = await testDbService.getUserFromDb({ id: firstId });
         expect(user.devices).toMatchObject([]);
 
-        done();
       });
     });
     describe("List registered devices (GET)", () => {
-      it("should 200 when request devices", async done => {
+      it("should 200 when request devices", async () => {
         const myId = testDbService.users[1].id;
 
         const jwtToken = await platform.auth.getJWTToken({ sub: myId });
@@ -504,12 +483,11 @@ describe("The /users API", () => {
             },
           ],
         });
-        done();
       });
     });
 
     describe("De-register device (DELETE)", () => {
-      it("should 200 when device not found for the user", async done => {
+      it("should 200 when device not found for the user", async () => {
         const myId = testDbService.users[1].id;
 
         const jwtToken = await platform.auth.getJWTToken({ sub: myId });
@@ -532,10 +510,9 @@ describe("The /users API", () => {
           version: "1",
         });
 
-        done();
       });
 
-      it("should 200 when device found and device should be removed", async done => {
+      it("should 200 when device found and device should be removed", async () => {
         const myId = testDbService.users[1].id;
 
         const jwtToken = await platform.auth.getJWTToken({ sub: myId });
@@ -553,13 +530,12 @@ describe("The /users API", () => {
         const device = await testDbService.getDeviceFromDb(deviceToken);
         expect(device).toBeFalsy();
 
-        done();
       });
     });
   });
 
   describe("Recent contacts", () => {
-    it("should return list of recent contacts of user", async done => {
+    it("should return list of recent contacts of user", async () => {
       // api = new Api(platform);
       const channelUtils = getChannelUtils(platform);
 
@@ -639,7 +615,6 @@ describe("The /users API", () => {
       expect(result.resources.length).toEqual(5);
       expect(result.resources[0].first_name).toEqual("FirstName2");
 
-      done();
     });
   });
 });

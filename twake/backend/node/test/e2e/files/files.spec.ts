@@ -19,10 +19,9 @@ describe.skip("The Files feature", () => {
     });
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await platform?.tearDown();
     platform = null;
-    done();
   });
 
   describe("On user send files", () => {
@@ -36,7 +35,7 @@ describe.skip("The Files feature", () => {
     ].map(p => `${__dirname}/${p}`);
     const thumbnails = [1, 1, 2, 5, 0, 1];
 
-    it("should save file and generate previews", async done => {
+    it("should save file and generate previews", async () => {
       for (const i in files) {
         const file = files[i];
 
@@ -66,7 +65,6 @@ describe.skip("The Files feature", () => {
         }
       }
 
-      done();
     }, 120000);
   });
 });

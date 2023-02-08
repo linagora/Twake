@@ -7,13 +7,12 @@ import gr from "../../../src/services/global-resolver";
  THIS TESTS RUNS ONLY FOR THE CONSOLE-MODE (CONSOLE TYPE: INTERNAL)
 */
 
-export const it = (name: string, cb: (a: any) => void) => {
-  _it(name, async done => {
+export const it = async (name: string, cb: (a: any) => void) => {
+  return _it(name, async () => {
     if (gr.services.console.consoleType === "internal") {
-      cb(done);
+      await cb();
     } else {
       console.warn(`[skipped]: ${name} (no-console mode only)`);
-      done();
     }
   });
 };
@@ -37,7 +36,7 @@ describe("The /workspace/pending users API", () => {
     return Promise.resolve(gr.services.console.consoleType === "remote");
   }
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init({
       services: [
         "user",
@@ -79,16 +78,14 @@ describe("The /workspace/pending users API", () => {
       email: fourthUser,
     });
 
-    ends();
   });
 
-  afterAll(async ends => {
+  afterAll(async () => {
     await platform.tearDown();
-    ends();
   });
 
   describe("Invite users to a workspace by email", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
 
       const response = await platform.app.inject({
@@ -96,10 +93,9 @@ describe("The /workspace/pending users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/invite`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 404 when workspace not found", async done => {
+    it("should 404 when workspace not found", async () => {
       const userId = testDbService.users[0].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
@@ -120,10 +116,9 @@ describe("The /workspace/pending users API", () => {
       });
 
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 403 when requester is not at least workspace member", async done => {
+    it("should 403 when requester is not at least workspace member", async () => {
       const workspace_id = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[0].id;
 
@@ -144,10 +139,9 @@ describe("The /workspace/pending users API", () => {
         },
       });
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -190,10 +184,9 @@ describe("The /workspace/pending users API", () => {
         });
       }
 
-      done();
     });
 
-    it("should fail in response with already added users", async done => {
+    it("should fail in response with already added users", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -234,12 +227,11 @@ describe("The /workspace/pending users API", () => {
         status: "ok",
       });
 
-      done();
     });
   });
 
   describe("Delete a pending user from a workspace", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
       const email = "first@test-user.com";
 
@@ -249,10 +241,9 @@ describe("The /workspace/pending users API", () => {
       });
 
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 404 when workspace not found", async done => {
+    it("should 404 when workspace not found", async () => {
       const companyId = testDbService.company.id;
       const email = "first@test-user.com";
 
@@ -266,10 +257,9 @@ describe("The /workspace/pending users API", () => {
       });
 
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 403 when requester is not at least workspace member", async done => {
+    it("should 403 when requester is not at least workspace member", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[0].id;
@@ -284,10 +274,9 @@ describe("The /workspace/pending users API", () => {
       });
 
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should {status:error} when email is absent in pending list", async done => {
+    it("should {status:error} when email is absent in pending list", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -305,10 +294,9 @@ describe("The /workspace/pending users API", () => {
         status: "error",
       });
 
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -326,12 +314,11 @@ describe("The /workspace/pending users API", () => {
         status: "success",
       });
 
-      done();
     });
   });
 
   describe("Get list of pending users in workspace", () => {
-    it("should 401 when not authenticated", async done => {
+    it("should 401 when not authenticated", async () => {
       const companyId = testDbService.company.id;
       const email = "first@test-user.com";
 
@@ -340,10 +327,9 @@ describe("The /workspace/pending users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending`,
       });
       expect(response.statusCode).toBe(401);
-      done();
     });
 
-    it("should 404 when workspace not found", async done => {
+    it("should 404 when workspace not found", async () => {
       const companyId = testDbService.company.id;
       const email = "first@test-user.com";
 
@@ -357,10 +343,9 @@ describe("The /workspace/pending users API", () => {
       });
 
       expect(response.statusCode).toBe(404);
-      done();
     });
 
-    it("should 403 when requester is not at least workspace member", async done => {
+    it("should 403 when requester is not at least workspace member", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[0].id;
@@ -375,10 +360,9 @@ describe("The /workspace/pending users API", () => {
       });
 
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should 200 when ok", async done => {
+    it("should 200 when ok", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -408,10 +392,9 @@ describe("The /workspace/pending users API", () => {
         company_role: "member",
       });
 
-      done();
     });
 
-    it("existed user should be added instantly", async done => {
+    it("existed user should be added instantly", async () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -431,7 +414,6 @@ describe("The /workspace/pending users API", () => {
       console.log("resources B: ", resources);
       expect(resources.find((a: any) => a.user.email === emailForExistedUser)).toBeDefined();
 
-      done();
     });
   });
 });

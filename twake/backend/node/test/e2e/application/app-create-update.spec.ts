@@ -18,7 +18,7 @@ describe("Applications", () => {
   let api: Api;
   let appRepo;
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init();
     await platform.database.getConnector().drop();
     testDbService = await TestDbService.getInstance(platform, true);
@@ -26,11 +26,10 @@ describe("Applications", () => {
     postPayload.company_id = platform.workspace.company_id;
     api = new Api(platform);
     appRepo = await testDbService.getRepository("application", Application);
-    ends();
   });
 
-  afterAll(done => {
-    platform.tearDown().then(() => done());
+  afterAll(async () => {
+    await platform.tearDown();
   });
 
   const publishApp = async id => {
@@ -41,7 +40,7 @@ describe("Applications", () => {
   };
 
   describe("Create application", function () {
-    it("should 403 if creator is not a company admin", async done => {
+    it("should 403 if creator is not a company admin", async () => {
       const payload = { resource: cloneDeep(postPayload) };
 
       const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
@@ -50,10 +49,9 @@ describe("Applications", () => {
 
       const response = await api.post(`${url}/applications`, payload, user.id);
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should 200 on application create", async done => {
+    it("should 200 on application create", async () => {
       const payload = { resource: cloneDeep(postPayload) };
       const response = await api.post(`${url}/applications`, payload);
       expect(response.statusCode).toBe(200);
@@ -88,21 +86,19 @@ describe("Applications", () => {
         private_key: expect.any(String),
       });
 
-      done();
     });
   });
   describe("Update application", function () {
     let createdApp: PublicApplicationObject;
 
-    beforeAll(async done => {
+    beforeAll(async () => {
       const payload = { resource: cloneDeep(postPayload) };
       const response = await api.post(`${url}/applications`, payload);
       createdApp = response.resource;
 
-      done();
     });
 
-    it("should 403 if editor is not a company admin", async done => {
+    it("should 403 if editor is not a company admin", async () => {
       if (!createdApp) throw new Error("can't find created app");
       log.debug(createdApp);
 
@@ -112,17 +108,15 @@ describe("Applications", () => {
 
       const response = await api.post(`${url}/applications/${createdApp.id}`, postPayload, user.id);
       expect(response.statusCode).toBe(403);
-      done();
     });
 
-    it("should 404 if application not found", async done => {
+    it("should 404 if application not found", async () => {
       const response = await api.post(`${url}/applications/${uuidv1()}`, { resource: postPayload });
       expect(response.statusCode).toBe(404);
-      done();
     });
 
     describe("Unpublished application", () => {
-      it("should 200 on application update", async done => {
+      it("should 200 on application update", async () => {
         const payload = { resource: cloneDeep(postPayload) };
 
         payload.resource.is_default = true;
@@ -159,20 +153,18 @@ describe("Applications", () => {
           private_key: expect.any(String),
         });
 
-        done();
       });
     });
 
     describe.skip("Published application", () => {
-      beforeAll(async done => {
+      beforeAll(async () => {
         const payload = { resource: cloneDeep(postPayload) };
         const response = await api.post(`${url}/applications`, payload);
         createdApp = response.resource;
         await publishApp(createdApp.id);
-        done();
       });
 
-      it("should 200 on update if allowed fields changed", async done => {
+      it("should 200 on update if allowed fields changed", async () => {
         const payload = { resource: cloneDeep(createdApp) as Application };
         const entity = await appRepo.findOne({ id: createdApp.id });
         payload.resource.api = cloneDeep(entity.api);
@@ -184,16 +176,14 @@ describe("Applications", () => {
           requested: true,
           published: true,
         });
-        done();
       });
 
-      it("should 400 on update if not allowed fields changed", async done => {
+      it("should 400 on update if not allowed fields changed", async () => {
         const payload = { resource: cloneDeep(createdApp) as Application };
         const entity = await appRepo.findOne({ id: createdApp.id });
         payload.resource.api = cloneDeep(entity.api);
         const response = await api.post(`${url}/applications/${createdApp.id}`, payload);
         expect(response.statusCode).toBe(400);
-        done();
       });
     });
   });
@@ -201,7 +191,7 @@ describe("Applications", () => {
     let firstApp: PublicApplicationObject;
     let secondApp: PublicApplicationObject;
     let thirdApp: PublicApplicationObject;
-    beforeAll(async done => {
+    beforeAll(async () => {
       const payload = { resource: cloneDeep(postPayload) };
       firstApp = (await api.post(`${url}/applications`, payload)).resource;
       secondApp = (await api.post(`${url}/applications`, payload)).resource;
@@ -210,10 +200,9 @@ describe("Applications", () => {
       await publishApp(firstApp.id);
       await publishApp(secondApp.id);
 
-      done();
     });
 
-    it("should list published applications", async done => {
+    it("should list published applications", async () => {
       const response = await api.get(`${url}/applications`);
       expect(response.statusCode).toBe(200);
 
@@ -227,40 +216,35 @@ describe("Applications", () => {
         expect.arrayContaining([firstApp.id, secondApp.id]),
       );
 
-      done();
     });
 
-    it("should return public object for published application to any user", async done => {
+    it("should return public object for published application to any user", async () => {
       const response = await api.get(`${url}/applications/${firstApp.id}`, uuidv1());
       expect(response.statusCode).toBe(200);
       expect(response.resource.id).toEqual(firstApp.id);
       expect(response.resource.api).toBeFalsy();
-      done();
     });
 
-    it("should return public object for unpublished application to any user", async done => {
+    it("should return public object for unpublished application to any user", async () => {
       const response = await api.get(`${url}/applications/${thirdApp.id}`, uuidv1());
       expect(response.statusCode).toBe(200);
       expect(response.resource.id).toEqual(thirdApp.id);
       expect(response.resource.api).toBeFalsy();
-      done();
     });
 
-    it("should return whole object for published application to admin", async done => {
+    it("should return whole object for published application to admin", async () => {
       const response = await api.get(`${url}/applications/${firstApp.id}`);
       expect(response.statusCode).toBe(200);
       expect(response.resource.id).toEqual(firstApp.id);
       expect(response.resource.api).toBeTruthy();
 
-      done();
     });
 
-    it("should return whole object for unpublished application to admin", async done => {
+    it("should return whole object for unpublished application to admin", async () => {
       const response = await api.get(`${url}/applications/${thirdApp.id}`);
       expect(response.statusCode).toBe(200);
       expect(response.resource.id).toEqual(thirdApp.id);
       expect(response.resource.api).toBeTruthy();
-      done();
     });
   });
 });

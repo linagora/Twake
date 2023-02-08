@@ -16,7 +16,7 @@ describe("Application events", () => {
   let api: Api;
   let appId: string;
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init(undefined, testAppHookRoute);
 
     await platform.database.getConnector().drop();
@@ -33,14 +33,9 @@ describe("Application events", () => {
     appId = createdApplication.resource.id;
     signingSecret = createdApplication.resource.api.private_key;
 
-    ends();
-
-    afterAll(done => {
-      platform.tearDown().then(() => done());
-    });
   });
 
-  it("Should 200 on sending well formed event", async done => {
+  it("Should 200 on sending well formed event", async () => {
     const payload = {
       company_id: platform.workspace.company_id,
       workspace_id: platform.workspace.workspace_id,
@@ -52,7 +47,6 @@ describe("Application events", () => {
     const response = await api.post(`${url}/applications/${appId}/event`, payload);
     expect(response.statusCode).toBe(200);
     expect(response.resource).toMatchObject({ a: "b" });
-    done();
   });
 });
 

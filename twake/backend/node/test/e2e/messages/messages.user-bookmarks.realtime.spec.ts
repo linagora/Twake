@@ -47,7 +47,7 @@ describe("The Bookmarks Realtime feature", () => {
   }
 
   describe("On bookmark creation", () => {
-    it("should notify the client", async done => {
+    it("should notify the client", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
 
@@ -72,7 +72,6 @@ describe("The Bookmarks Realtime feature", () => {
               expect(event.type).toEqual("user_message_bookmark");
               expect(event.action).toEqual("saved");
               expect(event.resource.name).toEqual("mybookmarksaved");
-              done();
             });
             socket.emit("realtime:join", {
               name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,
@@ -87,7 +86,7 @@ describe("The Bookmarks Realtime feature", () => {
   });
 
   describe("On bookmark removal", () => {
-    it("should notify the client", async done => {
+    it("should notify the client", async () => {
       const instance = await gr.services.messages.userBookmarks.save(
         {
           company_id: platform.workspace.company_id,
@@ -120,7 +119,6 @@ describe("The Bookmarks Realtime feature", () => {
             socket.on("realtime:resource", (event: any) => {
               expect(event.type).toEqual("user_message_bookmark");
               expect(event.action).toEqual("deleted");
-              done();
             });
             socket.emit("realtime:join", {
               name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,

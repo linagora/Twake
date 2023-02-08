@@ -51,7 +51,7 @@ describe("the Documents feature", () => {
   });
 
   describe("On user send Drive item", () => {
-    it("did create the drive item", async done => {
+    it("did create the drive item", async () => {
       await TestDbService.getInstance(platform, true);
 
       const item = {
@@ -69,10 +69,9 @@ describe("the Documents feature", () => {
       expect(result.name).toEqual("new test file");
       expect(result.added).toBeDefined();
 
-      done && done();
     });
 
-    it("did fetch the drive item", async done => {
+    it("did fetch the drive item", async () => {
       const response = await e2e_getDocument(platform, "");
       const result = deserialize<DriveItemDetailsMockClass>(
         DriveItemDetailsMockClass,
@@ -81,7 +80,6 @@ describe("the Documents feature", () => {
 
       expect(result.item.name).toEqual("root");
 
-      done && done();
     });
   });
 });

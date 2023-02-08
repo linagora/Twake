@@ -41,7 +41,7 @@ describe("The Messages Threads feature", () => {
   });
 
   describe("On user manage threads", () => {
-    it("should create new thread", async done => {
+    it("should create new thread", async () => {
       const response = await e2e_createThread(
         platform,
         [
@@ -76,10 +76,9 @@ describe("The Messages Threads feature", () => {
       });
       expect(result.resource.participants[0].created_at).toBeDefined();
 
-      done();
     });
 
-    it("should enforce requester in thread participants", async done => {
+    it("should enforce requester in thread participants", async () => {
       const response = await e2e_createThread(
         platform,
         [
@@ -116,10 +115,9 @@ describe("The Messages Threads feature", () => {
         id: platform.currentUser.id,
       });
 
-      done();
     });
 
-    it("should update thread participants when add participant", async done => {
+    it("should update thread participants when add participant", async () => {
       //Create thread
       const thread = await gr.services.messages.threads.save(
         {
@@ -173,10 +171,9 @@ describe("The Messages Threads feature", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resource.participants.length).toBe(2);
 
-      done();
     });
 
-    it("should update thread participants when remove participant", async done => {
+    it("should update thread participants when remove participant", async () => {
       //Create thread
       const thread = await gr.services.messages.threads.save(
         {
@@ -236,7 +233,6 @@ describe("The Messages Threads feature", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resource.participants.length).toBe(1);
 
-      done();
     });
   });
 });

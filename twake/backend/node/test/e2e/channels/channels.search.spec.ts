@@ -42,7 +42,6 @@ describe("The /internal/services/channels/v1 API", () => {
     });
 
     expect(response.statusCode).toBe(400);
-    done();
   }
 
   function getContext(user?: User): WorkspaceExecutionContext {
@@ -87,7 +86,7 @@ describe("The /internal/services/channels/v1 API", () => {
   }
 
   describe("Channels search", () => {
-    it("Should find channels by name", async done => {
+    it("Should find channels by name", async () => {
       const ws0pk = { id: uuidv1(), company_id: platform.workspace.company_id };
       await testDbService.createWorkspace(ws0pk);
       const newUser = await testDbService.createUser([ws0pk]);
@@ -130,7 +129,6 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(9);
-      done();
     });
   });
 });

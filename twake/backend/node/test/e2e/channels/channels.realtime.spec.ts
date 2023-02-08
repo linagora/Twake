@@ -58,7 +58,7 @@ describe("The Channels Realtime feature", () => {
   }
 
   describe("On channel creation", () => {
-    it("should notify the client", async done => {
+    it("should notify the client", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
@@ -97,7 +97,6 @@ describe("The Channels Realtime feature", () => {
                   expect(event.type).toEqual("channel");
                   expect(event.action).toEqual("saved");
                   expect(event.resource.name).toEqual(channelName);
-                  done();
                 }
               },
             );
@@ -110,7 +109,7 @@ describe("The Channels Realtime feature", () => {
   });
 
   describe("On channel removal", () => {
-    it("should notify the client", async done => {
+    it("should notify the client", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
@@ -149,7 +148,6 @@ describe("The Channels Realtime feature", () => {
                   ),
                 );
                 expect(event.resource.id).toEqual(creationResult.entity.id);
-                done();
               },
             );
             socket.emit("realtime:join", {

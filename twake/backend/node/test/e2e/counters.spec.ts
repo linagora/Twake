@@ -32,7 +32,7 @@ describe("Counters implementation", () => {
   let counterApi: CounterAPI;
   let testDbService: TestDbService;
 
-  beforeAll(async ends => {
+  beforeAll(async () => {
     platform = await init();
 
     testDbService = new TestDbService(platform);
@@ -42,11 +42,11 @@ describe("Counters implementation", () => {
     counterApi = platform.platform.getProvider<CounterAPI>("counter");
     expect(counterApi).toBeTruthy();
 
-    ends();
   });
 
-  afterAll(done => {
-    platform.tearDown().then(done);
+  afterAll(async () => {
+    await platform.tearDown();
+    platform = null;
   });
 
   const getCounter = async (type, entity) => {
@@ -57,7 +57,7 @@ describe("Counters implementation", () => {
     let counter: CounterProvider;
     const counterPk = { id: uuidv1(), counter_type: WorkspaceCounterType.MEMBERS };
 
-    beforeAll(async ends => {
+    beforeAll(async () => {
       counter = await getCounter("workspace_counters", WorkspaceCounterEntity);
 
       const workspaceUserRepository = await testDbService.getRepository(
@@ -75,17 +75,15 @@ describe("Counters implementation", () => {
 
       expect(counter).toBeTruthy();
 
-      ends();
     });
 
-    it("Initializing empty value", async done => {
+    it("Initializing empty value", async () => {
       await counter.increase(counterPk, 0);
       const val = await counter.get(counterPk);
       expect(val).toEqual(0);
-      done();
     });
 
-    it("Adding value", async done => {
+    it("Adding value", async () => {
       // adding 1
 
       await counter.increase(counterPk, 1);
@@ -98,10 +96,9 @@ describe("Counters implementation", () => {
       val = await counter.get(counterPk);
       expect(val).toEqual(3);
 
-      done();
     });
 
-    it("Subtracting value", async done => {
+    it("Subtracting value", async () => {
       // Subtracting 2
 
       await counter.increase(counterPk, -2);
@@ -114,10 +111,9 @@ describe("Counters implementation", () => {
       val = await counter.get(counterPk);
       expect(val).toEqual(-9);
 
-      done();
     });
 
-    it("Revising counter", async done => {
+    it("Revising counter", async () => {
       // Subtracting 2
 
       const workspaceUserRepository = await testDbService.getRepository(
@@ -135,7 +131,6 @@ describe("Counters implementation", () => {
       const val = await counter.get(counterPk);
       expect(val).toEqual(1);
 
-      done();
     });
   });
 
@@ -143,7 +138,7 @@ describe("Counters implementation", () => {
     let counter: CounterProvider;
     let counterPk: ChannelCounterPrimaryKey;
 
-    beforeAll(async ends => {
+    beforeAll(async () => {
       counterPk = {
         id: uuidv1(),
         company_id: uuidv1(),
@@ -169,17 +164,15 @@ describe("Counters implementation", () => {
 
       expect(counter).toBeTruthy();
 
-      ends();
     });
 
-    it("Initializing empty value", async done => {
+    it("Initializing empty value", async () => {
       await counter.increase(counterPk, 0);
       const val = await counter.get(counterPk);
       expect(val).toEqual(0);
-      done();
     });
 
-    it("Adding value", async done => {
+    it("Adding value", async () => {
       // adding 1
 
       await counter.increase(counterPk, 1);
@@ -192,10 +185,9 @@ describe("Counters implementation", () => {
       val = await counter.get(counterPk);
       expect(val).toEqual(3);
 
-      done();
     });
 
-    it("Subtracting value", async done => {
+    it("Subtracting value", async () => {
       // Subtracting 2
 
       await counter.increase(counterPk, -2);
@@ -208,10 +200,9 @@ describe("Counters implementation", () => {
       val = await counter.get(counterPk);
       expect(val).toEqual(-9);
 
-      done();
     });
 
-    it("Revising counter", async done => {
+    it("Revising counter", async () => {
       // Subtracting 2
 
       const memberOfChannelRepository = await testDbService.getRepository(
@@ -233,7 +224,6 @@ describe("Counters implementation", () => {
       const val = await counter.get(counterPk);
       expect(val).toEqual(1);
 
-      done();
     });
   });
 });

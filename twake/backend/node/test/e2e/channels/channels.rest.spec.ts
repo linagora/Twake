@@ -33,10 +33,9 @@ describe("The /internal/services/channels/v1 API", () => {
   let testDbService: TestDbService;
   let api: Api;
 
-  beforeAll(async end => {
+  beforeAll(async () => {
     // platform = await init();
     // await platform.database.getConnector().drop();
-    end();
   });
 
   beforeEach(async () => {
@@ -51,7 +50,7 @@ describe("The /internal/services/channels/v1 API", () => {
     platform = null;
   });
 
-  async function testAccess(url, method, done) {
+  async function testAccess(url, method) {
     const jwtToken = await platform.auth.getJWTToken();
     const response = await platform.app.inject({
       method,
@@ -62,7 +61,6 @@ describe("The /internal/services/channels/v1 API", () => {
     });
 
     expect(response.statusCode).toBe(400);
-    done();
   }
 
   function getContext(user?: User): WorkspaceExecutionContext {
@@ -107,23 +105,21 @@ describe("The /internal/services/channels/v1 API", () => {
   }
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels route", () => {
-    it("should 400 when companyId is not valid", async done => {
+    it("should 400 when companyId is not valid", async () => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels`,
         "GET",
-        done,
       );
     });
 
-    it("should 400 when workspaceId is not valid", async done => {
+    it("should 400 when workspaceId is not valid", async () => {
       testAccess(
         `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels`,
         "GET",
-        done,
       );
     });
 
-    it("should return empty list of channels", async done => {
+    it("should return empty list of channels", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
@@ -141,10 +137,9 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(0);
 
-      done();
     });
 
-    it("should return list of workspace channels", async done => {
+    it("should return list of workspace channels", async () => {
       const channel = new Channel();
       channel.name = "Test Channel";
       const creationResult = await gr.services.channels.channels.save(channel, {}, getContext());
@@ -177,10 +172,9 @@ describe("The /internal/services/channels/v1 API", () => {
         });
       });
 
-      done();
     });
 
-    it("should return list of channels the user is member of", async done => {
+    it("should return list of channels the user is member of", async () => {
       const ws0pk = { id: uuidv1(), company_id: platform.workspace.company_id };
       await testDbService.createWorkspace(ws0pk);
       const newUser = await testDbService.createUser([ws0pk]);
@@ -230,17 +224,16 @@ describe("The /internal/services/channels/v1 API", () => {
         id: creationResults[0].entity.id,
       });
 
-      done();
     });
 
-    it("should return pagination information when not all channels are returned", async done => {
+    it("should return pagination information when not all channels are returned", async () => {
       await Promise.all(
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
           return gr.services.channels.channels.save(channel, {}, getContext());
         }),
-      ).catch(() => done(new Error("Failed on creation")));
+      ).catch(() => {new Error("Failed on creation")});
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -263,10 +256,9 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(result.resources.length).toEqual(5);
       expect(result.next_page_token).toBeDefined;
 
-      done();
     });
 
-    it("should be able to paginate over channels from pagination information", async done => {
+    it("should be able to paginate over channels from pagination information", async () => {
       await platform.database.getConnector().drop();
 
       await Promise.all(
@@ -275,7 +267,7 @@ describe("The /internal/services/channels/v1 API", () => {
           channel.name = name;
           return gr.services.channels.channels.save(channel, {}, getContext());
         }),
-      ).catch(() => done(new Error("Failed on creation")));
+      ).catch(() => {new Error("Failed on creation")});
 
       const jwtToken = await platform.auth.getJWTToken();
       const firstPage = await platform.app.inject({
@@ -326,17 +318,16 @@ describe("The /internal/services/channels/v1 API", () => {
         ]).size,
       ).toEqual(10);
 
-      done();
     });
 
-    it("should not return pagination information when all channels are returned", async done => {
+    it("should not return pagination information when all channels are returned", async () => {
       await Promise.all(
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
           return gr.services.channels.channels.save(channel, {}, getContext());
         }),
-      ).catch(() => done(new Error("Failed on creation")));
+      ).catch(() => {new Error("Failed on creation")});
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -359,10 +350,9 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(result.resources.length).toEqual(10);
       expect(result.next_page_token).not.toBeDefined;
 
-      done();
     });
 
-    it("should return websockets information", async done => {
+    it("should return websockets information", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
@@ -387,10 +377,9 @@ describe("The /internal/services/channels/v1 API", () => {
         { room: expect.stringContaining(getPrivateRoomName(platform.workspace, { id: "" })) },
       ]);
 
-      done();
     });
 
-    it.skip("should return websockets and direct information", async done => {
+    it.skip("should return websockets and direct information", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
@@ -412,32 +401,29 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.websockets.length).toEqual(3);
 
-      done();
     });
   });
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
-    it("should 400 when companyId is not valid", async done => {
+    it("should 400 when companyId is not valid", async () => {
       const channelId = "1";
 
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/${channelId}`,
         "GET",
-        done,
       );
     });
 
-    it("should 400 when workspaceId is not valid", async done => {
+    it("should 400 when workspaceId is not valid", async () => {
       const channelId = "1";
 
       testAccess(
         `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/${channelId}`,
         "GET",
-        done,
       );
     });
 
-    it("should return the requested channel", async done => {
+    it("should return the requested channel", async () => {
       const jwtToken = await platform.auth.getJWTToken();
 
       const channel = new Channel();
@@ -473,10 +459,9 @@ describe("The /internal/services/channels/v1 API", () => {
         token: expect.any(String),
       });
 
-      done();
     });
 
-    it("channel counters", async done => {
+    it("channel counters", async () => {
       await platform.database.getConnector().drop();
 
       await testDbService.createDefault(platform);
@@ -568,28 +553,25 @@ describe("The /internal/services/channels/v1 API", () => {
         messages: 0,
       });
 
-      done();
     });
   });
 
   describe("The POST /companies/:companyId/workspaces/:workspaceId/channels route", () => {
-    it("should 400 when companyId is not valid", async done => {
+    it("should 400 when companyId is not valid", async () => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels`,
         "POST",
-        done,
       );
     });
 
-    it("should 400 when workspaceId is not valid", async done => {
+    it("should 400 when workspaceId is not valid", async () => {
       testAccess(
         `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels`,
         "POST",
-        done,
       );
     });
 
-    it("should create a channel", async done => {
+    it("should create a channel", async () => {
       const jwtToken = await platform.auth.getJWTToken();
 
       const response = await platform.app.inject({
@@ -628,10 +610,9 @@ describe("The /internal/services/channels/v1 API", () => {
         token: expect.any(String),
       });
       expect(createdChannel).toBeDefined();
-      done();
     });
 
-    it("should fail when channel name is not defined", async done => {
+    it("should fail when channel name is not defined", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
@@ -647,7 +628,6 @@ describe("The /internal/services/channels/v1 API", () => {
       });
 
       expect(response.statusCode).toEqual(400);
-      done();
     });
   });
 
@@ -700,19 +680,17 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(response.statusCode).toEqual(expectedCode);
     }
 
-    it("should 400 when companyId is not valid", async done => {
+    it("should 400 when companyId is not valid", async () => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
         "POST",
-        done,
       );
     });
 
-    it("should 400 when workspaceId is not valid", async done => {
+    it("should 400 when workspaceId is not valid", async () => {
       testAccess(
         `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/1`,
         "POST",
-        done,
       );
     });
 
@@ -721,7 +699,7 @@ describe("The /internal/services/channels/v1 API", () => {
         platform.currentUser.isWorkspaceModerator = true;
       });
 
-      it("should fail when resource is not defined", async done => {
+      it("should fail when resource is not defined", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -732,10 +710,9 @@ describe("The /internal/services/channels/v1 API", () => {
         );
 
         await updateChannelFail(jwtToken, creationResult.entity.id, {}, 400);
-        done();
       });
 
-      it("should be able to update the is_default field", async done => {
+      it("should be able to update the is_default field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -759,10 +736,9 @@ describe("The /internal/services/channels/v1 API", () => {
           archived: channel.archived,
           owner: channel.owner,
         });
-        done();
       });
 
-      it("should be able to update the visibility field", async done => {
+      it("should be able to update the visibility field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -786,10 +762,9 @@ describe("The /internal/services/channels/v1 API", () => {
           archived: channel.archived,
           owner: channel.owner,
         });
-        done();
       });
 
-      it("should be able to update the archived field", async done => {
+      it("should be able to update the archived field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -812,10 +787,9 @@ describe("The /internal/services/channels/v1 API", () => {
           archived: true,
           owner: channel.owner,
         });
-        done();
       });
 
-      it("should be able to update all the fields at the same time", async done => {
+      it("should be able to update all the fields at the same time", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -842,7 +816,6 @@ describe("The /internal/services/channels/v1 API", () => {
           owner: channel.owner,
         });
 
-        done();
       });
     });
 
@@ -851,7 +824,7 @@ describe("The /internal/services/channels/v1 API", () => {
         platform.currentUser.isWorkspaceModerator = false;
       });
 
-      it("should be able to update the is_default field", async done => {
+      it("should be able to update the is_default field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
@@ -876,10 +849,9 @@ describe("The /internal/services/channels/v1 API", () => {
           owner: channel.owner,
         });
 
-        done();
       });
 
-      it("should be able to update the visibility field", async done => {
+      it("should be able to update the visibility field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
@@ -904,10 +876,9 @@ describe("The /internal/services/channels/v1 API", () => {
           owner: channel.owner,
         });
 
-        done();
       });
 
-      it("should be able to update the archived field", async done => {
+      it("should be able to update the archived field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
@@ -931,10 +902,9 @@ describe("The /internal/services/channels/v1 API", () => {
           archived: true,
           owner: channel.owner,
         });
-        done();
       });
 
-      it("should be able to update all the fields at the same time", async done => {
+      it("should be able to update all the fields at the same time", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
@@ -961,7 +931,6 @@ describe("The /internal/services/channels/v1 API", () => {
           owner: channel.owner,
         });
 
-        done();
       });
     });
 
@@ -970,7 +939,7 @@ describe("The /internal/services/channels/v1 API", () => {
         platform.currentUser.isWorkspaceModerator = false;
       });
 
-      it("should not be able to update the is_default field", async done => {
+      it("should not be able to update the is_default field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -989,10 +958,9 @@ describe("The /internal/services/channels/v1 API", () => {
           400,
         );
 
-        done();
       });
 
-      it("should not be able to update the visibility field", async done => {
+      it("should not be able to update the visibility field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -1011,10 +979,9 @@ describe("The /internal/services/channels/v1 API", () => {
           400,
         );
 
-        done();
       });
 
-      it("should not be able to update the archived field", async done => {
+      it("should not be able to update the archived field", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -1033,10 +1000,9 @@ describe("The /internal/services/channels/v1 API", () => {
           400,
         );
 
-        done();
       });
 
-      it("should be able to update the 'name', 'description', 'icon' fields", async done => {
+      it("should be able to update the 'name', 'description', 'icon' fields", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -1065,7 +1031,6 @@ describe("The /internal/services/channels/v1 API", () => {
           owner: channel.owner,
         });
 
-        done();
       });
     });
   });
@@ -1087,19 +1052,17 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(response.statusCode).toEqual(status);
     }
 
-    it("should 400 when companyId is not valid", async done => {
+    it("should 400 when companyId is not valid", async () => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
         "DELETE",
-        done,
       );
     });
 
-    it("should 400 when workspaceId is not valid", async done => {
+    it("should 400 when workspaceId is not valid", async () => {
       testAccess(
         `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/1`,
         "DELETE",
-        done,
       );
     });
 
@@ -1108,7 +1071,7 @@ describe("The /internal/services/channels/v1 API", () => {
         platform.currentUser.isWorkspaceModerator = true;
       });
 
-      it("should not be able to delete a direct channel", async done => {
+      it("should not be able to delete a direct channel", async () => {
         platform.workspace.workspace_id = "direct";
         const jwtToken = await platform.auth.getJWTToken();
 
@@ -1125,10 +1088,9 @@ describe("The /internal/services/channels/v1 API", () => {
           `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
           400,
         );
-        done();
       });
 
-      it("should be able to delete any channel of the workspace", async done => {
+      it("should be able to delete any channel of the workspace", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -1144,7 +1106,6 @@ describe("The /internal/services/channels/v1 API", () => {
           `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
           204,
         );
-        done();
       });
     });
 
@@ -1153,7 +1114,7 @@ describe("The /internal/services/channels/v1 API", () => {
         platform.currentUser.isWorkspaceModerator = false;
       });
 
-      it("should not be able to delete a direct channel", async done => {
+      it("should not be able to delete a direct channel", async () => {
         platform.workspace.workspace_id = "direct";
         const jwtToken = await platform.auth.getJWTToken();
 
@@ -1170,10 +1131,9 @@ describe("The /internal/services/channels/v1 API", () => {
           `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
           400,
         );
-        done();
       });
 
-      it("should be able to delete the channel", async done => {
+      it("should be able to delete the channel", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
@@ -1189,7 +1149,6 @@ describe("The /internal/services/channels/v1 API", () => {
           `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
           204,
         );
-        done();
       });
     });
 
@@ -1198,7 +1157,7 @@ describe("The /internal/services/channels/v1 API", () => {
         platform.currentUser.isWorkspaceModerator = false;
       });
 
-      it("should not be able to delete the channel", async done => {
+      it("should not be able to delete the channel", async () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
@@ -1214,10 +1173,9 @@ describe("The /internal/services/channels/v1 API", () => {
           `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
           400,
         );
-        done();
       });
 
-      it("should not be able to delete a direct channel", async done => {
+      it("should not be able to delete a direct channel", async () => {
         platform.workspace.workspace_id = "direct";
         const jwtToken = await platform.auth.getJWTToken();
 
@@ -1234,13 +1192,12 @@ describe("The /internal/services/channels/v1 API", () => {
           `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
           400,
         );
-        done();
       });
     });
   });
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/recent route", () => {
-    it("should return list of recent channels for workspace", async done => {
+    it("should return list of recent channels for workspace", async () => {
       await testDbService.createDefault(platform);
 
       const channels = [];
@@ -1344,7 +1301,6 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(result.resources[0].name).toEqual("FirstName2 LastName2");
       expect(result.resources[1].name).toEqual("Regular Channel 2");
 
-      done();
     });
   });
 });

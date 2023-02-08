@@ -48,7 +48,7 @@ describe("The Messages Files feature", () => {
   });
 
   describe("On user send files", () => {
-    it("did add the files when full information is given (external source)", async done => {
+    it("did add the files when full information is given (external source)", async () => {
       const file: MessageFile = {
         cache: { channel_id: "", company_id: "", user_id: "", workspace_id: "" },
         company_id: "",
@@ -78,10 +78,9 @@ describe("The Messages Files feature", () => {
       expect(result.resource.message.files[0].metadata.external_id).toBe("1234");
       expect(result.resource.message.files[0].metadata.source).toBe("linshare");
 
-      done();
     });
 
-    it("did not deduplicate files", async done => {
+    it("did not deduplicate files", async () => {
       const file: MessageFile = {
         cache: { channel_id: "", company_id: "", user_id: "", workspace_id: "" },
         company_id: "",
@@ -141,7 +140,6 @@ describe("The Messages Files feature", () => {
       expect(messageUpdated.resource.files.length).toBe(2);
       expect(messageUpdated.resource.files.filter(f => f.id === firstFileId).length).toBe(1);
 
-      done();
     });
   });
 });
@@ -158,10 +156,9 @@ describe("List user files", () => {
     await platform.database.getConnector().drop();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await platform?.tearDown();
     platform = null;
-    done();
   });
 
   const files = [
@@ -172,7 +169,7 @@ describe("List user files", () => {
     "../files/assets/sample.zip",
   ].map(p => `${__dirname}/${p}`);
 
-  it("should return uploaded files", async done => {
+  it("should return uploaded files", async () => {
     const jwtToken = await platform.auth.getJWTToken();
 
     const uploadedFiles = [];
@@ -271,10 +268,9 @@ describe("List user files", () => {
 
     resources.forEach(checkResource);
 
-    done();
   });
 
-  it("should return downloaded files", async done => {
+  it("should return downloaded files", async () => {
     const jwtToken = await platform.auth.getJWTToken({ sub: v1() });
     const uploadedFiles = [];
     for (const i in files) {
@@ -352,7 +348,6 @@ describe("List user files", () => {
       context: expect.any(Object),
     });
 
-    done();
   });
 });
 

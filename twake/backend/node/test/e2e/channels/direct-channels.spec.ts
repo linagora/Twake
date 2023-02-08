@@ -52,7 +52,7 @@ describe("The direct channels API", () => {
   }
 
   describe("Channel List - GET /channels", () => {
-    it("should return empty list of direct channels", async done => {
+    it("should return empty list of direct channels", async () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
@@ -70,10 +70,9 @@ describe("The direct channels API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(0);
 
-      done();
     });
 
-    it("should return list of direct channels the user is member of", async done => {
+    it("should return list of direct channels the user is member of", async () => {
       const channel = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelNotIn = channelUtils.getDirectChannel();
@@ -148,10 +147,9 @@ describe("The direct channels API", () => {
         id: creationResult[0].entity.id,
       });
 
-      done();
     });
 
-    it("should not return direct channels in workspace list", async done => {
+    it("should not return direct channels in workspace list", async () => {
       const channel = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelIn2 = channelUtils.getDirectChannel();
@@ -215,10 +213,9 @@ describe("The direct channels API", () => {
       });
       expect(result.resources[0].visibility).not.toEqual(ChannelVisibility.DIRECT);
 
-      done();
     });
 
-    it("should not return direct channels in workspace list with mine parameter", async done => {
+    it("should not return direct channels in workspace list with mine parameter", async () => {
       const channel = channelUtils.getChannel();
       const channel2 = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
@@ -274,12 +271,11 @@ describe("The direct channels API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
 
-      done();
     });
   });
 
   describe("Create direct channel - POST /channels", () => {
-    it("should be able to create a direct channel with members", async done => {
+    it("should be able to create a direct channel with members", async () => {
       const jwtToken = await platform.auth.getJWTToken();
 
       const members = [uuidv1(), platform.currentUser.id];
@@ -330,10 +326,9 @@ describe("The direct channels API", () => {
       );
       expect(directChannelsInCompany).toBeDefined();
 
-      done();
     });
 
-    it("should not be able to create the same direct channel twice (with same users)", async done => {
+    it("should not be able to create the same direct channel twice (with same users)", async () => {
       function createChannel(members: string[]) {
         return platform.app.inject({
           method: "POST",
@@ -372,10 +367,9 @@ describe("The direct channels API", () => {
 
       expect(ids.size).toEqual(1);
 
-      done();
     });
 
-    it("should not be able to create the same direct channel twice (with same users not in the same order)", async done => {
+    it("should not be able to create the same direct channel twice (with same users not in the same order)", async () => {
       function createChannel(members: string[]) {
         return platform.app.inject({
           method: "POST",
@@ -414,7 +408,6 @@ describe("The direct channels API", () => {
 
       expect(ids.size).toEqual(1);
 
-      done();
     });
   });
 });

@@ -107,7 +107,7 @@ describe("The Messages feature", () => {
   });
 
   describe("Inbox", () => {
-    it("Should get recent user messages", async done => {
+    it("Should get recent user messages", async () => {
       const directChannelIn = channelUtils.getDirectChannel();
       const members = [platform.currentUser.id, uuidv1()];
       const directWorkspace: Workspace = {
@@ -193,7 +193,6 @@ describe("The Messages feature", () => {
         });
       }
 
-      done();
     });
   });
 });
