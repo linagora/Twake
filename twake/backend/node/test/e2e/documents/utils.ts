@@ -73,7 +73,7 @@ export const e2e_searchDocument = async (
 ) => {
   const token = await platform.auth.getJWTToken();
 
-  return await platform.app.inject({
+  const response = await platform.app.inject({
     method: "POST",
     url: `${url}/companies/${platform.workspace.company_id}/search`,
     headers: {
@@ -81,6 +81,8 @@ export const e2e_searchDocument = async (
     },
     payload,
   });
+
+  return response;
 };
 
 export const e2e_createVersion = async (

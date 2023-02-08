@@ -1,7 +1,7 @@
-import { describe, beforeEach, afterEach, it, expect } from "@jest/globals";
+import { describe, beforeEach, afterEach, it, expect, afterAll } from "@jest/globals";
 import { deserialize } from "class-transformer";
-import { File } from '../../../src/services/files/entities/file';
-import { ResourceCreateResponse, ResourceUpdateResponse } from '../../../src/utils/types';
+import { File } from "../../../src/services/files/entities/file";
+import { ResourceUpdateResponse } from "../../../src/utils/types";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import {
@@ -29,7 +29,7 @@ describe("the Drive feature", () => {
     path: string[];
     item: DriveFileMockClass;
     children: DriveFileMockClass[];
-    versions: Record<string, any>[]
+    versions: Record<string, unknown>[];
   }
 
   class SearchResultMockClass {
@@ -62,7 +62,11 @@ describe("the Drive feature", () => {
   });
 
   afterEach(async () => {
-    platform.tearDown();
+    await platform.tearDown();
+  });
+
+  afterAll(async () => {
+    await platform.app.close();
   });
 
   const createItem = async (): Promise<DriveFileMockClass> => {
@@ -87,7 +91,7 @@ describe("the Drive feature", () => {
     expect(result.name).toEqual("new test file");
     expect(result.added).toBeDefined();
 
-    done!();
+    done?.();
   });
 
   it("did fetch the drive item", async done => {
@@ -98,7 +102,7 @@ describe("the Drive feature", () => {
 
     expect(result.item.name).toEqual("root");
 
-    done!();
+    done?.();
   });
 
   it("did fetch the trash", async done => {
@@ -109,7 +113,7 @@ describe("the Drive feature", () => {
 
     expect(result.item.name).toEqual("trash");
 
-    done!();
+    done?.();
   });
 
   it("did delete an item", async done => {
@@ -120,7 +124,7 @@ describe("the Drive feature", () => {
     const deleteResponse = await e2e_deleteDocument(platform, createItemResult.id);
     expect(deleteResponse.statusCode).toEqual(200);
 
-    done!();
+    done?.();
   });
 
   it("did update an item", async done => {
@@ -141,7 +145,7 @@ describe("the Drive feature", () => {
     expect(createItemResult.id).toEqual(updateItemResult.id);
     expect(updateItemResult.name).toEqual("somethingelse");
 
-    done!();
+    done?.();
   });
 
   it("did move an item to trash", async done => {
@@ -161,17 +165,24 @@ describe("the Drive feature", () => {
     expect(listTrashResult.item.name).toEqual("trash");
     expect(listTrashResult.children.some(({ id }) => id === createItemResult.id)).toBeTruthy();
 
-    done!();
+    done?.();
   });
 
+  // TODO: wait for elastic search index
   it("did search for an item", async done => {
     const createItemResult = await createItem();
 
     expect(createItemResult.id).toBeDefined();
 
+    await e2e_getDocument(platform, "root");
+    await e2e_getDocument(platform, createItemResult.id);
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
     const searchPayload = {
       search: "test",
     };
+
     const searchResponse = await e2e_searchDocument(platform, searchPayload);
     const searchResult = deserialize<SearchResultMockClass>(
       SearchResultMockClass,
@@ -179,6 +190,12 @@ describe("the Drive feature", () => {
     );
 
     expect(searchResult.entities.length).toBeGreaterThanOrEqual(1);
+
+    done?.();
+  });
+
+  it("did search for an item that doesn't exist", async done => {
+    await createItem();
 
     const unexistingSeachPayload = {
       search: "somethingthatdoesn'tandshouldn'texist",
@@ -191,7 +208,7 @@ describe("the Drive feature", () => {
 
     expect(failSearchResult.entities).toHaveLength(0);
 
-    done!();
+    done?.();
   });
 
   it("did create a version for a drive item", async done => {
@@ -202,17 +219,20 @@ describe("the Drive feature", () => {
       fileUploadResponse.body,
     );
 
-    const file_metadata = { external_id: fileUploadResult.resource.id}
+    const file_metadata = { external_id: fileUploadResult.resource.id };
 
-    await e2e_createVersion(platform, item.id, { filename: 'file2', file_metadata });
-    await e2e_createVersion(platform, item.id, { filename: 'file3', file_metadata });
-    await e2e_createVersion(platform, item.id, { filename: 'file4', file_metadata });
+    await e2e_createVersion(platform, item.id, { filename: "file2", file_metadata });
+    await e2e_createVersion(platform, item.id, { filename: "file3", file_metadata });
+    await e2e_createVersion(platform, item.id, { filename: "file4", file_metadata });
 
     const fetchItemResponse = await e2e_getDocument(platform, item.id);
-    const fetchItemResult = deserialize<DriveItemDetailsMockClass>(DriveItemDetailsMockClass, fetchItemResponse.body);
+    const fetchItemResult = deserialize<DriveItemDetailsMockClass>(
+      DriveItemDetailsMockClass,
+      fetchItemResponse.body,
+    );
 
     expect(fetchItemResult.versions).toHaveLength(4);
 
-    done!();
-  })
+    done?.();
+  });
 });
