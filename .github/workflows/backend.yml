@@ -28,12 +28,12 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: coverage-report-${{ github.event.pull_request.number }}
-          path: twake/coverage/lcov-report
+          path: twake/coverage/
       - name: deploy coverage report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: twake/coverage/lcov-report
+          publish_dir: twake/coverage/
           destination_dir: test/coverage/pr-${{ github.event.pull_request.number }} 
       - name: e2e-mongo-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
