@@ -520,7 +520,7 @@ export const addDriveItemToArchive = async (
     throw Error("item not found");
   }
 
-  // trigger coverage report
+  // trigger coverage report 2
   if (!item.is_directory) {
     const file_id = item.last_version_cache.file_metadata.external_id;
     const file = await globalResolver.services.files.download(file_id, context);
