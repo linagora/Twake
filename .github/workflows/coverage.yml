@@ -22,11 +22,8 @@ jobs:
         with:
           name: coverage-report-${{ github.event.pull_request.number }}
           path: twake/coverage/
-      - name: Monitor coverage
-        uses: slavcodev/coverage-monitor-action@v1
+      - name: Jest Coverage Comment
+        uses: MishaKav/jest-coverage-comment@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          coverage_path: "twake/coverage/clover.xml"
-          threshold_alert: 10
-          threshold_warning: 50
-          threshold_metric: "lines"
+          coverage-summary-path: twake/coverage/coverage-summary.json
+          coverage-path: twake/coverage/coverage-report.txt
