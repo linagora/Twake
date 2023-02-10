@@ -24,7 +24,7 @@
     "test:local": "jest --forceExit --detectOpenHandles --runInBand mock.spec.ts",
     "test:watch": "npm run test -- --watchAll --verbose false | pino-pretty",
     "test:e2e": "node ./test/e2e/run-all.js",
-    "test:unit": "jest test/unit --forceExit --coverage --detectOpenHandles --maxWorkers=1 --testTimeout=30000 --verbose false",
+    "test:unit": "jest test/unit --forceExit --coverage --detectOpenHandles --maxWorkers=1 --testTimeout=30000 --verbose false > coverage/coverage-report.txt",
     "test:unit:watch": "npm run test:unit -- --watchAll --verbose false | pino-pretty",
     "kill": "kill $(lsof -t -i:3000) | exit 0"
   },
@@ -33,7 +33,9 @@
     "coverageReporters": [
       "json",
       "html",
-      "clover"
+      "clover",
+      "json-summary",
+      "text"
     ],
     "verbose": true,
     "testEnvironment": "node"
