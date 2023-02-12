@@ -64,6 +64,7 @@
     "@types/fluent-ffmpeg": "^2.1.20",
     "@types/html-to-text": "^8.1.1",
     "@types/jest": "^26.0.14",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/lodash": "^4.14.165",
     "@types/minio": "^7.0.7",
     "@types/mongodb": "^4.0.7",
