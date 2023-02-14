@@ -71,8 +71,9 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   let summary = "";
 
   for (const path of localDevTests || srcFiles) {
-    const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
-    const args = `${testName} --forceExit --detectOpenHandles --coverage --runInBand --testTimeout=60000 --verbose=true`;
+    const test = path.split("test/e2e/")[1];
+    const testName = `test/e2e/${test}`;
+    const args = `${testName} --forceExit --detectOpenHandles --coverage --coverageDirectory=coverage/e2e/${test} --runInBand --testTimeout=60000 --verbose=true`;
 
     try {
       //Show logs in the console if we are doing local dev tests
