@@ -19,13 +19,10 @@ jobs:
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
       - name: e2e-mongo-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
-      - name: merge coverage reports
-        run: |
-          npx istanbul-combine --dir twake/coverage --pattern "**/coverage-final.json" --output twake/merged-coverage/coverage.json
       - name: generate coverage summary
         run: |
-          npx istanbul report --root twake --dir twake/merged-coverage --include "**/merged-coverage/coverage.json" --report json-summary
-          npx istanbul report --root twake --dir twake/merged-coverage --include "**/merged-coverage/coverage.json" --report text-summary
+          npx istanbul report --dir twake/coverage/merged --include "twake/coverage/**/coverage-final.json" json-summary
+          npx istanbul report --dir twake/coverage/merged --include "twake/coverage/**/coverage-final.json" text > twake/coverage/merged/coverage-report.txt
       - name: upload test coverage report
         uses: actions/upload-artifact@v2
         with:
@@ -34,5 +31,5 @@ jobs:
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
         with:
-          coverage-summary-path: twake/coverage/coverage-summary.json
-          coverage-path: twake/coverage/coverage-report.txt
+          coverage-summary-path: twake/coverage/merged/coverage-summary.json
+          coverage-path: twake/coverage/merged/coverage-report.txt
