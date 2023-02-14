@@ -23,11 +23,6 @@ jobs:
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:merge:json
       - name: generate coverage summary text
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:merge:text
-      - name: upload test coverage report
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage-report-${{ github.event.pull_request.number }}
-          path: twake/coverage/
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
         with:
