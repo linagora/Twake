@@ -17,6 +17,15 @@ jobs:
           ref: "refs/pull/${{ github.event.number }}/merge"
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
+      - name: e2e-mongo-test
+        run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
+      - name: merge coverage reports
+        run: |
+          npx istanbul-combine --dir twake/coverage --pattern "**/coverage-final.json" --output twake/merged-coverage/coverage.json
+      - name: generate coverage summary
+        run: |
+          npx istanbul report --root twake --dir twake/merged-coverage --include "**/merged-coverage/coverage.json" --report json-summary
+          npx istanbul report --root twake --dir twake/merged-coverage --include "**/merged-coverage/coverage.json" --report text-summary
       - name: upload test coverage report
         uses: actions/upload-artifact@v2
         with:
