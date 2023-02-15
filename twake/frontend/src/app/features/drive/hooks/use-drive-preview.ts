@@ -69,7 +69,7 @@ export const useDrivePreviewDisplayData = () => {
     status.details?.item.last_version_cache.file_metadata.name || status.details?.item.name || '';
   const extension = name.split('.').pop();
   const type = fileUploadApiClient.mimeToType(status.details?.item.last_version_cache.file_metadata.mime || '', extension);
-  const id = status.details?.item.last_version_cache.file_metadata.external_id;
+  const id = status.details?.item.last_version_cache.file_metadata.external_id || '';
   const download = fileUploadService.getDownloadRoute({
     companyId: status.item?.company_id || '',
     fileId: status.details?.item.last_version_cache.file_metadata.external_id || ''

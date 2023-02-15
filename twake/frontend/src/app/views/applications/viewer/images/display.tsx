@@ -1,4 +1,3 @@
-import { useViewerDataLoading } from 'app/features/viewer/hooks/use-viewer';
 import { useEffect, useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
@@ -12,13 +11,18 @@ let imageControls: {
   rotateCw: () => undefined,
 };
 
+type PropsType = {
+  download: string;
+  loading: boolean;
+  setLoading: (state: boolean) => void 
+}
+
 export const getImageControls = () => {
   return imageControls;
 };
 
-export default (props: { download: string }) => {
+export default ({ download, loading, setLoading}: PropsType) => {
   const [rotated, setRotated] = useState(0);
-  const { loading, setLoading } = useViewerDataLoading();
 
   useEffect(() => {
     setLoading(true);
@@ -39,7 +43,7 @@ export default (props: { download: string }) => {
                 height: '90vh',
                 opacity: loading ? 0 : 1,
               }}
-              src={props.download}
+              src={download}
               onLoad={() => {
                 zoomOut();
                 setLoading(false);
