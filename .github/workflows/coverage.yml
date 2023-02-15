@@ -27,4 +27,4 @@ jobs:
         uses: MishaKav/jest-coverage-comment@main
         with:
           coverage-summary-path: twake/coverage/merged/coverage-summary.json
-          coverage-path: twake/coverage/merged/coverage-report.txt
+          coverage-path: twake/coverage/coverage-report.txt
