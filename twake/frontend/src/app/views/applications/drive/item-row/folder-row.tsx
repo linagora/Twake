@@ -4,7 +4,10 @@ import { Button } from 'app/atoms/button/button';
 import { Base, BaseSmall } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
+import { usePublicLink } from 'app/features/drive/hooks/use-drive-item';
 import { formatBytes } from 'app/features/drive/utils';
+import { ToasterService } from 'app/features/global/services/toaster-service';
+import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { PublicIcon } from '../components/public-icon';
@@ -31,6 +34,7 @@ export const FolderRow = ({
   const setPropertiesModalState = useSetRecoilState(PropertiesModalAtom);
   const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
   const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
+  const publicLink = usePublicLink(item);
 
   return (
     <div
@@ -86,9 +90,18 @@ export const FolderRow = ({
             },
             {
               type: 'menu',
-              text: 'Manage access',
+              text: 'Public access',
               hide: parentAccess === 'read',
               onClick: () => setAccessModalState({ open: true, id: item.id }),
+            },
+            {
+              type: 'menu',
+              text: 'Copy public link',
+              hide: !item.access_info.public?.level || item.access_info.public?.level === 'none',
+              onClick: () => {
+                copyToClipboard(publicLink);
+                ToasterService.success('Public link copied to clipboard');
+              },
             },
             {
               type: 'menu',
@@ -111,7 +124,7 @@ export const FolderRow = ({
                   },
                 }),
             },
-            { type: 'separator' },
+            { type: 'separator', hide: parentAccess === 'read' },
             {
               type: 'menu',
               text: 'Move to trash',

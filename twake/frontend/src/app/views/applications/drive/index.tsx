@@ -53,14 +53,12 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
   useEffect(() => {
     setChecked({});
     refresh(parentId);
-    refresh("trash");
+    refresh('trash');
   }, [parentId, refresh]);
 
   const openItemModal = useCallback(() => {
     if (item?.id) setCreationModalState({ open: true, parent_id: item.id });
   }, [item?.id, setCreationModalState]);
-
-  const canWrite = true; // TODO get write permission from backend
 
   const selectedCount = Object.values(checked).filter(v => v).length;
   const folders = children.filter(i => i.is_directory).sort((a, b) => a.name.localeCompare(b.name));
@@ -148,7 +146,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
                           ? download(Object.keys(checked)[0])
                           : downloadZip(Object.keys(checked)),
                     },
-                    { type: 'separator' },
+                    { type: 'separator', hide: access === 'read' },
                     {
                       type: 'menu',
                       text: 'Delete ' + selectedCount + ' items',
@@ -280,7 +278,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
           {documents.length === 0 && !loading && (
             <div className="mt-4 text-center border-2 border-dashed rounded-md p-8">
               <Subtitle className="block mb-2">Nothing here.</Subtitle>
-              {!inTrash && canWrite && (
+              {!inTrash && access != 'read' && (
                 <>
                   <Base>
                     Drag and drop files to upload them or click on the 'Add document' button.

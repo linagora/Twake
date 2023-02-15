@@ -38,7 +38,9 @@ const AccessModalContent = ({ id }: { id: string }) => {
   return (
     <ModalContent title={'Manage access to ' + item?.name}>
       <PublicLinkManager id={id} disabled={access !== 'manage'} />
-      <InternalAccessManager id={id} disabled={access !== 'manage'} />
+      {document.location.origin.includes('localhost') && (
+        <InternalAccessManager id={id} disabled={access !== 'manage'} />
+      )}
     </ModalContent>
   );
 };

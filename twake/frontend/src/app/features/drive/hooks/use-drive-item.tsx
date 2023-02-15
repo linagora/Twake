@@ -1,12 +1,13 @@
 import { ToasterService } from 'app/features/global/services/toaster-service';
 import { LoadingStateInitTrue } from 'app/features/global/state/atoms/Loading';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { DriveItemAtom, DriveItemChildrenAtom } from '../state/store';
 import { DriveItem } from '../types';
 import { useDriveActions } from './use-drive-actions';
 import { useDriveUpload } from './use-drive-upload';
+import short from 'short-uuid';
 
 /**
  * Get in store single item and expose methods to operate on it
@@ -86,4 +87,15 @@ export const useDriveItem = (id: string) => {
     remove,
     refresh,
   };
+};
+
+export const usePublicLink = (item?: DriveItem) => {
+  const translator = useRef(short()).current;
+  const publicLink =
+    `${document.location.protocol}//${document.location.host}` +
+    `/shared/${translator.fromUUID(item?.company_id || '')}` +
+    `/drive/${translator.fromUUID(item?.id || '')}` +
+    `/t/${item?.access_info?.public?.token}`;
+
+  return publicLink;
 };
