@@ -10,11 +10,11 @@ import {
 import { addShortcut, removeShortcut } from 'app/features/global/services/shortcut-service';
 import { useEffect, useState } from 'react';
 import { fadeTransition } from 'src/utils/transitions';
-import Display from './display';
 import * as Text from '@atoms/text';
 import { formatDate } from 'app/features/global/utils/format-date';
 import { formatSize } from 'app/features/global/utils/format-file-size';
 import { Button } from 'app/atoms/button/button';
+import DriveDisplay from './drive-display';
 
 export const DrivePreview = (): React.ReactElement => {
   const { isOpen, close } = useDrivePreviewModal();
@@ -60,7 +60,8 @@ export const DrivePreview = (): React.ReactElement => {
         className="absolute m-auto w-8 h-8 left-0 right-0 top-0 bottom-0"
         {...fadeTransition}
       >
-        <Display />
+        <DriveDisplay />
+        <Footer />
       </Transition>
     </Modal>
   );
