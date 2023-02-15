@@ -1,16 +1,11 @@
-import { atomFamily } from 'recoil';
 import Browser from './browser';
+import TwakeTabConfiguration from './twake-tab-configuration';
 
-export const DriveCurrentFolderAtom = atomFamily<string, string>({
-  key: 'DriveCurrentFolderAtom',
-  default: startingParentId => startingParentId || 'root',
-});
-
-type EmbedContext = {
-  companyId: string;
-  workspaceId: string;
-  channelId: string;
-  tabId: string;
+export type EmbedContext = {
+  companyId?: string;
+  workspaceId?: string;
+  channelId?: string;
+  tabId?: string;
 };
 
 export default ({
@@ -20,7 +15,9 @@ export default ({
   initialParentId?: string;
   context?: EmbedContext;
 }) => {
-  //TODO use 'context' to show tab configuration page
+  if (context?.tabId) {
+    return <TwakeTabConfiguration context={context} />;
+  }
 
   return <Browser initialParentId={initialParentId} />;
 };
