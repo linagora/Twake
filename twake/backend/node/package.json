@@ -27,7 +27,7 @@
     "test:unit": "jest test/unit --forceExit --coverage --detectOpenHandles --maxWorkers=1 --testTimeout=30000 --verbose false > coverage/coverage-report.txt",
     "test:unit:watch": "npm run test:unit -- --watchAll --verbose false | pino-pretty",
     "test:merge:json": "npx istanbul report --dir coverage/merged --include 'coverage/**/coverage-final.json' json-summary",
-    "test:merge:text": "npx istanbul report --dir coverage/merged --include 'coverage/**/coverage-final.json' text > /coverage/merged/coverage-report.txt",
+    "test:merge:text": "npx istanbul report --dir coverage/merged --include 'coverage/**/coverage-final.json' text > coverage/merged/coverage-report.txt",
     "kill": "kill $(lsof -t -i:3000) | exit 0"
   },
   "jest": {
