@@ -7,6 +7,7 @@ import {
   useSearchMessagesMedias,
 } from 'app/features/search/hooks/use-search-files-or-medias';
 import { useSearchMessages } from 'app/features/search/hooks/use-search-messages';
+import { useSearchDriveItems } from 'app/features/search/hooks/use-search-drive-items';
 import { SearchInputState, SearchTabsState } from 'app/features/search/state/search-input';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -15,8 +16,9 @@ import SearchResultsChannels from './tabs/channels';
 import SearchResultsFiles from './tabs/files';
 import SearchResultsMedias from './tabs/medias';
 import SearchResultsMessages from './tabs/messages';
+import SearchResulsDriveItems from './tabs/drive';
 
-const orderedTabs = ['all', 'messages', 'medias', 'files', 'channels'];
+const orderedTabs = ['all', 'messages', 'medias', 'files', 'channels', 'drive'];
 
 export const SearchResultsIndex = () => {
   const input = useRecoilValue(SearchInputState);
@@ -26,6 +28,7 @@ export const SearchResultsIndex = () => {
   const { messages } = useSearchMessages();
   const { files } = useSearchMessagesFiles();
   const { files: medias } = useSearchMessagesMedias();
+  const { driveItems } = useSearchDriveItems();
 
   return (
     <>
@@ -57,6 +60,12 @@ export const SearchResultsIndex = () => {
             </div>,
           ],
           /*: []*/
+          <div key="drive">
+            <div className="flex">
+              {Languages.t('components.searchpopup.drive')}
+              {hasInput && <SearchCounterBadge count={driveItems.length} />}
+            </div>
+          </div>,
         ]}
         selected={orderedTabs.indexOf(tab)}
         onClick={idx => setTab(orderedTabs[idx] as any)}
@@ -73,6 +82,7 @@ export const SearchResultsIndex = () => {
         {tab === 'medias' && <SearchResultsMedias />}
         {tab === 'files' && <SearchResultsFiles />}
         {tab === 'channels' && <SearchResultsChannels />}
+        {tab === 'drive' && <SearchResulsDriveItems />}
       </PerfectScrollbar>
     </>
   );
