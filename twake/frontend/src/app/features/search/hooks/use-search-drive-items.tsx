@@ -42,7 +42,7 @@ export const useSearchDriveItems = () => {
     currentQuery = query;
 
     const response = await DriveApiClient.search(searchInput.query, opt);
-    let results = response.resources || [];
+    let results = response.entities || [];
     if (isRecent)
       results = results.sort(
         (a, b) => (b?.size || 0) - (a.size || 0),

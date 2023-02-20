@@ -106,11 +106,14 @@ export class DriveApiClient {
 
   static async search(searchString: string, options?: BaseSearchOptions) {
     const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
-    const query = `/internal/services/messages/v1/companies/${companyId}/search?q=${searchString}&include_users=1`;
-    const res = await Api.post<SearchDocumentsBody,{ resources: DriveItem[] }>(query, {});
+    const query = `/internal/services/documents/v1/companies/${companyId}/search`;
+    const searchData = {
+      "search": searchString
+    };
+    const res = await Api.post<SearchDocumentsBody,{ entities: DriveItem[] }>(query, searchData);
     this.logger.debug(
       `Drive search by text "${searchString}". Found`,
-      res.resources.length,
+      res.entities.length,
       'drive item(s)',
     );
 
