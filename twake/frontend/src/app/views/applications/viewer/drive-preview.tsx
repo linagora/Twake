@@ -15,6 +15,7 @@ import { formatSize } from 'app/features/global/utils/format-file-size';
 import { Button } from 'app/atoms/button/button';
 import DriveDisplay from './drive-display';
 import { Loader } from 'app/atoms/loader';
+import Controls from './controls';
 
 export const DrivePreview = (): React.ReactElement => {
   const { isOpen, close, loading } = useDrivePreview();
@@ -80,7 +81,7 @@ export const DrivePreview = (): React.ReactElement => {
 const Footer = (): React.ReactElement => {
   const { status } = useDrivePreview();
   const { download, extension } = useDrivePreviewDisplayData();
-
+  const { type = '' } = useDrivePreviewDisplayData();
   const name = status.details?.item.name;
 
   return (
@@ -103,7 +104,7 @@ const Footer = (): React.ReactElement => {
           </Text.Info>
         </div>
         <div className="whitespace-nowrap">
-          {/* controls here */}
+          <Controls type={type} />
           <Button
             iconSize="lg"
             className="ml-4 !rounded-full"

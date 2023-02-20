@@ -135,6 +135,7 @@ const Navigation = () => {
 const Footer = () => {
   const { status, close } = useFileViewer();
   const { download } = useViewerDisplayData();
+  const { type = '' } = useViewerDisplayData();
   const user = status?.details?.user as UserType;
   const name = status.details?.metadata?.name;
   const extension = name?.split('.').pop();
@@ -177,7 +178,7 @@ const Footer = () => {
         </div>
 
         <div className="whitespace-nowrap">
-          <Controls />
+          <Controls type={type} />
 
           <Button
             iconSize="lg"
