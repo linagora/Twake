@@ -5,7 +5,6 @@ import {
   useDrivePreview,
   useDrivePreviewDisplayData,
   useDrivePreviewLoading,
-  useDrivePreviewModal,
 } from 'app/features/drive/hooks/use-drive-preview';
 import { addShortcut, removeShortcut } from 'app/features/global/services/shortcut-service';
 import { useEffect, useState } from 'react';
@@ -15,10 +14,10 @@ import { formatDate } from 'app/features/global/utils/format-date';
 import { formatSize } from 'app/features/global/utils/format-file-size';
 import { Button } from 'app/atoms/button/button';
 import DriveDisplay from './drive-display';
+import { Loader } from 'app/atoms/loader';
 
 export const DrivePreview = (): React.ReactElement => {
-  const { isOpen, close } = useDrivePreviewModal();
-  const { loading } = useDrivePreview();
+  const { isOpen, close, loading } = useDrivePreview();
   const [modalLoading, setModalLoading] = useState(true);
   const { loading: loadingData } = useDrivePreviewLoading();
   let animationTimeout: number = setTimeout(() => undefined);
@@ -60,7 +59,18 @@ export const DrivePreview = (): React.ReactElement => {
         className="absolute m-auto w-8 h-8 left-0 right-0 top-0 bottom-0"
         {...fadeTransition}
       >
-        <DriveDisplay />
+        <Loader className="w-8 h-8 text-white" />
+      </Transition>
+
+      <Transition
+        show={!modalLoading}
+        as="div"
+        className="flex flex-col h-full"
+        {...fadeTransition}
+      >
+        <div className="px-16 py-2 grow relative overflow-hidden">
+          <DriveDisplay />
+        </div>
         <Footer />
       </Transition>
     </Modal>

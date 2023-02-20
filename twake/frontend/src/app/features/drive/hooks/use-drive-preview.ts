@@ -10,7 +10,7 @@ import { DriveItem } from '../types';
 export const useDrivePreviewModal = () => {
   const [status, setStatus] = useRecoilState(DriveViewerState);
 
-  const open = (item: DriveItem) => {
+  const open: (item: DriveItem) => void = (item: DriveItem) => {
     if (item.last_version_cache?.file_metadata?.source === 'internal') {
       setStatus({ item, loading: true });
     }
@@ -23,12 +23,12 @@ export const useDrivePreviewModal = () => {
 
 export const useDrivePreview = () => {
   const [status, setStatus] = useRecoilState(DriveViewerState);
-  const { isOpen } = useDrivePreviewModal();
+  const modal = useDrivePreviewModal();
 
   useGlobalEffect(
     'useDrivePreview',
     async () => {
-      if (isOpen && status.item) {
+      if (modal.isOpen && status.item) {
         setStatus({
           ...status,
           loading: true,
@@ -47,6 +47,7 @@ export const useDrivePreview = () => {
   );
 
   return {
+    ...modal,
     status,
     loading: status.loading,
   };
