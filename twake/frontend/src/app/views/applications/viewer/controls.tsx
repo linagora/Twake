@@ -1,12 +1,14 @@
-import { useViewerDisplayData } from 'app/features/viewer/hooks/use-viewer';
 import ImageControls from './images/controls';
 import VideoControls from './videos/controls';
 import PdfControls from './pdf/controls';
 import ArchiveControls from './archive/controls';
 import CodeControls from './code/controls';
 
-export default () => {
-  const { type } = useViewerDisplayData();
+type PropsType = {
+  type: string;
+}
+
+export default ({ type }: PropsType) => {
 
   if (!type) {
     return <></>;

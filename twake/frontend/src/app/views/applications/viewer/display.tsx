@@ -1,5 +1,6 @@
 import {
   useFileViewerModal,
+  useViewerDataLoading,
   useViewerDisplayData,
 } from 'app/features/viewer/hooks/use-viewer';
 import ImageDisplay from './images/display';
@@ -12,13 +13,14 @@ import OtherDisplay from './other/display';
 export default () => {
   const { download, type, name, id } = useViewerDisplayData();
   const { isOpen } = useFileViewerModal();
+  const { loading, setLoading } = useViewerDataLoading();
 
   if (!download || !isOpen) {
     return <></>;
   }
 
   if (type === 'image') {
-    return <ImageDisplay download={download} />;
+    return <ImageDisplay loading={loading} setLoading={setLoading}  download={download} />;
   }
 
   if (type === 'video' || type === 'audio') {

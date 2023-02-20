@@ -12,9 +12,9 @@ import {
 import { Base, BaseSmall } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
+import { useDrivePreview } from 'app/features/drive/hooks/use-drive-preview';
 import { formatBytes } from 'app/features/drive/utils';
 import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
-import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import Avatar from '../../../../atoms/avatar';
@@ -38,7 +38,7 @@ export const DocumentRow = ({
 }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
-  const { open } = useFileViewerModal();
+  const { open } = useDrivePreview();
 
   const setVersionModal = useSetRecoilState(VersionsModalAtom);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
@@ -55,12 +55,7 @@ export const DocumentRow = ({
   const hasThumbnails = !!metadata.thumbnails?.length || false;
 
   const preview = () => {
-    open({
-      ...item.last_version_cache,
-      company_id: item.company_id,
-      id: metadata.external_id,
-      metadata,
-    });
+    open(item);
   };
 
   return (

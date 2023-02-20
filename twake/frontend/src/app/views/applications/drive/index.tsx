@@ -12,8 +12,9 @@ import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef } from 'react';
+import { Suspense, useCallback, useEffect, useRef } from 'react';
 import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
+import { DrivePreview } from '../viewer/drive-preview';
 import HeaderPath from './header-path';
 import { DocumentRow } from './item-row/document-row';
 import { FolderRow } from './item-row/folder-row';
@@ -53,7 +54,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
   useEffect(() => {
     setChecked({});
     refresh(parentId);
-    refresh("trash");
+    refresh('trash');
   }, [parentId, refresh]);
 
   const openItemModal = useCallback(() => {
@@ -99,7 +100,9 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
       <PropertiesModal />
       <ConfirmDeleteModal />
       <ConfirmTrashModal />
-
+      <Suspense fallback={<></>}>
+        <DrivePreview />
+      </Suspense>
       <div
         className={
           'flex flex-col p-4 grow h-full overflow-auto ' +
