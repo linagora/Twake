@@ -16,7 +16,6 @@ import { formatSize } from 'app/features/global/utils/format-file-size';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import currentUserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';
-import { DrivePublicFile } from 'app/features/viewer/api/viewer-api-client';
 import {
   useFileViewer,
   useViewerDataLoading,
@@ -135,6 +134,7 @@ const Navigation = () => {
 const Footer = () => {
   const { status, close } = useFileViewer();
   const { download } = useViewerDisplayData();
+  const { type = '' } = useViewerDisplayData();
   const user = status?.details?.user as UserType;
   const name = status.details?.metadata?.name;
   const extension = name?.split('.').pop();
@@ -144,7 +144,7 @@ const Footer = () => {
 
   return (
     <>
-      {status.details?.message && status.details?.message?.text && (
+      {status.details?.message && (
         <div className="z-10 p-5 pb-0 bg-black w-full flex text-white">
           <Text.Base noColor className="block text-white">
             {status.details?.message.text.substring(0, 500)}
@@ -164,20 +164,13 @@ const Footer = () => {
           </Text.Base>
           <Text.Info className="whitespace-nowrap">
             {currentUserService.getFullName(user)} •{' '}
-            {formatDate(
-              (status.details as DrivePublicFile)?.created_at ||
-                status.details?.message?.created_at,
-            )}{' '}
-            • {extension?.toLocaleUpperCase()},{' '}
-            {formatSize(
-              status.details?.metadata?.size ||
-                (status.details as DrivePublicFile)?.upload_data?.size,
-            )}
+            {formatDate(status.details?.message?.created_at)} • {extension?.toLocaleUpperCase()},{' '}
+            {formatSize(status.details?.metadata?.size)}
           </Text.Info>
         </div>
 
         <div className="whitespace-nowrap">
-          <Controls />
+          <Controls type={type} />
 
           <Button
             iconSize="lg"
@@ -190,45 +183,42 @@ const Footer = () => {
             }}
           />
 
-          {
-            status.details?.message && status.details?.message.id &&
-            <Button
-              iconSize="lg"
-              className="ml-4 !rounded-full"
-              theme="dark"
-              size="lg"
-              icon={VerticalDotsIcon}
-              onClick={e => {
-                e.stopPropagation();
+          <Button
+            iconSize="lg"
+            className="ml-4 !rounded-full"
+            theme="dark"
+            size="lg"
+            icon={VerticalDotsIcon}
+            onClick={e => {
+              e.stopPropagation();
 
-                MenuManager.openMenu(
-                  [
-                    {
-                      type: 'menu',
-                      text: Languages.t('scenes.apps.messages.jump'),
-                      onClick: () => {
-                        close();
-                        setChannelAttachmentState(false);
-                        openMessage(status.details?.message as unknown as Message, workspaceId);
-                      },
+              MenuManager.openMenu(
+                [
+                  {
+                    type: 'menu',
+                    text: Languages.t('scenes.apps.messages.jump'),
+                    onClick: () => {
+                      close();
+                      setChannelAttachmentState(false);
+                      openMessage(status.details?.message as unknown as Message, workspaceId);
                     },
-                    {
-                      type: 'menu',
-                      text: Languages.t('components.channel_attachement_list.open'),
-                      onClick: () => {
-                        close();
-                        setChannelAttachmentState(true);
-                      },
+                  },
+                  {
+                    type: 'menu',
+                    text: Languages.t('components.channel_attachement_list.open'),
+                    onClick: () => {
+                      close();
+                      setChannelAttachmentState(true);
                     },
-                  ],
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (window as any).getBoundingClientRect(e.target),
-                  'top',
-                  { margin: 0 },
-                );
-              }}
-            />
-          }
+                  },
+                ],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (window as any).getBoundingClientRect(e.target),
+                'top',
+                { margin: 0 },
+              );
+            }}
+          />
         </div>
       </div>
     </>
