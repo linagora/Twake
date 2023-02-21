@@ -2,6 +2,7 @@ import * as Text from '@atoms/text';
 import FileUploadAPIClient from '@features/files/api/file-upload-api-client';
 import { Button } from 'app/atoms/button/button';
 import { DownloadIcon } from 'app/atoms/icons-agnostic';
+import { ArrowRight } from 'react-feather';
 import {
   FileTypeArchiveIcon,
   FileTypeDocumentIcon,
@@ -20,13 +21,20 @@ import { UserType } from 'app/features/users/types/user';
 import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 import Media from 'app/molecules/media';
 import Highlighter from 'react-highlight-words';
-import { useRecoilValue } from 'recoil';
-import { onDriveItemDownloadClick } from '../common';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { openDriveItem, onDriveItemDownloadClick } from '../common';
 import ResultContext from './result-context';
+import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
+import { DriveCurrentFolderAtom } from 'app/views/applications/drive/index';
 
 export default (props: { driveItem: DriveItem & { user?: UserType } }) => {
   const input = useRecoilValue(SearchInputState);
   const currentWorkspaceId = useRouterWorkspace();
+  const companyApplications = useCompanyApplications();
+  const [_, setParentId] = useRecoilState(DriveCurrentFolderAtom("root"));
+  const twakeDriveApplicationId = companyApplications.applications.find((application) => {
+    return application.identity.code === "twake_drive";
+  })?.id || '';
   const file = props.driveItem;
   const name = file?.name;
   const extension = name?.split('.').pop();
@@ -73,6 +81,27 @@ export default (props: { driveItem: DriveItem & { user?: UserType } }) => {
           onClick={() => onDriveItemDownloadClick(file)}
         >
           <DownloadIcon className="text-blue-500 w-6 h-6" />
+        </Button>
+      </div>
+      <div
+        className="whitespace-nowrap"
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <Button
+          theme="outline"
+          className="w-9 px-1.5 ml-2 rounded-full border-none"
+          onClick={() => 
+            {
+              openDriveItem(file, currentWorkspaceId, twakeDriveApplicationId);
+              setParentId(file.parent_id);
+              setOpen(false);
+            }
+          }
+        >
+          <ArrowRight className="text-blue-500 w-6 h-6" />
         </Button>
       </div>
     </div>

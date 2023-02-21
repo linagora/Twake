@@ -6,6 +6,7 @@ import { ChannelType } from 'app/features/channels/types/channel';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import { DriveApiClient } from 'app/features/drive/api-client/api-client';
 import { DriveItem } from 'app/features/drive/types';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 
 export const highlightText = (text?: string, highlight?: string) => {
   if (!text) {
@@ -68,6 +69,17 @@ export const openMessage = async (message: Message, currentWorkspaceId: string) 
   );
 };
 
+
+export const openDriveItem = (driveItem: DriveItem, workspace_id: string, drive_app_id: string) => {
+  routerService.push(
+    routerService.generateRouteFromState({
+      companyId: driveItem.company_id,
+      workspaceId: workspace_id ,
+      channelId: drive_app_id,
+    }),
+  );
+  DriveService.changeCurrentDirectory(drive_app_id, driveItem.parent_id);
+}
 
 export const onDriveItemDownloadClick = async (driveItem: DriveItem) => {
   const url = await DriveApiClient.getDownloadUrl(driveItem.company_id, driveItem.id);

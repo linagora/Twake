@@ -707,11 +707,11 @@ export class DocumentsService {
    * @param {DriveExecutionContext} context - the execution context.
    * @returns {Promise<ListResult<DriveFile>>} - the search result.
    */
-  search = async (
+   search = async (
     options: SearchDocumentsOptions,
     context?: DriveExecutionContext,
   ): Promise<ListResult<DriveFile>> => {
-    return await this.searchRepository.search(
+    const result = await this.searchRepository.search(
       {},
       {
         pagination: {
@@ -726,5 +726,17 @@ export class DocumentsService {
       },
       context,
     );
+  
+    // Use Promise.all to check access on each item in parallel
+    const filteredResult = await Promise.all(
+      result.getEntities().filter(async (item) => {
+        // Check access for each item
+        const hasAccess = await checkAccess(item.id, null, "read", this.repository, context);
+        // Return true if the user has access
+        return hasAccess;
+      })
+    );
+  
+    return new ListResult(result.type, filteredResult, result.nextPage);
   };
 }
