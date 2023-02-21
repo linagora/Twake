@@ -82,14 +82,14 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
 
   fastify.route({
     method: "GET",
-    url: `${serviceUrl}/tab/:tab_id`,
+    url: `${baseUrl}/tab/:tab_id`,
     preValidation: [fastify.authenticate],
     handler: documentsController.getTab.bind(documentsController),
   });
 
   fastify.route({
     method: "POST",
-    url: `${serviceUrl}/tab/:tab_id`,
+    url: `${baseUrl}/tab/:tab_id`,
     preValidation: [fastify.authenticate],
     handler: documentsController.setTab.bind(documentsController),
   });
