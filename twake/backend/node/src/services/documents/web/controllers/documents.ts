@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
+import { getCompanyExecutionContext } from "src/services/messages/web/controllers";
 import { logger } from "../../../../core/platform/framework";
 import { CrudException, ListResult } from "../../../../core/platform/framework/api/crud-service";
 import { File } from "../../../../services/files/entities/file";
@@ -10,6 +11,7 @@ import { FileVersion } from "../../entities/file-version";
 import {
   DriveExecutionContext,
   DriveItemDetails,
+  DriveTwakeTab,
   ItemRequestParams,
   RequestParams,
   SearchDocumentsBody,
@@ -321,6 +323,33 @@ export class DocumentsController {
       logger.error("error while searching for document", error);
       throw new CrudException("Failed to search for documents", 500);
     }
+  };
+
+  getTab = async (
+    request: FastifyRequest<{
+      Params: { tab_id: string; company_id: string };
+    }>,
+  ): Promise<DriveTwakeTab> => {
+    const context = getCompanyExecutionContext(request);
+    const { tab_id } = request.params;
+
+    return await globalResolver.services.documents.documents.getTab(tab_id, context);
+  };
+
+  setTab = async (
+    request: FastifyRequest<{
+      Params: { tab_id: string; company_id: string };
+      Body: DriveTwakeTab;
+    }>,
+  ): Promise<DriveTwakeTab> => {
+    const context = getCompanyExecutionContext(request);
+    const { tab_id } = request.params;
+
+    return await globalResolver.services.documents.documents.setTab(
+      tab_id,
+      request.body.item_id,
+      context,
+    );
   };
 }
 

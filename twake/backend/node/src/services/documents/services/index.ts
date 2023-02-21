@@ -9,12 +9,18 @@ import gr from "../../global-resolver";
 import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import {
+  DriveTwakeTab as DriveTwakeTabRepo,
+  TYPE as DriveTwakeTabRepoType,
+} from "../entities/drive_twake_tab";
+import {
   DriveExecutionContext,
   DocumentsMessageQueueRequest,
   DriveItemDetails,
   RootType,
   SearchDocumentsOptions,
   TrashType,
+  CompanyExecutionContext,
+  DriveTwakeTab,
 } from "../types";
 import {
   addDriveItemToArchive,
@@ -45,6 +51,7 @@ export class DocumentsService {
   repository: Repository<DriveFile>;
   searchRepository: SearchRepository<DriveFile>;
   fileVersionRepository: Repository<FileVersion>;
+  driveTwakeTabRepository: Repository<DriveTwakeTabRepo>;
   ROOT: RootType = "root";
   TRASH: TrashType = "trash";
   logger: TwakeLogger = getLogger("Documents Service");
@@ -59,6 +66,10 @@ export class DocumentsService {
       this.fileVersionRepository = await globalResolver.database.getRepository<FileVersion>(
         FileVersionType,
         FileVersion,
+      );
+      this.driveTwakeTabRepository = await globalResolver.database.getRepository<DriveTwakeTabRepo>(
+        DriveTwakeTabRepoType,
+        DriveTwakeTabRepo,
       );
     } catch (error) {
       logger.error("Error while initializing Documents Service", error);
@@ -726,5 +737,37 @@ export class DocumentsService {
       },
       context,
     );
+  };
+
+  getTab = async (tabId: string, context: CompanyExecutionContext): Promise<DriveTwakeTab> => {
+    const tab = await this.driveTwakeTabRepository.findOne(
+      { company_id: context.company.id, tab_id: tabId },
+      {},
+      context,
+    );
+    return tab;
+  };
+
+  setTab = async (
+    tabId: string,
+    itemId: string,
+    context: CompanyExecutionContext,
+  ): Promise<DriveTwakeTab> => {
+    const hasAccess = await checkAccess(itemId, null, "manage", this.repository, context);
+
+    if (!hasAccess) {
+      throw new CrudException("Not enough permissions", 403);
+    }
+
+    this.driveTwakeTabRepository.save(
+      {
+        company_id: context.company.id,
+        tab_id: tabId,
+        item_id: itemId,
+      },
+      context,
+    );
+
+    return await this.getTab(tabId, context);
   };
 }

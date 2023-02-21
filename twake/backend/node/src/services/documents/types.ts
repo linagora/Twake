@@ -65,3 +65,9 @@ export type exportKeywordPayload = {
   file_id: string;
   company_id: string;
 };
+
+export type DriveTwakeTab = {
+  company_id: string;
+  tab_id: string;
+  item_id: string;
+};
