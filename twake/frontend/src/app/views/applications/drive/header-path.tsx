@@ -32,7 +32,7 @@ export const PathRender = ({
   onClick: (id: string) => void;
 }) => {
   return (
-    <Title className="overflow-auto whitespace-nowrap mr-2 pl-px">
+    <Title className="overflow-hidden mr-2 pl-px">
       {(path || [])?.map((a, i) => (
         <PathItem
           key={a.id}
