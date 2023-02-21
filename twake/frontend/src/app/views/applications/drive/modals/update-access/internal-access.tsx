@@ -1,4 +1,5 @@
 import Avatar from 'app/atoms/avatar';
+import { Checkbox } from 'app/atoms/input/input-checkbox';
 import { Base, Info } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { DriveFileAccessLevel } from 'app/features/drive/types';
@@ -29,7 +30,7 @@ export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: 
       <Base className="block mt-4 mb-1">General access management</Base>
 
       <Info className="block mb-2">
-        Specific user or channel rule is applied first. Then least restrictive level will be chosen
+        User or channel specific rule is applied first. Then least restrictive level will be chosen
         between the parent folder and company accesses.
       </Info>
 
@@ -37,25 +38,25 @@ export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: 
         {folderEntity && (
           <div className="p-4 border-b flex flex-row items-center justify-center">
             <div className="grow">
-              <Base>Parent folder maximum level</Base>
+              <Base>Inherit parent folder</Base>
               <br />
-              <Info>Maximum level inherited from the parent folder.</Info>
+              <Info>Choose to inherit or not the parent folder permissions</Info>
             </div>
             <div className="shrink-0 ml-2">
-              <AccessLevel
+              <Checkbox
                 disabled={loading || disabled}
-                onChange={level => {
+                onChange={status => {
                   update({
                     access_info: {
                       entities: [
                         ...(item?.access_info.entities.filter(a => a.type !== 'folder') || []),
-                        { ...folderEntity, level },
+                        { ...folderEntity, level: status ? 'manage' : 'none' },
                       ],
                       public: item?.access_info.public,
                     },
                   });
                 }}
-                level={folderEntity.level}
+                value={folderEntity.level === 'manage'}
               />
             </div>
           </div>
