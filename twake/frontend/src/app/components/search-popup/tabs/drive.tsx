@@ -3,7 +3,7 @@ import Languages from 'app/features/global/services/languages-service';
 import { useSearchDriveItems } from 'app/features/search/hooks/use-search-drive-items';
 import { SearchInputState } from 'app/features/search/state/search-input';
 import { useRecoilValue } from 'recoil';
-import FileResult from '../parts/file-result';
+import DriveItemResult from '../parts/drive-item-result';
 import NothingFound from '../parts/nothing-found';
 
 export default () => {
@@ -36,7 +36,7 @@ export const DriveItemsResults = (props: { max?: number }) => {
   return (
     <>
       {driveItems.slice(0, props?.max || driveItems.length).map(item => (
-        <FileResult key={item.id} file={item} />
+        <DriveItemResult key={item.id} driveItem={item} />
       ))}
     </>
   );

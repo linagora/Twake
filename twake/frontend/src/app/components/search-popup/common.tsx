@@ -4,6 +4,8 @@ import FileUploadService from 'features/files/services/file-upload-service';
 import routerService from 'app/features/router/services/router-service';
 import { ChannelType } from 'app/features/channels/types/channel';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
+import { DriveApiClient } from 'app/features/drive/api-client/api-client';
+import { DriveItem } from 'app/features/drive/types';
 
 export const highlightText = (text?: string, highlight?: string) => {
   if (!text) {
@@ -64,4 +66,11 @@ export const openMessage = async (message: Message, currentWorkspaceId: string) 
       ...(message.id !== message?.thread_id ? { messageId: message.id } : {}),
     }),
   );
+};
+
+
+export const onDriveItemDownloadClick = async (driveItem: DriveItem) => {
+  const url = await DriveApiClient.getDownloadUrl(driveItem.company_id, driveItem.id);
+
+  url && (window.location.href = url);
 };

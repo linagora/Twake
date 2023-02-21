@@ -4,6 +4,7 @@ import { SearchInputState } from '../state/search-input';
 import { DriveApiClient } from 'app/features/drive/api-client/api-client';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { SearchDriveItemsResultsState } from '../state/search-drive-items-result';
+import { RecentDriveItemsState } from '../state/recent-drive-items';
 import _ from 'lodash';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
@@ -24,6 +25,7 @@ export const useSearchDriveItems = () => {
   );
 
   const [searched, setSearched] = useRecoilState(SearchDriveItemsResultsState(companyId));
+  const [recent, setRecent] = useRecoilState(RecentDriveItemsState(companyId));
 
   const opt = _.omitBy(
     {
@@ -45,7 +47,7 @@ export const useSearchDriveItems = () => {
     let results = response.entities || [];
     if (isRecent)
       results = results.sort(
-        (a, b) => (b?.size || 0) - (a.size || 0),
+        (a, b) => (parseInt(b?.last_modified) || 0) - (parseInt(a.last_modified) || 0),
       );
 
     const update = {
@@ -59,7 +61,7 @@ export const useSearchDriveItems = () => {
     }
 
     if (!isRecent) setSearched(update);
-    // if (isRecent) setRecent(update);
+    if (isRecent) setRecent(update);
     setLoading(false);
   };
 

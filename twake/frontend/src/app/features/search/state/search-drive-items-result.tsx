@@ -1,8 +1,8 @@
-import { MessageFileType } from 'app/features/messages/types/message';
+import { DriveItem } from 'app/features/drive/types';
 import { atomFamily, selectorFamily } from 'recoil';
 
 export type SearchDriveItemsResults = {
-  results: MessageFileType[];
+  results: DriveItem[];
   nextPage: string | null;
 };
 
