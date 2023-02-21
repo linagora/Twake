@@ -1,9 +1,12 @@
 import { Transition } from '@headlessui/react';
 import { ChevronLeftIcon, DesktopComputerIcon } from '@heroicons/react/outline';
 import { FolderIcon } from '@heroicons/react/solid';
+import Avatar from 'app/atoms/avatar';
 import A from 'app/atoms/link';
 import { Modal, ModalContent } from 'app/atoms/modal';
 import { Base } from 'app/atoms/text';
+import { useApplications } from 'app/features/applications/hooks/use-applications';
+import { Application } from 'app/features/applications/types/application';
 import { ReactNode } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { slideXTransition, slideXTransitionReverted } from 'src/utils/transitions';
@@ -23,8 +26,15 @@ export const CreateModalAtom = atom<CreateModalAtomType>({
   },
 });
 
-export const CreateModal = ({ selectFromDevice }: { selectFromDevice: () => void }) => {
+export const CreateModal = ({
+  selectFromDevice,
+  addFromUrl,
+}: {
+  selectFromDevice: () => void;
+  addFromUrl: (url: string, name: string) => void;
+}) => {
   const [state, setState] = useRecoilState(CreateModalAtom);
+  const { applications } = useApplications();
 
   return (
     <Modal
@@ -71,7 +81,43 @@ export const CreateModal = ({ selectFromDevice }: { selectFromDevice: () => void
                 onClick={() => selectFromDevice()}
               />
 
-              {/* TODO get list of apps compatible with drive and show ability to create docs from them */}
+              {(applications || [])
+                .filter(app => app.display?.twake?.files?.editor?.empty_files?.length)
+                .reduce(
+                  (a, app) => [
+                    ...a,
+                    ...(app.display?.twake?.files?.editor?.empty_files || [])
+                      .filter(ef => ef?.filename)
+                      .map(ef => ({
+                        app,
+                        emptyFile: ef,
+                      })),
+                  ],
+                  [] as {
+                    app: Application;
+                    emptyFile: {
+                      url: string; // "https://[...]/empty.docx";
+                      filename: string; // "Untitled.docx";
+                      name: string; // "Word Document"
+                    };
+                  }[],
+                )
+                .map(app => {
+                  return (
+                    <CreateModalOption
+                      icon={
+                        <Avatar
+                          type="square"
+                          size="sm"
+                          className="w-5 h-5"
+                          avatar={app.app.identity?.icon}
+                        />
+                      }
+                      text={`${app.emptyFile.name} (${app.app.identity?.name})`}
+                      onClick={() => addFromUrl(app.emptyFile.url, app.emptyFile.name)}
+                    />
+                  );
+                })}
             </div>
           </Transition>
 

@@ -33,7 +33,7 @@ const AppView: FC<PropsType> = props => {
         <Drive
           context={{
             companyId: channel.company_id,
-            workspaceId: channel.workspace_id,
+            workspaceId: channel.workspace_id || '',
             channelId: channel.id,
             tabId: configuration.context.tabId,
           }}

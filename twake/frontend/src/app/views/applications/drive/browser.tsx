@@ -39,7 +39,7 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
   const { download, downloadZip, update } = useDriveActions();
   const { access, item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
   const { item: trash } = useDriveItem('trash');
-  const { uploadTree } = useDriveUpload();
+  const { uploadTree, uploadFromUrl } = useDriveUpload();
   useDriveRealtime(parentId);
 
   const uploadZone = 'drive_' + companyId;
@@ -91,7 +91,15 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
         });
       }}
     >
-      <CreateModal selectFromDevice={() => uploadZoneRef.current?.open()} />
+      <CreateModal
+        selectFromDevice={() => uploadZoneRef.current?.open()}
+        addFromUrl={(url, name) =>
+          uploadFromUrl(url, name, {
+            companyId,
+            parentId,
+          })
+        }
+      />
       <VersionsModal />
       <SelectorModal />
       <AccessModal />
