@@ -1,5 +1,4 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { getCompanyExecutionContext } from "src/services/messages/web/controllers";
 import { logger } from "../../../../core/platform/framework";
 import { CrudException, ListResult } from "../../../../core/platform/framework/api/crud-service";
 import { File } from "../../../../services/files/entities/file";
@@ -9,6 +8,7 @@ import { PaginationQueryParameters, ResourceWebsocket } from "../../../../utils/
 import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import {
+  CompanyExecutionContext,
   DriveExecutionContext,
   DriveItemDetails,
   DriveTwakeTab,
@@ -370,3 +370,18 @@ const getDriveExecutionContext = (
   reqId: req.id,
   transport: "http",
 });
+
+function getCompanyExecutionContext(
+  request: FastifyRequest<{
+    Params: { company_id: string };
+  }>,
+): CompanyExecutionContext {
+  return {
+    user: request.currentUser,
+    company: { id: request.params.company_id },
+    url: request.url,
+    method: request.routerMethod,
+    reqId: request.id,
+    transport: "http",
+  };
+}

@@ -11,7 +11,7 @@ import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import {
   DriveTwakeTab as DriveTwakeTabRepo,
   TYPE as DriveTwakeTabRepoType,
-} from "../entities/drive_twake_tab";
+} from "../entities/drive-twake-tab";
 import {
   DriveExecutionContext,
   DocumentsMessageQueueRequest,
