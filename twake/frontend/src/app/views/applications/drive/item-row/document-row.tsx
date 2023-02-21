@@ -59,12 +59,7 @@ export const DocumentRow = ({
   const hasThumbnails = !!metadata.thumbnails?.length || false;
 
   const preview = () => {
-    open({
-      ...item.last_version_cache,
-      company_id: item.company_id,
-      id: metadata.external_id,
-      metadata,
-    });
+    open(item);
   };
 
   return (
