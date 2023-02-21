@@ -112,7 +112,7 @@ export const useDriveUpload = () => {
 
   const uploadFromUrl =
     (url: string, name: string, context: { companyId: string; parentId: string }) => () => {
-      var request = new XMLHttpRequest();
+      const request = new XMLHttpRequest();
       request.open('GET', url, true);
       request.responseType = 'blob';
       request.onload = function () {

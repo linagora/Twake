@@ -102,9 +102,10 @@ export const CreateModal = ({
                     };
                   }[],
                 )
-                .map(app => {
+                .map((app, i) => {
                   return (
                     <CreateModalOption
+                      key={i}
                       icon={
                         <Avatar
                           type="square"

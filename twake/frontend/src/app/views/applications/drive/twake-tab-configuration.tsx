@@ -17,9 +17,7 @@ export default ({ context }: { context?: EmbedContext }) => {
   // If configured then show the content of the tab and forward the fact that the access is done through a specific channel
   return (
     <div>
-      <Modal open={modalOpen} onClose={() => {}}>
-        //TODO
-      </Modal>
+      <Modal open={modalOpen} onClose={() => {}}></Modal>
 
       {tab && item && <>TODO: show tab content page</>}
     </div>
