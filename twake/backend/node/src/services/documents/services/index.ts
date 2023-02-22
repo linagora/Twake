@@ -736,8 +736,9 @@ export class DocumentsService {
           // Return true if the user has access
           return hasAccess;
         } catch (error) {
+          this.logger.warn("failed to check item access", error);
           return false;
-        }  
+        }
       }),
     );
 
