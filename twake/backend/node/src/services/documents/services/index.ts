@@ -9,7 +9,7 @@ import gr from "../../global-resolver";
 import { DriveFile, TYPE } from "../entities/drive-file";
 import { FileVersion, TYPE as FileVersionType } from "../entities/file-version";
 import {
-  DriveTwakeTab as DriveTwakeTabRepo,
+  DriveTwakeTab as DriveTwakeTabEntity,
   TYPE as DriveTwakeTabRepoType,
 } from "../entities/drive-twake-tab";
 import {
@@ -51,7 +51,7 @@ export class DocumentsService {
   repository: Repository<DriveFile>;
   searchRepository: SearchRepository<DriveFile>;
   fileVersionRepository: Repository<FileVersion>;
-  driveTwakeTabRepository: Repository<DriveTwakeTabRepo>;
+  driveTwakeTabRepository: Repository<DriveTwakeTabEntity>;
   ROOT: RootType = "root";
   TRASH: TrashType = "trash";
   logger: TwakeLogger = getLogger("Documents Service");
@@ -67,10 +67,11 @@ export class DocumentsService {
         FileVersionType,
         FileVersion,
       );
-      this.driveTwakeTabRepository = await globalResolver.database.getRepository<DriveTwakeTabRepo>(
-        DriveTwakeTabRepoType,
-        DriveTwakeTabRepo,
-      );
+      this.driveTwakeTabRepository =
+        await globalResolver.database.getRepository<DriveTwakeTabEntity>(
+          DriveTwakeTabRepoType,
+          DriveTwakeTabEntity,
+        );
     } catch (error) {
       logger.error("Error while initializing Documents Service", error);
     }
@@ -760,11 +761,11 @@ export class DocumentsService {
     }
 
     this.driveTwakeTabRepository.save(
-      {
+      Object.assign(new DriveTwakeTabEntity(), {
         company_id: context.company.id,
         tab_id: tabId,
         item_id: itemId,
-      },
+      }),
       context,
     );
 
