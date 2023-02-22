@@ -977,7 +977,7 @@
     "scenes.app.channelsbar.channel_information.group": "Gruppo di canali",
     "scenes.app.channelsbar.channel_information.group.none": "Non selezionato",
     "scenes.app.channelsbar.channel_information.group.new": "Crea un nuovo gruppo",
-    "scenes.app.channelsbar.channel_information.group.save": "Imposta il gruppo di canali su $1",
+    "scenes.app.channelsbar.channel_information.group.save": "Imposta il gruppo di canali su {{$1}}",
     "scenes.app.channelsbar.channel_information.group.save_none": "Non imposta il gruppo di canali",
     "scenes.app.channelsbar.channel_information.save": "Salva informazioni",
     "components.invitation.reached_limit.text": "hai raggiunto il numero massimo di utenti all'interno della tua azienda. Aumenta la tua iscrizione o aggiungi questi utenti come ospiti",
@@ -995,14 +995,14 @@
     "components.invitation.invitation_sent.link": "Controlla lo stato dell'invito",
     "components.invitation.invitation_target.invite_as_guests": "Invita tutti come ospiti",
     "components.invitation.invitation_target.invite_as_members": "Invita tutti come membri",
-    "components.invitation.invitation_target.channels_button": "Canali da invitare",
+    "components.invitation.invitation_target.channels_button": "Seleziona i canali",
     "components.invitation.workspace_link.text": "Link di invito allo spazio di lavoro",
     "components.invitation.workspace_link.button": "Copia",
-    "components.invitation.title": "invita persone a {{$1}}",
-    "components.invitation.bulk_invitation": "Invito collettivo",
+    "components.invitation.title": "Invita persone a {{$1}}",
+    "components.invitation.bulk_invitation": "Email multiple",
     "components.invitation.button": "Invia inviti",
     "scenes.client.readonly.info": "Questo canale è un feed di sola lettura ma puoi commentare nei thread.",
     "scenes.app.channelsbar.channel_information.group.title": "Gruppi di canali",
     "components.invitation.custom_role_invitation": "Invito classico",
-    "components.invitation.link": "Collegamento"
+    "components.invitation.link": "Link"
 }
