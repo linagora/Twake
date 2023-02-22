@@ -122,7 +122,7 @@ describe("the Drive Twake tabs feature", () => {
             type: "folder",
             id: "parent",
             level: "none",
-          },
+          } as any,
         ],
       },
     };

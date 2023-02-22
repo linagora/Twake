@@ -760,7 +760,7 @@ export class DocumentsService {
       throw new CrudException("Not enough permissions", 403);
     }
 
-    this.driveTwakeTabRepository.save(
+    await this.driveTwakeTabRepository.save(
       Object.assign(new DriveTwakeTabEntity(), {
         company_id: context.company.id,
         tab_id: tabId,
