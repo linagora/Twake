@@ -1,4 +1,5 @@
 import Browser from './browser';
+import { SelectorModal } from './modals/selector';
 import TwakeTabConfiguration from './twake-tab-configuration';
 
 export type EmbedContext = {
@@ -9,6 +10,21 @@ export type EmbedContext = {
 };
 
 export default ({
+  initialParentId,
+  context,
+}: {
+  initialParentId?: string;
+  context?: EmbedContext;
+}) => {
+  return (
+    <>
+      <SelectorModal />
+      <Drive initialParentId={initialParentId} context={context} />
+    </>
+  );
+};
+
+const Drive = ({
   initialParentId,
   context,
 }: {

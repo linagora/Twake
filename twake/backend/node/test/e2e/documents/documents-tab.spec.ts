@@ -116,6 +116,15 @@ describe("the Drive Twake tabs feature", () => {
       name: "new tab test file",
       parent_id: "root",
       company_id: platform.workspace.company_id,
+      access_info: {
+        entities: [
+          {
+            type: "folder",
+            id: "parent",
+            level: "none",
+          },
+        ],
+      },
     };
 
     const version = {};

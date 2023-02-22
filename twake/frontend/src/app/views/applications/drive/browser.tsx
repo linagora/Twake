@@ -22,7 +22,7 @@ import { ConfirmDeleteModal, ConfirmDeleteModalAtom } from './modals/confirm-del
 import { ConfirmTrashModal, ConfirmTrashModalAtom } from './modals/confirm-trash';
 import { CreateModal, CreateModalAtom } from './modals/create';
 import { PropertiesModal } from './modals/properties';
-import { SelectorModal, SelectorModalAtom } from './modals/selector';
+import { SelectorModalAtom } from './modals/selector';
 import { AccessModal } from './modals/update-access';
 import { VersionsModal } from './modals/versions';
 
@@ -31,7 +31,13 @@ export const DriveCurrentFolderAtom = atomFamily<string, string>({
   default: startingParentId => startingParentId || 'root',
 });
 
-export default ({ initialParentId }: { initialParentId?: string }) => {
+export default ({
+  initialParentId,
+  twakeTabContextToken,
+}: {
+  initialParentId?: string;
+  twakeTabContextToken?: string;
+}) => {
   const companyId = useRouterCompany();
 
   const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom(initialParentId || 'root'));
@@ -101,7 +107,6 @@ export default ({ initialParentId }: { initialParentId?: string }) => {
         }
       />
       <VersionsModal />
-      <SelectorModal />
       <AccessModal />
       <PropertiesModal />
       <ConfirmDeleteModal />
