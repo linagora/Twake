@@ -8,13 +8,21 @@ export class DriveTwakeApiClient {
     );
   }
 
-  static async setTab(companyId: string, tabId: string, itemId: string) {
+  static async setTab(
+    companyId: string,
+    tabId: string,
+    channelId: string,
+    itemId: string,
+    level: 'write' | 'read',
+  ) {
     return await Api.post<DriveTwakeTab, DriveTwakeTab>(
       `/internal/services/documents/v1/companies/${companyId}/tab/${tabId}`,
       {
         company_id: companyId,
         tab_id: tabId,
+        channel_id: channelId,
         item_id: itemId,
+        level,
       },
     );
   }

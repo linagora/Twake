@@ -319,7 +319,9 @@ Get a tab configuration to get the attached folder/document id.
 {
   "company_id": string;
   "tab_id": string;
+  "channel_id": string;
   "item_id": string;
+  "level": "read" | "write";
 }
 ```
 
@@ -339,7 +341,9 @@ Get a tab configuration to get the attached folder/document id.
 {
   "company_id": string;
   "tab_id": string;
+  "channel_id": string;
   "item_id": string;
+  "level": "read" | "write";
 }
 ```
 
@@ -349,6 +353,8 @@ Get a tab configuration to get the attached folder/document id.
 {
   "company_id": string;
   "tab_id": string;
+  "channel_id": string;
   "item_id": string;
+  "level": "read" | "write";
 }
 ```

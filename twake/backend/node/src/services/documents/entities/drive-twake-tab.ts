@@ -17,6 +17,14 @@ export class DriveTwakeTab {
   tab_id: string;
 
   @Type(() => String)
+  @Column("channel__id", "string")
+  channel_id: string;
+
+  @Type(() => String)
   @Column("item_id", "string")
   item_id: string;
+
+  @Type(() => String)
+  @Column("level", "string")
+  level: "read" | "write";
 }

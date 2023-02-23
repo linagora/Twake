@@ -4,6 +4,7 @@ import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
+import { setTwakeTabToken } from 'app/features/drive/api-client/api-client';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
@@ -39,6 +40,7 @@ export default ({
   twakeTabContextToken?: string;
 }) => {
   const companyId = useRouterCompany();
+  setTwakeTabToken(twakeTabContextToken || null);
 
   const [parentId, setParentId] = useRecoilState(DriveCurrentFolderAtom(initialParentId || 'root'));
 

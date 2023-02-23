@@ -287,7 +287,7 @@ export class DocumentsService {
   update = async (
     id: string,
     content: Partial<DriveFile>,
-    context: DriveExecutionContext,
+    context: CompanyExecutionContext,
   ): Promise<DriveFile> => {
     if (!context) {
       this.logger.error("invalid execution context");
@@ -751,7 +751,9 @@ export class DocumentsService {
 
   setTab = async (
     tabId: string,
+    channelId: string,
     itemId: string,
+    level: "read" | "write",
     context: CompanyExecutionContext,
   ): Promise<DriveTwakeTab> => {
     const hasAccess = await checkAccess(itemId, null, "manage", this.repository, context);
@@ -760,12 +762,47 @@ export class DocumentsService {
       throw new CrudException("Not enough permissions", 403);
     }
 
+    const previousTabConfiguration = await this.getTab(tabId, context);
+    const item = await this.repository.findOne(
+      {
+        company_id: context.company.id,
+        itemId,
+      },
+      {},
+      context,
+    );
+
     await this.driveTwakeTabRepository.save(
       Object.assign(new DriveTwakeTabEntity(), {
         company_id: context.company.id,
         tab_id: tabId,
+        channel_id: channelId,
         item_id: itemId,
+        level,
       }),
+      context,
+    );
+
+    await this.update(
+      item.id,
+      {
+        ...item,
+        access_info: {
+          ...item.access_info,
+          entities: [
+            ...(item.access_info?.entities || []).filter(
+              e =>
+                !previousTabConfiguration ||
+                !(e.type === "channel" && e.id !== previousTabConfiguration.channel_id),
+            ),
+            {
+              type: "channel",
+              id: channelId,
+              level: level === "write" ? "write" : "read",
+            },
+          ],
+        },
+      },
       context,
     );
 

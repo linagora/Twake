@@ -345,9 +345,14 @@ export class DocumentsController {
     const context = getCompanyExecutionContext(request);
     const { tab_id } = request.params;
 
+    if (!request.body.channel_id || !request.body.item_id)
+      throw new Error("Missing parameters (channel_id, item_id)");
+
     return await globalResolver.services.documents.documents.setTab(
       tab_id,
+      request.body.channel_id,
       request.body.item_id,
+      request.body.level,
       context,
     );
   };

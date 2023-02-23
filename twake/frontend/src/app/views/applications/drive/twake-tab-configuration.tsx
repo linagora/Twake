@@ -10,7 +10,7 @@ import Browser from './browser';
 import { SelectorModalAtom } from './modals/selector';
 
 export default ({ context }: { context?: EmbedContext }) => {
-  const { tab, setTab, loading } = useDriveTwakeTab(context?.tabId || '');
+  const { tab, setTab, loading } = useDriveTwakeTab(context?.channelId || '', context?.tabId || '');
   const { item, loading: itemLoading } = useDriveItem(tab?.item_id || '');
   const [modifyConfiguration, setModifyConfiguration] = useState(false);
   const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
@@ -29,7 +29,7 @@ export default ({ context }: { context?: EmbedContext }) => {
         mode: 'move',
         title: `Select what folder this tab should display`,
         onSelected: async ids => {
-          await setTab(ids[0]);
+          await setTab(ids[0], 'write');
         },
       });
     }
