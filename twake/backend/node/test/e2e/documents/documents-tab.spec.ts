@@ -1,8 +1,9 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { deserialize } from "class-transformer";
+import { AccessInformation } from "../../../src/services/documents/entities/drive-file";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
-import { e2e_createDocument } from "./utils";
+import { e2e_createDocument, e2e_getDocument } from "./utils";
 
 const url = "/internal/services/documents/v1";
 
@@ -15,6 +16,14 @@ describe("the Drive Twake tabs feature", () => {
     size: number;
     added: string;
     parent_id: string;
+    access_info: AccessInformation;
+  }
+
+  class DriveItemDetailsMockClass {
+    path: string[];
+    item: DriveFileMockClass;
+    children: DriveFileMockClass[];
+    versions: Record<string, unknown>[];
   }
 
   beforeEach(async () => {
@@ -67,7 +76,9 @@ describe("the Drive Twake tabs feature", () => {
     const tab = {
       company_id: platform.workspace.company_id,
       tab_id: "1234567890",
+      channel_id: "abcdefghij",
       item_id: doc.id,
+      level: "write",
     };
 
     const token = await platform.auth.getJWTToken();
@@ -100,6 +111,20 @@ describe("the Drive Twake tabs feature", () => {
     expect(getTabResponse.json().company_id).toBe(tab.company_id);
     expect(getTabResponse.json().tab_id).toBe(tab.tab_id);
     expect(getTabResponse.json().item_id).toBe(tab.item_id);
+
+    const documentResponse = await e2e_getDocument(platform, doc.id);
+    const documentResult = deserialize<DriveItemDetailsMockClass>(
+      DriveItemDetailsMockClass,
+      documentResponse.body,
+    );
+
+    console.log(documentResult?.item);
+
+    expect(
+      documentResult?.item?.access_info?.entities?.find(
+        a => a?.type === "channel" && a.id === "abcdefghij" && a.level === "write",
+      ),
+    ).toBeDefined();
 
     done?.();
   });
@@ -135,7 +160,9 @@ describe("the Drive Twake tabs feature", () => {
     const tab = {
       company_id: platform.workspace.company_id,
       tab_id: "1234567890",
+      channel_id: "abcdefghij",
       item_id: doc.id,
+      level: "read",
     };
 
     const token = await platform.auth.getJWTToken({ sub: otherUser.id });
