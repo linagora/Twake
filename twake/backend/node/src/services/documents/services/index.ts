@@ -766,7 +766,7 @@ export class DocumentsService {
     const item = await this.repository.findOne(
       {
         company_id: context.company.id,
-        item_id: itemId,
+        id: itemId,
       },
       {},
       context,
