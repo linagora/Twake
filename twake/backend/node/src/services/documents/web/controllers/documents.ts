@@ -8,8 +8,10 @@ import { PaginationQueryParameters, ResourceWebsocket } from "../../../../utils/
 import { DriveFile } from "../../entities/drive-file";
 import { FileVersion } from "../../entities/file-version";
 import {
+  CompanyExecutionContext,
   DriveExecutionContext,
   DriveItemDetails,
+  DriveTwakeTab,
   ItemRequestParams,
   RequestParams,
   SearchDocumentsBody,
@@ -322,6 +324,38 @@ export class DocumentsController {
       throw new CrudException("Failed to search for documents", 500);
     }
   };
+
+  getTab = async (
+    request: FastifyRequest<{
+      Params: { tab_id: string; company_id: string };
+    }>,
+  ): Promise<DriveTwakeTab> => {
+    const context = getCompanyExecutionContext(request);
+    const { tab_id } = request.params;
+
+    return await globalResolver.services.documents.documents.getTab(tab_id, context);
+  };
+
+  setTab = async (
+    request: FastifyRequest<{
+      Params: { tab_id: string; company_id: string };
+      Body: DriveTwakeTab;
+    }>,
+  ): Promise<DriveTwakeTab> => {
+    const context = getCompanyExecutionContext(request);
+    const { tab_id } = request.params;
+
+    if (!request.body.channel_id || !request.body.item_id)
+      throw new Error("Missing parameters (channel_id, item_id)");
+
+    return await globalResolver.services.documents.documents.setTab(
+      tab_id,
+      request.body.channel_id,
+      request.body.item_id,
+      request.body.level,
+      context,
+    );
+  };
 }
 
 /**
@@ -341,3 +375,18 @@ const getDriveExecutionContext = (
   reqId: req.id,
   transport: "http",
 });
+
+function getCompanyExecutionContext(
+  request: FastifyRequest<{
+    Params: { company_id: string };
+  }>,
+): CompanyExecutionContext {
+  return {
+    user: request.currentUser,
+    company: { id: request.params.company_id },
+    url: request.url,
+    method: request.routerMethod,
+    reqId: request.id,
+    transport: "http",
+  };
+}

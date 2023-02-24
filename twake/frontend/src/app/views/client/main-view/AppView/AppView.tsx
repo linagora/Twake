@@ -29,7 +29,16 @@ const AppView: FC<PropsType> = props => {
 
   switch (app?.identity?.code) {
     case 'twake_drive':
-      return <Drive />;
+      return (
+        <Drive
+          context={{
+            companyId: channel.company_id,
+            workspaceId: channel.workspace_id || '',
+            channelId: channel.id,
+            tabId: configuration.context.tabId,
+          }}
+        />
+      );
     case 'twake_calendar':
       return <Calendar options={configuration} />;
     case 'twake_tasks':

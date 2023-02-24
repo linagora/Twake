@@ -80,6 +80,20 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _options, next)
     handler: documentsController.search.bind(documentsController),
   });
 
+  fastify.route({
+    method: "GET",
+    url: `${baseUrl}/tabs/:tab_id`,
+    preValidation: [fastify.authenticate],
+    handler: documentsController.getTab.bind(documentsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${baseUrl}/tabs/:tab_id`,
+    preValidation: [fastify.authenticate],
+    handler: documentsController.setTab.bind(documentsController),
+  });
+
   return next();
 };
 

@@ -1,5 +1,6 @@
 import { FileTreeObject } from 'app/components/uploads/file-tree-utils';
 import FileUploadService from 'app/features/files/services/file-upload-service';
+import { ToasterService } from 'app/features/global/services/toaster-service';
 import { DriveApiClient } from '../api-client/api-client';
 import { useDriveActions } from './use-drive-actions';
 
@@ -85,7 +86,7 @@ export const useDriveUpload = () => {
             create(
               {
                 company_id: context.companyId,
-                workspace_id: 'someid',
+                workspace_id: 'drive', //We don't set workspace ID for now
                 parent_id: context.parentId,
                 name: file.metadata?.name,
                 size: file.upload_data?.size,
@@ -109,5 +110,51 @@ export const useDriveUpload = () => {
     }
   };
 
-  return { uploadTree, uploadVersion };
+  const uploadFromUrl =
+    (url: string, name: string, context: { companyId: string; parentId: string }) => () => {
+      const request = new XMLHttpRequest();
+      request.open('GET', url, true);
+      request.responseType = 'blob';
+      request.onload = function () {
+        try {
+          const file = new File([request.response], name);
+          FileUploadService.upload([file], {
+            context: {
+              companyId: context.companyId,
+              parentId: context.parentId,
+            },
+            callback: (file, context) => {
+              if (file) {
+                create(
+                  {
+                    company_id: context.companyId,
+                    workspace_id: 'drive', //We don't set workspace ID for now
+                    parent_id: context.parentId,
+                    name: file.metadata?.name,
+                    size: file.upload_data?.size,
+                  },
+                  {
+                    provider: 'internal',
+                    application_id: '',
+                    file_metadata: {
+                      name: file.metadata?.name,
+                      size: file.upload_data?.size,
+                      mime: file.metadata?.mime,
+                      thumbnails: file?.thumbnails,
+                      source: 'internal',
+                      external_id: file.id,
+                    },
+                  },
+                );
+              }
+            },
+          });
+        } catch (e) {
+          ToasterService.error('Error while creating an empty file.');
+        }
+      };
+      request.send();
+    };
+
+  return { uploadTree, uploadFromUrl, uploadVersion };
 };
