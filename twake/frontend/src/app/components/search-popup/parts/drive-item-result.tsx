@@ -25,16 +25,17 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import { openDriveItem, onDriveItemDownloadClick } from '../common';
 import ResultContext from './result-context';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
-import { DriveCurrentFolderAtom } from 'app/views/applications/drive/index';
+import { DriveCurrentFolderAtom } from 'app/views/applications/drive/browser';
 
 export default (props: { driveItem: DriveItem & { user?: UserType } }) => {
   const input = useRecoilValue(SearchInputState);
   const currentWorkspaceId = useRouterWorkspace();
   const companyApplications = useCompanyApplications();
-  const [_, setParentId] = useRecoilState(DriveCurrentFolderAtom("root"));
-  const twakeDriveApplicationId = companyApplications.applications.find((application) => {
-    return application.identity.code === "twake_drive";
-  })?.id || '';
+  const [_, setParentId] = useRecoilState(DriveCurrentFolderAtom('root'));
+  const twakeDriveApplicationId =
+    companyApplications.applications.find(application => {
+      return application.identity.code === 'twake_drive';
+    })?.id || '';
   const file = props.driveItem;
   const name = file?.name;
   const extension = name?.split('.').pop();
@@ -93,13 +94,11 @@ export default (props: { driveItem: DriveItem & { user?: UserType } }) => {
         <Button
           theme="outline"
           className="w-9 px-1.5 ml-2 rounded-full border-none"
-          onClick={() => 
-            {
-              openDriveItem(file, currentWorkspaceId, twakeDriveApplicationId);
-              setParentId(file.parent_id);
-              setOpen(false);
-            }
-          }
+          onClick={() => {
+            openDriveItem(file, currentWorkspaceId, twakeDriveApplicationId);
+            setParentId(file.parent_id);
+            setOpen(false);
+          }}
         >
           <ArrowRight className="text-blue-500 w-6 h-6" />
         </Button>
