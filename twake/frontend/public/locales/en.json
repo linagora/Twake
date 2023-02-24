@@ -696,6 +696,7 @@
     "components.searchpopup.messages": "Messages",
     "components.searchpopup.media": "Media",
     "components.searchpopup.files": "Files",
+    "components.searchpopup.drive": "Drive",
     "components.searchpopup.see_more": "See more",
     "components.searchpopup.recent_chats": "Recent chats",
     "components.searchpopup.recent_media": "Recent media",

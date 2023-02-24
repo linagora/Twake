@@ -11,6 +11,7 @@ import {
   useSearchMessagesFilesLoading,
   useSearchMessagesMediasLoading,
 } from 'app/features/search/hooks/use-search-files-or-medias';
+import { useSearchDriveItemsLoading } from 'app/features/search/hooks/use-search-drive-items';
 import { useSearchMessagesLoading } from 'app/features/search/hooks/use-search-messages';
 import { SearchInputState } from 'app/features/search/state/search-input';
 import _ from 'lodash';
@@ -31,8 +32,9 @@ export const SearchInput = () => {
   const messagesLoading = useSearchMessagesLoading();
   const filesLoading = useSearchMessagesFilesLoading();
   const mediasLoading = useSearchMessagesMediasLoading();
+  const driveItemsLoading = useSearchDriveItemsLoading();
 
-  const loading = channelsLoading || messagesLoading || filesLoading || mediasLoading;
+  const loading = channelsLoading || messagesLoading || filesLoading || mediasLoading || driveItemsLoading;
 
   return (
     <div className="relative flex mt-2 w-full">

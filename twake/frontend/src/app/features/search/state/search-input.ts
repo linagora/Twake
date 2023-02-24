@@ -18,7 +18,7 @@ export const SearchInputState = atom<SearchInput>({
   },
 });
 
-export const SearchTabsState = atom<'all' | 'channels' | 'messages' | 'files' | 'medias'>({
+export const SearchTabsState = atom<'all' | 'channels' | 'messages' | 'files' | 'medias' | 'drive'>({
   key: 'SearchTabsState',
   default: 'all',
 });

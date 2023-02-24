@@ -1,5 +1,21 @@
 import Api from '../../global/framework/api-service';
 import { DriveItem, DriveItemDetails, DriveItemVersion } from '../types';
+import Workspace from 'app/deprecated/workspaces/workspaces';
+import Logger from 'features/global/framework/logger-service';
+export interface BaseSearchOptions {
+  company_id?: string;
+  workspace_id?: string;
+  channel_id?: string;
+  page_token?: string;
+  limit?: number;
+}
+
+export type SearchDocumentsBody = {
+  search?: string;
+  company_id?: string;
+  creator?: string;
+  added?: string;
+};
 
 let publicLinkToken: null | string = null;
 let twakeTabToken: null | string = null;
@@ -23,6 +39,7 @@ const appendPublicAndTwakeToken = (useAnd?: boolean) => {
 };
 
 export class DriveApiClient {
+  private static logger = Logger.getLogger('MessageAPIClientService');
   static async get(companyId: string, id: string | 'trash' | '') {
     return await Api.get<DriveItemDetails>(
       `/internal/services/documents/v1/companies/${companyId}/item/${id}${appendPublicAndTwakeToken()}`,
@@ -93,5 +110,21 @@ export class DriveApiClient {
         `?items=${ids.join(',')}&token=${token}` +
         appendPublicAndTwakeToken(true),
     );
+  }
+
+  static async search(searchString: string, options?: BaseSearchOptions) {
+    const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
+    const query = `/internal/services/documents/v1/companies/${companyId}/search`;
+    const searchData = {
+      "search": searchString
+    };
+    const res = await Api.post<SearchDocumentsBody,{ entities: DriveItem[] }>(query, searchData);
+    this.logger.debug(
+      `Drive search by text "${searchString}". Found`,
+      res.entities.length,
+      'drive item(s)',
+    );
+
+    return res;
   }
 }

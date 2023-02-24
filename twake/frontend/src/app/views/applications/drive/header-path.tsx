@@ -32,7 +32,7 @@ export const PathRender = ({
   onClick: (id: string) => void;
 }) => {
   return (
-    <Title className="overflow-auto whitespace-nowrap mr-2 pl-px">
+    <Title className="overflow-hidden whitespace-nowrap mr-2 pl-px flex py-5">
       {(path || [])?.map((a, i) => (
         <PathItem
           key={a.id}
@@ -60,12 +60,17 @@ const PathItem = ({
   return (
     <Button
       theme={last ? 'primary' : 'default'}
-      className={'-ml-px ' + (!first ? 'rounded-l-none ' : '') + (!last ? 'rounded-r-none ' : '')}
+      className={
+        '-ml-px shrink overflow-hidden whitespace-nowrap last:flex-[1_0_auto_!important] first:flex-[0_0_auto] first:flex-shrink-0 ' +
+        (!first ? 'rounded-l-none ' : '') +
+        (!last ? 'rounded-r-none ' : '') +
+        ((!first && !last) ? 'max-w-[15ch] ' : '')
+      }
       onClick={() => {
         onClick(item?.id || '');
       }}
     >
-      {item?.name || ''}
+      <span className="text-ellipsis overflow-hidden whitespace-nowrap">{item?.name || ''}</span>
       {item?.access_info?.public?.level && item?.access_info?.public?.level !== 'none' && (
         <PublicIcon className="h-5 w-5 ml-2" />
       )}
