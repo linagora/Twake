@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import { Button } from 'app/atoms/button/button';
-import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
+import { Base, BaseSmall, Info, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
@@ -123,6 +123,15 @@ export default ({
           (loading && !children?.length ? 'opacity-50 ' : '')
         }
       >
+        {(window as any).canary && (
+          <div className="bg-linear-purple w-full hidden sm:block px-4 py-2">
+            <Info className=" !text-white">
+              This is the new Drive, your documents are not migrated here yet, you can exit canary
+              to see all your previous documents. Documents added here will not be visible yet on
+              production but will be kept after the final migration.
+            </Info>
+          </div>
+        )}
         <div className="flex flex-row shrink-0 items-center">
           <HeaderPath path={path || []} inTrash={inTrash} setParentId={setParentId} />
           <div className="grow" />
