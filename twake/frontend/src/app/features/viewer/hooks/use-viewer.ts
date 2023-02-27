@@ -44,17 +44,17 @@ export const useFileViewer = () => {
           loading: true,
         });
 
-          const details = await ViewerAPIClient.getMessageFile(
-            status.file.company_id || '',
-            status.file.message_id || '',
-            status.file.id || '',
-          );
+        const details = await ViewerAPIClient.getMessageFile(
+          status.file.company_id || '',
+          status.file.message_id || '',
+          status.file.id || '',
+        );
 
-          setStatus({
-            ...status,
-            details: details.resource || (details as unknown as MessageFileDetails),
-            loading: false,
-          });
+        setStatus({
+          ...status,
+          details: details.resource || (details as unknown as MessageFileDetails),
+          loading: false,
+        });
       }
     },
     [status.file?.id],

@@ -357,7 +357,6 @@ export default memo(
                   (index === 0 ? 'rounded-t-md ' : '') +
                   (index === documents.length - 1 ? 'rounded-b-md ' : '')
                 }
-                onClick={() => {}}
                 item={item}
                 checked={checked[item.id] || false}
                 onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}

@@ -7,7 +7,7 @@ export type DriveItemProps = {
   className: string;
   onCheck: (status: boolean) => void;
   checked: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   inTrash?: boolean;
   parentAccess?: 'read' | 'write' | 'manage';
 };
