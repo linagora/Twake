@@ -6,11 +6,13 @@ import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
 import { setTwakeTabToken } from 'app/features/drive/api-client/api-client';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
-import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
+import { useDriveItem, usePublicLink } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
+import { ToasterService } from 'app/features/global/services/toaster-service';
+import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import _ from 'lodash';
 import { Suspense, useCallback, useEffect, useRef } from 'react';
@@ -46,6 +48,7 @@ export default ({
 
   const { download, downloadZip, update } = useDriveActions();
   const { access, item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
+  const publicLink = usePublicLink(item);
   const { item: trash } = useDriveItem('trash');
   const { uploadTree, uploadFromUrl } = useDriveUpload();
   useDriveRealtime(parentId);
@@ -173,6 +176,17 @@ export default ({
                         selectedCount === 1
                           ? download(Object.keys(checked)[0])
                           : downloadZip(Object.keys(checked)),
+                    },
+                    {
+                      type: 'menu',
+                      text: 'Copy public link',
+                      hide:
+                        !item?.access_info.public?.level ||
+                        item?.access_info.public?.level === 'none',
+                      onClick: () => {
+                        copyToClipboard(publicLink);
+                        ToasterService.success('Public link copied to clipboard');
+                      },
                     },
                     { type: 'separator', hide: access === 'read' },
                     {
