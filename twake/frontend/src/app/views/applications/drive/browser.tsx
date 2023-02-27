@@ -131,13 +131,16 @@ export default memo(
             (loading && !children?.length ? 'opacity-50 ' : '')
           }
         >
-          {(window as any).canary && (
-            <div className="bg-linear-purple w-full hidden sm:block px-4 py-2">
-              <Info className=" !text-white">
-                This is the new Drive, your documents are not migrated here yet, you can exit canary
-                to see all your previous documents. Documents added here will not be visible yet on
-                production but will be kept after the final migration.
-              </Info>
+          {document.location.origin.includes('canary') && (
+            <div className="bg-linear-purple w-full hidden sm:block px-4 py-2 rounded-md">
+              <Base className=" !text-white">
+                Welcome to the next version of Twake Drive.
+                <br />
+                Your documents are not migrated yet, you can switch back to{' '}
+                <a href="https://web.twake.app">https://web.twake.app</a> to see all your documents.
+                Documents added here will not be visible yet on production but will be kept after
+                the final migration.
+              </Base>
             </div>
           )}
           <div className="flex flex-row shrink-0 items-center">
