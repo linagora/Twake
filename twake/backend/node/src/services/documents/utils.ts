@@ -164,7 +164,7 @@ export const isCompanyGuest = async (context: CompanyExecutionContext): Promise<
     context.user?.id,
   );
 
-  return userRole === "guest";
+  return userRole === "guest" || !userRole;
 };
 
 /**
@@ -343,9 +343,10 @@ export const getAccessLevel = async (
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext & { public_token?: string; twake_tab_token?: string },
 ): Promise<DriveFileAccessLevel | "none"> => {
-  if (!id || id === "root") return (await isCompanyGuest(context)) ? "read" : "manage";
+  if (!id || id === "root")
+    return !context?.user?.id ? "none" : (await isCompanyGuest(context)) ? "read" : "manage";
   if (id === "trash")
-    return (await isCompanyGuest(context))
+    return (await isCompanyGuest(context)) || !context?.user?.id
       ? "none"
       : (await isCompanyAdmin(context))
       ? "manage"
@@ -376,6 +377,9 @@ export const getAccessLevel = async (
       const { token: itemToken, level: itemLevel } = item.access_info.public;
       if (itemToken === publicToken) return itemLevel;
     }
+
+    //From there a user must be logged in
+    if (!context.user.id) return "none";
 
     const accessEntities = item.access_info.entities || [];
 

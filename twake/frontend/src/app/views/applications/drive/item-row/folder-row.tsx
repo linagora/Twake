@@ -50,7 +50,7 @@ export const FolderRow = ({
       onMouseLeave={() => setHover(false)}
       onClick={e => {
         if (e.shiftKey || e.ctrlKey) onCheck(!checked);
-        else onClick();
+        else if (onClick) onClick();
       }}
     >
       <div onClick={e => e.stopPropagation()}>
@@ -90,7 +90,7 @@ export const FolderRow = ({
             },
             {
               type: 'menu',
-              text: 'Public access',
+              text: 'Manage access',
               hide: parentAccess === 'read',
               onClick: () => setAccessModalState({ open: true, id: item.id }),
             },

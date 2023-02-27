@@ -27,6 +27,8 @@ const AppView: FC<PropsType> = props => {
 
   const app = props.viewService.getConfiguration().app;
 
+  if (!channel) return <NoApp />;
+
   switch (app?.identity?.code) {
     case 'twake_drive':
       return (

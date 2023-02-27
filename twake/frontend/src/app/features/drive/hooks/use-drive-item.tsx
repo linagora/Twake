@@ -89,13 +89,17 @@ export const useDriveItem = (id: string) => {
   };
 };
 
-export const usePublicLink = (item?: DriveItem) => {
+export const usePublicLink = (item?: DriveItem): string => {
   const translator = useRef(short()).current;
-  const publicLink =
-    `${document.location.protocol}//${document.location.host}` +
-    `/shared/${translator.fromUUID(item?.company_id || '')}` +
-    `/drive/${translator.fromUUID(item?.id || '')}` +
-    `/t/${item?.access_info?.public?.token}`;
+  let publicLink = `${document.location.protocol}//${document.location.host}`;
+  try {
+    publicLink +=
+      `/shared/${translator.fromUUID(item?.company_id || '')}` +
+      `/drive/${translator.fromUUID(item?.id || '')}` +
+      `/t/${item?.access_info?.public?.token}`;
+  } catch (e) {
+    return publicLink;
+  }
 
   return publicLink;
 };

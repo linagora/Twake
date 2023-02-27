@@ -26,6 +26,7 @@ import { openDriveItem, onDriveItemDownloadClick } from '../common';
 import ResultContext from './result-context';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { DriveCurrentFolderAtom } from 'app/views/applications/drive/browser';
+import { FolderIcon } from '@heroicons/react/solid';
 
 export default (props: { driveItem: DriveItem & { user?: UserType } }) => {
   const input = useRecoilValue(SearchInputState);
@@ -121,6 +122,14 @@ export const FileResultMedia = (props: {
 
   let iconClassName = 'absolute left-0 top-0 bottom-0 right-0 m-auto w-8 h-8';
   if (url) iconClassName = 'absolute bottom-1 left-1 w-6 h-6';
+
+  if (file.is_directory) {
+    return (
+      <div className={'relative flex bg-blue-100 rounded-md ' + (props.className || '')}>
+        <FolderIcon className="w-10 h-10 m-auto text-blue-500" />
+      </div>
+    );
+  }
 
   return (
     <div className={'relative flex bg-zinc-200 rounded-md ' + (props.className || '')}>

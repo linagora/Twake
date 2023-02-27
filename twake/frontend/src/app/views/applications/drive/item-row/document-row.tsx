@@ -13,6 +13,7 @@ import { Base, BaseSmall } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { usePublicLink } from 'app/features/drive/hooks/use-drive-item';
+import { useDrivePreview } from 'app/features/drive/hooks/use-drive-preview';
 import { formatBytes } from 'app/features/drive/utils';
 import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
 import { ToasterService } from 'app/features/global/services/toaster-service';
@@ -41,7 +42,7 @@ export const DocumentRow = ({
 }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
   const { download, update } = useDriveActions();
-  const { open } = useFileViewerModal();
+  const { open } = useDrivePreview();
   const publicLink = usePublicLink(item);
 
   const setVersionModal = useSetRecoilState(VersionsModalAtom);
@@ -75,13 +76,13 @@ export const DocumentRow = ({
       onMouseLeave={() => setHover(false)}
       onClick={e => {
         if (e.shiftKey || e.ctrlKey) onCheck(!checked);
-        else onClick();
+        else if (onClick) onClick();
+        else preview();
       }}
     >
       <div
         onClick={e => {
           e.stopPropagation();
-          preview();
         }}
       >
         <CheckableIcon
@@ -150,7 +151,7 @@ export const DocumentRow = ({
             },
             {
               type: 'menu',
-              text: 'Public access',
+              text: 'Manage access',
               hide: parentAccess === 'read',
               onClick: () => setAccessModalState({ open: true, id: item.id }),
             },
