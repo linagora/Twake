@@ -93,7 +93,7 @@ export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: 
               <Base>Channel access</Base>
               <br />
               <Info>
-                Channels ({channelEntities.length}) from Twake chat tabs have access to this item.
+                {channelEntities.length} channel(s) from Twake chat have access to this item.
               </Info>
             </div>
             <div className="shrink-0 ml-2">

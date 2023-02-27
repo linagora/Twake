@@ -4,7 +4,7 @@ import { DriveTwakeTab } from '../types';
 export class DriveTwakeApiClient {
   static async getTab(companyId: string, tabId: string) {
     return await Api.get<DriveTwakeTab>(
-      `/internal/services/documents/v1/companies/${companyId}/tab/${tabId}`,
+      `/internal/services/documents/v1/companies/${companyId}/tabs/${tabId}`,
     );
   }
 
@@ -16,7 +16,7 @@ export class DriveTwakeApiClient {
     level: 'write' | 'read',
   ) {
     return await Api.post<DriveTwakeTab, DriveTwakeTab>(
-      `/internal/services/documents/v1/companies/${companyId}/tab/${tabId}`,
+      `/internal/services/documents/v1/companies/${companyId}/tabs/${tabId}`,
       {
         company_id: companyId,
         tab_id: tabId,

@@ -333,6 +333,7 @@ export class CompanyServiceImpl {
   }
 
   async getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole> {
+    if (!userId) return "guest";
     const companyUser = await this.getCompanyUser({ id: companyId }, { id: userId });
     if (!companyUser) {
       return "guest";
