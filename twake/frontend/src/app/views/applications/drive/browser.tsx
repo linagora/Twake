@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from '@heroicons/react/outline';
+import { ChevronDownIcon, PlusIcon } from '@heroicons/react/outline';
 import { Button } from 'app/atoms/button/button';
 import { Base, BaseSmall, Info, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
@@ -177,17 +177,6 @@ export default ({
                           ? download(Object.keys(checked)[0])
                           : downloadZip(Object.keys(checked)),
                     },
-                    {
-                      type: 'menu',
-                      text: 'Copy public link',
-                      hide:
-                        !item?.access_info.public?.level ||
-                        item?.access_info.public?.level === 'none',
-                      onClick: () => {
-                        copyToClipboard(publicLink);
-                        ToasterService.success('Public link copied to clipboard');
-                      },
-                    },
                     { type: 'separator', hide: access === 'read' },
                     {
                       type: 'menu',
@@ -237,15 +226,27 @@ export default ({
                 : [
                     {
                       type: 'menu',
+                      text: 'Add document or folder',
+                      hide: inTrash || access === 'read',
+                      onClick: () => openItemModal(),
+                    },
+
+                    {
+                      type: 'menu',
                       text: 'Download folder',
                       hide: inTrash,
                       onClick: () => downloadZip([parentId]),
                     },
                     {
                       type: 'menu',
-                      text: 'Add document or folder',
-                      hide: inTrash || access === 'read',
-                      onClick: () => openItemModal(),
+                      text: 'Copy public link',
+                      hide:
+                        !item?.access_info?.public?.level ||
+                        item?.access_info?.public?.level === 'none',
+                      onClick: () => {
+                        copyToClipboard(publicLink);
+                        ToasterService.success('Public link copied to clipboard');
+                      },
                     },
                     { type: 'separator' },
                     {
@@ -265,6 +266,15 @@ export default ({
             </Button>
           </Menu>
         </div>
+
+        {!(inTrash || access === 'read') && (
+          <div
+            className="absolute flex items-center justify-center bg-blue-500 rounded-full cursor-pointer w-14 h-14 bottom-12 right-12 shadow-md hover:bg-blue-600"
+            onClick={() => openItemModal()}
+          >
+            <PlusIcon className="h-7 w-7 text-white" />
+          </div>
+        )}
 
         {item?.id === 'trash' && (
           <div className="bg-zinc-500 bg-opacity-10 rounded-md p-4 my-4 w-auto max-w-md">

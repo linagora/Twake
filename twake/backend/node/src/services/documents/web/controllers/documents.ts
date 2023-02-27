@@ -308,9 +308,9 @@ export class DocumentsController {
       const { search = "", added = "", company_id = "", creator = "" } = request.body;
 
       const options: SearchDocumentsOptions = {
+        company_id: company_id || context.company.id,
         ...(search ? { search } : {}),
         ...(added ? { added } : {}),
-        ...(company_id ? { company_id } : {}),
         ...(creator ? { creator } : {}),
       };
 

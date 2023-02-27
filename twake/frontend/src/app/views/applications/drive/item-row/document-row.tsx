@@ -150,7 +150,7 @@ export const DocumentRow = ({
             },
             {
               type: 'menu',
-              text: 'Public access',
+              text: 'Manage access',
               hide: parentAccess === 'read',
               onClick: () => setAccessModalState({ open: true, id: item.id }),
             },
