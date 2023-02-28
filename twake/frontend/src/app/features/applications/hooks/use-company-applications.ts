@@ -13,6 +13,7 @@ import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { Application } from 'app/features/applications/types/application';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 
 const logger = Logger.getLogger('useApplications');
 /**
@@ -42,9 +43,13 @@ export function useCompanyApplications(companyId = '') {
     onChangeCompanyApplications(companyId, applications);
   }, [applications]);
 
-  useEffect(() => {
-    refresh();
-  }, [workspaceId]);
+  useGlobalEffect(
+    'useCompanyApplications',
+    () => {
+      refresh();
+    },
+    [workspaceId],
+  );
 
   const get = (applicationId: string) => {
     return applications.find(a => a.id === applicationId);

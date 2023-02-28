@@ -14,8 +14,6 @@ import { AccessLevel } from './common';
 export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: boolean }) => {
   const { item, loading, update } = useDriveItem(id);
 
-  console.log(item?.access_info.entities);
-
   const userEntities = item?.access_info.entities.filter(a => a.type === 'user') || [];
   const folderEntity = item?.access_info.entities.filter(a => a.type === 'folder')?.[0] || {
     type: 'folder',

@@ -21,7 +21,7 @@ export default (props: {
   const inputElement = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    props.onChange(users);
+    if (users.length) props.onChange(users);
   }, [users]);
 
   return (
