@@ -116,7 +116,9 @@ export const CreateModal = ({
                         />
                       }
                       text={`${app.emptyFile.name}`}
-                      onClick={() => addFromUrl(app.emptyFile.url, app.emptyFile.name)}
+                      onClick={() =>
+                        addFromUrl(app.emptyFile.url, app.emptyFile.filename || app.emptyFile.name)
+                      }
                     />
                   );
                 })}
