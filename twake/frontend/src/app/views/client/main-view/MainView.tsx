@@ -109,4 +109,13 @@ export const MainContentWrapper = () => {
   return <MainContent />;
 };
 
-export default MainView;
+export default ({ className }: PropsType) => {
+  //This is a hack because main view is displayed before we detect the current "channel" is in fact an application
+  const channelId = useRouterChannel();
+  const { applications } = useCompanyApplications();
+  const isChannelMember = useIsChannelMember(channelId);
+
+  if (applications.length === 0 && !isChannelMember) return <></>;
+
+  return <MainView className={className} />;
+};

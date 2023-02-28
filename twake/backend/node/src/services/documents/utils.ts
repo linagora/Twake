@@ -378,35 +378,34 @@ export const getAccessLevel = async (
       if (itemToken === publicToken) return itemLevel;
     }
 
-    //From there a user must be logged in
-    if (!context.user.id) return "none";
-
     const accessEntities = item.access_info.entities || [];
-
-    //Users
-    const matchingUser = accessEntities.find(a => a.type === "user" && a.id === context.user?.id);
-    if (matchingUser) return matchingUser.level;
-
-    //Channels
-    if (context.twake_tab_token) {
-      try {
-        const [channelId] = context.twake_tab_token.split("+"); //First item will be the channel id
-        const matchingChannel = accessEntities.find(
-          a => a.type === "channel" && a.id === channelId,
-        );
-        if (matchingChannel) return matchingChannel.level;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
     const otherLevels = [];
 
-    //Companies
-    const matchingCompany = accessEntities.find(
-      a => a.type === "company" && a.id === context.company.id,
-    );
-    if (matchingCompany) otherLevels.push(matchingCompany.level);
+    //From there a user must be logged in
+    if (context?.user?.id) {
+      //Users
+      const matchingUser = accessEntities.find(a => a.type === "user" && a.id === context.user?.id);
+      if (matchingUser) return matchingUser.level;
+
+      //Channels
+      if (context.twake_tab_token) {
+        try {
+          const [channelId] = context.twake_tab_token.split("+"); //First item will be the channel id
+          const matchingChannel = accessEntities.find(
+            a => a.type === "channel" && a.id === channelId,
+          );
+          if (matchingChannel) return matchingChannel.level;
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      //Companies
+      const matchingCompany = accessEntities.find(
+        a => a.type === "company" && a.id === context.company.id,
+      );
+      if (matchingCompany) otherLevels.push(matchingCompany.level);
+    }
 
     //Parent folder
     const maxParentFolderLevel =

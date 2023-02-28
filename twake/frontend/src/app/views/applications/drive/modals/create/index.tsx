@@ -6,6 +6,7 @@ import A from 'app/atoms/link';
 import { Modal, ModalContent } from 'app/atoms/modal';
 import { Base } from 'app/atoms/text';
 import { useApplications } from 'app/features/applications/hooks/use-applications';
+import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { Application } from 'app/features/applications/types/application';
 import { ReactNode } from 'react';
 import { atom, useRecoilState } from 'recoil';
@@ -34,7 +35,7 @@ export const CreateModal = ({
   addFromUrl: (url: string, name: string) => void;
 }) => {
   const [state, setState] = useRecoilState(CreateModalAtom);
-  const { applications } = useApplications();
+  const { applications } = useCompanyApplications();
 
   return (
     <Modal
@@ -114,7 +115,7 @@ export const CreateModal = ({
                           avatar={app.app.identity?.icon}
                         />
                       }
-                      text={`${app.emptyFile.name} (${app.app.identity?.name})`}
+                      text={`${app.emptyFile.name}`}
                       onClick={() => addFromUrl(app.emptyFile.url, app.emptyFile.name)}
                     />
                   );
