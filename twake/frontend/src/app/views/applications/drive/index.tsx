@@ -12,14 +12,20 @@ export type EmbedContext = {
 export default ({
   initialParentId,
   context,
+  inPublicSharing,
 }: {
   initialParentId?: string;
   context?: EmbedContext;
+  inPublicSharing?: boolean;
 }) => {
   return (
     <>
       <SelectorModal />
-      <Drive initialParentId={initialParentId} context={context} />
+      <Drive
+        initialParentId={initialParentId}
+        context={context}
+        inPublicSharing={inPublicSharing}
+      />
     </>
   );
 };
@@ -27,13 +33,15 @@ export default ({
 const Drive = ({
   initialParentId,
   context,
+  inPublicSharing,
 }: {
   initialParentId?: string;
   context?: EmbedContext;
+  inPublicSharing?: boolean;
 }) => {
   if (context?.tabId) {
     return <TwakeTabConfiguration context={context} />;
   }
 
-  return <Browser initialParentId={initialParentId} />;
+  return <Browser initialParentId={initialParentId} inPublicSharing={inPublicSharing} />;
 };

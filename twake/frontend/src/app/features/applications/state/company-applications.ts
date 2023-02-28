@@ -36,8 +36,5 @@ export const CompanyApplicationsStateFamily = atomFamily<Application[], string>(
 
 export const fetchCompanyApplications = selectorFamily<Application[], string>({
   key: 'fetchCompanyApplications',
-  get: companyId => async () => {
-    logger.debug('fetchCompanyApplications', companyId);
-    return (await CompanyApplicationsAPIClient.list(companyId)) || [];
-  },
+  get: companyId => () => [],
 });

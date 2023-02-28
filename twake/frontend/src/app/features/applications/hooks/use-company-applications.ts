@@ -14,6 +14,7 @@ import { Application } from 'app/features/applications/types/application';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 const logger = Logger.getLogger('useApplications');
 /**
@@ -22,8 +23,8 @@ const logger = Logger.getLogger('useApplications');
  * @returns
  */
 export function useCompanyApplications(companyId = '') {
-  const { company } = useCurrentCompany();
-  companyId = companyId || company?.id || '';
+  const routerCompanyId = useRouterCompany();
+  companyId = companyId || routerCompanyId || '';
   const workspaceId = useRouterWorkspace();
 
   const [applications, setApplications] = useRecoilState(CompanyApplicationsStateFamily(companyId));
@@ -51,8 +52,8 @@ export function useCompanyApplications(companyId = '') {
     [workspaceId],
   );
 
-  const get = (applicationId: string) => {
-    return applications.find(a => a.id === applicationId);
+  const get = (applicationId: string): Application | null => {
+    return applications.find(a => a.id === applicationId) || null;
   };
 
   const remove = async (applicationId: string) => {

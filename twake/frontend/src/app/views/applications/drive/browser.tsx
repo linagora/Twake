@@ -38,9 +38,11 @@ export default memo(
   ({
     initialParentId,
     twakeTabContextToken,
+    inPublicSharing,
   }: {
     initialParentId?: string;
     twakeTabContextToken?: string;
+    inPublicSharing?: boolean;
   }) => {
     const companyId = useRouterCompany();
     setTwakeTabToken(twakeTabContextToken || null);
@@ -68,7 +70,7 @@ export default memo(
     useEffect(() => {
       setChecked({});
       refresh(parentId);
-      refresh('trash');
+      if (!inPublicSharing) refresh('trash');
     }, [parentId, refresh]);
 
     const openItemModal = useCallback(() => {
@@ -131,7 +133,7 @@ export default memo(
             (loading && !children?.length ? 'opacity-50 ' : '')
           }
         >
-          {document.location.origin.includes('canary') && (
+          {document.location.origin.includes('canary') && access !== 'read' && (
             <div className="bg-linear-purple w-full hidden sm:block px-4 py-2 rounded-md">
               <Base className=" !text-white">
                 Welcome to the next version of Twake Drive.

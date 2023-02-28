@@ -66,7 +66,7 @@ export default () => {
         </div>
       </div>
       <div className="main-view public ">
-        <Drive initialParentId={documentId} />
+        <Drive initialParentId={documentId} inPublicSharing />
       </div>
       <MenusBodyLayer />
     </div>
