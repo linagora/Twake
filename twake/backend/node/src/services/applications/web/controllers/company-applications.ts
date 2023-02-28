@@ -89,11 +89,14 @@ export class CompanyApplicationController
     _reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
-    const resource = await gr.services.applications.companyApps.delete({
-      application_id: request.params.application_id,
-      company_id: context.company.id,
-      id: undefined,
-    });
+    const resource = await gr.services.applications.companyApps.delete(
+      {
+        application_id: request.params.application_id,
+        company_id: context.company.id,
+        id: undefined,
+      },
+      context,
+    );
     return {
       status: resource.deleted ? "success" : "error",
     };
