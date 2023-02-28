@@ -15,7 +15,7 @@ export default (): React.ReactElement => {
   const { isOpen } = useDrivePreviewModal();
   const { loading, setLoading } = useDrivePreviewLoading();
 
-  if (!download || !isOpen) {
+  if (!download || !isOpen || !id) {
     return <></>;
   }
 
