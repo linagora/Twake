@@ -111,12 +111,13 @@ export default memo(
       >
         <CreateModal
           selectFromDevice={() => uploadZoneRef.current?.open()}
-          addFromUrl={(url, name) =>
+          addFromUrl={(url, name) => {
+            setCreationModalState({ parent_id: '', open: false });
             uploadFromUrl(url, name, {
               companyId,
               parentId,
-            })
-          }
+            });
+          }}
         />
         <VersionsModal />
         <AccessModal />
