@@ -3,13 +3,13 @@ import VideoControls from './videos/controls';
 import PdfControls from './pdf/controls';
 import ArchiveControls from './archive/controls';
 import CodeControls from './code/controls';
+import OtherControls from './other/controls';
 
 type PropsType = {
   type: string;
-}
+};
 
 export default ({ type }: PropsType) => {
-
   if (!type) {
     return <></>;
   }
@@ -34,10 +34,9 @@ export default ({ type }: PropsType) => {
     return <ArchiveControls />;
   }
 
-  /* Uncomment after https://github.com/linagora/Twake/issues/2453 is done
   if (type) {
-    return <OtherControls name={name} />;
-  }*/
+    return <OtherControls />;
+  }
 
   return <></>;
 };
