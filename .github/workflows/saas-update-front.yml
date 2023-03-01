@@ -48,13 +48,13 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/canary'
     steps:
-      - run: 'echo "DOCKERTAGVERSION=2022.Q4.1143" >> $GITHUB_ENV'
+      - run: 'echo "DOCKERTAGVERSION=2023.Q1.1223" >> $GITHUB_ENV'
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
-        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=2022.Q4.1143" >> $GITHUB_ENV'
+        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=2023.Q1.1223" >> $GITHUB_ENV'
       - name: Set env to develop
         if: endsWith(github.ref, '/qa')
-        run: 'echo "DOCKERTAG=qa" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=2022.Q4.1143" >> $GITHUB_ENV'
+        run: 'echo "DOCKERTAG=qa" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=2023.Q1.1223" >> $GITHUB_ENV'
       - name: Set env to develop
         if: endsWith(github.ref, '/canary')
         run: 'echo "DOCKERTAG=canary" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=${{ env.DOCKERTAGVERSION }}-canary" >> $GITHUB_ENV'

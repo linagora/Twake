@@ -49,7 +49,7 @@ class Version extends BaseController
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
             "version" => [
-                "current" => /* @VERSION_DETAIL */ "2022.Q4.1143",
+                "current" => /* @VERSION_DETAIL */ "2023.Q1.1223",
                 "minimal" => [
                     "web" => /* @MIN_VERSION_WEB */ "2022.Q2.975",
                     "mobile" => /* @MIN_VERSION_MOBILE */ "2022.Q2.975",

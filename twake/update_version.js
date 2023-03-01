@@ -4,8 +4,8 @@
 
 const versions = {
   VERSION_NAME: process.env.TWAKE_VERSION_NAME || "Albatros",
-  VERSION: process.env.TWAKE_VERSION || "2022.Q4",
-  VERSION_DETAIL: process.env.TWAKE_VERSION_DETAIL || "2022.Q4.1143",
+  VERSION: process.env.TWAKE_VERSION || "2023.Q1",
+  VERSION_DETAIL: process.env.TWAKE_VERSION_DETAIL || "2023.Q1.1223",
   MIN_VERSION_WEB: process.env.TWAKE_MIN_VERSION_WEB || "2022.Q2.975",
   MIN_VERSION_MOBILE: process.env.TWAKE_MIN_VERSION_MOBILE || "2022.Q2.975",
 };
