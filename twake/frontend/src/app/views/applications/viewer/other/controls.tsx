@@ -1,24 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from 'app/atoms/button/button';
 import LockedOnlyOfficePopup from 'app/components/locked-features-components/locked-only-office-popup/locked-only-office-popup';
-import MenuManager from 'components/menus/menus-manager';
 import ModalManager from 'app/components/modal/modal-manager';
-import Languages from 'app/features/global/services/languages-service';
+import { useDrivePreview } from 'app/features/drive/hooks/use-drive-preview';
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
+import Languages from 'app/features/global/services/languages-service';
+import MenuManager from 'components/menus/menus-manager';
 import { useEditors } from './editors-service';
-import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
-export default (props: { name: string }) => {
-  const extension = props.name.split('.').pop();
+export default (props: {}) => {
+  const { status } = useDrivePreview();
+  const extension = status?.item?.name?.split('.').pop();
   const { candidates, openFile } = useEditors(extension || '');
 
-  const companyId = useRouterCompany();
-  const previewOnly = AccessRightsService.getCompanyLevel(companyId) !== 'guest';
-
-  if (previewOnly) {
+  if (!['manage', 'write'].includes(status?.details?.access || '') || !status?.details) {
     return <></>;
   }
 
@@ -30,7 +27,11 @@ export default (props: { name: string }) => {
           theme="dark"
           onClick={() => {
             if (FeatureTogglesService.isActiveFeatureName(FeatureNames.EDIT_FILES)) {
-              openFile(candidates[0]);
+              openFile(
+                candidates[0].app,
+                status.details?.versions?.[0]?.id || '',
+                status.details?.item.id || '',
+              );
             } else {
               ModalManager.open(
                 <LockedOnlyOfficePopup />,
@@ -60,7 +61,11 @@ export default (props: { name: string }) => {
                   type: 'menu',
                   text: editor?.app?.identity?.name,
                   onClick: () => {
-                    openFile(editor);
+                    openFile(
+                      editor.app,
+                      status.details?.versions?.[0]?.id || '',
+                      status.details?.item.id || '',
+                    );
                   },
                 };
               }),

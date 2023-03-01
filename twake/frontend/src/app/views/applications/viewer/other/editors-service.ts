@@ -58,28 +58,29 @@ export const useEditors = (
     }
   });
 
-  const openFile = (app: any) => {
+  const openFile = (app: any, fileId: string, driveId: string) => {
     if (app.url && app.is_url_file) {
       window.open(app.url);
       return;
     }
-    const documentId = ''; //TODO
 
-    window.open(getFileUrl(app.display?.twake?.files?.editor?.edition_url, documentId));
+    window.open(getFileUrl(app.display?.twake?.files?.editor?.edition_url, fileId, driveId));
   };
 
   const getPreviewUrl = (documentId: string): string => {
     return getFileUrl(preview_candidate?.[0]?.url as string, documentId);
   };
 
-  const getFileUrl = (url: string, file_id: string): string => {
+  const getFileUrl = (url: string, file_id: string, drive_id?: string): string => {
     const jwt = jwtStorageService.getJWT();
 
     if (!url) return '';
 
     return `${url}${url.indexOf('?') > 0 ? '&' : '?'}token=${jwt}&workspace_id=${
       workspace?.id
-    }&company_id=${workspace?.company_id}&file_id=${file_id}`;
+    }&company_id=${workspace?.company_id}&file_file_id=${file_id}${
+      drive_id ? `&drive_id=${drive_id}` : ''
+    }`;
   };
 
   return { candidates: editor_candidate, openFile, getPreviewUrl };

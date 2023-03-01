@@ -7,7 +7,7 @@ import FileUploadService from 'app/features/files/services/file-upload-service';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 
 export const FileViewerState = atom<{
-  file: null | { company_id?: string; message_id?: string; id?: string };
+  file: null | { company_id?: string; message_id?: string; id?: string; drive_id?: string };
   details?: MessageFileDetails;
   loading: boolean;
 }>({

@@ -22,6 +22,11 @@ export class ApplicationsApiController {
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
   ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
     const context = getExecutionContext(request);
+
+    if (!request.body.id || !request.body.secret) {
+      throw CrudException.forbidden("Application not found");
+    }
+
     const app = await gr.services.applications.marketplaceApps.get(
       {
         id: request.body.id,
@@ -33,7 +38,7 @@ export class ApplicationsApiController {
       throw CrudException.forbidden("Application not found");
     }
 
-    if (app.api.private_key !== request.body.secret) {
+    if (!app.api.private_key || app.api.private_key !== request.body.secret) {
       throw CrudException.forbidden("Secret key is not valid");
     }
 

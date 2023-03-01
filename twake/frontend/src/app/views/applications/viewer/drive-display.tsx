@@ -30,20 +30,15 @@ export default (): React.ReactElement => {
   switch (type) {
     case 'image':
       return <ImageDisplay loading={loading} setLoading={setLoading} download={download} />;
-
     case 'video':
     case 'audio':
       return <VideoDisplay download={download} />;
-
     case 'code':
       return <CodeDisplay download={download} name={name} />;
-
     case 'archive':
       return <ArchiveDisplay download={download} name={name} />;
-
     case 'pdf':
       return <PdfDisplay download={download} name={name} />;
-
     default:
       return <OtherDisplay download={download} name={name} id={id} />;
   }
