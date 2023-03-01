@@ -15,6 +15,7 @@ import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import { replaceOnlyOfficeForCanary } from './temp-fix';
 
 const logger = Logger.getLogger('useApplications');
 /**
@@ -92,7 +93,7 @@ export function useCompanyApplications(companyId = '') {
   const isInstalled = (applicationId: string) => (get(applicationId) ? true : false);
 
   return {
-    applications,
+    applications: replaceOnlyOfficeForCanary(applications),
     get,
     loading,
     add,
