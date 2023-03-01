@@ -103,7 +103,7 @@ const Footer = (): React.ReactElement => {
             )}
           </Text.Info>
         </div>
-        <div className="whitespace-nowrap">
+        <div className="whitespace-nowrap flex items-center">
           <Controls type={type} />
           <Button
             iconSize="lg"
