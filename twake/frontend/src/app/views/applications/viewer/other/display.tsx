@@ -10,6 +10,16 @@ export default (props: { download: string; name: string; id: string }) => {
     if (!previewUrl) setPreviewUrl(getPreviewUrl(props.id) || '');
   }, [previewUrl, setPreviewUrl]);
 
+  if (!(props.id && previewUrl)) {
+    return (
+      <>
+        <div className="text-white m-auto w-full text-center block h-full flex items-center">
+          <span className="block w-full text-center">We can't display this document.</span>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       {props.id && previewUrl && (

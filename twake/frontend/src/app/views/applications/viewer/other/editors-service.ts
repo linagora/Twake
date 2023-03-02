@@ -2,7 +2,8 @@
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { Application } from 'app/features/applications/types/application';
 import jwtStorageService from 'app/features/auth/jwt-storage-service';
-import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 type EditorType = {
   url?: string;
@@ -15,7 +16,8 @@ export const useEditors = (
   extension: string,
   options?: { preview_url?: string; editor_url?: string; editor_name?: string; url?: string },
 ) => {
-  const { workspace } = useCurrentWorkspace();
+  const workspaceId = useRouterWorkspace();
+  const companyId = useRouterCompany();
   const { applications } = useCompanyApplications();
   const apps = applications.filter(
     app =>
@@ -67,8 +69,8 @@ export const useEditors = (
     window.open(getFileUrl(app.display?.twake?.files?.editor?.edition_url, fileId, driveId));
   };
 
-  const getPreviewUrl = (documentId: string): string => {
-    return getFileUrl(preview_candidate?.[0]?.url as string, documentId);
+  const getPreviewUrl = (fileId: string): string => {
+    return getFileUrl(preview_candidate?.[0]?.url as string, fileId);
   };
 
   const getFileUrl = (url: string, file_id: string, drive_id?: string): string => {
@@ -76,10 +78,10 @@ export const useEditors = (
 
     if (!url) return '';
 
-    return `${url}${url.indexOf('?') > 0 ? '&' : '?'}token=${jwt}&workspace_id=${
-      workspace?.id
-    }&company_id=${workspace?.company_id}&file_file_id=${file_id}${
-      drive_id ? `&drive_id=${drive_id}` : ''
+    return `${url}${
+      url.indexOf('?') > 0 ? '&' : '?'
+    }token=${jwt}&workspace_id=${workspaceId}&company_id=${companyId}&file_id=${file_id}${
+      drive_id ? `&drive_file_id=${drive_id}` : ''
     }`;
   };
 

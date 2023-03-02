@@ -36,7 +36,7 @@ export default ({ context }: { context?: EmbedContext }) => {
     }
   }, [modalOpen]);
 
-  if (!item && !tab && (loading || itemLoading)) return <></>;
+  if (!item && !tab) return <></>;
 
   // If configured then show the content of the tab and forward the fact that the access is done through a specific channel
   return (
@@ -47,7 +47,7 @@ export default ({ context }: { context?: EmbedContext }) => {
           twakeTabContextToken={context?.channelId + '+' + context?.tabId}
         />
       )}
-      {!isConfigured && !loading && !itemLoading && (
+      {!isConfigured && !loading && !(tab?.item_id && itemLoading) && (
         <div className="w-full h-full flex items-center justify-center">
           <div className="text-center">
             <Info>This Documents tabs is not configured yet.</Info>

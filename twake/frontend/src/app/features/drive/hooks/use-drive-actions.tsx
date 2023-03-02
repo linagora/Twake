@@ -17,17 +17,19 @@ export const useDriveActions = () => {
   const refresh = useRecoilCallback(
     ({ set, snapshot }) =>
       async (parentId: string) => {
-        try {
-          const details = await DriveApiClient.get(companyId, parentId);
-          set(DriveItemChildrenAtom(parentId), details.children);
-          set(DriveItemAtom(parentId), details);
-          for (const child of details.children) {
-            const currentValue = snapshot.getLoadable(DriveItemAtom(child.id)).contents;
-            set(DriveItemAtom(child.id), { ...currentValue, item: child });
+        if (parentId) {
+          try {
+            const details = await DriveApiClient.get(companyId, parentId);
+            set(DriveItemChildrenAtom(parentId), details.children);
+            set(DriveItemAtom(parentId), details);
+            for (const child of details.children) {
+              const currentValue = snapshot.getLoadable(DriveItemAtom(child.id)).contents;
+              set(DriveItemAtom(child.id), { ...currentValue, item: child });
+            }
+            return details;
+          } catch (e) {
+            ToasterService.error('Unable to load your files.');
           }
-          return details;
-        } catch (e) {
-          ToasterService.error('Unable to load your files.');
         }
       },
     [companyId],

@@ -64,7 +64,7 @@ export default (): React.ReactElement => {
             : Languages.t(
                 'components.invitation.title',
                 [workspace.workspace?.name],
-                `Invite people to ${workspace.workspace?.name}`,
+                `Invite users to ${workspace.workspace?.name}`,
               )
         }
       >

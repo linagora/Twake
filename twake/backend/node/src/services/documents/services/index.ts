@@ -236,11 +236,15 @@ export class DocumentsService {
           driveItemVersion.file_metadata.mime = fileToProcess.metadata.mime;
           driveItemVersion.file_metadata.size = fileToProcess.upload_data.size;
           driveItemVersion.file_metadata.name = fileToProcess.metadata.name;
+          if (context.user.application_id) {
+            driveItemVersion.application_id = context.user.application_id;
+          }
         }
       }
 
       driveItem.name = await getItemName(
         driveItem.parent_id,
+        driveItem.id,
         driveItem.name,
         driveItem.is_directory,
         this.repository,
@@ -335,6 +339,7 @@ export class DocumentsService {
           if (key === "name") {
             item.name = await getItemName(
               content.parent_id || item.parent_id,
+              item.id,
               content.name,
               item.is_directory,
               this.repository,
@@ -551,6 +556,9 @@ export class DocumentsService {
       driveItemVersion.file_metadata.name = metadata.name;
       driveItemVersion.file_metadata.mime = metadata.mime;
       driveItemVersion.drive_item_id = item.id;
+      if (context.user.application_id) {
+        driveItemVersion.application_id = context.user.application_id;
+      }
 
       await this.fileVersionRepository.save(driveItemVersion);
 
@@ -603,13 +611,13 @@ export class DocumentsService {
       }>(token);
       if (
         ids.some(a => !(v?.ids || [])?.includes(a)) ||
-        (v?.version_id && v?.version_id !== versionId)
+        (v?.version_id && versionId && v?.version_id !== versionId)
       ) {
         return;
       }
 
-      context.company.id = v.company_id;
-      context.user.id = v.user_id;
+      context.company = { id: v.company_id };
+      context.user = { id: v.user_id };
     } catch (e) {
       if (token) throw new CrudException("Invalid token", 401);
     }
@@ -666,35 +674,21 @@ export class DocumentsService {
       zlib: { level: 9 },
     });
 
-    let counter = ids.length;
+    for (const id of ids) {
+      if (!(await checkAccess(id, null, "read", this.repository, context))) {
+        this.logger.warn(`not enough permissions to download ${id}, skipping`);
+        return;
+      }
 
-    await Promise.all(
-      ids.map(async id => {
-        if (!(await checkAccess(id, null, "read", this.repository, context))) {
-          this.logger.warn(`not enough permissions to download ${id}, skipping`);
-          counter--;
-          return;
-        }
-
-        try {
-          counter = await addDriveItemToArchive(
-            id,
-            null,
-            archive,
-            this.repository,
-            context,
-            counter,
-          );
-        } catch (error) {
-          this.logger.warn("failed to add item to archive", error);
-          throw new Error("Failed to add item to archive");
-        }
-      }),
-    );
-
-    if (counter === 0) {
-      archive.finalize();
+      try {
+        await addDriveItemToArchive(id, null, archive, this.repository, context);
+      } catch (error) {
+        console.error(error);
+        this.logger.warn("failed to add item to archive", error);
+      }
     }
+
+    archive.finalize();
 
     return archive;
   };

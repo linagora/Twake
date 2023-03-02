@@ -294,7 +294,7 @@ export const getPath = async (
     company_id: context.company.id,
   });
 
-  if (!item || (!checkAccess(id, item, "read", repository, context) && !ignoreAccess)) {
+  if (!item || (!(await checkAccess(id, item, "read", repository, context)) && !ignoreAccess)) {
     return [];
   }
 
@@ -343,6 +343,18 @@ export const getAccessLevel = async (
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext & { public_token?: string; twake_tab_token?: string },
 ): Promise<DriveFileAccessLevel | "none"> => {
+  if (
+    context.user?.application_id &&
+    (
+      await globalResolver.services.applications.companyApps.get({
+        company_id: context.company.id,
+        application_id: context.user.application_id,
+      })
+    )?.application?.access //TODO check precise access right
+  ) {
+    return "manage";
+  }
+
   if (!id || id === "root")
     return !context?.user?.id ? "none" : (await isCompanyGuest(context)) ? "read" : "manage";
   if (id === "trash")
@@ -520,9 +532,8 @@ export const addDriveItemToArchive = async (
   archive: archiver.Archiver,
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext,
-  counter: number,
   prefix?: string,
-): Promise<number> => {
+): Promise<void> => {
   const item = entity || (await repository.findOne({ id, company_id: context.company.id }));
 
   if (!item) {
@@ -538,30 +549,25 @@ export const addDriveItemToArchive = async (
     }
 
     archive.append(file.file, { name: file.name, prefix: prefix ?? "" });
-    return counter - 1;
+    return;
   } else {
     const items = await repository.find({
       parent_id: item.id,
       company_id: context.company.id,
     });
 
-    let currentCounter = counter;
+    for (const child of items.getEntities()) {
+      await addDriveItemToArchive(
+        child.id,
+        child,
+        archive,
+        repository,
+        context,
+        `${prefix || ""}${item.name}/`,
+      );
+    }
 
-    await Promise.all(
-      items.getEntities().map(async child => {
-        currentCounter = await addDriveItemToArchive(
-          child.id,
-          child,
-          archive,
-          repository,
-          context,
-          currentCounter,
-          `${item.name}/`,
-        );
-      }),
-    );
-
-    return currentCounter;
+    return;
   }
 };
 
@@ -686,6 +692,7 @@ export const getFileMetadata = async (
  */
 export const getItemName = async (
   parent_id: string,
+  id: string,
   name: string,
   is_directory: boolean,
   repository: Repository<DriveFile>,
@@ -706,7 +713,9 @@ export const getItemName = async (
     while (exists) {
       exists = !!children
         .getEntities()
-        .find(child => child.name === newName && child.is_directory === is_directory);
+        .find(
+          child => child.name === newName && child.is_directory === is_directory && child.id !== id,
+        );
 
       if (exists) {
         const ext = newName.split(".").pop();
@@ -758,7 +767,7 @@ export const canMoveItem = async (
     throw Error("target item doesn't exist or not a directory");
   }
 
-  if (!checkAccess(target, targetItem, "write", repository, context)) {
+  if (!(await checkAccess(target, targetItem, "write", repository, context))) {
     return false;
   }
 

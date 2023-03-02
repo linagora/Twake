@@ -134,15 +134,17 @@ export default memo(
             (loading && !children?.length ? 'opacity-50 ' : '')
           }
         >
-          {document.location.origin.includes('canary') && access !== 'read' && (
+          {document.location.origin.includes('canary') && access !== 'read' && !inPublicSharing && (
             <div className="bg-linear-purple w-full hidden sm:block px-4 py-2 rounded-md">
               <Base className=" !text-white">
                 Welcome to the next version of Twake Drive.
                 <br />
                 Your documents are not migrated yet, you can switch back to{' '}
-                <a href="https://web.twake.app">https://web.twake.app</a> to see all your documents.
-                Documents added here will not be visible yet on production but will be kept after
-                the final migration.
+                <a className="text-white" href="https://web.twake.app">
+                  https://web.twake.app
+                </a>{' '}
+                to see all your documents. Documents added here will not be visible yet on
+                production but will be kept after the final migration.
               </Base>
             </div>
           )}
@@ -259,7 +261,7 @@ export default memo(
                           ToasterService.success('Public link copied to clipboard');
                         },
                       },
-                      { type: 'separator' },
+                      { type: 'separator', hide: inTrash || access === 'read' },
                       {
                         type: 'menu',
                         text: 'Go to trash',

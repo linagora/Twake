@@ -42,7 +42,7 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
 
   // TODO: remove logic from context
   async get(
-    pk: CompanyApplicationPrimaryKey,
+    pk: Pick<CompanyApplicationPrimaryKey, "company_id" | "application_id"> & { id?: string },
     context?: CompanyExecutionContext,
   ): Promise<CompanyApplicationWithApplication> {
     const companyApplication = await this.repository.findOne(

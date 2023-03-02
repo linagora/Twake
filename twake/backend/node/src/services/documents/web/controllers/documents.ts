@@ -122,6 +122,8 @@ export class DocumentsController {
     const context = getDriveExecutionContext(request);
     const { id } = request.params;
 
+    if (!id) throw new CrudException("Missing id", 400);
+
     return {
       ...(await globalResolver.services.documents.documents.get(id, context)),
       websockets: request.currentUser?.id
@@ -150,6 +152,8 @@ export class DocumentsController {
     const { id } = request.params;
     const update = request.body;
 
+    if (!id) throw new CrudException("Missing id", 400);
+
     return await globalResolver.services.documents.documents.update(id, update, context);
   };
 
@@ -169,6 +173,8 @@ export class DocumentsController {
     const context = getDriveExecutionContext(request);
     const { id } = request.params;
     const version = request.body;
+
+    if (!id) throw new CrudException("Missing id", 400);
 
     return await globalResolver.services.documents.documents.createVersion(id, version, context);
   };
@@ -263,7 +269,7 @@ export class DocumentsController {
     reply: FastifyReply,
   ): Promise<void> => {
     const context = getDriveExecutionContext(request);
-    const ids = (request.query.items || "").split(",");
+    let ids = (request.query.items || "").split(",");
     const token = request.query.token;
 
     await globalResolver.services.documents.documents.applyDownloadTokenToContext(
@@ -272,6 +278,11 @@ export class DocumentsController {
       token,
       context,
     );
+
+    if (ids[0] === "root") {
+      const items = await globalResolver.services.documents.documents.get(ids[0], context);
+      ids = items.children.map(item => item.id);
+    }
 
     try {
       const archive = await globalResolver.services.documents.documents.createZip(ids, context);
