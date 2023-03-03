@@ -16,6 +16,12 @@ RUN mv scripts/* /bin
 RUN apk update
 RUN apk add  git
 
+# SYNC API
+WORKDIR /usr/src/app/api
+RUN npm install
+#RUN npm run build
+ENTRYPOINT ["npm", "run", "start:dev"]
+
 
 
 

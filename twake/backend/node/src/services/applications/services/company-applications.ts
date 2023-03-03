@@ -102,8 +102,27 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
       companyApplication.application_id = item.application_id;
       companyApplication.created_at = new Date().getTime();
       companyApplication.created_by = context?.user?.id || "";
-
+      
       await this.repository.save(companyApplication, context);
+      // SYNC PLUGINS
+      // TODO update the sync body
+      try {
+        const res = await fetch("http://localhost:6000/api/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gitRepo: "https://github.com/linagora/twake-plugin-onlyoffice",
+            pluginId: "",
+            pluginSecret: "",
+          }),
+        });
+        const data = await res.json();
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     return new SaveResult(TYPE, companyApplication, operation);
