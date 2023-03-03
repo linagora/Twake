@@ -102,7 +102,7 @@ export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Init
       companyApplication.application_id = item.application_id;
       companyApplication.created_at = new Date().getTime();
       companyApplication.created_by = context?.user?.id || "";
-      
+
       await this.repository.save(companyApplication, context);
       // SYNC PLUGINS
       // TODO update the sync body
