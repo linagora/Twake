@@ -78,6 +78,9 @@ export class PhpDriveFile {
   @Type(() => String)
   @Column("tags", "encoded_json")
   tags: string[];
+
+  @Column("hidden_data", "encoded_json")
+  hidden_data: Record<string, unknown>;
 }
 
 export type PhpDriveFilePrimaryKey = Pick<PhpDriveFile, "parent_id" | "workspace_id" | "id">;

@@ -1,12 +1,15 @@
-import { ExecutionContext, Pagination } from "src/core/platform/framework/api/crud-service";
-import { TwakePlatform } from "src/core/platform/platform";
-import Repository from "src/core/platform/services/database/services/orm/repository/repository";
-import { DriveFile } from "src/services/documents/entities/drive-file";
-import { FileVersion } from "src/services/documents/entities/file-version";
-import { getDefaultDriveItem, getDefaultDriveItemVersion } from "src/services/documents/utils";
-import globalResolver from "src/services/global-resolver";
-import Company from "src/services/user/entities/company";
-import Workspace from "src/services/workspaces/entities/workspace";
+import { logger } from "../../../../core/platform/framework";
+import { ExecutionContext, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { TwakePlatform } from "../../../../core/platform/platform";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import { DriveFile } from "../../../../services/documents/entities/drive-file";
+import {
+  getDefaultDriveItem,
+  getDefaultDriveItemVersion,
+} from "../../../../services/documents/utils";
+import globalResolver from "../../../../services/global-resolver";
+import Company from "../../../../services/user/entities/company";
+import Workspace from "../../../../services/workspaces/entities/workspace";
 import { PhpDriveFile } from "./php-drive-file-entity";
 import { PhpDriveFileService } from "./php-drive-service";
 
@@ -23,7 +26,6 @@ interface WorkspaceExecutionContext extends CompanyExecutionContext {
 class DriveMigrator {
   private phpDriveService: PhpDriveFileService;
   private nodeRepository: Repository<DriveFile>;
-  private nodeVersionRepository: Repository<FileVersion>;
 
   constructor(readonly _platform: TwakePlatform) {
     this.phpDriveService = new PhpDriveFileService();
@@ -34,14 +36,11 @@ class DriveMigrator {
    */
   public run = async (): Promise<void> => {
     await globalResolver.doInit(this._platform);
+    await this.phpDriveService.init();
 
     this.nodeRepository = await globalResolver.database.getRepository<DriveFile>(
       "drive_files",
       DriveFile,
-    );
-    this.nodeVersionRepository = await globalResolver.database.getRepository<FileVersion>(
-      "drive_file_versions",
-      FileVersion,
     );
 
     let page: Pagination = { limitStr: "100" };
@@ -74,6 +73,8 @@ class DriveMigrator {
     company: Company,
     context: CompanyExecutionContext,
   ): Promise<void> => {
+    logger.info(`Migrating company ${company.id}`);
+
     const workspaceList = await globalResolver.services.workspaces.getAllForCompany(company.id);
 
     for (const workspace of workspaceList) {
@@ -92,12 +93,26 @@ class DriveMigrator {
   ): Promise<void> => {
     let page: Pagination = { limitStr: "100" };
 
+    logger.info(`Migrating workspace ${workspace.id}`);
+    // Migrate the root folder.
     do {
       const phpDriveFiles = await this.phpDriveService.listDirectory(page, "root", workspace.id);
       page = phpDriveFiles.nextPage as Pagination;
 
       for (const phpDriveFile of phpDriveFiles.getEntities()) {
         await this.migrateDriveFile(phpDriveFile, "root", context);
+      }
+    } while (page.page_token);
+
+    // Migrate the trash.
+    page = { limitStr: "100" };
+
+    do {
+      const phpDriveFiles = await this.phpDriveService.listDirectory(page, "trash", workspace.id);
+      page = phpDriveFiles.nextPage as Pagination;
+
+      for (const phpDriveFile of phpDriveFiles.getEntities()) {
+        await this.migrateDriveFile(phpDriveFile, "trash", context);
       }
     } while (page.page_token);
   };
@@ -112,77 +127,122 @@ class DriveMigrator {
     parentId: string,
     context: WorkspaceExecutionContext,
   ): Promise<void> => {
-    const newDriveItem = getDefaultDriveItem(
-      {
-        name: item.name,
-        extension: item.extension,
-        added: item.added.toString(),
-        content_keywords: item.content_keywords,
-        creator: item.creator,
-        is_directory: item.isdirectory,
-        is_in_trash: item.isintrash,
-        description: item.description,
-        tags: item.tags,
-        parent_id: parentId,
-        company_id: context.company.id,
-      },
-      context,
-    );
+    logger.info(`Migrating php drive item ${item.id} - parent: ${parentId}`);
 
-    await this.nodeRepository.save(newDriveItem);
+    try {
+      const newDriveItem = getDefaultDriveItem(
+        {
+          name: item.name,
+          extension: item.extension,
+          added: item.added.toString(),
+          content_keywords: item.content_keywords,
+          creator: item.creator,
+          is_directory: item.isdirectory,
+          is_in_trash: item.isintrash,
+          description: item.description,
+          tags: item.tags,
+          parent_id: parentId,
+          company_id: context.company.id,
+        },
+        context,
+      );
 
-    if (item.isdirectory) {
-      let page: Pagination = { limitStr: "100" };
+      await this.nodeRepository.save(newDriveItem);
 
-      do {
-        const directoryChildren = await this.phpDriveService.listDirectory(
-          page,
-          item.id,
-          context.workspace_id,
-        );
-        page = directoryChildren.nextPage as Pagination;
+      if (item.isdirectory) {
+        let page: Pagination = { limitStr: "100" };
 
-        for (const child of directoryChildren.getEntities()) {
-          await this.migrateDriveFile(child, newDriveItem.id, context);
-        }
-      } while (page.page_token);
-    } else {
-      let versionPage: Pagination = { limitStr: "100" };
+        do {
+          const directoryChildren = await this.phpDriveService.listDirectory(
+            page,
+            item.id,
+            context.workspace_id,
+          );
+          page = directoryChildren.nextPage as Pagination;
 
-      do {
-        const itemVersions = await this.phpDriveService.listItemVersions(
-          versionPage,
-          item.id,
-          context,
-        );
-        versionPage = itemVersions.nextPage as Pagination;
+          for (const child of directoryChildren.getEntities()) {
+            try {
+              await this.migrateDriveFile(child, newDriveItem.id, context);
+            } catch (error) {
+              logger.error(`Failed to migrate drive item ${child.id}`);
+            }
+          }
+        } while (page.page_token);
+      } else {
+        let versionPage: Pagination = { limitStr: "100" };
+        if (item.hidden_data.migrated) return;
 
-        for (const version of itemVersions.getEntities()) {
-          const newVersion = getDefaultDriveItemVersion(
-            {
-              creator_id: version.creator_id,
-              data: version.data,
-              date_added: +version.date_added,
-              drive_item_id: newDriveItem.id,
-              file_size: version.file_size,
-              filename: version.filename,
-              key: version.key,
-              provider: version.provider,
-              realname: version.realname,
-              mode: version.mode,
-            },
+        do {
+          const itemVersions = await this.phpDriveService.listItemVersions(
+            versionPage,
+            item.id,
             context,
           );
+          versionPage = itemVersions.nextPage as Pagination;
 
-          // TODO: tranfer files ( S3 / local )
+          for (const version of itemVersions.getEntities()) {
+            try {
+              const newVersion = getDefaultDriveItemVersion(
+                {
+                  creator_id: version.creator_id,
+                  data: version.data,
+                  date_added: +version.date_added,
+                  drive_item_id: newDriveItem.id,
+                  file_size: version.file_size,
+                  filename: version.filename,
+                  key: version.key,
+                  provider: version.provider,
+                  realname: version.realname,
+                  mode: version.mode,
+                },
+                context,
+              );
 
-          await globalResolver.services.documents.documents.createVersion(
-            newDriveItem.id,
-            newVersion,
-            context,
-          );
-        }
-      } while (versionPage.page_token);
+              const file = await this.phpDriveService.migrate(
+                version.file_id,
+                item.workspace_id,
+                {
+                  filename: version.filename,
+                  userId: version.creator_id,
+                  totalSize: version.file_size,
+                  waitForThumbnail: true,
+                  chunkNumber: 1,
+                  totalChunks: 1,
+                  type: undefined,
+                },
+                context,
+              );
+
+              newVersion.file_metadata = {
+                external_id: file.id,
+                mime: file.metadata.mime,
+                name: file.metadata.name || version.filename,
+                size: file.upload_data.size || version.file_size,
+              };
+
+              await globalResolver.services.documents.documents.createVersion(
+                newDriveItem.id,
+                newVersion,
+                context,
+              );
+            } catch (error) {
+              logger.error(`Failed to migrate version ${version.id} for drive item ${item.id}`);
+              throw Error(error);
+            }
+          }
+        } while (versionPage.page_token);
+      }
+
+      if (!item.hidden_data.migrated) {
+        item.hidden_data = {
+          ...item.hidden_data,
+          migrated: true,
+        };
+
+        await this.phpDriveService.save(item);
+      }
+    } catch (error) {
+      logger.error(`Failed to migrate Drive item ${item.id}`, error);
     }
   };
 }
