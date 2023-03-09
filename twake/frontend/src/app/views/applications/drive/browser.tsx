@@ -6,7 +6,7 @@ import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
 import { setTwakeTabToken } from 'app/features/drive/api-client/api-client';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
-import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
+import { DriveRealtimeObject } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
@@ -61,7 +61,6 @@ export default memo(
     } = useDriveItem(parentId);
     const { item: trash } = useDriveItem('trash');
     const { uploadTree, uploadFromUrl } = useDriveUpload();
-    useDriveRealtime(parentId);
 
     const loading = loadingParent || loadingParentChange;
 
@@ -135,6 +134,7 @@ export default memo(
           });
         }}
       >
+        <DriveRealtimeObject id={parentId} key={parentId} />
         <CreateModal
           selectFromDevice={() => uploadZoneRef.current?.open()}
           addFromUrl={(url, name) => {

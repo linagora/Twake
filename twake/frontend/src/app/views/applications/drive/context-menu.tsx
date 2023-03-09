@@ -132,7 +132,7 @@ export const useOnBuildContextMenu = (children: DriveItem[], initialParentId?: s
           }
         }
 
-        if (selectedCount && !item) {
+        if (selectedCount && (selectedCount >= 2 || !item)) {
           // Add selected items related menus
           const newMenuActions: any[] = [
             {
