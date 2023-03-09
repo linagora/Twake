@@ -1,35 +1,30 @@
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/outline';
 import { Button } from 'app/atoms/button/button';
-import { Base, BaseSmall, Info, Subtitle, Title } from 'app/atoms/text';
+import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
 import { setTwakeTabToken } from 'app/features/drive/api-client/api-client';
-import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
-import { useDriveItem, getPublicLink } from 'app/features/drive/hooks/use-drive-item';
+import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
-import { ToasterService } from 'app/features/global/services/toaster-service';
-import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import _ from 'lodash';
-import { memo, Suspense, useCallback, useEffect, useRef } from 'react';
+import { memo, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import { DrivePreview } from '../viewer/drive-preview';
-import HeaderPath from './header-path';
+import { useOnBuildContextMenu } from './context-menu';
 import { DocumentRow } from './documents/document-row';
 import { FolderRow } from './documents/folder-row';
-import { ConfirmDeleteModal, ConfirmDeleteModalAtom } from './modals/confirm-delete';
-import { ConfirmTrashModal, ConfirmTrashModalAtom } from './modals/confirm-trash';
+import HeaderPath from './header-path';
+import { ConfirmDeleteModal } from './modals/confirm-delete';
+import { ConfirmTrashModal } from './modals/confirm-trash';
 import { CreateModal, CreateModalAtom } from './modals/create';
 import { PropertiesModal } from './modals/properties';
-import { SelectorModalAtom } from './modals/selector';
 import { AccessModal } from './modals/update-access';
 import { VersionsModal } from './modals/versions';
-import { DriveItem } from 'app/features/drive/types';
-import { useOnBuildContextMenu } from './context-menu';
 
 export const DriveCurrentFolderAtom = atomFamily<string, string>({
   key: 'DriveCurrentFolderAtom',
@@ -49,21 +44,46 @@ export default memo(
     const companyId = useRouterCompany();
     setTwakeTabToken(twakeTabContextToken || null);
 
-    const [parentId, setParentId] = useRecoilState(
+    const [parentId, _setParentId] = useRecoilState(
       DriveCurrentFolderAtom(initialParentId || 'root'),
     );
 
-    const { details, access, item, inTrash, refresh, children, loading, path } =
-      useDriveItem(parentId);
+    const [loadingParentChange, setLoadingParentChange] = useState(false);
+    const {
+      details,
+      access,
+      item,
+      inTrash,
+      refresh,
+      children,
+      loading: loadingParent,
+      path,
+    } = useDriveItem(parentId);
     const { item: trash } = useDriveItem('trash');
     const { uploadTree, uploadFromUrl } = useDriveUpload();
     useDriveRealtime(parentId);
+
+    const loading = loadingParent || loadingParentChange;
 
     const uploadZone = 'drive_' + companyId;
     const uploadZoneRef = useRef<UploadZone | null>(null);
 
     const setCreationModalState = useSetRecoilState(CreateModalAtom);
     const [checked, setChecked] = useRecoilState(DriveItemSelectedList);
+
+    const setParentId = useCallback(
+      async (id: string) => {
+        setLoadingParentChange(true);
+        try {
+          await refresh(id);
+          _setParentId(id);
+        } catch (e) {
+          console.error(e);
+        }
+        setLoadingParentChange(false);
+      },
+      [_setParentId],
+    );
 
     //In case we are kicked out of the current folder, we need to reset the parent id
     useEffect(() => {
@@ -137,7 +157,7 @@ export default memo(
         <div
           className={
             'flex flex-col p-4 grow h-full overflow-auto ' +
-            (loading && !children?.length ? 'opacity-50 ' : '')
+            (loading && (!children?.length || loadingParentChange) ? 'opacity-50 ' : '')
           }
         >
           {document.location.origin.includes('canary') && access !== 'read' && !inPublicSharing && (
