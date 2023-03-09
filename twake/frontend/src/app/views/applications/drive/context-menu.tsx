@@ -111,19 +111,19 @@ export const useOnBuildContextMenu = (children: DriveItem[], initialParentId?: s
                   },
                 }),
             },
-            { type: 'separator', hide: access === 'read' },
+            { type: 'separator', hide: access !== 'manage' },
             {
               type: 'menu',
               text: 'Move to trash',
               className: 'error',
-              hide: inTrash || access === 'read',
+              hide: inTrash || access !== 'manage',
               onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
             },
             {
               type: 'menu',
               text: 'Delete',
               className: 'error',
-              hide: !inTrash || access === 'read',
+              hide: !inTrash || access !== 'manage',
               onClick: () => setConfirmDeleteModalState({ open: true, items: [item] }),
             },
           ];
@@ -186,7 +186,7 @@ export const useOnBuildContextMenu = (children: DriveItem[], initialParentId?: s
             {
               type: 'menu',
               text: 'Move ' + selectedCount + ' items to trash',
-              hide: inTrash || parent.access === 'read',
+              hide: inTrash || parent.access !== 'manage',
               className: 'error',
               onClick: async () =>
                 setConfirmTrashModalState({

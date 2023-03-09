@@ -445,7 +445,7 @@ export class DocumentsService {
       }
 
       try {
-        if (!(await checkAccess(item.id, item, "write", this.repository, context))) {
+        if (!(await checkAccess(item.id, item, "manage", this.repository, context))) {
           this.logger.error("user does not have access drive item ", id);
           throw Error("user does not have access to this item");
         }
