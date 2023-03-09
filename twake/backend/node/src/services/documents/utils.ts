@@ -678,11 +678,13 @@ export const getFileMetadata = async (
   }
 
   return {
+    source: "internal",
     external_id: fileId,
     mime: file.metadata.mime,
     name: file.metadata.name,
     size: file.upload_data.size,
-  };
+    thumbnails: file.thumbnails,
+  } as DriveFileMetadata;
 };
 
 /**

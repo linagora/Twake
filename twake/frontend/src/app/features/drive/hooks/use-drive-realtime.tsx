@@ -10,3 +10,8 @@ export const useDriveRealtime = (id: string) => {
     refresh(id);
   });
 };
+
+export const DriveRealtimeObject = ({ id }: { id: string }) => {
+  useDriveRealtime(id);
+  return <></>;
+};
