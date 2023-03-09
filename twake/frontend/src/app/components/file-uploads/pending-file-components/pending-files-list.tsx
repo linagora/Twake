@@ -28,7 +28,7 @@ export default ({ pendingFilesState, visible }: PropsType) => {
     const uploadingFiles = pendingFiles.filter(f => f?.resumable && f.resumable.isUploading());
 
     const remainingSizeTotal = uploadingFiles
-      .map(f => (1 - f.progress) * f.originalFile.size)
+      .map(f => (1 - f.progress) * (f?.originalFile?.size || 0))
       .reduce((accumulator: number, nextValue: number) => accumulator + nextValue, 0);
 
     const speed =

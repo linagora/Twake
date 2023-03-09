@@ -69,7 +69,7 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
         }}
       >
         <Col className="small-left-margin" flex="auto" style={{ lineHeight: '16px' }}>
-          {pendingFile.originalFile.name ? (
+          {pendingFile?.originalFile.name ? (
             <Row justify="start" align="middle" wrap={false}>
               <Text
                 ellipsis
@@ -78,7 +78,7 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
                   verticalAlign: 'middle',
                 }}
               >
-                {capitalize(pendingFile.originalFile.name)}
+                {capitalize(pendingFile?.originalFile.name)}
               </Text>
               {isPendingFileStatusPause(pendingFile.status) && (
                 <Text type="secondary" style={{ verticalAlign: 'middle', marginLeft: 4 }}>

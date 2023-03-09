@@ -109,7 +109,8 @@ class FileUploadService {
       pendingFile.resumable.on('fileAdded', () => pendingFile.resumable.upload());
 
       pendingFile.resumable.on('fileProgress', (f: any) => {
-        const bytesDelta = (f.progress() - pendingFile.progress) * pendingFile.originalFile.size;
+        const bytesDelta =
+          (f.progress() - pendingFile.progress) * (pendingFile?.originalFile.size || 0);
         const timeDelta = new Date().getTime() - pendingFile.lastProgress;
 
         // To avoid jumping time ?
