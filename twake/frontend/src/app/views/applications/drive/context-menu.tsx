@@ -65,7 +65,7 @@ export const useOnBuildContextMenu = (children: DriveItem[], initialParentId?: s
             { type: 'separator' },
             {
               type: 'menu',
-              text: 'Modify properties',
+              text: 'Rename',
               hide: access === 'read',
               onClick: () => setPropertiesModalState({ open: true, id: item.id }),
             },
@@ -132,7 +132,7 @@ export const useOnBuildContextMenu = (children: DriveItem[], initialParentId?: s
           }
         }
 
-        if (selectedCount && !item) {
+        if (selectedCount && (selectedCount >= 2 || !item)) {
           // Add selected items related menus
           const newMenuActions: any[] = [
             {

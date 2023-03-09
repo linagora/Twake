@@ -47,7 +47,7 @@ const PropertiesModalContent = ({ id, onClose }: { id: string; onClose: () => vo
   }, [item?.name]);
 
   return (
-    <ModalContent title={'Properties of ' + item?.name}>
+    <ModalContent title={'Rename ' + item?.name}>
       <InputLabel
         className="mt-4"
         label={'Name'}
@@ -67,7 +67,14 @@ const PropertiesModalContent = ({ id, onClose }: { id: string; onClose: () => vo
         loading={loading}
         onClick={async () => {
           setLoading(true);
-          if (item) await update({ name }, id, item.parent_id);
+          if (item) {
+            let finalName = name;
+            if (!item?.is_directory) {
+              const ext = item?.name.split('.').pop();
+              finalName = name.split('.')[0] + (ext !== item?.name ? '.' + ext : '');
+            }
+            await update({ name: finalName }, id, item.parent_id);
+          }
           onClose();
           setLoading(false);
         }}

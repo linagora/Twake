@@ -66,7 +66,7 @@ export type DriveFileMetadata = {
   name?: string;
   mime?: string;
   size?: number;
-  thumbnails?: DriveFileThumbnail;
+  thumbnails?: DriveFileThumbnail[];
 };
 
 type DriveFileThumbnail = {

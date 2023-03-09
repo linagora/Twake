@@ -240,6 +240,7 @@ export class DocumentsService {
           driveItemVersion.file_metadata.mime = fileToProcess.metadata.mime;
           driveItemVersion.file_metadata.size = fileToProcess.upload_data.size;
           driveItemVersion.file_metadata.name = fileToProcess.metadata.name;
+          driveItemVersion.file_metadata.thumbnails = fileToProcess.thumbnails;
           if (context.user.application_id) {
             driveItemVersion.application_id = context.user.application_id;
           }
@@ -559,6 +560,7 @@ export class DocumentsService {
       driveItemVersion.file_metadata.size = metadata.size;
       driveItemVersion.file_metadata.name = metadata.name;
       driveItemVersion.file_metadata.mime = metadata.mime;
+      driveItemVersion.file_metadata.thumbnails = metadata.thumbnails;
       driveItemVersion.drive_item_id = item.id;
       if (context.user.application_id) {
         driveItemVersion.application_id = context.user.application_id;
