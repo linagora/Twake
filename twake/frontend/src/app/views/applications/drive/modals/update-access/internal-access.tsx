@@ -28,18 +28,13 @@ export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: 
     <>
       <Base className="block mt-4 mb-1">General access management</Base>
 
-      <Info className="block mb-2">
-        User or channel specific rule is applied first. Then least restrictive level will be chosen
-        between the parent folder and company accesses.
-      </Info>
-
       <div className="rounded-md border overflow-hidden">
         {folderEntity && (
           <div className="p-4 border-b flex flex-row items-center justify-center">
             <div className="grow">
               <Base>Inherit parent folder</Base>
               <br />
-              <Info>Choose to inherit or not the parent folder permissions</Info>
+              <Info>Choose to inherit or not the parent folder permissions.</Info>
             </div>
             <div className="shrink-0 ml-2">
               <Checkbox
@@ -61,7 +56,7 @@ export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: 
           </div>
         )}
 
-        {companyEntity && (
+        {companyEntity && folderEntity.level === 'none' && (
           <div className="p-4 border-b flex flex-row items-center justify-center">
             <div className="grow">
               <Base>Every member from the company</Base>
@@ -143,6 +138,8 @@ export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: 
 
         <div className="-mb-px" />
       </div>
+
+      <Base className="block mt-4 mb-1">Specific access rules</Base>
       <div className="rounded-md border mt-2">
         <UserAccessSelector id={id} disabled={disabled} />
 

@@ -152,10 +152,14 @@ export class FileServiceImpl {
             );
 
             if (options.waitForThumbnail) {
-              entity = await gr.services.files.getFile({
-                id: entity.id,
-                company_id: context.company.id,
-              });
+              entity = await gr.services.files.getFile(
+                {
+                  id: entity.id,
+                  company_id: context.company.id,
+                },
+                context,
+                { waitForThumbnail: true },
+              );
             }
           } catch (err) {
             entity.metadata.thumbnails_status = "error";

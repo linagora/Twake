@@ -35,6 +35,8 @@ const AccessModalContent = ({ id }: { id: string }) => {
     refresh(id);
   }, []);
 
+  console.log(item?.access_info?.public?.level, 'item');
+
   return (
     <ModalContent title={'Manage access to ' + item?.name}>
       <PublicLinkManager id={id} disabled={access !== 'manage'} />

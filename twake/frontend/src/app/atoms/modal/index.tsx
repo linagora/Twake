@@ -175,7 +175,7 @@ export const ModalContent = (props: {
             (props.textCenter ? 'text-center' : 'text-left')
           }
         >
-          <Title>{props.title}</Title>
+          <Title className="pr-8 overflow-hidden text-ellipsis">{props.title}</Title>
           <div className="mt-2">
             <p className="text-sm text-gray-500">{props.text || ''}</p>
           </div>

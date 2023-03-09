@@ -220,10 +220,14 @@ export class DocumentsService {
         if (file) {
           fileToProcess = file;
         } else if (driveItemVersion.file_metadata.external_id) {
-          fileToProcess = await globalResolver.services.files.getFile({
-            id: driveItemVersion.file_metadata.external_id,
-            company_id: driveItem.company_id,
-          });
+          fileToProcess = await globalResolver.services.files.getFile(
+            {
+              id: driveItemVersion.file_metadata.external_id,
+              company_id: driveItem.company_id,
+            },
+            context,
+            { waitForThumbnail: true },
+          );
         }
 
         if (fileToProcess) {

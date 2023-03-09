@@ -76,7 +76,7 @@ export default (props: Props) => {
             app.display?.twake?.chat?.input?.type === 'call'
           ) {
             addon_calls.push(menu_item);
-          } else {
+          } else if (app?.identity?.code !== 'twake_drive') {
             addon_menu.push(menu_item);
           }
         }
