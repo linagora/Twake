@@ -2,13 +2,9 @@ import { Button } from 'app/atoms/button/button';
 import { InputLabel } from 'app/atoms/input/input-decoration-label';
 import { Input } from 'app/atoms/input/input-text';
 import { Modal, ModalContent } from 'app/atoms/modal';
-import { Base, BaseSmall, Title } from 'app/atoms/text';
-import UploadZone from 'app/components/uploads/upload-zone';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
-import { formatBytes } from 'app/features/drive/utils';
-import { formatDate } from 'app/features/global/utils/format-date';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 
 export type PropertiesModalType = {
@@ -29,12 +25,14 @@ export const PropertiesModal = () => {
 
   return (
     <Modal open={state.open} onClose={() => setState({ ...state, open: false })}>
-      {!!state.id && <PropertiesModalContent id={state.id} />}
+      {!!state.id && (
+        <PropertiesModalContent id={state.id} onClose={() => setState({ ...state, open: false })} />
+      )}
     </Modal>
   );
 };
 
-const PropertiesModalContent = ({ id }: { id: string }) => {
+const PropertiesModalContent = ({ id, onClose }: { id: string; onClose: () => void }) => {
   const { item, refresh } = useDriveItem(id);
   const { update } = useDriveActions();
   const [loading, setLoading] = useState(false);
@@ -70,6 +68,7 @@ const PropertiesModalContent = ({ id }: { id: string }) => {
         onClick={async () => {
           setLoading(true);
           if (item) await update({ name }, id, item.parent_id);
+          onClose();
           setLoading(false);
         }}
       >
