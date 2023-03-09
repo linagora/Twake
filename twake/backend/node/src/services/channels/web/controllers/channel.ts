@@ -86,7 +86,7 @@ export class ChannelCrudController
         context,
       );
 
-      if (!isMember) {
+      if (!isMember && !context.user.application_id && !context.user.server_request) {
         throw CrudException.badRequest("User does not have enough rights to get channel");
       }
     }

@@ -37,7 +37,7 @@ export default () => {
   useEffect(() => {
     refreshApplications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applicationsList]);
+  }, [applicationsList?.length]);
 
   const refreshApplications = () => {
     applicationsList && setData(applicationsList);

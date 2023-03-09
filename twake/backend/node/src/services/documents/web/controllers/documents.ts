@@ -122,8 +122,6 @@ export class DocumentsController {
     const context = getDriveExecutionContext(request);
     const { id } = request.params;
 
-    if (!id) throw new CrudException("Missing id", 400);
-
     return {
       ...(await globalResolver.services.documents.documents.get(id, context)),
       websockets: request.currentUser?.id

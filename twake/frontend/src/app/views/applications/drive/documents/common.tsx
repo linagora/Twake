@@ -8,9 +8,10 @@ export type DriveItemProps = {
   onCheck: (status: boolean) => void;
   checked: boolean;
   onClick?: () => void;
-  inTrash?: boolean;
-  parentAccess?: 'read' | 'write' | 'manage';
+  onBuildContextMenu: () => Promise<any[]>;
 };
+
+export const menuBuilder = async () => {};
 
 export const CheckableIcon = ({
   show,

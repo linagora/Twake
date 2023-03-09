@@ -148,7 +148,7 @@ export class MessageEditorService extends Observable {
       if (this.shouldLimitAttachements(threadId)) {
         return Toaster.error(
           Languages.t('services.apps.messages.message_editor_service.upload_error_toaster', [
-            file.originalFile.name,
+            file?.originalFile?.name || 'unknown file',
             this.ATTACHEMENTS_LIMIT,
           ]),
           4,

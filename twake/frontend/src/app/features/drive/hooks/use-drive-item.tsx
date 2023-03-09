@@ -76,6 +76,7 @@ export const useDriveItem = (id: string) => {
     inTrash,
     loading: loading,
     children: children || [],
+    details: item,
     path: item?.path,
     item: item?.item,
     access: item?.access,
@@ -89,8 +90,8 @@ export const useDriveItem = (id: string) => {
   };
 };
 
-export const usePublicLink = (item?: DriveItem): string => {
-  const translator = useRef(short()).current;
+const translator = short();
+export const getPublicLink = (item?: DriveItem): string => {
   let publicLink = `${document.location.protocol}//${document.location.host}`;
   try {
     publicLink +=

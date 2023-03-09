@@ -11,46 +11,24 @@ import {
 } from 'app/atoms/icons-colored';
 import { Base, BaseSmall } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
-import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
-import { usePublicLink } from 'app/features/drive/hooks/use-drive-item';
 import { useDrivePreview } from 'app/features/drive/hooks/use-drive-preview';
 import { formatBytes } from 'app/features/drive/utils';
 import fileUploadApiClient from 'app/features/files/api/file-upload-api-client';
-import { ToasterService } from 'app/features/global/services/toaster-service';
-import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
-import { useFileViewerModal } from 'app/features/viewer/hooks/use-viewer';
 import { useState } from 'react';
-import { useSetRecoilState } from 'recoil';
 import Avatar from '../../../../atoms/avatar';
 import { PublicIcon } from '../components/public-icon';
-import { ConfirmDeleteModalAtom } from '../modals/confirm-delete';
-import { ConfirmTrashModalAtom } from '../modals/confirm-trash';
-import { PropertiesModalAtom } from '../modals/properties';
-import { SelectorModalAtom } from '../modals/selector';
-import { AccessModalAtom } from '../modals/update-access';
-import { VersionsModalAtom } from '../modals/versions';
 import { CheckableIcon, DriveItemProps } from './common';
 
 export const DocumentRow = ({
   item,
   className,
-  inTrash,
   onCheck,
   checked,
   onClick,
-  parentAccess,
+  onBuildContextMenu,
 }: DriveItemProps) => {
   const [hover, setHover] = useState(false);
-  const { download, update } = useDriveActions();
   const { open } = useDrivePreview();
-  const publicLink = usePublicLink(item);
-
-  const setVersionModal = useSetRecoilState(VersionsModalAtom);
-  const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
-  const setAccessModalState = useSetRecoilState(AccessModalAtom);
-  const setPropertiesModalState = useSetRecoilState(PropertiesModalAtom);
-  const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
-  const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
 
   const fileType = fileUploadApiClient.mimeToType(
     item?.last_version_cache?.file_metadata?.mime || '',
@@ -130,83 +108,7 @@ export const DocumentRow = ({
         <BaseSmall>{formatBytes(item.size)}</BaseSmall>
       </div>
       <div className="shrink-0 ml-4">
-        <Menu
-          menu={[
-            {
-              type: 'menu',
-              text: 'Preview',
-              onClick: () => preview(),
-            },
-            {
-              type: 'menu',
-              text: 'Download',
-              onClick: () => download(item.id),
-            },
-            { type: 'separator' },
-            {
-              type: 'menu',
-              text: 'Modify properties',
-              hide: parentAccess === 'read',
-              onClick: () => setPropertiesModalState({ open: true, id: item.id }),
-            },
-            {
-              type: 'menu',
-              text: 'Manage access',
-              hide: parentAccess === 'read',
-              onClick: () => setAccessModalState({ open: true, id: item.id }),
-            },
-            {
-              type: 'menu',
-              text: 'Copy public link',
-              hide: !item.access_info.public?.level || item.access_info.public?.level === 'none',
-              onClick: () => {
-                copyToClipboard(publicLink);
-                ToasterService.success('Public link copied to clipboard');
-              },
-            },
-            {
-              type: 'menu',
-              text: 'Versions',
-              onClick: () => setVersionModal({ open: true, id: item.id }),
-            },
-            {
-              type: 'menu',
-              text: 'Move',
-              hide: parentAccess === 'read',
-              onClick: () =>
-                setSelectorModalState({
-                  open: true,
-                  parent_id: inTrash ? 'root' : item.parent_id,
-                  mode: 'move',
-                  title: `Move '${item.name}'`,
-                  onSelected: async ids => {
-                    await update(
-                      {
-                        parent_id: ids[0],
-                      },
-                      item.id,
-                      item.parent_id,
-                    );
-                  },
-                }),
-            },
-            { type: 'separator', hide: parentAccess === 'read' },
-            {
-              type: 'menu',
-              text: 'Move to trash',
-              className: 'error',
-              hide: inTrash || parentAccess === 'read',
-              onClick: () => setConfirmTrashModalState({ open: true, items: [item] }),
-            },
-            {
-              type: 'menu',
-              text: 'Delete',
-              className: 'error',
-              hide: !inTrash || parentAccess === 'read',
-              onClick: () => setConfirmDeleteModalState({ open: true, items: [item] }),
-            },
-          ]}
-        >
+        <Menu menu={onBuildContextMenu}>
           <Button
             theme={'secondary'}
             size="sm"
