@@ -24,7 +24,6 @@ export default ({
 
 export const PathRender = ({
   path,
-  inTrash,
   onClick,
 }: {
   path: DriveItem[];
@@ -70,7 +69,9 @@ const PathItem = ({
         onClick(item?.id || '');
       }}
     >
-      <span className="text-ellipsis overflow-hidden whitespace-nowrap">{item?.name || ''}</span>
+      <span className="text-ellipsis overflow-hidden whitespace-nowrap" style={{ maxWidth: 120 }}>
+        {item?.name || ''}
+      </span>
       {item?.access_info?.public?.level && item?.access_info?.public?.level !== 'none' && (
         <PublicIcon className="h-5 w-5 ml-2" />
       )}

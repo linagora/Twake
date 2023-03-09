@@ -56,7 +56,12 @@ class MenusManager extends Observable {
 
     this.notify();
   }
-  openMenu(menu, domRect, positionType, options) {
+  async openMenu(menu, domRect, positionType, options) {
+
+    if(typeof menu === 'function') {
+      menu = await menu();
+    }
+
     this.menus = [];
 
     if (this.closeMenuTimeout) {

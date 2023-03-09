@@ -50,7 +50,7 @@ export class ViewsController {
         id: request.params.channel_id,
       },
     );
-    if (!isMember) {
+    if (!isMember && !context.user.application_id && !context.user.server_request) {
       throw CrudException.notFound("Channel not found");
     }
 

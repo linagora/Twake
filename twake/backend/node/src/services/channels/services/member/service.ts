@@ -344,7 +344,7 @@ export class MemberServiceImpl {
     if (ChannelEntity.isDirectChannel(channel) || ChannelEntity.isPrivateChannel(channel)) {
       const isMember = await this.getChannelMember(context.user, channel, undefined, context);
 
-      if (!isMember && !context.user.server_request) {
+      if (!isMember && !context.user.application_id && !context.user.server_request) {
         throw CrudException.badRequest("User does not have enough rights to get channels");
       }
     }

@@ -200,7 +200,7 @@ export class DocumentsService {
   ): Promise<DriveFile> => {
     try {
       const driveItem = getDefaultDriveItem(content, context);
-      const driveItemVersion = getDefaultDriveItemVersion(version, context);
+      let driveItemVersion = getDefaultDriveItemVersion(version, context);
 
       const hasAccess = await checkAccess(
         driveItem.parent_id,
@@ -445,7 +445,7 @@ export class DocumentsService {
       }
 
       try {
-        if (!(await checkAccess(item.id, item, "write", this.repository, context))) {
+        if (!(await checkAccess(item.id, item, "manage", this.repository, context))) {
           this.logger.error("user does not have access drive item ", id);
           throw Error("user does not have access to this item");
         }
@@ -568,6 +568,17 @@ export class DocumentsService {
       await this.repository.save(item);
 
       this.notifyWebsocket(item.parent_id, context);
+
+      globalResolver.platformServices.messageQueue.publish<DocumentsMessageQueueRequest>(
+        "services:documents:process",
+        {
+          data: {
+            item,
+            version: driveItemVersion,
+            context,
+          },
+        },
+      );
 
       return driveItemVersion;
     } catch (error) {

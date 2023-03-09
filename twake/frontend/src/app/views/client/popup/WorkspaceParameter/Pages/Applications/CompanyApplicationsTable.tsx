@@ -46,7 +46,7 @@ export default () => {
   useEffect(() => {
     refreshCompanyApplications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyApplications]);
+  }, [companyApplications.length]);
 
   const refreshCompanyApplications = () => {
     companyApplications && setData(companyApplications);
@@ -118,7 +118,7 @@ export default () => {
         index: number,
       ) => {
         return (
-          <Row key={index} align="middle" onClick={() => console.log('iciii', companyApplications)}>
+          <Row key={index} align="middle">
             <AvatarComponent
               url={icon?.length ? icon : undefined}
               fallback={`${process.env.PUBLIC_URL}/public/img/hexagon.png`}

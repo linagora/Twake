@@ -152,20 +152,10 @@ export class FileServiceImpl {
             );
 
             if (options.waitForThumbnail) {
-              for (let i = 1; i < 100; i++) {
-                entity = await this.repository.findOne(
-                  {
-                    company_id: context.company.id,
-                    id: entity.id,
-                  },
-                  {},
-                  context,
-                );
-                if (entity.metadata.thumbnails_status === "done") {
-                  break;
-                }
-                await new Promise(r => setTimeout(r, i * 200));
-              }
+              entity = await gr.services.files.getFile({
+                id: entity.id,
+                company_id: context.company.id,
+              });
             }
           } catch (err) {
             entity.metadata.thumbnails_status = "error";
@@ -247,8 +237,26 @@ export class FileServiceImpl {
     return this.getFile({ id, company_id: context.company.id }, context);
   }
 
-  async getFile(pk: Pick<File, "company_id" | "id">, context?: ExecutionContext): Promise<File> {
-    return this.repository.findOne(pk, {}, context);
+  async getFile(
+    pk: Pick<File, "company_id" | "id">,
+    context?: ExecutionContext,
+    options?: {
+      waitForThumbnail?: boolean;
+    },
+  ): Promise<File> {
+    let entity = await this.repository.findOne(pk, {}, context);
+
+    if (options?.waitForThumbnail) {
+      for (let i = 1; i < 100; i++) {
+        if (entity.metadata.thumbnails_status === "done") {
+          break;
+        }
+        await new Promise(r => setTimeout(r, i * 200));
+        entity = await this.repository.findOne(pk, {}, context);
+      }
+    }
+
+    return entity;
   }
 
   getThumbnailRoute(file: File, index: string) {

@@ -24,7 +24,10 @@ export const useDriveActions = () => {
             set(DriveItemAtom(parentId), details);
             for (const child of details.children) {
               const currentValue = snapshot.getLoadable(DriveItemAtom(child.id)).contents;
-              set(DriveItemAtom(child.id), { ...currentValue, item: child });
+              if (!currentValue) {
+                //only update if not already in cache to avoid concurrent updates
+                set(DriveItemAtom(child.id), { item: child });
+              }
             }
             return details;
           } catch (e) {

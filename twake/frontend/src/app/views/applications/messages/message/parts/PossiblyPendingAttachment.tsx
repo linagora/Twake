@@ -50,11 +50,11 @@ export default ({ file, onRemove, type, large, xlarge }: PropsType) => {
     formatedFile = {
       id: pendingFile?.backendFile?.id || '',
       company_id: pendingFile?.backendFile?.company_id || '',
-      name: pendingFile.originalFile.name,
-      size: pendingFile.originalFile.size,
+      name: pendingFile?.originalFile.name || '',
+      size: pendingFile?.originalFile.size || 0,
       thumbnail: URL.createObjectURL(pendingFile.originalFile),
       thumbnail_ratio: 1,
-      type: FileUploadAPIClient.mimeToType(pendingFile.originalFile.type || ''),
+      type: FileUploadAPIClient.mimeToType(pendingFile?.originalFile.type || ''),
     };
     status = pendingFile.status || undefined;
     progress = pendingFile.progress;

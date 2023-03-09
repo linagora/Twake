@@ -1,31 +1,28 @@
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/outline';
 import { Button } from 'app/atoms/button/button';
-import { Base, BaseSmall, Info, Subtitle, Title } from 'app/atoms/text';
+import { Base, BaseSmall, Subtitle, Title } from 'app/atoms/text';
 import Menu from 'app/components/menus/menu';
 import { getFilesTree } from 'app/components/uploads/file-tree-utils';
 import UploadZone from 'app/components/uploads/upload-zone';
 import { setTwakeTabToken } from 'app/features/drive/api-client/api-client';
-import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
-import { useDriveItem, usePublicLink } from 'app/features/drive/hooks/use-drive-item';
+import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { useDriveRealtime } from 'app/features/drive/hooks/use-drive-realtime';
 import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { DriveItemSelectedList } from 'app/features/drive/state/store';
 import { formatBytes } from 'app/features/drive/utils';
-import { ToasterService } from 'app/features/global/services/toaster-service';
-import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import _ from 'lodash';
-import { memo, Suspense, useCallback, useEffect, useRef } from 'react';
+import { memo, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import { DrivePreview } from '../viewer/drive-preview';
+import { useOnBuildContextMenu } from './context-menu';
+import { DocumentRow } from './documents/document-row';
+import { FolderRow } from './documents/folder-row';
 import HeaderPath from './header-path';
-import { DocumentRow } from './item-row/document-row';
-import { FolderRow } from './item-row/folder-row';
-import { ConfirmDeleteModal, ConfirmDeleteModalAtom } from './modals/confirm-delete';
-import { ConfirmTrashModal, ConfirmTrashModalAtom } from './modals/confirm-trash';
+import { ConfirmDeleteModal } from './modals/confirm-delete';
+import { ConfirmTrashModal } from './modals/confirm-trash';
 import { CreateModal, CreateModalAtom } from './modals/create';
 import { PropertiesModal } from './modals/properties';
-import { SelectorModalAtom } from './modals/selector';
 import { AccessModal } from './modals/update-access';
 import { VersionsModal } from './modals/versions';
 
@@ -47,25 +44,51 @@ export default memo(
     const companyId = useRouterCompany();
     setTwakeTabToken(twakeTabContextToken || null);
 
-    const [parentId, setParentId] = useRecoilState(
+    const [parentId, _setParentId] = useRecoilState(
       DriveCurrentFolderAtom(initialParentId || 'root'),
     );
 
-    const { download, downloadZip, update } = useDriveActions();
-    const { access, item, inTrash, refresh, children, loading, path } = useDriveItem(parentId);
-    const publicLink = usePublicLink(item);
+    const [loadingParentChange, setLoadingParentChange] = useState(false);
+    const {
+      details,
+      access,
+      item,
+      inTrash,
+      refresh,
+      children,
+      loading: loadingParent,
+      path,
+    } = useDriveItem(parentId);
     const { item: trash } = useDriveItem('trash');
     const { uploadTree, uploadFromUrl } = useDriveUpload();
     useDriveRealtime(parentId);
+
+    const loading = loadingParent || loadingParentChange;
 
     const uploadZone = 'drive_' + companyId;
     const uploadZoneRef = useRef<UploadZone | null>(null);
 
     const setCreationModalState = useSetRecoilState(CreateModalAtom);
-    const setSelectorModalState = useSetRecoilState(SelectorModalAtom);
-    const setConfirmDeleteModalState = useSetRecoilState(ConfirmDeleteModalAtom);
-    const setConfirmTrashModalState = useSetRecoilState(ConfirmTrashModalAtom);
     const [checked, setChecked] = useRecoilState(DriveItemSelectedList);
+
+    const setParentId = useCallback(
+      async (id: string) => {
+        setLoadingParentChange(true);
+        try {
+          await refresh(id);
+          _setParentId(id);
+        } catch (e) {
+          console.error(e);
+        }
+        setLoadingParentChange(false);
+      },
+      [_setParentId],
+    );
+
+    //In case we are kicked out of the current folder, we need to reset the parent id
+    useEffect(() => {
+      if (!loading && !path?.length) setParentId('root');
+    }, [path, loading, setParentId]);
 
     useEffect(() => {
       setChecked({});
@@ -91,6 +114,9 @@ export default memo(
     )
       .filter(i => !i.is_directory)
       .sort((a, b) => a.name.localeCompare(b.name));
+
+    const onBuildContextMenu = useOnBuildContextMenu(children, initialParentId);
+
     return (
       <UploadZone
         overClassName={'!m-4'}
@@ -131,7 +157,7 @@ export default memo(
         <div
           className={
             'flex flex-col p-4 grow h-full overflow-auto ' +
-            (loading && !children?.length ? 'opacity-50 ' : '')
+            (loading && (!children?.length || loadingParentChange) ? 'opacity-50 ' : '')
           }
         >
           {document.location.origin.includes('canary') && access !== 'read' && !inPublicSharing && (
@@ -154,123 +180,7 @@ export default memo(
             {access !== 'read' && (
               <BaseSmall>{formatBytes(item?.size || 0)} used in this folder</BaseSmall>
             )}
-            <Menu
-              menu={
-                selectedCount
-                  ? [
-                      {
-                        type: 'menu',
-                        text: 'Move ' + selectedCount + ' items',
-                        hide: access === 'read',
-                        onClick: () =>
-                          setSelectorModalState({
-                            open: true,
-                            parent_id: inTrash ? 'root' : parentId,
-                            title: 'Move ' + selectedCount + ' items',
-                            mode: 'move',
-                            onSelected: async ids => {
-                              for (const item of children.filter(c => checked[c.id])) {
-                                await update(
-                                  {
-                                    parent_id: ids[0],
-                                  },
-                                  item.id,
-                                  item.parent_id,
-                                );
-                              }
-                              setChecked({});
-                            },
-                          }),
-                      },
-                      {
-                        type: 'menu',
-                        text: 'Download ' + selectedCount + ' items',
-                        onClick: () =>
-                          selectedCount === 1
-                            ? download(Object.keys(checked)[0])
-                            : downloadZip(Object.keys(checked)),
-                      },
-                      { type: 'separator', hide: access === 'read' },
-                      {
-                        type: 'menu',
-                        text: 'Delete ' + selectedCount + ' items',
-                        hide: !inTrash || access !== 'manage',
-                        className: 'error',
-                        onClick: () => {
-                          setConfirmDeleteModalState({
-                            open: true,
-                            items: children.filter(a => checked[a.id]),
-                          });
-                        },
-                      },
-                      {
-                        type: 'menu',
-                        text: 'Move ' + selectedCount + ' items to trash',
-                        hide: inTrash || access === 'read',
-                        className: 'error',
-                        onClick: async () =>
-                          setConfirmTrashModalState({
-                            open: true,
-                            items: children.filter(a => checked[a.id]),
-                          }),
-                      },
-                    ]
-                  : inTrash
-                  ? [
-                      {
-                        type: 'menu',
-                        text: 'Exit trash',
-                        onClick: () => setParentId('root'),
-                      },
-                      { type: 'separator' },
-                      {
-                        type: 'menu',
-                        text: 'Empty trash',
-                        className: 'error',
-                        hide: parentId != 'trash' || access !== 'manage',
-                        onClick: () => {
-                          setConfirmDeleteModalState({
-                            open: true,
-                            items: children, //Fixme: Here it works because this menu is displayed only in the trash root folder
-                          });
-                        },
-                      },
-                    ]
-                  : [
-                      {
-                        type: 'menu',
-                        text: 'Add document or folder',
-                        hide: inTrash || access === 'read',
-                        onClick: () => openItemModal(),
-                      },
-
-                      {
-                        type: 'menu',
-                        text: 'Download folder',
-                        hide: inTrash,
-                        onClick: () => downloadZip([parentId]),
-                      },
-                      {
-                        type: 'menu',
-                        text: 'Copy public link',
-                        hide:
-                          !item?.access_info?.public?.level ||
-                          item?.access_info?.public?.level === 'none',
-                        onClick: () => {
-                          copyToClipboard(publicLink);
-                          ToasterService.success('Public link copied to clipboard');
-                        },
-                      },
-                      { type: 'separator', hide: inTrash || access === 'read' },
-                      {
-                        type: 'menu',
-                        text: 'Go to trash',
-                        hide: inTrash || access === 'read',
-                        onClick: () => setParentId('trash'),
-                      },
-                    ]
-              }
-            >
+            <Menu menu={() => onBuildContextMenu(details)}>
               {' '}
               <Button theme="outline" className="ml-4 flex flex-row items-center">
                 <span>{selectedCount > 1 ? `${selectedCount} items` : 'More'} </span>
@@ -317,21 +227,20 @@ export default memo(
               <>
                 <Title className="mb-2 block">Folders</Title>
 
-                {folders.map((item, index) => (
+                {folders.map((child, index) => (
                   <FolderRow
                     key={index}
-                    inTrash={inTrash}
                     className={
                       (index === 0 ? 'rounded-t-md ' : '') +
                       (index === folders.length - 1 ? 'rounded-b-md ' : '')
                     }
-                    item={item}
+                    item={child}
                     onClick={() => {
-                      return setParentId(item.id);
+                      return setParentId(child.id);
                     }}
-                    checked={checked[item.id] || false}
-                    onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
-                    parentAccess={access}
+                    checked={checked[child.id] || false}
+                    onCheck={v => setChecked(_.pickBy({ ...checked, [child.id]: v }, _.identity))}
+                    onBuildContextMenu={() => onBuildContextMenu(details, child)}
                   />
                 ))}
                 <div className="my-6" />
@@ -357,18 +266,17 @@ export default memo(
               </div>
             )}
 
-            {documents.map((item, index) => (
+            {documents.map((child, index) => (
               <DocumentRow
                 key={index}
-                inTrash={inTrash}
                 className={
                   (index === 0 ? 'rounded-t-md ' : '') +
                   (index === documents.length - 1 ? 'rounded-b-md ' : '')
                 }
-                item={item}
-                checked={checked[item.id] || false}
-                onCheck={v => setChecked(_.pickBy({ ...checked, [item.id]: v }, _.identity))}
-                parentAccess={access}
+                item={child}
+                checked={checked[child.id] || false}
+                onCheck={v => setChecked(_.pickBy({ ...checked, [child.id]: v }, _.identity))}
+                onBuildContextMenu={() => onBuildContextMenu(details, child)}
               />
             ))}
           </div>

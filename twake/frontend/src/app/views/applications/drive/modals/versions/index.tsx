@@ -1,15 +1,14 @@
 import { Button } from 'app/atoms/button/button';
 import { Modal, ModalContent } from 'app/atoms/modal';
-import { Base, BaseSmall, Title } from 'app/atoms/text';
+import { Base, BaseSmall } from 'app/atoms/text';
 import UploadZone from 'app/components/uploads/upload-zone';
 import { useDriveActions } from 'app/features/drive/hooks/use-drive-actions';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
-import { useDriveUpload } from 'app/features/drive/hooks/use-drive-upload';
 import { formatBytes } from 'app/features/drive/utils';
 import { formatDate } from 'app/features/global/utils/format-date';
+import _ from 'lodash';
 import { useEffect, useRef } from 'react';
 import { atom, useRecoilState } from 'recoil';
-import { DocumentRow } from '../../item-row/document-row';
 
 export type VersionsModalType = {
   open: boolean;
@@ -86,13 +85,16 @@ const VersionModalContent = ({ id }: { id: string }) => {
           </div>
         )}
 
-        {[...(versions?.length ? versions : [item.last_version_cache])].map((version, index) => (
+        {_.orderBy(
+          [...(versions?.length ? versions : [item.last_version_cache])],
+          f => -f.date_added,
+        ).map((version, index) => (
           <div
             key={index}
             className={
               'flex flex-row items-center border -mt-px px-4 py-3 cursor-pointer hover:bg-zinc-500 hover:bg-opacity-10 ' +
               (index === 0 ? 'rounded-t-md ' : '') +
-              (index === (versions || []).length ? 'rounded-b-md ' : '')
+              (index === (versions || []).length - 1 ? 'rounded-b-md ' : '')
             }
           >
             <div className="grow text-ellipsis whitespace-nowrap overflow-hidden">
