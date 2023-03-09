@@ -699,7 +699,7 @@ export const getItemName = async (
   context: CompanyExecutionContext,
 ): Promise<string> => {
   try {
-    let newName = name;
+    let newName = name.substring(0, 255);
     let exists = true;
     const children = await repository.find(
       {

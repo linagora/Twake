@@ -1,13 +1,13 @@
 import A from 'app/atoms/link';
 import { Base, Info } from 'app/atoms/text';
-import { useDriveItem, usePublicLink } from 'app/features/drive/hooks/use-drive-item';
+import { useDriveItem, getPublicLink } from 'app/features/drive/hooks/use-drive-item';
 import { ToasterService } from 'app/features/global/services/toaster-service';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { AccessLevel } from './common';
 
 export const PublicLinkManager = ({ id, disabled }: { id: string; disabled?: boolean }) => {
   const { item, loading, update } = useDriveItem(id);
-  const publicLink = usePublicLink(item);
+  const publicLink = getPublicLink(item);
   return (
     <>
       <Base className="block mt-2 mb-1">Public link access</Base>
@@ -36,9 +36,7 @@ export const PublicLinkManager = ({ id, disabled }: { id: string; disabled?: boo
         </div>
         <div className="shrink-0">
           <AccessLevel
-            hiddenLevels={
-              document.location.origin.includes('localhost') ? ['manage'] : ['manage', 'write']
-            }
+            hiddenLevels={['manage', 'write']}
             disabled={loading || disabled}
             level={item?.access_info?.public?.level || null}
             onChange={level => {

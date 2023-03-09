@@ -4,6 +4,7 @@ import { Base, Info } from 'app/atoms/text';
 import { useDriveItem } from 'app/features/drive/hooks/use-drive-item';
 import { DriveFileAccessLevel } from 'app/features/drive/types';
 import AlertManager from 'app/features/global/services/alert-manager-service';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useUser } from 'app/features/users/hooks/use-user';
 import currentUserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';
@@ -112,7 +113,9 @@ export const InternalAccessManager = ({ id, disabled }: { id: string; disabled: 
                           },
                         });
                       },
-                      () => {},
+                      () => {
+                        //Do nothing
+                      },
                       {
                         text: 'You will need to go to Twake chat to give back access to this item.',
                       },
@@ -203,6 +206,7 @@ const UserAccessLevel = ({
 }) => {
   const { item, loading, update } = useDriveItem(id);
   const user = useUser(userId);
+  const { user: currentUser } = useCurrentUser();
   const level =
     item?.access_info.entities.filter(a => a.type === 'user' && a.id === userId)?.[0]?.level ||
     'none';
@@ -217,11 +221,12 @@ const UserAccessLevel = ({
         />
       </div>
       <div className="grow ml-2">
-        <Base>{!!user && currentUserService.getFullName(user)}</Base>
+        <Base>{!!user && currentUserService.getFullName(user)}</Base>{' '}
+        {user?.id === currentUser?.id && <Info>(you)</Info>}
       </div>
       <div className="shrink-0 ml-2">
         <AccessLevel
-          disabled={loading || disabled}
+          disabled={loading || disabled || user?.id === currentUser?.id}
           level={level}
           canRemove
           onChange={level => {
