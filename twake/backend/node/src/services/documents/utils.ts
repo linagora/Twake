@@ -350,7 +350,7 @@ export const getAccessLevel = async (
         company_id: context.company.id,
         application_id: context.user.application_id,
       })
-    )?.application?.access //TODO check precise access right
+    )?.application?.access //TODO check precise access right for applications
   ) {
     return "manage";
   }

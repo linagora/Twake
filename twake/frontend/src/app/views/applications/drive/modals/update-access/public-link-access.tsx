@@ -37,7 +37,7 @@ export const PublicLinkManager = ({ id, disabled }: { id: string; disabled?: boo
         <div className="shrink-0">
           <AccessLevel
             hiddenLevels={
-              document.location.origin.includes('localhost') ? ['manage', 'write'] : ['manage']
+              document.location.origin.includes('localhost') ? ['manage'] : ['manage', 'write']
             }
             disabled={loading || disabled}
             level={item?.access_info?.public?.level || null}
