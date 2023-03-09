@@ -664,10 +664,14 @@ export const getFileMetadata = async (
   fileId: string,
   context: CompanyExecutionContext,
 ): Promise<DriveFileMetadata> => {
-  const file = await globalResolver.services.files.getFile({
-    id: fileId,
-    company_id: context.company.id,
-  });
+  const file = await globalResolver.services.files.getFile(
+    {
+      id: fileId,
+      company_id: context.company.id,
+    },
+    context,
+    { waitForThumbnail: true },
+  );
 
   if (!file) {
     throw Error("File doesn't exist");
