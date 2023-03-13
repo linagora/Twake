@@ -5,9 +5,12 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import globalResolver from "../../../../services/global-resolver";
-import { PhpDriveFile } from "./php-drive-file-entity";
+import { PhpDriveFile, TYPE as DRIVE_FILE_TABLE } from "./php-drive-file-entity";
 import { Initializable, logger, TwakeServiceProvider } from "../../../../core/platform/framework";
-import { PhpDriveFileVersion } from "./php-drive-file-version-entity";
+import {
+  PhpDriveFileVersion,
+  TYPE as DRIVE_FILE_VERSION_TABLE,
+} from "./php-drive-file-version-entity";
 import axios from "axios";
 import { Stream } from "stream";
 import { Multipart } from "fastify-multipart";
@@ -33,12 +36,12 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
    */
   async init(): Promise<this> {
     this.repository = await globalResolver.database.getRepository<PhpDriveFile>(
-      "drive_file",
+      DRIVE_FILE_TABLE,
       PhpDriveFile,
     );
 
     this.versionRepository = await globalResolver.database.getRepository<PhpDriveFileVersion>(
-      "drive_file_version",
+      DRIVE_FILE_VERSION_TABLE,
       PhpDriveFileVersion,
     );
 
@@ -56,7 +59,7 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
    */
   listDirectory = async (
     pagination: Pagination,
-    directory: string | "root" | "trash",
+    directory: string | "" | "trash",
     workspaceId: string,
     context?: ExecutionContext,
   ): Promise<ListResult<PhpDriveFile>> =>

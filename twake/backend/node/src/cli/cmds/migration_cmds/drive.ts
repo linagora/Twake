@@ -25,7 +25,8 @@ const command: yargs.CommandModule<unknown, unknown> = {
   describe: "migrate php drive items to node",
   builder: {},
   handler: async _argv => {
-    const spinner = ora({ text: "Migrating php drive items -" }).start();
+    console.log("test");
+    const spinner = ora({ text: "Migrating php drive - " }).start();
     const platform = await twake.run(services);
     await globalResolver.doInit(platform);
     const migrator = new DriveMigrator(platform);

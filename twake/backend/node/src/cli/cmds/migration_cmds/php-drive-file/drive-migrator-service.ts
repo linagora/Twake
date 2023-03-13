@@ -51,6 +51,8 @@ class DriveMigrator {
       },
     };
 
+    console.debug("Starting migration");
+
     do {
       const companyListResult = await globalResolver.services.companies.getCompanies(page);
       page = companyListResult.nextPage as Pagination;
@@ -73,7 +75,7 @@ class DriveMigrator {
     company: Company,
     context: CompanyExecutionContext,
   ): Promise<void> => {
-    logger.info(`Migrating company ${company.id}`);
+    console.debug(`Migrating company ${company.id}`);
 
     const workspaceList = await globalResolver.services.workspaces.getAllForCompany(company.id);
 
@@ -93,17 +95,23 @@ class DriveMigrator {
   ): Promise<void> => {
     let page: Pagination = { limitStr: "100" };
 
-    logger.info(`Migrating workspace ${workspace.id}`);
+    console.debug(`Migrating workspace ${workspace.id} root folder`);
     // Migrate the root folder.
     do {
-      const phpDriveFiles = await this.phpDriveService.listDirectory(page, "root", workspace.id);
+      const phpDriveFiles = await this.phpDriveService.listDirectory(
+        page,
+        "",
+        workspace.id,
+        context,
+      );
       page = phpDriveFiles.nextPage as Pagination;
 
       for (const phpDriveFile of phpDriveFiles.getEntities()) {
-        await this.migrateDriveFile(phpDriveFile, "root", context);
+        await this.migrateDriveFile(phpDriveFile, "", context);
       }
     } while (page.page_token);
 
+    console.debug(`Migrating workspace ${workspace.id} trash`);
     // Migrate the trash.
     page = { limitStr: "100" };
 
@@ -128,6 +136,7 @@ class DriveMigrator {
     context: WorkspaceExecutionContext,
   ): Promise<void> => {
     logger.info(`Migrating php drive item ${item.id} - parent: ${parentId}`);
+    console.debug(`Migrating php drive item ${item.id} - parent: ${parentId}`);
 
     try {
       const newDriveItem = getDefaultDriveItem(
@@ -165,12 +174,16 @@ class DriveMigrator {
               await this.migrateDriveFile(child, newDriveItem.id, context);
             } catch (error) {
               logger.error(`Failed to migrate drive item ${child.id}`);
+              console.error(`Failed to migrate drive item ${child.id}`);
             }
           }
         } while (page.page_token);
       } else {
         let versionPage: Pagination = { limitStr: "100" };
-        if (item.hidden_data.migrated) return;
+        if ((item.hidden_data as any)?.migrated) {
+          logger.info(`item is already migrated - ${item.id} - skipping`);
+          logger.info(`item is already migrated - ${item.id} - skipping`);
+        }
 
         do {
           const itemVersions = await this.phpDriveService.listItemVersions(
@@ -181,6 +194,7 @@ class DriveMigrator {
           versionPage = itemVersions.nextPage as Pagination;
 
           for (const version of itemVersions.getEntities()) {
+            console.debug(`Migrating version ${version.id}`);
             try {
               const newVersion = getDefaultDriveItemVersion(
                 {
@@ -227,15 +241,16 @@ class DriveMigrator {
               );
             } catch (error) {
               logger.error(`Failed to migrate version ${version.id} for drive item ${item.id}`);
+              console.error(`Failed to migrate version ${version.id} for drive item ${item.id}`);
               throw Error(error);
             }
           }
         } while (versionPage.page_token);
       }
 
-      if (!item.hidden_data.migrated) {
+      if (!(item.hidden_data as any)?.migrated) {
         item.hidden_data = {
-          ...item.hidden_data,
+          ...((item.hidden_data as any) || {}),
           migrated: true,
         };
 
@@ -243,6 +258,7 @@ class DriveMigrator {
       }
     } catch (error) {
       logger.error(`Failed to migrate Drive item ${item.id}`, error);
+      console.error(`Failed to migrate Drive item ${item.id}`, error);
     }
   };
 }
