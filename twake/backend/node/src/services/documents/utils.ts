@@ -42,7 +42,7 @@ export const getDefaultDriveItem = (
     added: item.added || new Date().getTime().toString(),
     creator: item.creator || context.user?.id,
     is_directory: item.is_directory || false,
-    is_in_trash: false,
+    is_in_trash: item.is_in_trash || false,
     last_modified: new Date().getTime().toString(),
     parent_id: item.parent_id || "root",
     content_keywords: item.content_keywords || "",
@@ -319,6 +319,10 @@ export const checkAccess = async (
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext & { public_token?: string; twake_tab_token?: string },
 ): Promise<boolean> => {
+  if (context.user.server_request) {
+    return true;
+  }
+
   const grantedLevel = await getAccessLevel(id, item, repository, context);
   const hasAccess = hasAccessLevel(level, grantedLevel);
   logger.info(
