@@ -111,7 +111,7 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
     public_access_key?: string,
   ): Promise<File> => {
     try {
-      const url = `https://web.twake.app/ajax/drive/download?workspace_id=${workspaceId}&element_id=${fileId}&download=1${
+      const url = `https://staging-web.twake.app/ajax/drive/download?workspace_id=${workspaceId}&element_id=${fileId}&download=1${
         public_access_key ? `&public_access_key=${public_access_key}` : ""
       }`;
 
