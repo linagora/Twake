@@ -24,7 +24,7 @@ export class PhpDriveFileVersion {
   creator_id: string;
 
   @Type(() => String)
-  @Column("realname", "string")
+  @Column("realname", "encoded_string")
   realname: string;
 
   @Type(() => String)
@@ -44,7 +44,7 @@ export class PhpDriveFileVersion {
   date_added: string;
 
   @Type(() => String)
-  @Column("filename", "string")
+  @Column("filename", "encoded_string")
   filename: string;
 
   @Type(() => String)

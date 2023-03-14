@@ -12,6 +12,7 @@ import Company from "../../../../services/user/entities/company";
 import Workspace from "../../../../services/workspaces/entities/workspace";
 import { PhpDriveFile } from "./php-drive-file-entity";
 import { PhpDriveFileService } from "./php-drive-service";
+import mimes from "../../../../utils/mime";
 
 interface CompanyExecutionContext extends ExecutionContext {
   company: {
@@ -98,6 +99,7 @@ class DriveMigrator {
   ): Promise<void> => {
     let page: Pagination = { limitStr: "100" };
 
+    console.debug(`Migrating workspace ${workspace.id} of company ${context.company.id}`);
     logger.info(`Migrating workspace ${workspace.id} root folder`);
     // Migrate the root folder.
     do {
@@ -141,6 +143,11 @@ class DriveMigrator {
     logger.info(`Migrating php drive item ${item.id} - parent: ${parentId ?? "root"}`);
 
     try {
+      const migrationRecord = await this.phpDriveService.getMigrationRecord(
+        item.id,
+        context.company.id,
+      );
+
       const newDriveItem = getDefaultDriveItem(
         {
           name: item.name || item.id,
@@ -161,9 +168,18 @@ class DriveMigrator {
         context,
       );
 
-      await this.nodeRepository.save(newDriveItem);
+      if (migrationRecord && migrationRecord.company_id === context.company.id) {
+        console.debug(`${item.id} is already migrated`);
+      } else {
+        await this.nodeRepository.save(newDriveItem);
+      }
 
       if (item.isdirectory) {
+        const newParentId =
+          migrationRecord && migrationRecord.company_id === context.company.id
+            ? migrationRecord.new_id
+            : newDriveItem.id;
+
         let page: Pagination = { limitStr: "100" };
 
         do {
@@ -176,7 +192,7 @@ class DriveMigrator {
 
           for (const child of directoryChildren.getEntities()) {
             try {
-              await this.migrateDriveFile(child, newDriveItem.id, context);
+              await this.migrateDriveFile(child, newParentId, context);
             } catch (error) {
               logger.error(`Failed to migrate drive item ${child.id}`);
               console.error(`Failed to migrate drive item ${child.id}`);
@@ -185,10 +201,17 @@ class DriveMigrator {
         } while (page.page_token);
       } else {
         let versionPage: Pagination = { limitStr: "100" };
-        if ((item.hidden_data as any)?.migrated) {
+        if (
+          migrationRecord &&
+          migrationRecord.item_id === item.id &&
+          migrationRecord.company_id === context.company.id
+        ) {
           logger.info(`item is already migrated - ${item.id} - skipping`);
           console.log(`item is already migrated - ${item.id} - skipping`);
+          return;
         }
+
+        const mime = mimes[item.extension];
 
         let createdVersions = 0;
 
@@ -204,7 +227,7 @@ class DriveMigrator {
             try {
               const newVersion = getDefaultDriveItemVersion(
                 {
-                  creator_id: version.creator_id,
+                  creator_id: version.creator_id || context.user.id,
                   data: version.data,
                   date_added: +version.date_added,
                   drive_item_id: newDriveItem.id,
@@ -224,12 +247,12 @@ class DriveMigrator {
                 version.id,
                 {
                   filename: version.filename,
-                  userId: version.creator_id,
+                  userId: version.creator_id || context.user.id,
                   totalSize: version.file_size,
                   waitForThumbnail: true,
                   chunkNumber: 1,
                   totalChunks: 1,
-                  type: undefined,
+                  type: mime,
                 },
                 context,
               );
@@ -265,13 +288,8 @@ class DriveMigrator {
         }
       }
 
-      if (!(item.hidden_data as any)?.migrated) {
-        item.hidden_data = {
-          ...((item.hidden_data as any) || {}),
-          migrated: true,
-        };
-
-        await this.phpDriveService.save(item);
+      if (!migrationRecord) {
+        await this.phpDriveService.markAsMigrated(item.id, newDriveItem.id, context.company.id);
       }
     } catch (error) {
       logger.error(

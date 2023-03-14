@@ -53,7 +53,7 @@ export class PhpDriveFile {
   @Column("last_modified", "string")
   last_modified: string;
 
-  @Column("name", "string")
+  @Column("name", "encoded_string")
   name: string;
 
   @Column("size", "number")

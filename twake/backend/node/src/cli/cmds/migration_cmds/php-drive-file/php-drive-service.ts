@@ -16,6 +16,10 @@ import { Multipart } from "fastify-multipart";
 import { CompanyExecutionContext } from "../../../../services/files/web/types";
 import { File } from "../../../../services/files/entities/file";
 import { UploadOptions } from "../../../../services/files/types";
+import {
+  phpDriveMigrationRecord,
+  TYPE as MIGRATION_RECORD_TABLE,
+} from "./php-drive-migration-record-entity";
 
 export interface MigrateOptions extends UploadOptions {
   userId: string;
@@ -27,6 +31,7 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
   version: "1";
   public repository: Repository<PhpDriveFile>;
   public versionRepository: Repository<PhpDriveFileVersion>;
+  public migrationRepository: Repository<phpDriveMigrationRecord>;
 
   /**
    * Init the service.
@@ -42,6 +47,11 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
     this.versionRepository = await globalResolver.database.getRepository<PhpDriveFileVersion>(
       DRIVE_FILE_VERSION_TABLE,
       PhpDriveFileVersion,
+    );
+
+    this.migrationRepository = await globalResolver.database.getRepository<phpDriveMigrationRecord>(
+      MIGRATION_RECORD_TABLE,
+      phpDriveMigrationRecord,
     );
 
     return this;
@@ -112,7 +122,7 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
     public_access_key?: string,
   ): Promise<File> => {
     try {
-      const url = `https://staging-web.twake.app/ajax/drive/download?workspace_id=${workspaceId}&element_id=${fileId}&version_id=${versionId}&download=1${
+      const url = `https://web.twake.app/ajax/drive/download?workspace_id=${workspaceId}&element_id=${fileId}&version_id=${versionId}&download=1${
         public_access_key ? `&public_access_key=${public_access_key}` : ""
       }`;
 
@@ -147,4 +157,33 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
    * @returns {Promise<void>}
    */
   save = async (item: PhpDriveFile): Promise<void> => await this.repository.save(item);
+
+  /**
+   * Marks a drive item as migrated.
+   *
+   * @param {string} itemId - the drive item.
+   * @param {string} newId - the new drive item id.
+   * @param {string} companyId - the company id.
+   */
+  markAsMigrated = async (itemId: string, newId: string, companyId: string): Promise<void> => {
+    const migrationRecord = new phpDriveMigrationRecord();
+    migrationRecord.item_id = itemId;
+    migrationRecord.new_id = newId;
+    migrationRecord.company_id = companyId;
+
+    await this.migrationRepository.save(migrationRecord);
+  };
+
+  /**
+   * Fetches the drive item migration record.
+   *
+   * @param {string} itemId - the drive item id.
+   * @param {string} companyId - the company id.
+   * @returns {Promise<boolean>}
+   */
+  getMigrationRecord = async (
+    itemId: string,
+    companyId: string,
+  ): Promise<phpDriveMigrationRecord> =>
+    await this.migrationRepository.findOne({ item_id: itemId, company_id: companyId });
 }
