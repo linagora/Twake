@@ -12,7 +12,6 @@ import {
   TYPE as DRIVE_FILE_VERSION_TABLE,
 } from "./php-drive-file-version-entity";
 import axios from "axios";
-import { Stream } from "stream";
 import { Multipart } from "fastify-multipart";
 import { CompanyExecutionContext } from "../../../../services/files/web/types";
 import { File } from "../../../../services/files/entities/file";
@@ -94,10 +93,11 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
     );
 
   /**
-   * Downloads a file from the old drive and uploads it to the new Drive.
+   * Downloads a file version from the old drive and uploads it to the new Drive.
    *
    * @param {string} fileId - the old file id
    * @param {string} workspaceId - the workspace id
+   * @param {string} versionId - the version id
    * @param {MigrateOptions} options - the file upload / migration options.
    * @param {CompanyExecutionContext} context - the company execution context.
    * @param {string} public_access_key - the file public access key.
@@ -106,18 +106,23 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
   migrate = async (
     fileId: string,
     workspaceId: string,
+    versionId: string,
     options: MigrateOptions,
     context: CompanyExecutionContext,
     public_access_key?: string,
   ): Promise<File> => {
     try {
-      const url = `https://staging-web.twake.app/ajax/drive/download?workspace_id=${workspaceId}&element_id=${fileId}&download=1${
+      const url = `https://staging-web.twake.app/ajax/drive/download?workspace_id=${workspaceId}&element_id=${fileId}&version_id=${versionId}&download=1${
         public_access_key ? `&public_access_key=${public_access_key}` : ""
       }`;
 
-      const response = await axios.get<Stream>(url, {
+      const response = await axios.get(url, {
         responseType: "stream",
       });
+
+      if (!response.data) {
+        throw Error("invalid download response");
+      }
 
       const file = {
         file: response.data,

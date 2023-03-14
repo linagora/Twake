@@ -33,7 +33,7 @@ export class PhpDriveFile {
   attachements: unknown;
 
   @Column("content_keywords", "encoded_json")
-  content_keywords: string;
+  content_keywords: string[] | null;
 
   @Column("creator", "string")
   creator: string;
@@ -60,5 +60,5 @@ export class PhpDriveFile {
   size: number;
 
   @Column("tags", "encoded_json")
-  tags: string[];
+  tags: string[] | null;
 }

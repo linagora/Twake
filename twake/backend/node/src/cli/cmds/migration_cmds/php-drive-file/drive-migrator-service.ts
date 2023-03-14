@@ -51,8 +51,6 @@ class DriveMigrator {
       },
     };
 
-    console.debug("Starting migration");
-
     do {
       const companyListResult = await globalResolver.services.companies.getCompanies(page);
       page = companyListResult.nextPage as Pagination;
@@ -75,12 +73,17 @@ class DriveMigrator {
     company: Company,
     context: CompanyExecutionContext,
   ): Promise<void> => {
-    console.debug(`Migrating company ${company.id}`);
+    logger.info(`Migrating company ${company.id}`);
 
+    const companyAdminOrOwnerId = await this.getCompanyOwnerOrAdminId(company.id, context);
     const workspaceList = await globalResolver.services.workspaces.getAllForCompany(company.id);
 
     for (const workspace of workspaceList) {
-      await this.migrateWorkspace(workspace, { ...context, workspace_id: workspace.id });
+      await this.migrateWorkspace(workspace, {
+        ...context,
+        workspace_id: workspace.id,
+        user: { id: companyAdminOrOwnerId, server_request: true },
+      });
     }
   };
 
@@ -95,7 +98,7 @@ class DriveMigrator {
   ): Promise<void> => {
     let page: Pagination = { limitStr: "100" };
 
-    console.debug(`Migrating workspace ${workspace.id} root folder`);
+    logger.info(`Migrating workspace ${workspace.id} root folder`);
     // Migrate the root folder.
     do {
       const phpDriveFiles = await this.phpDriveService.listDirectory(
@@ -111,7 +114,7 @@ class DriveMigrator {
       }
     } while (page.page_token);
 
-    console.debug(`Migrating workspace ${workspace.id} trash`);
+    logger.info(`Migrating workspace ${workspace.id} trash`);
     // Migrate the trash.
     page = { limitStr: "100" };
 
@@ -135,21 +138,23 @@ class DriveMigrator {
     parentId: string,
     context: WorkspaceExecutionContext,
   ): Promise<void> => {
-    logger.info(`Migrating php drive item ${item.id} - parent: ${parentId}`);
-    console.debug(`Migrating php drive item ${item.id} - parent: ${parentId}`);
+    logger.info(`Migrating php drive item ${item.id} - parent: ${parentId ?? "root"}`);
 
     try {
       const newDriveItem = getDefaultDriveItem(
         {
-          name: item.name,
+          name: item.name || item.id,
           extension: item.extension,
           added: item.added.toString(),
-          content_keywords: item.content_keywords,
-          creator: item.creator,
+          content_keywords:
+            item.content_keywords && item.content_keywords.length
+              ? item.content_keywords.join(",")
+              : "",
+          creator: item.creator || context.user.id,
           is_directory: item.isdirectory,
           is_in_trash: item.isintrash,
           description: item.description,
-          tags: item.tags,
+          tags: item.tags || [],
           parent_id: parentId,
           company_id: context.company.id,
         },
@@ -182,8 +187,10 @@ class DriveMigrator {
         let versionPage: Pagination = { limitStr: "100" };
         if ((item.hidden_data as any)?.migrated) {
           logger.info(`item is already migrated - ${item.id} - skipping`);
-          logger.info(`item is already migrated - ${item.id} - skipping`);
+          console.log(`item is already migrated - ${item.id} - skipping`);
         }
+
+        let createdVersions = 0;
 
         do {
           const itemVersions = await this.phpDriveService.listItemVersions(
@@ -194,7 +201,6 @@ class DriveMigrator {
           versionPage = itemVersions.nextPage as Pagination;
 
           for (const version of itemVersions.getEntities()) {
-            console.debug(`Migrating version ${version.id}`);
             try {
               const newVersion = getDefaultDriveItemVersion(
                 {
@@ -215,6 +221,7 @@ class DriveMigrator {
               const file = await this.phpDriveService.migrate(
                 version.file_id,
                 item.workspace_id,
+                version.id,
                 {
                   filename: version.filename,
                   userId: version.creator_id,
@@ -226,6 +233,10 @@ class DriveMigrator {
                 },
                 context,
               );
+
+              if (!file) {
+                throw Error("cannot download file version");
+              }
 
               newVersion.file_metadata = {
                 external_id: file.id,
@@ -239,13 +250,19 @@ class DriveMigrator {
                 newVersion,
                 context,
               );
+
+              createdVersions++;
             } catch (error) {
               logger.error(`Failed to migrate version ${version.id} for drive item ${item.id}`);
               console.error(`Failed to migrate version ${version.id} for drive item ${item.id}`);
-              throw Error(error);
             }
           }
         } while (versionPage.page_token);
+
+        if (createdVersions === 0) {
+          await this.nodeRepository.remove(newDriveItem);
+          return;
+        }
       }
 
       if (!(item.hidden_data as any)?.migrated) {
@@ -257,9 +274,47 @@ class DriveMigrator {
         await this.phpDriveService.save(item);
       }
     } catch (error) {
-      logger.error(`Failed to migrate Drive item ${item.id}`, error);
+      logger.error(
+        `Failed to migrate Drive item ${item.id} / workspace ${item.workspace_id} / company_id: ${context.company.id}`,
+        error,
+      );
       console.error(`Failed to migrate Drive item ${item.id}`, error);
     }
+  };
+
+  /**
+   * Fetches the first found company owner or admin identifier.
+   *
+   * @param {string} companyId - the companyId
+   * @param {ExecutionContext} context - the execution context
+   * @returns {Promise<string>}
+   */
+  private getCompanyOwnerOrAdminId = async (
+    companyId: string,
+    context: ExecutionContext,
+  ): Promise<string> => {
+    let pagination: Pagination = { limitStr: "100" };
+    let companyOwnerOrAdminId = null;
+
+    do {
+      const companyUsers = await globalResolver.services.companies.companyUserRepository.find(
+        { group_id: companyId },
+        { pagination },
+        context,
+      );
+
+      pagination = companyUsers.nextPage as Pagination;
+
+      const companyAdminOrOwner = companyUsers
+        .getEntities()
+        .find(({ role }) => ["admin", "owner"].includes(role));
+
+      if (companyAdminOrOwner) {
+        companyOwnerOrAdminId = companyAdminOrOwner.id;
+      }
+    } while (pagination && !companyOwnerOrAdminId);
+
+    return companyOwnerOrAdminId;
   };
 }
 
