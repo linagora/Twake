@@ -4,7 +4,7 @@ import {
   Entity,
 } from "../../../../core/platform/services/database/services/orm/decorators";
 
-export const TYPE = "php_drive_file_versions";
+export const TYPE = "drive_file_version";
 
 @Entity(TYPE, {
   primaryKey: [["file_id"], "id"],

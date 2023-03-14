@@ -4,7 +4,7 @@ import {
   Entity,
 } from "../../../../core/platform/services/database/services/orm/decorators";
 
-export const TYPE = "php_drive_files";
+export const TYPE = "drive_file";
 
 @Entity(TYPE, {
   primaryKey: [["workspace_id"], "parent_id", "id"],
