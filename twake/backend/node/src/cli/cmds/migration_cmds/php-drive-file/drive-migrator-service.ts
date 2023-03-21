@@ -2,8 +2,9 @@ import { logger } from "../../../../core/platform/framework";
 import { ExecutionContext, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { TwakePlatform } from "../../../../core/platform/platform";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { DriveFile } from "../../../../services/documents/entities/drive-file";
+import { DriveFile, AccessInformation } from "../../../../services/documents/entities/drive-file";
 import {
+  generateAccessToken,
   getDefaultDriveItem,
   getDefaultDriveItemVersion,
 } from "../../../../services/documents/utils";
@@ -13,6 +14,8 @@ import Workspace from "../../../../services/workspaces/entities/workspace";
 import { PhpDriveFile } from "./php-drive-file-entity";
 import { PhpDriveFileService } from "./php-drive-service";
 import mimes from "../../../../utils/mime";
+import WorkspaceUser from "../../../../services/workspaces/entities/workspace_user";
+import CompanyUser from "src/services/user/entities/company_user";
 
 interface CompanyExecutionContext extends ExecutionContext {
   company: {
@@ -80,11 +83,14 @@ class DriveMigrator {
     const workspaceList = await globalResolver.services.workspaces.getAllForCompany(company.id);
 
     for (const workspace of workspaceList) {
-      await this.migrateWorkspace(workspace, {
+      const wsContext = {
         ...context,
         workspace_id: workspace.id,
         user: { id: companyAdminOrOwnerId, server_request: true },
-      });
+      };
+      const access = await this.getWorkspaceAccess(workspace, company, wsContext);
+
+      await this.migrateWorkspace(workspace, access, wsContext);
     }
   };
 
@@ -95,12 +101,15 @@ class DriveMigrator {
    */
   private migrateWorkspace = async (
     workspace: Workspace,
+    access: AccessInformation,
     context: WorkspaceExecutionContext,
   ): Promise<void> => {
     let page: Pagination = { limitStr: "100" };
 
     console.debug(`Migrating workspace ${workspace.id} of company ${context.company.id}`);
     logger.info(`Migrating workspace ${workspace.id} root folder`);
+
+    const workspaceFolder = await this.createWorkspaceFolder(workspace, access, context);
     // Migrate the root folder.
     do {
       const phpDriveFiles = await this.phpDriveService.listDirectory(
@@ -112,7 +121,7 @@ class DriveMigrator {
       page = phpDriveFiles.nextPage as Pagination;
 
       for (const phpDriveFile of phpDriveFiles.getEntities()) {
-        await this.migrateDriveFile(phpDriveFile, "", context);
+        await this.migrateDriveFile(phpDriveFile, workspaceFolder.id, access, context);
       }
     } while (page.page_token);
 
@@ -125,7 +134,7 @@ class DriveMigrator {
       page = phpDriveFiles.nextPage as Pagination;
 
       for (const phpDriveFile of phpDriveFiles.getEntities()) {
-        await this.migrateDriveFile(phpDriveFile, "trash", context);
+        await this.migrateDriveFile(phpDriveFile, "trash", access, context);
       }
     } while (page.page_token);
   };
@@ -138,6 +147,7 @@ class DriveMigrator {
   private migrateDriveFile = async (
     item: PhpDriveFile,
     parentId: string,
+    access: AccessInformation,
     context: WorkspaceExecutionContext,
   ): Promise<void> => {
     logger.info(`Migrating php drive item ${item.id} - parent: ${parentId ?? "root"}`);
@@ -164,6 +174,7 @@ class DriveMigrator {
           tags: item.tags || [],
           parent_id: parentId,
           company_id: context.company.id,
+          access_info: access,
         },
         context,
       );
@@ -192,7 +203,7 @@ class DriveMigrator {
 
           for (const child of directoryChildren.getEntities()) {
             try {
-              await this.migrateDriveFile(child, newParentId, context);
+              await this.migrateDriveFile(child, newParentId, access, context);
             } catch (error) {
               logger.error(`Failed to migrate drive item ${child.id}`);
               console.error(`Failed to migrate drive item ${child.id}`);
@@ -333,6 +344,191 @@ class DriveMigrator {
     } while (pagination && !companyOwnerOrAdminId);
 
     return companyOwnerOrAdminId;
+  };
+
+  /**
+   * Compute the Access Information for the workspace folder to be created.
+   *
+   * @param {Workspace} workspace - the target workspace
+   * @param {Company} company - the target company
+   * @param {WorkspaceExecutionContext} context - the execution context
+   * @returns {Promise<AccessInformation>}
+   */
+  private getWorkspaceAccess = async (
+    workspace: Workspace,
+    company: Company,
+    context: WorkspaceExecutionContext,
+  ): Promise<AccessInformation> => {
+    const companyUsersCount = await globalResolver.services.companies.getUsersCount(company.id);
+    const workspaceUsersCount = await globalResolver.services.workspaces.getUsersCount(
+      workspace.id,
+    );
+
+    if (companyUsersCount === workspaceUsersCount) {
+      return {
+        entities: [
+          {
+            id: "parent",
+            type: "folder",
+            level: "manage",
+          },
+          {
+            id: company.id,
+            type: "company",
+            level: "none",
+          },
+          {
+            id: context.user?.id,
+            type: "user",
+            level: "manage",
+          },
+        ],
+        public: {
+          level: "none",
+          token: generateAccessToken(),
+        },
+      };
+    }
+
+    let workspaceUsers: WorkspaceUser[] = [];
+    let wsUsersPagination: Pagination = { limitStr: "100" };
+
+    do {
+      const wsUsersQuery = await globalResolver.services.workspaces.getUsers(
+        { workspaceId: workspace.id },
+        wsUsersPagination,
+        context,
+      );
+      wsUsersPagination = wsUsersQuery.nextPage as Pagination;
+
+      workspaceUsers = [...workspaceUsers, ...wsUsersQuery.getEntities()];
+    } while (wsUsersPagination.page_token);
+
+    if (companyUsersCount < 30 || workspaceUsersCount < 30) {
+      return {
+        entities: [
+          {
+            id: "parent",
+            type: "folder",
+            level: "none",
+          },
+          {
+            id: company.id,
+            type: "company",
+            level: "none",
+          },
+          {
+            id: context.user?.id,
+            type: "user",
+            level: "manage",
+          },
+          ...workspaceUsers.reduce((acc, curr) => {
+            acc = [
+              ...acc,
+              {
+                id: curr.userId,
+                type: "user",
+                level: "manage",
+              },
+            ];
+
+            return acc;
+          }, []),
+        ],
+        public: {
+          level: "none",
+          token: generateAccessToken(),
+        },
+      };
+    }
+
+    let companyUsers: CompanyUser[] = [];
+    let companyUsersPaginations: Pagination = { limitStr: "100" };
+    do {
+      const companyUsersQuery = await globalResolver.services.companies.getUsers(
+        { group_id: company.id },
+        companyUsersPaginations,
+        {},
+        context,
+      );
+      companyUsersPaginations = companyUsersQuery.nextPage as Pagination;
+      companyUsers = [...companyUsers, ...companyUsersQuery.getEntities()];
+    } while (companyUsersPaginations.page_token);
+    return {
+      entities: [
+        {
+          id: "parent",
+          type: "folder",
+          level: "none",
+        },
+        {
+          id: company.id,
+          type: "company",
+          level: "manage",
+        },
+        {
+          id: context.user?.id,
+          type: "user",
+          level: "manage",
+        },
+        ...companyUsers.reduce((acc, curr) => {
+          if (workspaceUsers.find(({ userId }) => curr.user_id === userId)) {
+            return acc;
+          }
+
+          acc = [
+            ...acc,
+            {
+              id: curr.user_id,
+              type: "user",
+              level: "none",
+            },
+          ];
+
+          return acc;
+        }, []),
+      ],
+      public: {
+        level: "none",
+        token: generateAccessToken(),
+      },
+    };
+  };
+
+  /**
+   * Creates a folder for the workspace to migrate.
+   *
+   * @param {Workspace} workspace - the workspace to migrate.
+   * @param {AccessInformation} access - the access information.
+   * @param {WorkspaceExecutionContext} context - the execution context
+   * @returns {Promise<DriveFile>}
+   */
+  private createWorkspaceFolder = async (
+    workspace: Workspace,
+    access: AccessInformation,
+    context: WorkspaceExecutionContext,
+  ): Promise<DriveFile> => {
+    const workspaceFolder = getDefaultDriveItem(
+      {
+        name: workspace.name || workspace.id,
+        extension: "",
+        content_keywords: "",
+        creator: context.user.id,
+        is_directory: true,
+        is_in_trash: false,
+        description: "",
+        tags: [],
+        parent_id: "root",
+        company_id: context.company.id,
+        access_info: access,
+      },
+      context,
+    );
+
+    await this.nodeRepository.save(workspaceFolder);
+    await this.phpDriveService.markAsMigrated(workspace.id, workspaceFolder.id, context.company.id);
+
+    return workspaceFolder;
   };
 }
 
