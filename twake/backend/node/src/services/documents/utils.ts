@@ -122,7 +122,7 @@ export const getDefaultDriveItemVersion = (
  *
  * @returns {String} - the random access token ( sha1 hex digest ).
  */
-const generateAccessToken = (): string => {
+export const generateAccessToken = (): string => {
   const randomBytes = crypto.randomBytes(64);
 
   return crypto.createHash("sha1").update(randomBytes).digest("hex");
