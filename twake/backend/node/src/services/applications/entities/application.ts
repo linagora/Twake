@@ -109,6 +109,7 @@ export type ApplicationIdentity = {
   website: string;
   categories: string[];
   compatibility: "twake"[];
+  pluginRepo: string;
 };
 
 export type ApplicationPublication = {
