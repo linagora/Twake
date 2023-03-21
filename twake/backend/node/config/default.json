@@ -141,7 +141,8 @@
     }
   },
   "plugins": {
-    "server": "plugins:3100"
+    "server": "plugins:3100",
+    "api": "http://localhost:6000/api"
   },
   "knowledge-graph": {
     "endpoint": "http://host-gateway:8888",
