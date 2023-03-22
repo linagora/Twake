@@ -122,7 +122,7 @@ export const getDefaultDriveItemVersion = (
  *
  * @returns {String} - the random access token ( sha1 hex digest ).
  */
-const generateAccessToken = (): string => {
+export const generateAccessToken = (): string => {
   const randomBytes = crypto.randomBytes(64);
 
   return crypto.createHash("sha1").update(randomBytes).digest("hex");
@@ -674,7 +674,7 @@ export const getFileMetadata = async (
       company_id: context.company.id,
     },
     context,
-    { waitForThumbnail: true },
+    { ...(context.user.server_request ? {} : { waitForThumbnail: true }) },
   );
 
   if (!file) {

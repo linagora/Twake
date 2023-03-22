@@ -4,7 +4,7 @@ import {
   Entity,
 } from "../../../../core/platform/services/database/services/orm/decorators";
 
-export const TYPE = "php_drive_files";
+export const TYPE = "drive_file";
 
 @Entity(TYPE, {
   primaryKey: [["workspace_id"], "parent_id", "id"],
@@ -33,7 +33,7 @@ export class PhpDriveFile {
   attachements: unknown;
 
   @Column("content_keywords", "encoded_json")
-  content_keywords: string;
+  content_keywords: string[] | null;
 
   @Column("creator", "string")
   creator: string;
@@ -53,12 +53,12 @@ export class PhpDriveFile {
   @Column("last_modified", "string")
   last_modified: string;
 
-  @Column("name", "string")
+  @Column("name", "encoded_string")
   name: string;
 
   @Column("size", "number")
   size: number;
 
   @Column("tags", "encoded_json")
-  tags: string[];
+  tags: string[] | null;
 }
