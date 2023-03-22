@@ -4,7 +4,7 @@ import {
   Entity,
 } from "../../../../core/platform/services/database/services/orm/decorators";
 
-export const TYPE = "php_drive_file_versions";
+export const TYPE = "drive_file_version";
 
 @Entity(TYPE, {
   primaryKey: [["file_id"], "id"],
@@ -24,7 +24,7 @@ export class PhpDriveFileVersion {
   creator_id: string;
 
   @Type(() => String)
-  @Column("realname", "string")
+  @Column("realname", "encoded_string")
   realname: string;
 
   @Type(() => String)
@@ -44,7 +44,7 @@ export class PhpDriveFileVersion {
   date_added: string;
 
   @Type(() => String)
-  @Column("filename", "string")
+  @Column("filename", "encoded_string")
   filename: string;
 
   @Type(() => String)

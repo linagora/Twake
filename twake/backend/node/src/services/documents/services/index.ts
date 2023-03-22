@@ -200,7 +200,7 @@ export class DocumentsService {
   ): Promise<DriveFile> => {
     try {
       const driveItem = getDefaultDriveItem(content, context);
-      let driveItemVersion = getDefaultDriveItemVersion(version, context);
+      const driveItemVersion = getDefaultDriveItemVersion(version, context);
 
       const hasAccess = await checkAccess(
         driveItem.parent_id,
@@ -574,6 +574,7 @@ export class DocumentsService {
       await this.repository.save(item);
 
       this.notifyWebsocket(item.parent_id, context);
+      await updateItemSize(item.parent_id, this.repository, context);
 
       globalResolver.platformServices.messageQueue.publish<DocumentsMessageQueueRequest>(
         "services:documents:process",
