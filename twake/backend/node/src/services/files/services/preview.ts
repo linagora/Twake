@@ -30,7 +30,7 @@ export class PreviewFinishedProcessor
   name = "FilePreviewProcessor";
 
   validate(message: PreviewMessageQueueCallback): boolean {
-    return !!(message && message.document && message.thumbnails);
+    return !!(message && message.document);
   }
 
   async process(message: PreviewMessageQueueCallback, context?: ExecutionContext): Promise<string> {
@@ -46,7 +46,7 @@ export class PreviewFinishedProcessor
       return;
     }
 
-    entity.thumbnails = message.thumbnails.map((thumb, index) => {
+    entity.thumbnails = (message.thumbnails || []).map((thumb, index) => {
       return {
         index,
         id: thumb.path.split("/").pop(),

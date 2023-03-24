@@ -9,7 +9,6 @@ import {
 } from "../api";
 import MessageQueueProxy from "../proxy";
 import { AMQPMessageQueueManager } from "./manager";
-import { SkipCLI } from "../../../framework/decorators/skip";
 
 const logger = rootLogger.child({
   component: "twake.core.platform.services.message-queue.amqp",
@@ -28,7 +27,6 @@ export class AMQPMessageQueueService implements MessageQueueAdapter {
     this.clientProxy = new MessageQueueProxy();
   }
 
-  @SkipCLI()
   async init(): Promise<this> {
     logger.info("Initializing message-queue service implementation with urls %o", this.urls);
     await this.manager.createClient(this.urls);

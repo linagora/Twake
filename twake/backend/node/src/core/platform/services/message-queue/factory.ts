@@ -17,7 +17,7 @@ export class MessageQueueAdapterFactory {
     logger.info("Building Adapter %o", type);
 
     switch (type) {
-      case "local":
+      case "local" || process.env.NODE_ENV === "cli":
         return new LocalMessageQueueService();
       case "amqp":
         let urls: string[] = configuration.get<string[]>("amqp.urls", [DEFAULT_AMQP_URL]);

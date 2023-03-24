@@ -12,7 +12,7 @@ export const TYPE = "drive_file";
 })
 export class PhpDriveFile {
   @Type(() => String)
-  @Column("workspace_id", "timeuuid")
+  @Column("workspace_id", "string")
   workspace_id: string;
 
   @Type(() => String)

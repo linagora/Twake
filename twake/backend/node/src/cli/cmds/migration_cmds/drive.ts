@@ -18,6 +18,7 @@ const services = [
   "tracker",
   "websocket",
   "email-pusher",
+  "files",
 ];
 
 const command: yargs.CommandModule<unknown, unknown> = {
