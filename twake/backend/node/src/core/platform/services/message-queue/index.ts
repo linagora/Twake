@@ -9,7 +9,6 @@ import {
 import { eventBus } from "./bus";
 import { Processor } from "./processor";
 import adapterFactory from "./factory";
-import { SkipCLI } from "../../framework/decorators/skip";
 import config from "../../../../core/config";
 
 const logger = rootLogger.child({
@@ -61,7 +60,6 @@ export class MessageQueueService implements MessageQueueServiceAPI {
     this.processor = new Processor(this);
   }
 
-  @SkipCLI()
   async init(): Promise<this> {
     logger.info("Initializing message-queue adapter %o", this.adapter.type);
     await this.adapter?.init?.();
@@ -69,7 +67,6 @@ export class MessageQueueService implements MessageQueueServiceAPI {
     return this;
   }
 
-  @SkipCLI()
   async start(): Promise<this> {
     logger.info("Starting message-queue adapter %o", this.adapter.type);
     await this.adapter?.start?.();
@@ -78,7 +75,6 @@ export class MessageQueueService implements MessageQueueServiceAPI {
     return this;
   }
 
-  @SkipCLI()
   async stop(): Promise<this> {
     logger.info("Stopping message-queue adapter %o", this.adapter.type);
     await this.adapter?.stop?.();
