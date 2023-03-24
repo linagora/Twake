@@ -80,7 +80,13 @@ class DriveMigrator {
     logger.info(`Migrating company ${company.id}`);
 
     const companyAdminOrOwnerId = await this.getCompanyOwnerOrAdminId(company.id, context);
+    if (!companyAdminOrOwnerId) {
+      return;
+    }
     const workspaceList = await globalResolver.services.workspaces.getAllForCompany(company.id);
+    if (!workspaceList || workspaceList.length === 0) {
+      return;
+    }
 
     for (const workspace of workspaceList) {
       const wsContext = {
@@ -252,6 +258,9 @@ class DriveMigrator {
                 context,
               );
 
+              logger.info(
+                `Migrating version ${version.id} of item ${item.id}... (downloading then uploading...)`,
+              );
               const file = await this.phpDriveService.migrate(
                 version.file_id,
                 item.workspace_id,
@@ -331,6 +340,9 @@ class DriveMigrator {
         { pagination },
         context,
       );
+      if (!companyUsers.getEntities().length && !pagination?.page_token) {
+        return null;
+      }
 
       pagination = companyUsers.nextPage as Pagination;
 
@@ -341,7 +353,7 @@ class DriveMigrator {
       if (companyAdminOrOwner) {
         companyOwnerOrAdminId = companyAdminOrOwner.id;
       }
-    } while (pagination && !companyOwnerOrAdminId);
+    } while (pagination?.page_token && !companyOwnerOrAdminId);
 
     return companyOwnerOrAdminId;
   };

@@ -16,7 +16,7 @@ export class PhpDriveFileVersion {
   id: string;
 
   @Type(() => String)
-  @Column("file_id", "string")
+  @Column("file_id", "timeuuid")
   file_id: string;
 
   @Type(() => String)
