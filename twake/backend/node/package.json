@@ -160,7 +160,7 @@
     "get-website-favicon": "^0.0.7",
     "html-metadata-parser": "^2.0.4",
     "html-to-text": "^8.2.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "keyv": "^4.5.0",
     "lodash": "^4.17.21",
     "match-all": "^1.2.6",
