@@ -1,16 +1,18 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { ObjectId } from "mongodb";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import io from "socket.io-client";
 import { Channel } from "../../../src/services/channels/entities/channel";
-import ChannelServiceAPI from "../../../src/services/channels/provider";
 import {
   getChannelPath,
   getPublicRoomName,
 } from "../../../src/services/channels/services/channel/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
-import { TestPlatform, init } from "../setup";
+import { init, TestPlatform } from "../setup";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
+import gr from "../../../src/services/global-resolver";
 
 describe("The Channels Realtime feature", () => {
   const url = "/internal/services/channels/v1";
@@ -25,7 +27,7 @@ describe("The Channels Realtime feature", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",
@@ -113,11 +115,10 @@ describe("The Channels Realtime feature", () => {
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
 
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel(platform.currentUser.id);
       channel.name = channelName;
 
-      const creationResult = await channelService.channels.save(
+      const creationResult = await gr.services.channels.channels.save(
         channel,
         {},
         channelUtils.getContext({ id: channel.owner }),

@@ -2,6 +2,7 @@ import { merge } from "lodash";
 import { Channel } from "../../entities/channel";
 import { ChannelActivity } from "../../entities/channel-activity";
 import { ChannelMember } from "../../entities";
+import { UserObject } from "../../../user/web/types";
 
 export type NewUserInWorkspaceNotification = {
   user_id: string;
@@ -11,7 +12,6 @@ export type NewUserInWorkspaceNotification = {
 
 export type ChannelStats = {
   members: number;
-  guests: number;
   messages: number;
 };
 
@@ -35,6 +35,9 @@ export class ChannelMemberObject extends ChannelMember {
     }
 
     return merge(new ChannelMemberObject(), {
+      favorite: false,
+      last_increment: 0,
+      last_access: 0,
       ...channelMember,
       ...channelMemberLikeObject,
     });
@@ -47,7 +50,7 @@ export class ChannelObject extends Channel {
   default: boolean;
   type: ChannelType;
   user_member: ChannelMemberObject;
-
+  users: UserObject[];
   stats: ChannelStats;
 
   constructor() {
@@ -68,3 +71,16 @@ export class ChannelObject extends Channel {
     });
   }
 }
+
+export type SearchChannelOptions = {
+  search: string;
+  companyId?: string;
+};
+
+export type ChannelActivityMessage = {
+  date: number;
+  sender: string;
+  sender_name: string;
+  title: string;
+  text: string;
+};

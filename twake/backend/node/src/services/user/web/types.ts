@@ -1,5 +1,5 @@
 import { PaginationQueryParameters } from "../../../utils/types";
-import { ChannelMember } from "../../channels/entities";
+import User from "../entities/user";
 
 export interface UserListQueryParameters extends PaginationQueryParameters {
   user_ids?: string;
@@ -53,21 +53,50 @@ export interface UserObject {
   deleted: boolean;
   status: string; //Single string for the status
   last_activity: number;
+  last_seen?: number;
+  is_connected?: boolean;
+  cache: { companies: string[] };
 
   //Below is only if this is myself
-
-  preference?: {
-    locale: string;
-    timezone: number;
-    allow_tracking: boolean;
-  };
-
+  preferences?: User["preferences"];
   companies?: CompanyUserObject[];
+
+  // TODO this is temporary, should be deleted
+  preference?: User["preferences"];
 }
+
+export enum CompanyLimitsEnum {
+  CHAT_MESSAGE_HISTORY_LIMIT = "chat:message_history_limit",
+  COMPANY_MEMBERS_LIMIT = "company:members_limit", // 100
+}
+
+export enum CompanyFeaturesEnum {
+  CHAT_GUESTS = "chat:guests",
+  CHAT_MESSAGE_HISTORY = "chat:message_history",
+  CHAT_MULTIPLE_WORKSPACES = "chat:multiple_workspaces",
+  CHAT_EDIT_FILES = "chat:edit_files",
+  CHAT_UNLIMITED_STORAGE = "chat:unlimited_storage",
+  COMPANY_INVITE_MEMBER = "company:invite_member",
+}
+
+export type CompanyFeaturesObject = {
+  [CompanyFeaturesEnum.CHAT_GUESTS]?: boolean;
+  [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]?: boolean;
+  [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]?: boolean;
+  [CompanyFeaturesEnum.CHAT_EDIT_FILES]?: boolean;
+  [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]?: boolean;
+  [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]?: boolean;
+};
+
+export type CompanyLimitsObject = {
+  [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]?: number;
+  [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]?: number;
+};
 
 export interface CompanyPlanObject {
   name: string;
-  features: any;
+  limits?: CompanyLimitsObject;
+  features?: CompanyFeaturesObject;
 }
 
 export interface CompanyStatsObject {

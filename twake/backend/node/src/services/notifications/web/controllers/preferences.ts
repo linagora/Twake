@@ -1,62 +1,68 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { NotificationServiceAPI } from "../../api";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
+import { UserNotificationPreferences } from "../../../../services/user/entities/user";
 import { handleError } from "../../../../utils/handleError";
-import {
-  NotificationPreferenceListQueryParameters,
-  CreateNotificationPreferencesBody,
-} from "../../types";
-import {
-  ResourceCreateResponse,
-  ResourceDeleteResponse,
-  ResourceGetResponse,
-  ResourceListResponse,
-} from "../../../../utils/types";
-import { UserNotificationPreferences } from "../../entities";
+import { ResourceCreateResponse, ResourceListResponse } from "../../../../utils/types";
+import gr from "../../../global-resolver";
+import { NotificationPreferenceListQueryParameters } from "../../types";
 
 const ALL = "all";
 
-export class NotificationPrerencesController
-  implements
-    CrudController<
-      ResourceGetResponse<UserNotificationPreferences>,
-      ResourceCreateResponse<UserNotificationPreferences>,
-      ResourceListResponse<UserNotificationPreferences>,
-      ResourceDeleteResponse
-    > {
-  constructor(protected service: NotificationServiceAPI) {}
-
+export class NotificationPreferencesController {
   async list(
     request: FastifyRequest<{
       Querystring: NotificationPreferenceListQueryParameters;
     }>,
   ): Promise<ResourceListResponse<UserNotificationPreferences>> {
-    const list = await this.service.notificationPreferences.listPreferences(
+    const list = await gr.services.notifications.preferences.listPreferences(
       ALL,
       ALL,
       request.currentUser.id,
       { ...request.query },
     );
 
-    return { resources: list.getEntities() };
+    let resources = list.getEntities();
+
+    if (!resources.length) {
+      resources = [
+        {
+          company_id: ALL,
+          workspace_id: ALL,
+          preferences: {
+            highlight_words: [],
+            night_break: { enable: false, from: 0, to: 0 },
+            private_message_content: false,
+            mobile_notifications: "always",
+            email_notifications_delay: 15,
+            deactivate_notifications_until: 0,
+            notification_sound: "default",
+          },
+        },
+      ];
+    }
+
+    return { resources };
   }
 
   async save(
-    request: FastifyRequest<{ Body: CreateNotificationPreferencesBody }>,
+    request: FastifyRequest<{ Body: { resource: UserNotificationPreferences } }>,
     reply: FastifyReply,
+    context?: ExecutionContext,
   ): Promise<ResourceCreateResponse<UserNotificationPreferences>> {
     const entity = {
-      ...request.body.resource,
-      ...{
-        workspace_id: ALL,
-        company_id: ALL,
-        user_id: request.currentUser.id,
+      workspace_id: ALL,
+      company_id: ALL,
+      user_id: request.currentUser.id,
+      preferences: {
+        ...request.body.resource,
       },
     };
 
     try {
-      const result = await this.service.notificationPreferences.savePreferences(
+      const result = await gr.services.notifications.preferences.savePreferences(
         entity as UserNotificationPreferences,
+        request.currentUser.id,
+        context,
       );
 
       if (result) {

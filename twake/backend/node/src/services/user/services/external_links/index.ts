@@ -1,64 +1,66 @@
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import ExternalUser from "../../entities/external_user";
 import ExternalGroup from "../../entities/external_company";
-import { UserExternalLinksServiceAPI } from "../../api";
+
 import Company from "../../entities/company";
 import User from "../../entities/user";
+import gr from "../../../global-resolver";
+import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 
-export class UserExternalLinksService implements UserExternalLinksServiceAPI {
+export class UserExternalLinksServiceImpl {
   version: "1";
   private externalUserRepository: Repository<ExternalUser>;
   private externalGroupRepository: Repository<ExternalGroup>;
   private companyRepository: Repository<Company>;
   private userRepository: Repository<User>;
 
-  constructor(private database: DatabaseServiceAPI) {}
-
   async init(): Promise<this> {
-    this.externalUserRepository = await this.database.getRepository<ExternalUser>(
+    this.externalUserRepository = await gr.database.getRepository<ExternalUser>(
       "external_user_repository",
       ExternalUser,
     );
-    this.externalGroupRepository = await this.database.getRepository<ExternalGroup>(
+    this.externalGroupRepository = await gr.database.getRepository<ExternalGroup>(
       "external_group_repository",
       ExternalGroup,
     );
-    this.companyRepository = await this.database.getRepository<Company>("group_entity", Company);
-    this.userRepository = await this.database.getRepository<User>("user", User);
+    this.companyRepository = await gr.database.getRepository<Company>("group_entity", Company);
+    this.userRepository = await gr.database.getRepository<User>("user", User);
 
     return this;
   }
 
-  async createExternalUser(user: ExternalUser): Promise<ExternalUser> {
-    await this.externalUserRepository.save(user);
+  async createExternalUser(user: ExternalUser, context?: ExecutionContext): Promise<ExternalUser> {
+    await this.externalUserRepository.save(user, context);
 
     //Save user provider and provider id here
-    const internalUser = await this.userRepository.findOne({ id: user.user_id });
+    const internalUser = await this.userRepository.findOne({ id: user.user_id }, {}, context);
     if (internalUser) {
       internalUser.identity_provider = user.service_id;
       internalUser.identity_provider_id = user.external_id;
-      this.userRepository.save(internalUser);
+      this.userRepository.save(internalUser, context);
     }
 
     return user;
   }
 
-  async createExternalGroup(group: ExternalGroup): Promise<ExternalGroup> {
-    await this.externalGroupRepository.save(group);
+  async createExternalGroup(
+    group: ExternalGroup,
+    context?: ExecutionContext,
+  ): Promise<ExternalGroup> {
+    await this.externalGroupRepository.save(group, context);
 
     //Save company provider and provider id here
-    const internalCompany = await this.companyRepository.findOne({ id: group.company_id });
+    const internalCompany = await this.companyRepository.findOne(
+      { id: group.company_id },
+      {},
+      context,
+    );
     if (internalCompany) {
       internalCompany.identity_provider = group.service_id;
       internalCompany.identity_provider_id = group.external_id;
-      this.companyRepository.save(internalCompany);
+      this.companyRepository.save(internalCompany, context);
     }
 
     return group;
   }
-}
-
-export function getService(databaseService: DatabaseServiceAPI): UserExternalLinksServiceAPI {
-  return new UserExternalLinksService(databaseService);
 }

@@ -2,7 +2,6 @@ import {
   ConsoleCompany,
   ConsoleHookCompany,
   ConsoleHookUser,
-  ConsoleOptions,
   CreateConsoleCompany,
   CreateConsoleUser,
   CreatedConsoleCompany,
@@ -12,9 +11,7 @@ import {
   UpdatedConsoleUserRole,
 } from "./types";
 import User from "../user/entities/user";
-import Company, { CompanyPrimaryKey, CompanySearchKey } from "../user/entities/company";
-import { CompanyUserRole } from "../user/web/types";
-import { ExternalGroupPrimaryKey } from "../user/entities/external_company";
+import Company, { CompanySearchKey } from "../user/entities/company";
 
 export interface ConsoleServiceClient {
   /**

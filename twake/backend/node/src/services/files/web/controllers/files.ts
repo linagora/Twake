@@ -1,13 +1,12 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { Multipart } from "fastify-multipart";
 import { ResourceDeleteResponse } from "../../../../utils/types";
 import { CompanyExecutionContext } from "../types";
-import { FileServiceAPI, UploadOptions } from "../../api";
-import { File, PublicFile } from "../../entities/file";
+import { UploadOptions } from "../../types";
+import { PublicFile } from "../../entities/file";
+import gr from "../../../global-resolver";
 
 export class FileController {
-  constructor(protected service: FileServiceAPI) {}
-
   async save(
     request: FastifyRequest<{
       Params: { company_id: string; id: string };
@@ -32,7 +31,7 @@ export class FileController {
     };
 
     const id = request.params.id;
-    const result = await this.service.save(id, file, options, context);
+    const result = await gr.services.files.save(id, file, options, context);
 
     return {
       resource: result.getPublicObject(),
@@ -45,7 +44,7 @@ export class FileController {
   ): Promise<void> {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
-    const data = await this.service.download(params.id, context);
+    const data = await gr.services.files.download(params.id, context);
     const filename = data.name.replace(/[^a-zA-Z0-9 -_.]/g, "");
 
     response.header("Content-disposition", `attachment; filename="${filename}"`);
@@ -61,9 +60,10 @@ export class FileController {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
     try {
-      const data = await this.service.thumbnail(params.id, params.index, context);
+      const data = await gr.services.files.thumbnail(params.id, params.index, context);
 
       response.header("Content-disposition", "inline");
+      response.expires(new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 365));
       if (data.size) response.header("Content-Length", data.size);
       response.type(data.type);
       response.send(data.file);
@@ -79,7 +79,7 @@ export class FileController {
   ): Promise<{ resource: PublicFile }> {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
-    const resource = await this.service.get(params.id, context);
+    const resource = await gr.services.files.get(params.id, context);
 
     return { resource: resource.getPublicObject() };
   }
@@ -90,7 +90,7 @@ export class FileController {
     const params = request.params;
     const context = getCompanyExecutionContext(request);
 
-    const deleteResult = await this.service.delete(params.id, context);
+    const deleteResult = await gr.services.files.delete(params.id, context);
 
     return { status: deleteResult.deleted ? "success" : "error" };
   }

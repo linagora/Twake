@@ -22,7 +22,7 @@ Twake offers all the features for collaboration :
 - Video call and conferencing
 - Real time document collaboration
 
-<a href="https://twakeapp.com"><img width=800 src="https://github.com/linagora/Twake/raw/main/twake.png"/></a>
+<a href="https://twake.app"><img width=800 src="https://github.com/linagora/Twake/raw/main/twake.png"/></a>
 
 ## Demo
 
@@ -30,10 +30,12 @@ You can <a href="https://twake.app"> try Twake</a> in SaaS.
 
 Or run your own local Twake instance with :
 
+```bash
+cd twake 
+export COMPOSE_FILE=docker-compose.onpremise.yml
+docker compose up -d
 ```
-cd twake
-sudo ./start.sh
-```
+
 Twake will be running on http//localhost and by default redirect to https and uses a self-signed certificate. If you want to run http only then set SSL_CERTS=none at docker-compose.yml
 
 ## Documentation
@@ -61,9 +63,9 @@ Everyone can contribute at their own level, even if they only give a few minutes
 Install Twake on your machine with docker-compose using the install documentation here :
 [doc.twake.app/installation](https://doc.twake.app/installation)
 
-### Migration to 2021.Q1.385
+`cd twake; docker-compose -f docker-compose.onpremise.mongo.yml up -d`
 
-If you migrate to the 2021.Q1 version for a 2020.Q4 version or earlier, please follow the documentation at https://github.com/Twake/Twake/tree/main/migration/2020Q3_to_2020Q4
+Twake will be available on port 3000.
 
 ## License
 

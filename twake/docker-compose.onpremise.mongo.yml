@@ -1,0 +1,26 @@
+version: "3.4"
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./docker-data/mongo:/data/db
+
+  node:
+    image: twaketech/twake-node:latest
+    ports:
+      - 3000:3000
+      - 8000:3000
+    environment:
+      - DEV=production
+      - SEARCH_DRIVER=mongodb
+      - DB_DRIVER=mongodb
+      - PUBSUB_TYPE=local
+    volumes:
+      - ./configuration/backend-node/production.json:/usr/src/app/config/production.json
+      - ./docker-data/documents/:/storage/
+    depends_on:
+      - mongo
+    links:
+      - mongo

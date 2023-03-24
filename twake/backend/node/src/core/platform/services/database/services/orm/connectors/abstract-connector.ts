@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types */
 import { Connector } from ".";
 import { ConnectionOptions, DatabaseType } from "../..";
 import { FindOptions } from "../repository/repository";
@@ -5,7 +6,8 @@ import { ColumnDefinition, EntityDefinition } from "../types";
 import { ListResult } from "../../../../../framework/api/crud-service";
 
 export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseClient>
-  implements Connector {
+  implements Connector
+{
   constructor(protected type: DatabaseType, protected options: T, protected secret: string) {}
 
   abstract connect(): Promise<this>;

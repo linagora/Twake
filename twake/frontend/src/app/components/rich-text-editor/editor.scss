@@ -1,0 +1,59 @@
+.public-DraftEditorPlaceholder-inner {
+  color: var(--grey-dark);
+  position: absolute;
+  pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap !important;
+  text-overflow: ellipsis;
+  max-width: 90%;
+}
+
+.editor {
+  .public-DraftStyleDefault-ol, .public-DraftStyleDefault-ul {
+    margin: 0px;
+  }
+}
+
+.public-DraftStyleDefault-pre {
+  margin-bottom: 0;
+}
+
+.public-DraftEditor-content {
+  // looks like contenteditable have some defaults from browser which are hard to harmonize around all the editor places...
+  overflow-wrap: anywhere !important;
+}
+
+.editor-hide-placeholder .public-DraftEditorPlaceholder-root {
+  display: none;
+}
+
+.editor-blockquote,
+blockquote {
+  background-color: var(--grey-background);
+  border-left: 3px solid var(--grey-dark);
+  padding-left: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.editor-code-block,
+code {
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-bottom: 0;
+  color: #e6e1dc;
+  background: #232323;
+  font-family: monospace;
+  padding: 0 5px;
+  white-space: pre-wrap;
+  max-height: 400px;
+  overflow: auto;
+  box-sizing: border-box;
+  line-break: anywhere;
+}
+
+.scrollable-editor {
+  // While we do not have header and footer variables, sum is around 150px...
+  max-height: calc(60vh - 150px);
+  overflow-y: scroll;
+}

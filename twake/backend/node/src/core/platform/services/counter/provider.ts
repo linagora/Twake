@@ -1,5 +1,6 @@
 import Repository from "../database/services/orm/repository/repository";
 import { logger } from "../../framework";
+import { ExecutionContext } from "../../framework/api/crud-service";
 
 type LastRevised = {
   calls: number;
@@ -22,13 +23,13 @@ export class CounterProvider<T> {
     logger.debug(`${this.name} Created counter provider for ${this.repository.table}`);
   }
 
-  async increase(pk: Partial<T>, value: number): Promise<void> {
-    return this.repository.save(this.repository.createEntityFromObject({ value, ...pk }));
+  async increase(pk: Partial<T>, value: number, context?: ExecutionContext): Promise<void> {
+    return this.repository.save(this.repository.createEntityFromObject({ value, ...pk }), context);
   }
 
-  async get(pk: Partial<T>): Promise<number> {
+  async get(pk: Partial<T>, context?: ExecutionContext): Promise<number> {
     try {
-      const counter = await this.repository.findOne(pk);
+      const counter = await this.repository.findOne(pk, {}, context);
       const val = counter ? (counter as any).value : 0;
       return this.revise(pk, val);
     } catch (e) {
@@ -36,12 +37,12 @@ export class CounterProvider<T> {
     }
   }
 
-  reviseCounter(
+  setReviseCallback(
     handler: (pk: Partial<T>) => Promise<number>,
     maxCalls: number = 10,
     maxPeriod: number = 24 * 60 * 60 * 1000,
   ): void {
-    logger.debug(`${this.name} Set reviseCounter for ${this.repository.table}`);
+    logger.debug(`${this.name} Set setReviseCallback for ${this.repository.table}`);
     this.reviseHandler = handler;
     this.reviseMaxCalls = maxCalls;
     this.reviseMaxPeriod = maxPeriod;
@@ -54,20 +55,27 @@ export class CounterProvider<T> {
       period: now,
     };
 
+    logger.debug(
+      `${this.name} revision status for ${JSON.stringify(pk)} is ${JSON.stringify(lastRevised)}`,
+    );
+
     if (
       lastRevised.calls >= this.reviseMaxCalls ||
-      now > lastRevised.period + this.reviseMaxPeriod
+      now > lastRevised.period + this.reviseMaxPeriod ||
+      Math.random() < 1 / Math.max(1, currentValue) //The slowest the number is, the more we update it
     ) {
       if (!this.reviseHandler) {
-        logger.debug(`${this.name} No reviseCounter handler found for ${this.repository.table}`);
+        logger.debug(
+          `${this.name} No setReviseCallback handler found for ${this.repository.table}`,
+        );
         return currentValue;
       }
 
-      logger.debug(`${this.name} Execute reviseCounter handler for ${this.repository.table}`);
+      logger.debug(`${this.name} Execute setReviseCallback handler for ${this.repository.table}`);
 
       const actual = await this.reviseHandler(pk);
 
-      if (actual != currentValue) {
+      if (actual !== undefined && actual != currentValue) {
         await this.increase(pk, actual - currentValue);
         currentValue = actual;
       }

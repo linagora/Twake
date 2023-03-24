@@ -4,11 +4,23 @@
     "paths": {
       "app/*": ["./src/app/*"],
       "environment/*": ["./src/app/environment/*"],
-      "common/*": ["./src/app/common/*"],
       "components/*": ["./src/app/components/*"],
+      "features/*": ["./src/app/features/*"],
       "services/*": ["./src/app/services/*"],
-      "scenes/*": ["./src/app/scenes/*"],
-      "apps/*": ["./src/app/apps/*"]
+      "deprecated/*": ["./src/app/deprecated/*"],
+      "styles/*": ["./src/app/styles/*"],
+      "views/*": ["./src/app/views/*"],
+
+      "@app/*": ["./src/app/*"],
+      "@environment/*": ["./src/app/environment/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@features/*": ["./src/app/features/*"],
+      "@services/*": ["./src/app/services/*"],
+      "@deprecated/*": ["./src/app/deprecated/*"],
+      "@styles/*": ["./src/app/styles/*"],
+      "@atoms/*": ["./src/app/atoms/*"],
+      "@molecules/*": ["./src/app/molecules/*"],
+      "@views/*": ["./src/app/views/*"]
     }
   }
 }

@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types */
 import { TwakeServiceProvider } from "../../framework";
-import { ListResult, Pagination } from "../../framework/api/crud-service";
+import { ListResult } from "../../framework/api/crud-service";
 import {
   FindFilter as OrmFindFilter,
   FindOptions as OrmFindOptions,
 } from "../database/services/orm/repository/repository";
 import { EntityTarget } from "../database/services/orm/types";
 import SearchRepository from "./repository";
+
 export { getEntityDefinition, unwrapPrimarykey } from "../database/services/orm/utils";
 export {
   DatabaseEntitiesRemovedEvent,
@@ -24,12 +26,17 @@ type TextType = {
   $diacriticSensitive?: boolean; //Default false
 };
 
+type SortType = {
+  [key: string]: "asc" | "desc";
+};
+
 //Field, regex, options
 type RegexType = [string, string, string];
 
 export type FindOptions = OrmFindOptions & {
   $regex?: RegexType[];
   $text?: TextType;
+  $sort?: SortType;
 };
 
 export type IndexedEntity = {
@@ -54,6 +61,7 @@ export interface SearchServiceAPI extends TwakeServiceProvider {
   getRepository<Entity>(table: string, entityType: EntityTarget<Entity>): SearchRepository<Entity>;
   upsert(entities: any[]): Promise<void>;
   remove(entities: any[]): Promise<void>;
+  type: SearchConfiguration["type"];
 }
 
 export type SearchConfiguration = {

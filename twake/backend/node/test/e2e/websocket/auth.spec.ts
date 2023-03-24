@@ -1,7 +1,8 @@
-import { describe, it, beforeEach, afterEach } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
+import { afterEach, beforeEach, describe, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import io from "socket.io-client";
-import { UnauthorizedError } from "socketio-jwt";
 
 describe("The Websocket authentication", () => {
   let platform: TestPlatform;
@@ -14,7 +15,7 @@ describe("The Websocket authentication", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "websocket",
         "webserver",
@@ -50,8 +51,7 @@ describe("The Websocket authentication", () => {
           .on("authenticated", () => {
             done(new Error("Should not occur"));
           })
-          .on("unauthorized", (msg: UnauthorizedError) => {
-            console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
+          .on("unauthorized", (msg: any) => {
             done();
           });
       });
@@ -65,8 +65,7 @@ describe("The Websocket authentication", () => {
           .on("authenticated", () => {
             done(new Error("Should not occur"));
           })
-          .on("unauthorized", (msg: UnauthorizedError) => {
-            console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
+          .on("unauthorized", (msg: any) => {
             done();
           });
       });

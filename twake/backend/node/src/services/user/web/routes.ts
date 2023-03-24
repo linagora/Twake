@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { UsersCrudController } from "./controller";
-import UserServiceAPI from "../api";
 import {
   deleteDeviceSchema,
   getCompanySchema,
@@ -11,15 +10,11 @@ import {
   postDevicesSchema,
   setUserPreferencesSchema,
 } from "./schemas";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 
 const usersUrl = "/users";
 
-const routes: FastifyPluginCallback<{
-  service: UserServiceAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const usersController = new UsersCrudController(options.realtime, options.service);
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const usersController = new UsersCrudController();
   const accessControl = async (request: FastifyRequest) => {
     // TODO
     const authorized = true;
@@ -39,7 +34,7 @@ const routes: FastifyPluginCallback<{
   });
 
   fastify.route({
-    method: "GET",
+    method: "POST",
     url: `${usersUrl}/me/preferences`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
@@ -71,7 +66,7 @@ const routes: FastifyPluginCallback<{
     url: `${usersUrl}/:id/companies`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    //schema: getUserCompaniesSchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
+    schema: getUserCompaniesSchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
     handler: usersController.getUserCompanies.bind(usersController),
   });
 
@@ -80,7 +75,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: "/companies/:id",
     preValidation: [fastify.authenticateOptional],
-    //schema: getCompanySchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
+    schema: getCompanySchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
     handler: usersController.getCompany.bind(usersController),
   });
 
@@ -109,6 +104,14 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: deleteDeviceSchema,
     handler: usersController.deregisterUserDevice.bind(usersController),
+  });
+
+  // recent users the current user has interacted with
+  fastify.route({
+    method: "GET",
+    url: "/companies/:id/users/recent",
+    preValidation: [fastify.authenticateOptional],
+    handler: usersController.recent.bind(usersController),
   });
 
   next();

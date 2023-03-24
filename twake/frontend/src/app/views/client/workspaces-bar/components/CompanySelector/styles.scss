@@ -1,0 +1,88 @@
+.company-selector-container {
+  width: 100%;
+  position: relative;
+  transition: top 0.2s, height 0.2s, opacity 0.2s;
+  cursor: pointer;
+
+  .image {
+    color: var(--secondary);
+    border-radius: var(--border-radius-base);
+
+    background-color: var(--white);
+    background-size: cover;
+    background-position: center;
+
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 14px;
+    text-align: center;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    margin: auto;
+    margin-bottom: 8px;
+    background-size: cover;
+    background-position: center;
+    font-weight: 500;
+    overflow: visible;
+
+    &.has_image {
+      font-size: 0px;
+    }
+  }
+
+  .name {
+    color: var(--white);
+    opacity: 1;
+    text-align: center;
+    font-size: 12px;
+    height: 16px;
+    margin-right: 5%;
+    margin-left: 5%;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-transform: capitalize;
+  }
+
+  .notification_dot {
+    position: absolute;
+    top: -8px;
+    left: calc(50% + 8px);
+    background: var(--red);
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--secondary);
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+}
+
+.company-in-menu {
+  margin: -8px !important;
+
+  .text {
+    line-height: 32px;
+    flex: 1;
+  }
+
+  .notification_dot {
+    min-width: 16px;
+    height: 16px;
+    color: var(--white);
+    background: var(--red);
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 16px;
+    border-radius: var(--border-radius-small);
+    margin: 8px 0px;
+    padding: 0 2px;
+    vertical-align: top;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+}

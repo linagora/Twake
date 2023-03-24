@@ -15,6 +15,12 @@ export type ServerConfiguration = {
   configuration: {
     help_url: string | null;
     pricing_plan_url: string | null;
+    app_download_url: string | null;
+    mobile: {
+      mobile_redirect: string;
+      mobile_appstore: string;
+      mobile_googleplay: string;
+    };
     accounts: {
       type: "console" | "internal";
       console: null | {

@@ -114,7 +114,18 @@ class Resumable
 
                 if (is_string($file)) {
                     if (strpos($file, "http://") === 0 || strpos($file, "https://") === 0) {
-                        file_put_contents($chunkFile, fopen($file, 'r'));
+                        try{
+                            $newContent = fopen($file, 'r', false, stream_context_create(array(
+                                "ssl"=>array(
+                                    "verify_peer"=>false,
+                                    "verify_peer_name"=>false,
+                                ),
+                            )));
+                        }catch(\Exception $e){
+                            error_log("Error while downloading file from url : " . $file);
+                            return;
+                        }
+                        file_put_contents($chunkFile, $newContent);
                     }
                 } else {
                     $this->moveUploadedFile($file['tmp_name'], $chunkFile);

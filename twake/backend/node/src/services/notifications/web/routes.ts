@@ -1,18 +1,13 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { NotificationController, NotificationPrerencesController } from "./controllers";
-import { NotificationServiceAPI } from "../api";
+import { NotificationController, NotificationPreferencesController } from "./controllers";
 import { createNotificationPreferencesSchema } from "./schemas";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 
 const badgesUrl = "/badges";
 const notificationPreferencesUrl = "/preferences";
 
-const routes: FastifyPluginCallback<{
-  service: NotificationServiceAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const notificationController = new NotificationController(options.realtime, options.service);
-  const notificationPrerencesController = new NotificationPrerencesController(options.service);
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const notificationController = new NotificationController();
+  const notificationPreferencesController = new NotificationPreferencesController();
 
   fastify.route({
     method: "GET",
@@ -25,7 +20,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: notificationPreferencesUrl,
     preValidation: [fastify.authenticate],
-    handler: notificationPrerencesController.list.bind(notificationPrerencesController),
+    handler: notificationPreferencesController.list.bind(notificationPreferencesController),
   });
 
   fastify.route({
@@ -33,7 +28,14 @@ const routes: FastifyPluginCallback<{
     url: notificationPreferencesUrl,
     preValidation: [fastify.authenticate],
     schema: createNotificationPreferencesSchema,
-    handler: notificationPrerencesController.save.bind(notificationPrerencesController),
+    handler: notificationPreferencesController.save.bind(notificationPreferencesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${badgesUrl}/:company_id/acknowledge`,
+    preValidation: [fastify.authenticate],
+    handler: notificationController.acknowledge.bind(notificationController),
   });
 
   next();

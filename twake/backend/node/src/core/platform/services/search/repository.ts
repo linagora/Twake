@@ -1,6 +1,11 @@
 import Search from ".";
 import { logger } from "../../framework";
-import { ListResult, Paginable, Pagination } from "../../framework/api/crud-service";
+import {
+  ExecutionContext,
+  ListResult,
+  Paginable,
+  Pagination,
+} from "../../framework/api/crud-service";
 import { EntityTarget, FindFilter, FindOptions, getEntityDefinition } from "./api";
 
 export default class SearchRepository<EntityType> {
@@ -13,7 +18,7 @@ export default class SearchRepository<EntityType> {
   ) {}
 
   /** Execute a search over defined search database (mongo or elastic search) */
-  public async search(filters: FindFilter, options: FindOptions = {}) {
+  public async search(filters: FindFilter, options: FindOptions = {}, context?: ExecutionContext) {
     logger.debug(
       `${this.name} Run search for table ${this.table} with filter ${JSON.stringify(
         filters,
@@ -24,7 +29,7 @@ export default class SearchRepository<EntityType> {
     const { entityDefinition } = getEntityDefinition(instance);
     const repository = await this.service.database.getRepository(this.table, this.entityType);
 
-    let results: EntityType[] = [];
+    const results: EntityType[] = [];
     let nextPage: Paginable = new Pagination();
     try {
       //1. Get objects primary keys from search connector
@@ -37,7 +42,7 @@ export default class SearchRepository<EntityType> {
 
       //2. Get database original objects from theses primary keys
       for (const searchEntity of searchResults.getEntities().sort((a, b) => b.score - a.score)) {
-        const sourceEntity = await repository.findOne(searchEntity.primaryKey);
+        const sourceEntity = await repository.findOne(searchEntity.primaryKey, {}, context);
         if (sourceEntity) {
           results.push(sourceEntity);
         } else {

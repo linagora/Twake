@@ -1,13 +1,8 @@
-import crypto, { randomBytes } from "crypto";
-import _ from "lodash";
+import _, { flatten } from "lodash";
 import { FindOptions } from "./repository/repository";
 import { ColumnDefinition, EntityDefinition, ObjectType } from "./types";
-import { v1 as uuidv1 } from "uuid";
-import { flatten } from "lodash";
 
-export function getEntityDefinition(
-  instance: any,
-): {
+export function getEntityDefinition(instance: any): {
   entityDefinition: EntityDefinition;
   columnsDefinition: { [name: string]: ColumnDefinition };
 } {
@@ -37,6 +32,7 @@ export function unwrapIndexes(entityDefinition: EntityDefinition): string[] {
 }
 
 export function secureOperators<Entity>(
+  // eslint-disable-next-line @typescript-eslint/ban-types
   transformValueToDbString: Function,
   findOptions: FindOptions = {},
   entityType: ObjectType<Entity>,

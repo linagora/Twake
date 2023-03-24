@@ -1,15 +1,11 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
 import { UserMessageBookmark } from "../../../src/services/messages/entities/user-message-bookmarks";
-import {
-  ResourceDeleteResponse,
-  ResourceListResponse,
-  ResourceUpdateResponse,
-} from "../../../src/utils/types";
+import { ResourceListResponse, ResourceUpdateResponse } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
-import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
+import gr from "../../../src/services/global-resolver";
 
 describe("The Messages User Bookmarks feature", () => {
   const url = "/internal/services/messages/v1";
@@ -24,7 +20,7 @@ describe("The Messages User Bookmarks feature", () => {
         "files",
         "storage",
         "applications",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",
@@ -45,8 +41,6 @@ describe("The Messages User Bookmarks feature", () => {
 
   describe("On user manage bookmmarks", () => {
     it("should create new bookmark", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
@@ -72,27 +66,32 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      const list = await service.userBookmarks.list({}, {}, getContext(platform));
+      const context = getContext(platform);
+
+      const list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(1);
 
       done();
     });
 
     it("should prevent duplicated bookmark", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
+      // const uuid = uuidv4();
 
-      const uuid = uuidv4();
+      const context = getContext(platform);
 
-      await service.userBookmarks.save(
+      const data = await gr.services.messages.userBookmarks.save(
         {
-          id: uuid,
           company_id: platform.workspace.company_id,
           user_id: platform.currentUser.id,
           name: "mybookmark",
+          test: "123",
         },
-        {},
-        getContext(platform),
+        context,
       );
+      const uuid = data.entity.id;
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -120,29 +119,33 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      const list = await service.userBookmarks.list({}, {}, getContext(platform));
+      const list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(1);
 
       done();
     });
 
     it("should remove bookmark", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
       const id = uuidv4();
+      const context = getContext(platform);
 
-      await service.userBookmarks.save(
+      await gr.services.messages.userBookmarks.save(
         {
           id,
           company_id: platform.workspace.company_id,
           user_id: platform.currentUser.id,
           name: "mybookmark",
         },
-        {},
-        getContext(platform),
+        context,
       );
 
-      let list = await service.userBookmarks.list({}, {}, getContext(platform));
+      let list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(1);
 
       const jwtToken = await platform.auth.getJWTToken();
@@ -156,25 +159,33 @@ describe("The Messages User Bookmarks feature", () => {
 
       expect(response.statusCode).toBe(200);
 
-      list = await service.userBookmarks.list({}, {}, getContext(platform));
+      list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       expect(list.getEntities().length).toBe(0);
 
       done();
     });
 
     it("should list bookmarks", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
+      const context = getContext(platform);
 
-      await service.userBookmarks.save(
+      await gr.services.messages.userBookmarks.save(
         {
           id: uuidv4(),
           company_id: platform.workspace.company_id,
           user_id: platform.currentUser.id,
           name: "mybookmark",
         },
-        {},
-        getContext(platform),
+        context,
       );
+
+      const list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
+      expect(list.getEntities().length).toBe(1);
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({

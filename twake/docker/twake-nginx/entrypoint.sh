@@ -15,6 +15,8 @@ else
   fi
 fi
 
+[[ -d "/etc/nginx/sites-enabled" ]] || mkdir /etc/nginx/sites-enabled
+
 function _selfsigned() {
     self-signed.sh
     export NGINX_LISTEN="443 ssl"
@@ -43,5 +45,4 @@ export PHP_UPSTREAM
 envsubst '$${NODE_HOST} $${NGINX_LISTEN}' < /etc/nginx/sites-available/site.template > /etc/nginx/sites-enabled/site
 echo "upstream php-upstream { server ${PHP_UPSTREAM}; }" > /etc/nginx/conf.d/upstream.conf
 
-cron -f &
 nginx -g "daemon off;"

@@ -2,23 +2,23 @@ import yargs from "yargs";
 import ora from "ora";
 import twake from "../../../twake";
 import Table from "cli-table";
-import { ApplicationServiceAPI } from "../../../services/applications/api";
 import * as process from "process";
+import gr from "../../../services/global-resolver";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
  */
-type CLIArgs = {};
+type CLIArgs = Record<string, unknown>;
 
 const services = [
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "platform-services",
   "applications",
-  // "auth",
-  // "realtime",
-  // "websocket",
+  "auth",
+  "realtime",
+  "websocket",
   // "user",
   "search",
   "database",
@@ -33,15 +33,15 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
   handler: async argv => {
     const spinner = ora({ text: "Retrieving applications" }).start();
     const platform = await twake.run(services);
-    const applicationService = platform.getProvider<ApplicationServiceAPI>("applications");
+    await gr.doInit(platform);
     //
-    const unpublished = await applicationService.applications.listUnpublished();
+    const unpublished = await gr.services.applications.marketplaceApps.listUnpublished(undefined);
     //
     const table = new Table({
       head: ["ID", "Name", "Description"],
       colWidths: [40, 20, 40],
     });
-    unpublished.forEach(app => {
+    unpublished.forEach((app: any) => {
       table.push([app.id, app.identity.name, app.identity.description]);
     });
     spinner.stop();
@@ -50,7 +50,5 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     process.exit(0);
   },
 };
-
-const showUnpublishedApplications = async () => {};
 
 export default command;

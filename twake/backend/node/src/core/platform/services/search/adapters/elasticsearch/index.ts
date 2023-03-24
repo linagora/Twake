@@ -16,19 +16,19 @@ import { SearchAdapter } from "../abstract";
 import { DatabaseServiceAPI } from "../../../database/api";
 import { getEntityDefinition, unwrapPrimarykey } from "../../api";
 import { ListResult, Paginable, Pagination } from "../../../../framework/api/crud-service";
-import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
+import { asciiFold, parsePrimaryKey, stringifyPrimaryKey } from "../utils";
 import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 import { buildSearchQuery } from "./search";
 
 type Operation = {
-  index?: { _index: string; _id: string; _type: string };
-  delete?: { _index: string; _id: string; _type: string };
+  index?: { _index: string; _id: string };
+  delete?: { _index: string; _id: string };
   [key: string]: any;
 };
 
 export default class ElasticSearch extends SearchAdapter implements SearchAdapterInterface {
   private client: Client;
-  private bulkReaders: number = 0;
+  private bulkReaders = 0;
   private buffer: Operation[] = [];
   private name = "ElasticSearch";
 
@@ -61,9 +61,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const name = entity.options?.search?.index || entity.name;
     const mapping = entity.options?.search?.esMapping;
 
-    let mappings: any = {};
-    mappings[`_doc`] = { ...mapping, _source: { enabled: true } };
-
     try {
       await this.client.indices.get({
         index: name,
@@ -72,25 +69,24 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     } catch (e) {
       logger.info(`Create index ${name} with mapping %o`, mapping);
 
-      const rep = await this.client.indices.create(
-        {
-          index: name,
-          body: {
-            settings: {
-              analysis: {
-                analyzer: {
-                  folding: {
-                    tokenizer: "standard",
-                    filter: ["lowercase", "asciifolding"],
-                  },
+      const indice = {
+        index: name,
+        body: {
+          settings: {
+            analysis: {
+              analyzer: {
+                folding: {
+                  tokenizer: "standard",
+                  filter: ["lowercase", "asciifolding"],
                 },
               },
             },
-            mappings: { ...mappings },
           },
+          mappings: { ...mapping, _source: { enabled: false } },
         },
-        { ignore: [400] },
-      );
+      };
+
+      const rep = await this.client.indices.create(indice, { ignore: [400] });
 
       if (rep.statusCode !== 200) {
         logger.error(`${this.name} -  ${JSON.stringify(rep.body)}`);
@@ -126,13 +122,21 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         ...entityDefinition.options.search.source(entity),
       };
 
+      Object.keys(entityDefinition.options?.search.esMapping?.properties || []).forEach(
+        (key: string) => {
+          const mapping: any = entityDefinition.options?.search?.esMapping?.properties[key];
+          if (mapping.type === "text") {
+            body[key] = asciiFold(body[key]).toLocaleLowerCase();
+          }
+        },
+      );
+
       const index = entityDefinition.options?.search?.index || entityDefinition.name;
 
       const record: Operation = {
         index: {
           _index: index,
           _id: stringifyPrimaryKey(entity),
-          _type: `_doc`,
         },
         ...body,
       };
@@ -161,7 +165,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         delete: {
           _index: index,
           _id: stringifyPrimaryKey(entity),
-          _type: `_doc`,
         },
       };
 
@@ -178,7 +181,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       return;
     }
 
-    logger.info(`Start new Elasticsearch bulk reader.`);
+    logger.info("Start new Elasticsearch bulk reader.");
     this.bulkReaders += 1;
 
     let buffer;
@@ -221,9 +224,13 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         onDrop: res => {
           const doc = res.document;
           logger.error(
-            `Operation ${doc.action} was droped while pushing to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
-            res.error,
+            `Operation ${
+              doc.action
+            } was droped while pushing to elasticsearch index ${JSON.stringify(
+              doc.index,
+            )} (doc.id: ${doc.id})`,
           );
+          logger.error(res.error);
         },
       });
     } catch (err) {
@@ -231,7 +238,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       logger.error(err);
     }
 
-    logger.info(`Elasticsearch bulk flushed.`);
+    logger.info("Elasticsearch bulk flushed.");
     this.bulkReaders += -1;
 
     this.startBulkReader();
@@ -254,9 +261,12 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     };
 
     let esResponse: ApiResponse;
+
     if (options.pagination.page_token) {
       esResponse = await this.client.scroll(
-        { scroll_id: options.pagination.page_token, ...esParamsWithScroll },
+        {
+          scroll_id: options.pagination.page_token,
+        },
         esOptions,
       );
     } else {

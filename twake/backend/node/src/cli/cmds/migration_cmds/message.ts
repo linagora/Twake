@@ -2,6 +2,7 @@ import yargs from "yargs";
 import twake from "../../../twake";
 import ora from "ora";
 import MessageMigrator from "./php-message/message-migrator-service";
+import gr from "../../../services/global-resolver";
 
 const services = [
   "storage",
@@ -12,7 +13,7 @@ const services = [
   "channels",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "messages",
   "statistics",
 ];
@@ -62,6 +63,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Migrating php messages - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new MessageMigrator(platform);
 
     const from = argv.from as string | null;

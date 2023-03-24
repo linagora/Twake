@@ -1,16 +1,18 @@
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
-import { TestPlatform, init } from "../setup";
-import { ResourceCreateResponse, ResourceListResponse } from "../../../src/utils/types";
-import ChannelServiceAPI from "../../../src/services/channels/provider";
-import { Channel } from "../../../src/services/channels/entities/channel";
-import { ChannelVisibility } from "../../../src/services/channels/types";
-import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
-import { User, Workspace } from "../../../src/utils/types";
+import { init, TestPlatform } from "../setup";
+import {
+  ResourceCreateResponse,
+  ResourceListResponse,
+  User,
+  Workspace,
+} from "../../../src/utils/types";
+import { Channel } from "../../../src/services/channels/entities";
+import { ChannelVisibility, WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { DirectChannel } from "../../../src/services/channels/entities/direct-channel";
-import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
+import gr from "../../../src/services/global-resolver";
 
 describe("The direct channels API", () => {
   const url = "/internal/services/channels/v1";
@@ -24,7 +26,7 @@ describe("The direct channels API", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "applications",
         "websocket",
@@ -33,7 +35,6 @@ describe("The direct channels API", () => {
         "storage",
         "counter",
         "statistics",
-        "platform-services",
       ],
     });
     channelUtils = getChannelUtils(platform);
@@ -73,7 +74,6 @@ describe("The direct channels API", () => {
     });
 
     it("should return list of direct channels the user is member of", async done => {
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelNotIn = channelUtils.getDirectChannel();
@@ -84,15 +84,15 @@ describe("The direct channels API", () => {
       };
 
       const creationResult = await Promise.all([
-        channelService.channels.save(channel, {}, getContext()),
-        channelService.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(channel, {}, getContext()),
+        gr.services.channels.channels.save(
           directChannelIn,
           {
             members,
           },
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
-        channelService.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1()],
@@ -152,7 +152,6 @@ describe("The direct channels API", () => {
     });
 
     it("should not return direct channels in workspace list", async done => {
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelIn2 = channelUtils.getDirectChannel();
@@ -165,10 +164,10 @@ describe("The direct channels API", () => {
 
       const creationResult = await Promise.all([
         //This channel will automatically contains the requester because it is added automatically in it
-        channelService.channels.save(channel, {}, getContext()),
+        gr.services.channels.channels.save(channel, {}, getContext()),
 
         //It will contain the currentUser
-        channelService.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelIn,
           {
             members,
@@ -177,7 +176,7 @@ describe("The direct channels API", () => {
         ),
 
         //This channel will automatically contains the requester because it is added automatically in it
-        channelService.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelIn2,
           {
             members: [uuidv1(), uuidv1()],
@@ -186,7 +185,7 @@ describe("The direct channels API", () => {
         ),
 
         //This channel will not contain the currentUser
-        channelService.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1()],
@@ -220,7 +219,6 @@ describe("The direct channels API", () => {
     });
 
     it("should not return direct channels in workspace list with mine parameter", async done => {
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
       const channel2 = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
@@ -233,13 +231,13 @@ describe("The direct channels API", () => {
 
       await Promise.all([
         //This channel will automatically contains the requester because it is added automatically in it
-        channelService.channels.save(channel, {}, getContext()),
+        gr.services.channels.channels.save(channel, {}, getContext()),
 
         //This channel will not contain currentUser
-        channelService.channels.save(channel2, {}, getContext({ id: uuidv1() })),
+        gr.services.channels.channels.save(channel2, {}, getContext({ id: uuidv1() })),
 
         //This channel will automatically contains the requester because it is added automatically in it
-        channelService.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelIn,
           {
             members,
@@ -247,7 +245,7 @@ describe("The direct channels API", () => {
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
 
-        channelService.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1(), uuidv1()],
@@ -283,7 +281,7 @@ describe("The direct channels API", () => {
   describe("Create direct channel - POST /channels", () => {
     it("should be able to create a direct channel with members", async done => {
       const jwtToken = await platform.auth.getJWTToken();
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+
       const members = [uuidv1(), platform.currentUser.id];
 
       const response = await platform.app.inject({
@@ -312,21 +310,21 @@ describe("The direct channels API", () => {
 
       expect(channelCreateResult.resource).toBeDefined();
 
-      const createdChannel = await channelService.channels.get({
+      const createdChannel = await gr.services.channels.channels.get({
         id: channelCreateResult.resource.id,
         company_id: channelCreateResult.resource.company_id,
         workspace_id: ChannelVisibility.DIRECT,
       });
       expect(createdChannel).toBeDefined();
 
-      const directChannelEntity = await channelService.channels.getDirectChannel({
+      const directChannelEntity = await gr.services.channels.channels.getDirectChannel({
         channel_id: createdChannel.id,
         company_id: createdChannel.company_id,
         users: DirectChannel.getUsersAsString(members),
       });
       expect(directChannelEntity).toBeDefined();
 
-      const directChannelsInCompany = await channelService.channels.getDirectChannelInCompany(
+      const directChannelsInCompany = await gr.services.channels.channels.getDirectChannelInCompany(
         createdChannel.company_id,
         members,
       );

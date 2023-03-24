@@ -1,19 +1,16 @@
 # Common node machine
-FROM node:16-bullseye-slim as node-base
+FROM node:lts as node-base
 
 ### Install dependancies
-
-#Imagick
-RUN apt-get update && apt-get install -y ghostscript && apt-get clean
-RUN apt-get update && apt-get install -y graphicsmagick
-
-#Unoconv
-RUN apt-get update && apt-get install -y --force-yes unoconv libxml2-dev
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
+RUN apt-get update && \
+    apt-get install -y ghostscript graphicsmagick wget unoconv libxml2-dev ffmpeg python-is-python3 && \
+    # upgrade unoconv
+    wget -N https://raw.githubusercontent.com/dagwieers/unoconv/master/unoconv -O /usr/bin/unoconv && \
+    chmod +x /usr/bin/unoconv
 #Docker mac issue
-RUN apt-get update && apt-get install -y libc6
-RUN ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
+# RUN apt-get update && apt-get install -y libc6
+# RUN ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
+
 
 ### Install Twake
 
@@ -26,43 +23,44 @@ FROM node-base as test
 RUN npm install
 COPY backend/node/ .
 
-# Development Stage
-FROM node-base as development
+# Add frontend Stage
+FROM node-base as with-frontend
 
-RUN npm install -g pino-pretty
-RUN npm install -g tsc-watch
-RUN npm install
 COPY backend/node/ .
-
-CMD ["npm", "run", "dev"]
-
-# Production Stage
-FROM node-base as production
-
-ARG NODE_ENV=production
-
-ENV NODE_ENV=development
-RUN npm install #Install dev dependancies for build
-COPY backend/node/ .
-ENV NODE_ENV=${NODE_ENV}
-RUN npm run build #Build in production mode
-RUN rm -R node_modules
-RUN npm install #Install prod dependancies after build
+#Install dev dependancies for build
+RUN NODE_ENV=development npm install && \
+    #Build in production mode
+    export NODE_ENV=production && \
+    npm run build && \
+    rm -rf node_modules && \
+    #Install prod dependancies after build
+    npm install --legacy-peer-deps
 
 # Add frontend into node
-ENV NODE_ENV=development
 COPY frontend/ ../public_build/
-RUN apt-get install -y build-essential
-RUN cd ../public_build && yarn install --network-timeout 1000000000
-RUN yarn global add webpack && yarn global add webpack-cli && yarn global add jest
-RUN cp ../public_build/src/app/environment/environment.ts.dist ../public_build/src/app/environment/environment.ts
-ENV NODE_ENV=${NODE_ENV}
-RUN cd ../public_build && yarn build
-RUN cd ../public_build && rm -R node_modules
-RUN mv ../public_build/build public; rm -R ../public_build
+RUN export NODE_ENV=development && \
+    apt-get install -y build-essential && \
+    cd ../public_build/ && \
+    yarn install --network-timeout 1000000000 && \
+    yarn global add webpack webpack-cli jest && \
+    cp src/app/environment/environment.ts.dist src/app/environment/environment.ts && \
+    export NODE_ENV=production && \
+    yarn build && \
+    rm -R node_modules && \
+    mv build/* ../app/public && \
+    cd .. && rm -R public_build/
+
+# Development Stage
+FROM with-frontend as development
+
+ENV NODE_ENV=development
+RUN npm install -g pino-pretty && \
+    npm install -g tsc-watch && \
+    yarn install
+CMD ["npm", "run", "dev:debug"]
+
+# Production Stage
+FROM with-frontend as production
 
 EXPOSE 3000
-
 CMD ["npm", "run", "serve"]
-
-

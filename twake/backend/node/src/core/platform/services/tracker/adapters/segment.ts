@@ -1,10 +1,9 @@
 import Analytics from "analytics-node";
 import { Analytics as AnalyticsAbtract } from "./types";
 import axios, { AxiosInstance } from "axios";
-import { string } from "yargs";
 
 export default class Segment implements AnalyticsAbtract {
-  protected version: string = "5.0.0"; //Segment analytics lib version
+  protected version = "5.0.0"; //Segment analytics lib version
   protected analytics: Analytics;
 
   protected axiosInstance: AxiosInstance;
@@ -78,6 +77,7 @@ export default class Segment implements AnalyticsAbtract {
           },
           req,
         )
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         .then(() => () => {})
         .catch(err => {
           if (err.response) {

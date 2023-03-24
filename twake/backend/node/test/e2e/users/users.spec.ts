@@ -1,7 +1,18 @@
-import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
+import { CompanyLimitsEnum, UserObject } from "../../../src/services/user/web/types";
+import { Channel } from "../../../src/services/channels/entities";
+import { ChannelVisibility } from "../../../src/services/channels/types";
+import gr from "../../../src/services/global-resolver";
+import { ResourceListResponse, Workspace } from "../../../src/utils/types";
+import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
+import { createMessage, e2e_createThread } from "../messages/utils";
+import { ChannelObject } from "../../../src/services/channels/services/channel/types";
+import { deserialize } from "class-transformer";
+import { ChannelUtils, get as getChannelUtils } from "../channels/utils";
+import { Api } from "../utils.api";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";
@@ -26,7 +37,7 @@ describe("The /users API", () => {
       services: [
         "database",
         "search",
-        "pubsub",
+        "message-queue",
         "websocket",
         "applications",
         "webserver",
@@ -285,9 +296,8 @@ describe("The /users API", () => {
           expect(resource.plan).toMatchObject({
             name: expect.any(String),
             limits: expect.objectContaining({
-              members: expect.any(Number),
-              guests: expect.any(Number),
-              storage: expect.any(Number),
+              [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: expect.any(Number || undefined),
+              [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: expect.any(Number || undefined),
             }),
           });
         }
@@ -334,9 +344,8 @@ describe("The /users API", () => {
         expect(json.resource.plan).toMatchObject({
           name: expect.any(String),
           limits: expect.objectContaining({
-            members: expect.any(Number),
-            guests: expect.any(Number),
-            storage: expect.any(Number),
+            [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: expect.any(Number || undefined),
+            [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: expect.any(Number || undefined),
           }),
         });
       }
@@ -549,6 +558,91 @@ describe("The /users API", () => {
 
         done();
       });
+    });
+  });
+
+  describe("Recent contacts", () => {
+    it("should return list of recent contacts of user", async done => {
+      // api = new Api(platform);
+      const channelUtils = getChannelUtils(platform);
+
+      await testDbService.createDefault(platform);
+
+      const channels = [];
+
+      for (let i = 0; i < 5; i++) {
+        // const channel = channelUtils.getChannel();
+        const directChannelIn = channelUtils.getDirectChannel();
+
+        const nextUser = await testDbService.createUser(
+          [{ id: platform.workspace.workspace_id, company_id: platform.workspace.company_id }],
+          { firstName: "FirstName" + i, lastName: "LastName" + i },
+        );
+
+        const members = [platform.currentUser.id, nextUser.id];
+        const directWorkspace: Workspace = {
+          company_id: platform.workspace.company_id,
+          workspace_id: ChannelVisibility.DIRECT,
+        };
+        await Promise.all([
+          // gr.services.channels.channels.save(channel, {}, getContext()),
+          gr.services.channels.channels.save<ChannelSaveOptions>(
+            directChannelIn,
+            {
+              members,
+            },
+            {
+              ...{
+                workspace: platform.workspace,
+                user: platform.currentUser,
+              },
+              ...{ workspace: directWorkspace },
+            },
+          ),
+        ]);
+        channels.push(directChannelIn);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      await e2e_createThread(
+        platform,
+        [
+          {
+            company_id: platform.workspace.company_id,
+            created_at: 0,
+            created_by: "",
+            id: channels[2].id,
+            type: "channel",
+            workspace_id: "direct",
+          },
+        ],
+        createMessage({ text: "Some message" }),
+      );
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const jwtToken = await platform.auth.getJWTToken();
+
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${platform.workspace.company_id}/users/recent`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      const result: ResourceListResponse<UserObject> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
+
+      expect(result.resources.length).toEqual(5);
+      expect(result.resources[0].first_name).toEqual("FirstName2");
+
+      done();
     });
   });
 });

@@ -1,6 +1,6 @@
 import { CreateResult } from "../../api/crud-service";
 import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
-import { eventBus } from "../../../services/realtime/bus";
+import { websocketEventBus } from "../../../services/realtime/bus";
 import { getRealtimeRecipients, getRoom, RealtimeRecipients } from ".";
 
 /**
@@ -25,7 +25,7 @@ export function RealtimeCreated<T>(recipients: RealtimeRecipients<T>): MethodDec
 
       getRealtimeRecipients(recipients, result.entity, context).forEach(
         ({ room, path, resource }) => {
-          eventBus.publish<T>(RealtimeEntityActionType.Created, {
+          websocketEventBus.publish<T>(RealtimeEntityActionType.Created, {
             type: result.type,
             room: getRoom(room, result, context),
             resourcePath: path || "/",

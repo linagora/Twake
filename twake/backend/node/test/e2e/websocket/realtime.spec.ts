@@ -1,5 +1,7 @@
-import { describe, it, beforeEach, afterEach, expect } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import io from "socket.io-client";
 
 describe("The Realtime API", () => {
@@ -13,7 +15,7 @@ describe("The Realtime API", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "applications",
         "user",
         "auth",

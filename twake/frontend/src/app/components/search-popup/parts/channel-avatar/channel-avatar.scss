@@ -1,0 +1,83 @@
+
+
+.component-channel-avatar {
+
+  display: inline-flex;
+  flex-direction: column;
+
+  .channel-icon-container{
+    display: flex;
+    flex-direction: row;
+
+  }
+
+  $iconWidth: 64px;
+
+  .channel-icon-wrapper {
+    height: $iconWidth;
+    width: $iconWidth;
+    border-radius: 50%;
+    margin-bottom:2px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+
+    .channel-icon-text {
+      line-height: 64px;
+      width:100%;
+      font-size: 24px;
+      color:white;
+      font-weight: 700;
+    }
+
+    .channel-icon-img {
+      width:$iconWidth;
+      height:$iconWidth;
+      object-fit: cover;
+      object-position: 50% 15%;
+      border-radius: 50%;
+
+    }
+  }
+
+  .channel-icon-wrapper:not(:first-child){
+    margin-left:calc($iconWidth*2/5*-1);
+  }
+
+
+  .channel-label {
+    text-align: center;
+    font-size:10px;
+    line-height: 1.2em;
+    padding-top:4px;
+    padding-bottom:4px;
+    width:$iconWidth;
+
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    overflow: hidden;
+
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    overflow-y: hidden;
+    height: 40px;
+
+  }
+
+  .channel-icon-wrapper.style0{
+    background: var(--messagebubblelight);
+  }
+
+  .channel-icon-wrapper.style1 {background: linear-gradient(129.62deg, #9F2EF4 15.98%, #F97D64 50.17%, #F6C533 82.97%);}
+  .channel-icon-wrapper.style2 {background: linear-gradient(124.19deg, #0099C0 12.87%, #0099C0 49.65%, #3DD5A8 84.94%);}
+  .channel-icon-wrapper.style3 {background: linear-gradient(137.24deg, #D3A6FF 15.1%, #B966B5 50.52%, #7E72C6 85.13%);}
+  .channel-icon-wrapper.style4 {background: linear-gradient(124.08deg, #E2EF54 14.56%, #FF5C66 47.57%, #6248D5 83.84%);}
+  .channel-icon-wrapper.style5 {background: linear-gradient(120.32deg, #FF5CF1 14.48%, #B38ADE 51.66%, #56CDDF 84.61%);}
+  .channel-icon-wrapper.style6 {background: linear-gradient(120.32deg, #75C192 14.48%, #70BDA0 51.66%, #21B59C 84.61%);}
+  .channel-icon-wrapper.style7 {background: linear-gradient(136.93deg, #FFA6AF 14.87%, #E62E40 50.07%, #AA0909 84.36%);}
+  .channel-icon-wrapper.style8 {background: linear-gradient(136.93deg, #335F50 14.87%, #47888C 50.07%, #08C992 84.36%);}
+  .channel-icon-wrapper.style9 {background: linear-gradient(135.32deg, #6CD97E 15.23%, #12B312 56.97%, #117600 84.49%);}
+  .channel-icon-wrapper.style10 {background: linear-gradient(135deg, #7DF1FA 14.84%, #2BB4D6 49.93%, #008AA2 82.63%);}
+  .channel-icon-wrapper.style11 {background: linear-gradient(136.26deg, #FFBF80 13.66%, #E66B2E 51.13%, #A64300 84.79%);}
+}
+

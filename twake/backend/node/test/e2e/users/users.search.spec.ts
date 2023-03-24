@@ -12,7 +12,7 @@ describe("The /users API", () => {
       services: [
         "database",
         "search",
-        "pubsub",
+        "message-queue",
         "websocket",
         "webserver",
         "user",
@@ -84,7 +84,7 @@ describe("The /users API", () => {
       await new Promise(r => setTimeout(r, 5000));
 
       let resources = await search("ha");
-      expect(resources.length).toBe(1);
+      expect(resources.length).toBe(2);
 
       resources = await search("bob rabiot");
 
@@ -93,6 +93,18 @@ describe("The /users API", () => {
       expect(resources.map(e => e.email).includes("bob@twake.app")).toBe(true);
 
       resources = await search("alexis");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("ALEXIS");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("AleXis");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("alex");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("àlèXïs");
       expect(resources[0].email).toBe("alexis.goelans@twake.app");
 
       resources = await search("rbs");

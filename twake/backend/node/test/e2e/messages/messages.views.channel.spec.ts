@@ -1,17 +1,17 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
-import { UserMessageBookmark } from "../../../src/services/messages/entities/user-message-bookmarks";
-import {
-  ResourceDeleteResponse,
-  ResourceListResponse,
-  ResourceUpdateResponse,
-} from "../../../src/utils/types";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
+import { ResourceListResponse, ResourceUpdateResponse } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
-import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
-import { createMessage, createParticipant, e2e_createMessage, e2e_createThread } from "./utils";
+import {
+  createMessage,
+  createParticipant,
+  e2e_createChannel,
+  e2e_createMessage,
+  e2e_createThread,
+} from "./utils";
 import { MessageWithReplies } from "../../../src/services/messages/types";
 
 describe("The Messages feature", () => {
@@ -27,7 +27,7 @@ describe("The Messages feature", () => {
         "storage",
         "files",
         "applications",
-        "pubsub",
+        "message-queue",
         "user",
         "websocket",
         "messages",
@@ -48,7 +48,7 @@ describe("The Messages feature", () => {
 
   describe("On user use messages in channel view", () => {
     it("should create a message and retrieve it in channel view", async () => {
-      const channelId = uuidv4();
+      const channel = await e2e_createChannel(platform, [platform.currentUser.id]);
 
       const response = await e2e_createThread(
         platform,
@@ -56,7 +56,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -79,7 +81,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -95,7 +99,9 @@ describe("The Messages feature", () => {
           createParticipant(
             {
               type: "channel",
-              id: channelId,
+              id: channel.resource.id,
+              workspace_id: channel.resource.workspace_id,
+              company_id: channel.resource.company_id,
             },
             platform,
           ),
@@ -106,7 +112,7 @@ describe("The Messages feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const listResponse = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}/feed?replies_per_thread=3`,
+        url: `${url}/companies/${channel.resource.company_id}/workspaces/${channel.resource.workspace_id}/channels/${channel.resource.id}/feed?replies_per_thread=3&include_users=1`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -116,6 +122,8 @@ describe("The Messages feature", () => {
         ResourceListResponse,
         listResponse.body,
       );
+
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       expect(listResponse.statusCode).toBe(200);
       expect(listResult.resources.length).toBe(3);

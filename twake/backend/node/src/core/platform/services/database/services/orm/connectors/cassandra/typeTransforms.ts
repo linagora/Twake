@@ -38,11 +38,17 @@ export const transformValueToDbString = (
   options: TransformOptions = {},
 ): string => {
   if (type === "twake_datetime") {
+    if (isNaN(v) || isNull(v)) {
+      return "null";
+    }
     return `${v}`;
   }
 
   if (type === "number" || type === "twake_int") {
     if (isNull(v)) {
+      return "null";
+    }
+    if (isNaN(v)) {
       return "null";
     }
     return `${parseInt(v)}`;
@@ -141,8 +147,8 @@ export const transformValueFromDbString = (
     return decryptedValue;
   }
 
-  if (type === "twake_boolean") {
-    return Boolean(v);
+  if (type === "twake_boolean" || type === "boolean") {
+    return Boolean(v).valueOf();
   }
 
   if (type === "json") {
@@ -154,7 +160,7 @@ export const transformValueFromDbString = (
   }
 
   if (type === "uuid" || type === "timeuuid") {
-    return v ? String(v) : null;
+    return v ? String(v).valueOf() : null;
   }
 
   if (type === "number") {

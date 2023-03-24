@@ -1,4 +1,5 @@
 import { webSocketSchema } from "../../../utils/types";
+import { CompanyFeaturesEnum, CompanyLimitsEnum } from "./types";
 
 export const userObjectSchema = {
   type: "object",
@@ -19,16 +20,28 @@ export const userObjectSchema = {
     status: { type: "string" },
     last_activity: { type: "number" },
 
-    //Below is only if this is myself
-
-    preference: {
+    // cache: { type: ["object", "null"] },
+    cache: {
       type: "object",
       properties: {
-        locale: { type: "string" },
-        timezone: { type: "number" },
+        companies: { type: ["array", "null"] },
       },
     },
 
+    //Below is only if this is myself
+    preferences: {
+      type: "object",
+      properties: {
+        tutorial_done: { type: ["boolean", "null"] },
+        channel_ordering: { type: ["string", "null"] },
+        recent_workspaces: { type: ["array", "null"] },
+        knowledge_graph: { type: ["string", "null"] },
+        locale: { type: ["string", "null"] },
+        timezone: { type: ["number", "null"] },
+        language: { type: ["string", "null"] },
+        allow_tracking: { type: ["boolean", "null"] },
+      },
+    },
     companies: {
       type: "array",
       items: {
@@ -47,10 +60,12 @@ export const userObjectSchema = {
         },
       },
     },
+    // TODO this is temporary, should be deleted
+    preference: {},
   },
 };
 
-const companyObjectSchema = {
+export const companyObjectSchema = {
   type: "object",
   properties: {
     id: { type: "string" },
@@ -60,8 +75,27 @@ const companyObjectSchema = {
       type: ["object", "null"],
       properties: {
         name: { type: "string" },
+        limits: {
+          type: ["object", "null"],
+          properties: {
+            [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: { type: "number" },
+            [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: { type: "number" },
+          },
+        },
         features: {
           type: "object",
+          properties: {
+            [CompanyFeaturesEnum.CHAT_EDIT_FILES]: { type: ["boolean"] },
+            [CompanyFeaturesEnum.CHAT_GUESTS]: { type: ["boolean"] },
+            [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: { type: "boolean" },
+            [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: { type: "boolean" },
+            [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: { type: "boolean" },
+            [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: { type: "boolean" },
+            guests: { type: "number" }, // to rename or delete
+            members: { type: "number" }, //  to rename or delete
+            storage: { type: "number" }, //  to rename or delete
+          },
+          required: [] as string[],
         },
       },
     },
@@ -97,14 +131,19 @@ export const getUserSchema = {
 export const setUserPreferencesSchema = {
   request: {
     properties: {
-      tutorial_done: { type: "boolean" },
-      channel_ordering: { type: "string" },
+      tutorial_done: { type: ["boolean", "null"] },
+      channel_ordering: { type: ["string", "null"] },
+      recent_workspaces: { type: ["array", "null"] },
+      knowledge_graph: { type: ["string", "null"] },
+      locale: { type: ["string", "null"] },
+      timezone: { type: ["number", "null"] },
+      language: { type: ["string", "null"] },
+      allow_tracking: { type: ["boolean", "null"] },
     },
+    required: [] as any[],
   },
   response: {
-    "2xx": {
-      type: "object",
-    },
+    "2xx": userObjectSchema.properties.preferences,
   },
 };
 

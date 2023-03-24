@@ -1,7 +1,6 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
-import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
-import { ChannelMemberType } from "../types";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 @Entity("channel_pending_emails", {
   primaryKey: [["company_id", "workspace_id"], "channel_id", "email"],

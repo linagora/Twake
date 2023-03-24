@@ -1,14 +1,12 @@
 import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
-import { Thread } from "../../../../entities/threads";
+import { ParticipantObject, Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { getInstance, MessageChannelRef } from "../../../../entities/message-channel-refs";
 import {
   getInstance as getInstanceReversed,
   MessageChannelRefReversed,
 } from "../../../../entities/message-channel-refs-reversed";
-import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../../../core/platform/framework/event-bus";
 import {
   RealtimeEntityActionType,
   RealtimeLocalBusEvent,
@@ -17,32 +15,49 @@ import {
 import { Message } from "../../../../entities/messages";
 import {
   CreateResult,
+  ExecutionContext,
   UpdateResult,
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { getThreadMessagePath } from "../../../../web/realtime";
-import fetch from "node-fetch";
-import config from "config";
-import { logger } from "../../../../../../core/platform/framework";
+import gr from "../../../../../global-resolver";
+import { publishMessageInRealtime } from "../../../utils";
 
 export class ChannelViewProcessor {
   repository: Repository<MessageChannelRef>;
   repositoryReversed: Repository<MessageChannelRefReversed>;
 
-  constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
-
   async init() {
-    this.repository = await this.database.getRepository<MessageChannelRef>(
+    this.repository = await gr.database.getRepository<MessageChannelRef>(
       "message_channel_refs",
       MessageChannelRef,
     );
-    this.repositoryReversed = await this.database.getRepository<MessageChannelRefReversed>(
+    this.repositoryReversed = await gr.database.getRepository<MessageChannelRefReversed>(
       "message_channel_refs_reversed",
       MessageChannelRefReversed,
     );
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
-    for (const participant of (thread.participants || []).filter(p => p.type === "channel")) {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
+    let participants: ParticipantObject[] = thread?.participants || [];
+
+    if (participants.length === 0) {
+      participants = message.context.channel
+        ? [
+            {
+              type: "channel",
+              id: message.context.channel.id,
+              workspace_id: message.context.workspace.id,
+              company_id: message.context.company.id,
+            } as ParticipantObject,
+          ]
+        : [];
+    }
+
+    for (const participant of (participants || []).filter(p => p.type === "channel")) {
       if (!message.resource.ephemeral) {
         //Publish message in corresponding channel
         if (message.created) {
@@ -53,10 +68,14 @@ export class ChannelViewProcessor {
           };
 
           //If a pointer exists it means the message already exists (it was probably moved and so we need to keep everything in place)
-          const existingPointer = await this.repository.findOne({
-            ...pkPrefix,
-            message_id: message.resource.id,
-          });
+          const existingPointer = await this.repository.findOne(
+            {
+              ...pkPrefix,
+              message_id: message.resource.id,
+            },
+            {},
+            context,
+          );
 
           if (!existingPointer) {
             await this.repository.save(
@@ -65,25 +84,34 @@ export class ChannelViewProcessor {
                 thread_id: thread.id,
                 message_id: message.resource.id,
               }),
+              context,
             );
 
-            const reversed = await this.repositoryReversed.findOne({
-              ...pkPrefix,
-              thread_id: thread.id,
-            });
+            const reversed = await this.repositoryReversed.findOne(
+              {
+                ...pkPrefix,
+                thread_id: thread.id,
+              },
+              {},
+              context,
+            );
 
             if (reversed) {
-              const existingThreadRef = await this.repository.findOne({
-                ...pkPrefix,
-                message_id: reversed.message_id,
-              });
+              const existingThreadRef = await this.repository.findOne(
+                {
+                  ...pkPrefix,
+                  message_id: reversed.message_id,
+                },
+                {},
+                context,
+              );
               if (
                 existingThreadRef &&
                 `${existingThreadRef.thread_id}` === `${message.resource.thread_id}`
               ) {
                 reversed.message_id = message.resource.id;
-                await this.repositoryReversed.save(reversed);
-                await this.repository.remove(existingThreadRef);
+                await this.repositoryReversed.save(reversed, context);
+                await this.repository.remove(existingThreadRef, context);
               }
             } else {
               await this.repositoryReversed.save(
@@ -92,6 +120,7 @@ export class ChannelViewProcessor {
                   thread_id: thread.id,
                   message_id: message.resource.id,
                 }),
+                context,
               );
             }
           }
@@ -104,6 +133,7 @@ export class ChannelViewProcessor {
                 thread_id: thread.id,
                 message_id: message.resource.id,
               }),
+              context,
             );
             await this.repositoryReversed.save(
               getInstanceReversed({
@@ -111,50 +141,14 @@ export class ChannelViewProcessor {
                 thread_id: thread.id,
                 message_id: message.resource.id,
               }),
+              context,
             );
           }
         }
       }
 
-      if (process.env.NODE_ENV !== "cli") {
-        logger.debug("Share with php realtime endpoint: " + config.get("phpnode.php_endpoint"));
-        //Monkey patch to remove as soon as nobody use php depreciated endpoints
-        if (config.get("phpnode.php_endpoint")) {
-          fetch(config.get("phpnode.php_endpoint") + "/ajax/discussion/noderealtime", {
-            method: "POST",
-            headers: {
-              Authorization: "Token " + config.get("phpnode.secret"),
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              entity: message.resource,
-              context: message.context,
-              participant: participant,
-            }),
-          });
-        }
-      }
-
       //Publish message in realtime
-      const room = `/companies/${participant.company_id}/workspaces/${participant.workspace_id}/channels/${participant.id}/feed`;
-      const type = "message";
-      const entity = message.resource;
-      const context = message.context;
-      localEventBus.publish("realtime:publish", {
-        topic: message.created
-          ? RealtimeEntityActionType.Created
-          : RealtimeEntityActionType.Updated,
-        event: {
-          type: type,
-          room: ResourcePath.get(room),
-          resourcePath: getThreadMessagePath(context as ThreadExecutionContext) + "/" + entity.id,
-          entity: entity,
-          result: message.created
-            ? new CreateResult<Message>(type, entity)
-            : new UpdateResult<Message>(type, entity),
-        },
-      } as RealtimeLocalBusEvent<Message>);
+      publishMessageInRealtime(message, participant);
     }
   }
 }

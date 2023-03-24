@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: build-test
+        run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run build
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.tests.yml run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
       - name: e2e-mongo-test

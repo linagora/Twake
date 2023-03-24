@@ -41,7 +41,7 @@ describe("The /workspace users API", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "search",
         "webserver",
         "user",
@@ -72,6 +72,7 @@ describe("The /workspace users API", () => {
     await testDbService.createUser([ws0pk, ws1pk]);
     await testDbService.createUser([ws2pk], { companyRole: "admin" });
     await testDbService.createUser([ws2pk], { workspaceRole: "moderator" });
+    await testDbService.createUser([ws2pk], { workspaceRole: "member" });
     await testDbService.createUser([ws2pk], { workspaceRole: "member" });
     await testDbService.createUser([], { companyRole: "member" });
     await testDbService.createUser([ws3pk], { companyRole: "guest", workspaceRole: "member" });
@@ -264,7 +265,11 @@ describe("The /workspace users API", () => {
 
       let workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
       let companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
-      expect(workspaceUsersCount).toBe(3);
+
+      console.log(testDbService.workspaces[2].users);
+      console.log(workspaceUsersCount);
+
+      expect(workspaceUsersCount).toBe(4);
       // expect(companyUsersCount).toBe(6);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
@@ -286,7 +291,7 @@ describe("The /workspace users API", () => {
 
       workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
       companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
-      expect(workspaceUsersCount).toBe(4);
+      expect(workspaceUsersCount).toBe(5);
       // expect(companyUsersCount).toBe(6);
 
       done();
@@ -374,7 +379,7 @@ describe("The /workspace users API", () => {
       expect(resource["role"]).toBe("moderator");
 
       const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
-      expect(usersCount).toBe(4);
+      expect(usersCount).toBe(5);
 
       done();
     });
@@ -394,9 +399,10 @@ describe("The /workspace users API", () => {
     });
 
     it("should 403 user is not workspace moderator", async done => {
-      const userId = testDbService.users[0].id;
-      const anotherUserId = testDbService.users[1].id;
-      const workspaceId = testDbService.workspaces[0].workspace.id;
+      const companyId = testDbService.company.id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[3].id;
+      const anotherUserId = testDbService.workspaces[2].users[1].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -405,6 +411,9 @@ describe("The /workspace users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/${anotherUserId}`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
+
+      console.log(response.body);
+
       expect(response.statusCode).toBe(403);
       done();
     });
@@ -452,7 +461,7 @@ describe("The /workspace users API", () => {
       expect(resources.find((a: { user_id: uuid }) => a.user_id === anotherUserId)).toBeUndefined();
 
       const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
-      expect(usersCount).toBe(3);
+      expect(usersCount).toBe(4);
 
       done();
     });

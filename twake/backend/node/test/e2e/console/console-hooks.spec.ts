@@ -3,18 +3,15 @@ import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
 import { sign as cryptoSign } from "crypto";
-import { ConsoleServiceAPI } from "../../../src/services/console/api";
-import { ConsoleOptions, ConsoleType } from "../../../src/services/console/types";
-
+import gr from "../../../src/services/global-resolver";
+import { ConsoleServiceImpl } from "../../../src/services/console/service";
 /*
  THIS TESTS RUNS ONLY FOR THE CONSOLE-MODE (CONSOLE TYPE: REMOTE)
 */
 
-let consoleType: ConsoleType = null;
-
 export const it = (name: string, cb: (a: any) => void) => {
   _it(name, async done => {
-    if (consoleType === "remote") {
+    if (gr.services.console.consoleType === "remote") {
       cb(done);
     } else {
       console.warn(`[skipped]: ${name} (console-mode only)`);
@@ -37,13 +34,11 @@ describe("The console API hooks", () => {
 
   const secret = "ohquoo1fohzeigitochaJeepoowug4Yuqueite6etojieg1oowaeraeshiW8ku8g";
 
-  let consoleOptions: ConsoleOptions = null;
-
   beforeAll(async ends => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "search",
         "user",
@@ -71,9 +66,7 @@ describe("The console API hooks", () => {
       username: "superman",
     });
 
-    const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
-    consoleOptions = console.consoleOptions;
-    consoleType = console.consoleType;
+    const console = platform.platform.getProvider<ConsoleServiceImpl>("console");
 
     ends();
   });
@@ -162,7 +155,9 @@ describe("The console API hooks", () => {
           payload: getPayload("user_updated", {
             user: {
               _id: user.identity_provider_id,
-              roles: [{ targetCode: companyId, roleCode: "owner" }],
+              roles: [
+                { targetCode: companyId, roleCode: "owner", applications: [{ code: "twake" }] },
+              ],
               email: firstEmail,
               firstName: "firstName",
               lastName: "lastName",
@@ -193,7 +188,8 @@ describe("The console API hooks", () => {
           mail_verified: true,
           timezone: 2,
           language: "en",
-          picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/123456.jpg",
+          picture:
+            gr.services.console.consoleOptions.url.replace(/\/$/, "") + "/avatars/123456.jpg",
         });
 
         const userRoles = await testDbService.getCompanyUser(companyId, updatedUser.id);
@@ -216,7 +212,9 @@ describe("The console API hooks", () => {
           payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
-              roles: [{ targetCode: companyId, roleCode: "admin" }],
+              roles: [
+                { targetCode: companyId, roleCode: "admin", applications: [{ code: "twake" }] },
+              ],
               email: secondEmail,
               firstName: "consoleFirst",
               lastName: "consoleSecond",
@@ -251,7 +249,7 @@ describe("The console API hooks", () => {
           identity_provider: "console",
           identity_provider_id: newUserConsoleId,
           username_canonical: "consolecreateduser",
-          picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/5678.jpg",
+          picture: gr.services.console.consoleOptions.url.replace(/\/$/, "") + "/avatars/5678.jpg",
         });
 
         const userRoles = await testDbService.getCompanyUser(companyId, updatedUser.id);
@@ -273,7 +271,9 @@ describe("The console API hooks", () => {
           payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
-              roles: [{ targetCode: companyId, roleCode: "member" }],
+              roles: [
+                { targetCode: companyId, roleCode: "member", applications: [{ code: "twake" }] },
+              ],
               email: thirdEmail,
               firstName: "superman",
               lastName: "superman-lastname",
@@ -308,7 +308,7 @@ describe("The console API hooks", () => {
           identity_provider: "console",
           identity_provider_id: newUserConsoleId,
           username_canonical: "superman1",
-          picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/5679.jpg",
+          picture: gr.services.console.consoleOptions.url.replace(/\/$/, "") + "/avatars/5679.jpg",
         });
 
         const userRoles = await testDbService.getCompanyUser(companyId, updatedUser.id);

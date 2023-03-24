@@ -1,20 +1,16 @@
 import { getLogger, Initializable } from "../../../../../core/platform/framework";
-import { localEventBus } from "../../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../../core/platform/framework/event-bus";
 import { Channel as ChannelEntity, ChannelMember } from "../../../entities/";
 import { ResourceEventsPayload } from "../../../../../utils/types";
 import { ActivityObjectType, ActivityPublishedType } from "./types";
 import _, { sortBy } from "lodash";
-import { PubsubServiceAPI } from "../../../../../core/platform/services/pubsub/api";
+import { MessageQueueServiceAPI } from "../../../../../core/platform/services/message-queue/api";
 import { ChannelParameters } from "../../../web/types";
 import { ChannelVisibility } from "../../../types";
 
 const logger = getLogger("channel.activities");
 export default class Activities implements Initializable {
-  pubsub: PubsubServiceAPI;
-
-  constructor(pubsub: PubsubServiceAPI) {
-    this.pubsub = pubsub;
-  }
+  messageQueue: MessageQueueServiceAPI;
 
   async init(): Promise<this> {
     const channelConnectorCreatedEvent = "channel:connector:created";
@@ -212,7 +208,7 @@ export default class Activities implements Initializable {
   ): Promise<void> {
     logger.debug(`Activities - New ${event} event %o`, data);
     try {
-      await this.pubsub.publish<ActivityPublishedType>("channel:activity_message", {
+      await this.messageQueue.publish<ActivityPublishedType>("channel:activity_message", {
         data: {
           channel_id: channel.id,
           workspace_id: channel.workspace_id,

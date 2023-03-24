@@ -1,14 +1,3 @@
-import { TwakeServiceProvider, Initializable } from "../../../../core/platform/framework";
-import {
-  CRUDService,
-  ExecutionContext,
-} from "../../../../core/platform/framework/api/crud-service";
-import {
-  PhpMessage,
-  PhpMessagePrimaryKey,
-} from "./php-message-entity";
+import { Initializable, TwakeServiceProvider } from "../../../../core/platform/framework";
 
-export interface PhpMessagesServiceAPI
-  extends TwakeServiceProvider,
-    Initializable,
-    CRUDService<PhpMessage, PhpMessagePrimaryKey, ExecutionContext> {}
+export interface PhpMessagesServiceAPI extends TwakeServiceProvider, Initializable {}

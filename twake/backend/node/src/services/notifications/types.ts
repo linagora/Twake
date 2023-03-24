@@ -1,9 +1,9 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { Channel, ChannelMember } from "../channels/entities";
-import { UserNotificationPreferences } from "./entities";
 import { PaginationQueryParameters } from "../channels/web/types";
-import { specialMention } from "../messages/types";
+import { SpecialMention } from "../messages/types";
 import { uuid } from "../../utils/types";
+import { MessageQueueHandler } from "../../core/platform/services/message-queue/api";
 
 export type NotificationConfiguration = {
   push: {
@@ -26,7 +26,7 @@ export type MentionNotification = {
   creation_date: number;
   mentions?: {
     users: uuid[];
-    specials?: specialMention[];
+    specials?: SpecialMention[];
   };
   object_names?: {
     users: { [id: string]: string };
@@ -47,16 +47,12 @@ export type PushNotificationMessage = {
   channel_id: uuid;
   message_id: uuid;
   thread_id: uuid;
-  badge_value: number;
+  badge_value?: number;
   user: string;
   title: string;
   text: string;
 };
 export type PushNotificationMessageResult = PushNotificationMessage;
-
-export class CreateNotificationPreferencesBody {
-  resource: Pick<UserNotificationPreferences, "user_id">;
-}
 
 export interface NotificationListQueryParameters extends PaginationQueryParameters {
   company_id: uuid;
@@ -75,3 +71,29 @@ export interface NotificationPreferenceListQueryParameters extends PaginationQue
   company_id: uuid | "all";
   user_id: uuid;
 }
+
+export type NotificationMessageQueueHandler<InputMessage, OutputMessage> = MessageQueueHandler<
+  InputMessage,
+  OutputMessage
+>;
+
+export type ReactionNotification = {
+  company_id: uuid;
+  workspace_id: uuid | "direct";
+  channel_id: uuid;
+  thread_id: uuid;
+  message_id: uuid;
+  creation_date: number;
+  user_id: string;
+  reaction: string;
+  reaction_user_id: string;
+};
+
+export type ReactionNotificationResult = ReactionNotification;
+
+export type NotificationAcknowledgeBody = {
+  thread_id: uuid;
+  workspace_id: uuid | "direct";
+  channel_id: uuid;
+  message_id: uuid;
+};

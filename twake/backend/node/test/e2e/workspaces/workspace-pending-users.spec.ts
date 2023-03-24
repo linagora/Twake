@@ -1,19 +1,15 @@
 import { afterAll, beforeAll, describe, expect, it as _it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
-import { TestDbService, uuid } from "../utils.prepare.db";
+import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import { ConsoleServiceAPI } from "../../../src/services/console/api";
-import { ConsoleType } from "../../../src/services/console/types";
-
+import gr from "../../../src/services/global-resolver";
 /*
  THIS TESTS RUNS ONLY FOR THE CONSOLE-MODE (CONSOLE TYPE: INTERNAL)
 */
 
-let consoleType: ConsoleType = null;
-
 export const it = (name: string, cb: (a: any) => void) => {
   _it(name, async done => {
-    if (consoleType === "internal") {
+    if (gr.services.console.consoleType === "internal") {
       cb(done);
     } else {
       console.warn(`[skipped]: ${name} (no-console mode only)`);
@@ -34,10 +30,11 @@ describe("The /workspace/pending users API", () => {
   const firstEmail = "first@test-user.com";
   const secondEmail = "second@test-user.com";
   const thirdEmail = "third@test-user.com";
+  const fourthUser = "fourth@test-user.com";
   const emailForExistedUser = "exist@email.com";
 
   async function doTheTest() {
-    return Promise.resolve(consoleType === "remote");
+    return Promise.resolve(gr.services.console.consoleType === "remote");
   }
 
   beforeAll(async ends => {
@@ -45,7 +42,7 @@ describe("The /workspace/pending users API", () => {
       services: [
         "user",
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "search",
         "workspaces",
@@ -65,8 +62,10 @@ describe("The /workspace/pending users API", () => {
     await testDbService.createCompany(companyId);
     const ws0pk = { id: uuidv1(), company_id: companyId };
     const ws1pk = { id: uuidv1(), company_id: companyId };
+    const ws2pk = { id: uuidv1(), company_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
+    await testDbService.createWorkspace(ws2pk);
     await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "moderator" });
     await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "member" });
     await testDbService.createUser([ws1pk], {
@@ -74,9 +73,11 @@ describe("The /workspace/pending users API", () => {
       workspaceRole: "member",
       email: emailForExistedUser,
     });
-
-    const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
-    consoleType = console.consoleType;
+    await testDbService.createUser([ws2pk], {
+      companyRole: "guest",
+      workspaceRole: "member",
+      email: fourthUser,
+    });
 
     ends();
   });
@@ -122,9 +123,9 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace moderator", async done => {
-      const workspace_id = testDbService.workspaces[0].workspace.id;
-      const userId = testDbService.workspaces[0].users[1].id;
+    it("should 403 when requester is not at least workspace member", async done => {
+      const workspace_id = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -268,10 +269,10 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace moderator", async done => {
+    it("should 403 when requester is not at least workspace member", async done => {
       const companyId = testDbService.company.id;
-      const workspaceId = testDbService.workspaces[0].workspace.id;
-      const userId = testDbService.workspaces[0].users[1].id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id;
       const email = "first@test-user.com";
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
@@ -336,7 +337,7 @@ describe("The /workspace/pending users API", () => {
 
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending`,
       });
       expect(response.statusCode).toBe(401);
       done();
@@ -351,7 +352,7 @@ describe("The /workspace/pending users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
@@ -359,17 +360,17 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace moderator", async done => {
+    it("should 403 when requester is not at least workspace member", async done => {
       const companyId = testDbService.company.id;
-      const workspaceId = testDbService.workspaces[0].workspace.id;
-      const userId = testDbService.workspaces[0].users[1].id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id;
       const email = "first@test-user.com";
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
@@ -381,18 +382,18 @@ describe("The /workspace/pending users API", () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
-      const email = "first@test-user.com";
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
       expect(response.statusCode).toBe(200);
 
       const resources = response.json()["resources"];
+      console.log("resources A: ", resources);
       expect(resources.length).toBe(2);
 
       expect(resources[0]).toMatchObject({
@@ -427,6 +428,7 @@ describe("The /workspace/pending users API", () => {
 
       const resources = response.json()["resources"];
 
+      console.log("resources B: ", resources);
       expect(resources.find((a: any) => a.user.email === emailForExistedUser)).toBeDefined();
 
       done();

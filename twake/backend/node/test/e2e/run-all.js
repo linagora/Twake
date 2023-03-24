@@ -1,8 +1,27 @@
-/** This too will clean up the languages keys if they are not used anywhere in the code */
+/**
+ * To run all tests in local development mode:
+ * cd twake/; docker-compose -f docker-compose.dev.tests.mongo.yml run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
+ *
+ * To run only specific tests:
+ * cd twake/; docker-compose -f docker-compose.dev.tests.mongo.yml run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e -- test/e2e/application/app-create-update.spec.ts  test/e2e/application/application-events.spec.ts
+ */
 
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
+
+let localDevTests = process.argv.slice(2);
+
+//If we are in the CI tests we will run all the tests
+if (process.env.CI || localDevTests.length === 0) {
+  localDevTests = false;
+}
+
+if (localDevTests) {
+  console.log("Only this tests will be run:", localDevTests);
+} else {
+  console.log("Will run all the tests");
+}
 
 function exec(command, args, debug = false) {
   return new Promise(done => {
@@ -49,18 +68,23 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   let failed = 0;
   let passed = 0;
 
-  for (const path of srcFiles) {
+  let summary = "";
+
+  for (const path of localDevTests || srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
-    const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
+    const args = `${testName} --forceExit --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
+
     try {
-      const out = await exec("jest", args.split(" "));
+      //Show logs in the console if we are doing local dev tests
+      const out = await exec("jest", args.split(" "), !!localDevTests);
       if (out.code !== 0) {
-        //To get all the logs
-        await exec("jest", args.split(" "), true);
+        //To get all the logs, we run it again
         console.log(`FAIL ${testName}`);
-        console.log(`-- Data\n ${out.data}`);
-        console.log(`-- Error\n ${out.error || "(no error)"}`);
+        console.log(out.data);
+        console.log(out.error);
+        if (!localDevTests) await exec("jest", args.split(" "), true);
         failed++;
+        summary += `FAIL ${testName}\n`;
       } else {
         passed++;
         console.log(`PASS ${testName}`);
@@ -73,6 +97,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   }
 
   console.log(`\nResults: ${passed} passed, ${failed} failed, total ${failed + passed}`);
+  console.log(summary);
 
   process.exit(failed > 0 ? 1 : 0);
 })();

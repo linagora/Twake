@@ -125,25 +125,29 @@ export interface ExecutionContext {
   transport?: "http" | "ws";
 }
 
-export class CrudExeption extends Error {
+export class CrudException extends Error {
   constructor(readonly details: string, readonly status: number) {
     super();
     this.message = details;
   }
 
-  static badRequest(details: string): CrudExeption {
-    return new CrudExeption(details, 400);
+  static badRequest(details: string): CrudException {
+    return new CrudException(details, 400);
   }
 
-  static notFound(details: string): CrudExeption {
-    return new CrudExeption(details, 404);
+  static notFound(details: string): CrudException {
+    return new CrudException(details, 404);
   }
-  static forbidden(details: string): CrudExeption {
-    return new CrudExeption(details, 403);
+  static forbidden(details: string): CrudException {
+    return new CrudException(details, 403);
   }
 
-  static notImplemented(details: string): CrudExeption {
-    return new CrudExeption(details, 501);
+  static notImplemented(details: string): CrudException {
+    return new CrudException(details, 501);
+  }
+
+  static badGateway(details: string): CrudException {
+    return new CrudException(details, 502);
   }
 }
 
@@ -157,6 +161,10 @@ export class Pagination implements Paginable {
   reversed?: boolean;
   constructor(readonly page_token?: string, readonly limitStr = "100", reversed = false) {
     this.reversed = reversed;
+  }
+
+  public static fromPaginable(p: Paginable) {
+    return new Pagination(p.page_token, p.limitStr, p.reversed);
   }
 }
 

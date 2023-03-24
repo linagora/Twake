@@ -1,26 +1,28 @@
 import { MessageLocalEvent } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import {
-  MessageChannelMarkedRef,
   getInstance,
+  MessageChannelMarkedRef,
 } from "../../../../entities/message-channel-marked-refs";
+import gr from "../../../../../global-resolver";
+import { ExecutionContext } from "../../../../../../core/platform/framework/api/crud-service";
 
 export class ChannelMarkedViewProcessor {
   repository: Repository<MessageChannelMarkedRef>;
 
-  constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
-
   async init() {
-    this.repository = await this.database.getRepository<MessageChannelMarkedRef>(
+    this.repository = await gr.database.getRepository<MessageChannelMarkedRef>(
       "message_channel_marked_refs",
       MessageChannelMarkedRef,
     );
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     for (const participant of thread.participants.filter(p => p.type === "channel")) {
       //Pinned messages
       const pinRef = getInstance({
@@ -34,9 +36,9 @@ export class ChannelMarkedViewProcessor {
         created_by: message.resource.pinned_info?.pinned_by || "",
       });
       if (message.resource.pinned_info) {
-        this.repository.save(pinRef);
+        this.repository.save(pinRef, context);
       } else if (!message.created) {
-        this.repository.remove(pinRef);
+        this.repository.remove(pinRef, context);
       }
 
       //TODO add realtime

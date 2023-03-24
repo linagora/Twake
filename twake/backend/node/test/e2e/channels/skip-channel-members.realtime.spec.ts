@@ -1,25 +1,25 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import io from "socket.io-client";
-import { Channel } from "../../../src/services/channels/entities/channel";
-import { ChannelMember } from "../../../src/services/channels/entities/channel-member";
-import ChannelServiceAPI from "../../../src/services/channels/provider";
-import { TestPlatform, init } from "../setup";
+import { Channel, ChannelMember } from "../../../src/services/channels/entities";
+import { init, TestPlatform } from "../setup";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { getPublicRoomName } from "../../../src/services/channels/services/member/realtime";
 import { SaveResult } from "../../../src/core/platform/framework/api/crud-service";
+import gr from "../../../src/services/global-resolver";
 
 describe.skip("The Channels Members Realtime feature", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
   let channelUtils: ChannelUtils;
-  let channelService: ChannelServiceAPI;
 
   beforeEach(async () => {
     platform = await init({
       services: [
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "websocket",
@@ -32,7 +32,6 @@ describe.skip("The Channels Members Realtime feature", () => {
       ],
     });
     channelUtils = getChannelUtils(platform);
-    channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
   });
 
   afterEach(async () => {
@@ -53,7 +52,7 @@ describe.skip("The Channels Members Realtime feature", () => {
 
     beforeEach(async () => {
       channel = channelUtils.getChannel();
-      createdChannel = await channelService.channels.save(
+      createdChannel = await gr.services.channels.channels.save(
         channel,
         {},
         channelUtils.getContext({ id: channel.owner }),
@@ -114,10 +113,9 @@ describe.skip("The Channels Members Realtime feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
 
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel(platform.currentUser.id);
 
-      const creationResult = await channelService.channels.save(
+      const creationResult = await gr.services.channels.channels.save(
         channel,
         {},
         channelUtils.getContext({ id: channel.owner }),
@@ -129,14 +127,10 @@ describe.skip("The Channels Members Realtime feature", () => {
         user_id: platform.currentUser.id,
       } as ChannelMember;
 
-      await channelService.members.save(
-        member,
-        {},
-        {
-          channel: creationResult.entity,
-          user: platform.currentUser,
-        },
-      );
+      await gr.services.channels.members.save(member, {
+        channel: creationResult.entity,
+        user: platform.currentUser,
+      });
 
       connect();
       socket.on("connect", () => {

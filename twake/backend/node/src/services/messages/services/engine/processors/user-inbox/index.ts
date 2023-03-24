@@ -1,47 +1,50 @@
 import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import {
-  MessageUserInboxRef,
   getInstance as getInboxRefInstance,
+  MessageUserInboxRef,
 } from "../../../../entities/message-user-inbox-refs";
 import {
-  MessageUserInboxRefReversed,
   getInstance as getInboxThreadInstance,
+  MessageUserInboxRefReversed,
 } from "../../../../entities/message-user-inbox-refs-reversed";
-import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../../../core/platform/framework/event-bus";
 import {
   RealtimeEntityActionType,
   RealtimeLocalBusEvent,
+  ResourcePath,
 } from "../../../../../../core/platform/services/realtime/types";
-import { ResourcePath } from "../../../../../../core/platform/services/realtime/types";
 import { getThreadMessagePath } from "../../../../web/realtime";
 import {
   CreateResult,
+  ExecutionContext,
   UpdateResult,
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../entities/messages";
+import gr from "../../../../../global-resolver";
+import { publishMessageInRealtime } from "../../../utils";
 
 export class UserInboxViewProcessor {
   repositoryRef: Repository<MessageUserInboxRef>;
   repositoryReversed: Repository<MessageUserInboxRefReversed>;
 
-  constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
-
   async init() {
-    this.repositoryRef = await this.database.getRepository<MessageUserInboxRef>(
+    this.repositoryRef = await gr.database.getRepository<MessageUserInboxRef>(
       "message_user_inbox_refs",
       MessageUserInboxRef,
     );
-    this.repositoryReversed = await this.database.getRepository<MessageUserInboxRefReversed>(
+    this.repositoryReversed = await gr.database.getRepository<MessageUserInboxRefReversed>(
       "message_user_inbox_refs_reversed",
       MessageUserInboxRefReversed,
     );
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     for (const userParticipant of thread.participants.filter(p => p.type === "user")) {
       for (const channelParticipant of thread.participants.filter(p => p.type === "channel")) {
         //Publish message in corresponding channel
@@ -57,14 +60,18 @@ export class UserInboxViewProcessor {
             thread_id: thread.id,
           };
 
-          let threadActivityReversed = await this.repositoryReversed.findOne(commonPk);
+          let threadActivityReversed = await this.repositoryReversed.findOne(commonPk, {}, context);
 
           let currentRef: MessageUserInboxRef = null;
           if (threadActivityReversed) {
-            currentRef = await this.repositoryRef.findOne({
-              ...commonPk,
-              last_activity: threadActivityReversed.last_activity,
-            });
+            currentRef = await this.repositoryRef.findOne(
+              {
+                ...commonPk,
+                last_activity: threadActivityReversed.last_activity,
+              },
+              {},
+              context,
+            );
           } else {
             threadActivityReversed = getInboxThreadInstance({
               ...commonPk,
@@ -80,34 +87,17 @@ export class UserInboxViewProcessor {
           });
 
           if (currentRef) {
-            await this.repositoryReversed.remove(currentRef);
+            await this.repositoryReversed.remove(currentRef, context);
           }
-          await this.repositoryRef.save(ref);
+          await this.repositoryRef.save(ref, context);
           threadActivityReversed.last_activity = message.resource.created_at;
-          await this.repositoryReversed.save(threadActivityReversed);
+          await this.repositoryReversed.save(threadActivityReversed, context);
         }
 
         //Publish message in realtime
 
         //TODO send a thread object instead of a message object
-        const room = `/companies/${channelParticipant.company_id}/users/${userParticipant.id}/inbox`;
-        const type = "message";
-        const entity = message.resource;
-        const context = message.context;
-        localEventBus.publish("realtime:publish", {
-          topic: message.created
-            ? RealtimeEntityActionType.Created
-            : RealtimeEntityActionType.Updated,
-          event: {
-            type: type,
-            room: ResourcePath.get(room),
-            resourcePath: getThreadMessagePath(context as ThreadExecutionContext) + "/" + entity.id,
-            entity: entity,
-            result: message.created
-              ? new CreateResult<Message>(type, entity)
-              : new UpdateResult<Message>(type, entity),
-          },
-        } as RealtimeLocalBusEvent<Message>);
+        publishMessageInRealtime(message, channelParticipant);
       }
     }
   }

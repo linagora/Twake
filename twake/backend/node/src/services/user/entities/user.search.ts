@@ -4,12 +4,11 @@ import User from "./user";
 export default {
   index: "user",
   source: (entity: User) => {
-    const expanded = `${entity.first_name} ${entity.last_name} ${entity.email_canonical}`;
-    let source: any = {
+    const source: any = {
       first_name: entity.first_name,
       last_name: entity.last_name,
-      email_canonical: entity.email_canonical,
-      expanded: expandStringForPrefix(expanded),
+      email: entity.email_canonical,
+      username: entity.username_canonical,
     };
     if (entity.cache?.companies) {
       return {
@@ -23,18 +22,23 @@ export default {
     text: {
       first_name: "text",
       last_name: "text",
-      email_canonical: "text",
-      expanded: "text",
+      email: "text",
+      username: "text",
+    },
+    prefix: {
+      first_name: "prefix",
+      last_name: "prefix",
+      email: "prefix",
+      username: "prefix",
     },
   },
   esMapping: {
     properties: {
-      first_name: { type: "text" },
-      last_name: { type: "text" },
-      email_canonical: { type: "text" },
-      expanded: { type: "text" },
+      first_name: { type: "text", index_prefixes: { min_chars: 1 } },
+      last_name: { type: "text", index_prefixes: { min_chars: 1 } },
+      email: { type: "text", index_prefixes: { min_chars: 1 } },
+      username: { type: "text", index_prefixes: { min_chars: 1 } },
       companies: { type: "keyword" },
-      workspaces: { type: "keyword" },
     },
   },
 };

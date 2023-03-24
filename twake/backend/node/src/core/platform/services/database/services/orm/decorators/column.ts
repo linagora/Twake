@@ -7,9 +7,13 @@ export function Column(
   options: ColumnDefinition["options"] = { order: "ASC" },
 ): PropertyDecorator {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  return function (target: Object, key: string): void {
+  return function (target: Object, key: string | symbol) {
     target.constructor.prototype._columns = target.constructor.prototype._columns || {};
-    const colDefinition: ColumnDefinition = { type: type, options: options, nodename: key };
+    const colDefinition: ColumnDefinition = {
+      type: type,
+      options: options,
+      nodename: key.toString(),
+    };
     target.constructor.prototype._columns[name] = colDefinition;
   };
 }

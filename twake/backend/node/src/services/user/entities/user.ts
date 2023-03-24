@@ -7,7 +7,7 @@ export const TYPE = "user";
 
 @Entity(TYPE, {
   primaryKey: [["id"]],
-  globalIndexes: [["email_canonical"]],
+  globalIndexes: [["email_canonical"], ["username_canonical"]],
   type: TYPE,
   search,
 })
@@ -30,6 +30,7 @@ export default class User {
   public get status_icon(): string {
     if (this._status_icon && this._status_icon.startsWith("[\\")) {
       try {
+        // eslint-disable-next-line quotes
         const parsed = JSON.parse(this._status_icon.replace(/\\"/g, '"').replace(/\\\\/g, "\\"));
         return `${parsed[0]} ${parsed[1]}`;
       } catch (e) {
@@ -93,11 +94,15 @@ export default class User {
 
   @Column("preferences", "encoded_json")
   preferences: null | {
+    locale?: string;
     timezone?: number;
     language?: string;
     allow_tracking?: boolean;
     tutorial_done?: boolean;
     channel_ordering?: "chronological" | "alphabetical";
+    recent_workspaces?: { company_id: string; workspace_id: string }[];
+    knowledge_graph?: "all" | "nothing" | "metadata";
+    notifications?: UserNotificationPreferences[];
   };
 
   @Column("cache", "encoded_json")
@@ -115,6 +120,24 @@ export default class User {
     this.id = id;
   }
 }
+
+export type UserNotificationPreferences = {
+  company_id: string | "all";
+  workspace_id: string | "all";
+  preferences: {
+    highlight_words?: string[];
+    night_break?: {
+      enable: boolean;
+      from: number;
+      to: number;
+    };
+    private_message_content?: boolean;
+    mobile_notifications?: "never" | "when_inactive" | "always";
+    email_notifications_delay?: number; //0: never send email, 1 and more in minutes from first unread notification
+    deactivate_notifications_until?: number;
+    notification_sound?: "default" | "none" | string;
+  };
+};
 
 export type UserPrimaryKey = Pick<User, "id">;
 

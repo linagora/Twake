@@ -5,7 +5,7 @@ import { TwakeServiceState } from "./service-state";
 import { TwakeServiceConfiguration } from "./service-configuration";
 import { TwakeContext } from "./context";
 import { TwakeServiceOptions } from "./service-options";
-import { PREFIX_METADATA, CONSUMES_METADATA } from "./constants";
+import { CONSUMES_METADATA, PREFIX_METADATA } from "./constants";
 import { getLogger, logger } from "../logger";
 import { TwakeLogger } from "..";
 
@@ -22,6 +22,7 @@ export abstract class TwakeService<T extends TwakeServiceProvider>
 
   constructor(protected options?: TwakeServiceOptions<TwakeServiceConfiguration>) {
     this.state = new BehaviorSubject<TwakeServiceState>(TwakeServiceState.Ready);
+    // REMOVE ME, we should import config from framework folder instead
     this.configuration = options?.configuration;
     this.logger = getLogger(`core.platform.services.${this.name}Service`);
   }

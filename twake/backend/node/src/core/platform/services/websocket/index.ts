@@ -1,10 +1,9 @@
-import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
 import { Consumes, ServiceName, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "./provider";
-import websocketPlugin from "./plugin";
 import { WebSocketService } from "./services";
 import { AdaptersConfiguration } from "./types";
+import FastifyIO from "fastify-socket.io";
 
 @Consumes(["webserver"])
 @ServiceName("websocket")
@@ -18,19 +17,29 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
   }
 
   async doInit(): Promise<this> {
-    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
+    const webserver = this.context.getProvider<WebServerAPI>("webserver");
+    const fastify = webserver.getServer();
 
-    this.service = new WebSocketService({
-      server: fastify.server,
-      options: {
-        path: this.configuration.get<string>("path", "/socket"),
+    const options = {
+      path: this.configuration.get<string>("path", "/socket"),
+    };
+
+    fastify.register(FastifyIO, {
+      ...options,
+      allowEIO3: true,
+      cors: {
+        //Allow all origins
+        origin: (origin, callback) => callback(null, origin),
+        credentials: true,
       },
-      adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
-      auth: this.configuration.get<SocketIOJWTOptions>("auth.jwt"),
     });
 
-    fastify.register(websocketPlugin, {
-      io: this.service.getIo(),
+    this.service = new WebSocketService({
+      server: fastify,
+      options,
+      ready: webserver.onReady.bind(webserver),
+      adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
+      auth: this.configuration.get<{ secret: string }>("auth.jwt"),
     });
 
     return this;

@@ -1,4 +1,3 @@
-import { ConsoleServiceAPI } from "../api";
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
   AuthRequest,
@@ -6,32 +5,28 @@ import {
   ConsoleHookBody,
   ConsoleHookBodyContent,
   ConsoleHookCompany,
+  ConsoleHookCompanyDeletedContent,
   ConsoleHookPreferenceContent,
   ConsoleHookResponse,
   ConsoleHookUser,
-  ConsoleOptions,
+  ConsoleType,
 } from "../types";
 import Company from "../../user/entities/company";
-import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import PasswordEncoder from "../../../utils/password-encoder";
 import { AccessToken } from "../../../utils/types";
-import AuthServiceAPI from "../../../core/platform/services/auth/provider";
-import UserServiceAPI from "../../user/api";
 import assert from "assert";
-import { logger } from "../../../core/platform/framework/logger";
-import { getInstance } from "../../../services/user/entities/user";
+import { logger } from "../../../core/platform/framework";
+import { getInstance } from "../../user/entities/user";
 import { getInstance as getCompanyInstance } from "../../../services/user/entities/company";
 import Workspace from "../../../services/workspaces/entities/workspace";
+import gr from "../../global-resolver";
+import { Configuration } from "../../../core/platform/framework";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
 
-  constructor(
-    protected consoleService: ConsoleServiceAPI,
-    protected authService: AuthServiceAPI,
-    protected userService: UserServiceAPI,
-    protected options: ConsoleOptions,
-  ) {
+  constructor() {
     this.passwordEncoder = new PasswordEncoder();
   }
 
@@ -41,7 +36,7 @@ export class ConsoleController {
     } else if (request.body.email && request.body.password) {
       return { access_token: await this.authByPassword(request.body.email, request.body.password) };
     } else {
-      throw CrudExeption.badRequest("remote_access_token or email+password are required");
+      throw CrudException.badRequest("remote_access_token or email+password are required");
     }
   }
 
@@ -50,20 +45,23 @@ export class ConsoleController {
       Body: { email: string; password: string; first_name: string; last_name: string };
     }>,
   ): Promise<AuthResponse> {
+    const configuration = new Configuration("console");
+    const type = configuration.get("type") as ConsoleType;
+
     try {
       //Allow only if no console is set up in this case everyone will be in the same company
       //Console is set up
-      if (this.options.type !== "internal") {
+      if (type !== "internal") {
         throw new Error("Unable to signup in console mode");
       }
 
       //Allow only if signup isn't disabled
-      if (this.options.disable_account_creation) {
+      if (configuration.get("disable_account_creation")) {
         throw new Error("Account creation is disabled");
       }
 
       const email = request.body.email.trim().toLocaleLowerCase();
-      if (await this.userService.users.getByEmail(email)) {
+      if (await gr.services.users.getByEmail(email)) {
         throw new Error("This email is already used");
       }
 
@@ -72,33 +70,33 @@ export class ConsoleController {
           first_name: request.body.first_name,
           last_name: request.body.last_name,
           email_canonical: email,
-          username_canonical: email.replace("@", "."),
+          username_canonical: (email.replace("@", ".") || "").toLocaleLowerCase(),
         });
-        const user = await this.userService.users.create(newUser);
-        await this.userService.users.setPassword({ id: user.entity.id }, request.body.password);
+        const user = await gr.services.users.create(newUser);
+        await gr.services.users.setPassword({ id: user.entity.id }, request.body.password);
 
         //Create a global company for all users in local mode
-        const companies = await this.userService.companies.getCompanies();
+        const companies = await gr.services.companies.getCompanies();
         let company = companies.getEntities()?.[0];
         if (!company) {
           const newCompany = getCompanyInstance({
             name: "Twake",
-            plan: { name: "Local", features: {} },
+            plan: { name: "Local", limits: undefined, features: undefined },
           });
-          company = await this.userService.companies.createCompany(newCompany);
+          company = await gr.services.companies.createCompany(newCompany);
         }
-        await this.userService.companies.setUserRole(company.id, user.entity.id, "admin");
+        await gr.services.companies.setUserRole(company.id, user.entity.id, "admin");
 
         //In case someone invited us to a workspace
-        await this.userService.workspaces.processPendingUser(user.entity);
+        await gr.services.workspaces.processPendingUser(user.entity);
 
         //If user is in no workspace, then we create one for they
-        const workspaces = await this.userService.workspaces.getAllForUser(
+        const workspaces = await gr.services.workspaces.getAllForUser(
           { userId: user.entity.id },
           { id: company.id },
         );
         if (workspaces.length === 0) {
-          this.userService.workspaces.create(
+          gr.services.workspaces.create(
             {
               company_id: company.id,
               name: `${
@@ -122,7 +120,7 @@ export class ConsoleController {
 
   async tokenRenewal(request: FastifyRequest): Promise<AuthResponse> {
     return {
-      access_token: this.authService.generateJWT(
+      access_token: gr.platformServices.auth.generateJWT(
         request.currentUser.id,
         request.currentUser.email,
         {
@@ -136,9 +134,9 @@ export class ConsoleController {
   async resendVerificationEmail(
     request: FastifyRequest,
   ): Promise<{ success: boolean; email: string }> {
-    const user = await this.userService.users.get({ id: request.currentUser.id });
+    const user = await gr.services.users.get({ id: request.currentUser.id });
 
-    await this.consoleService.getClient().resendVerificationEmail(user.email_canonical);
+    await gr.services.console.getClient().resendVerificationEmail(user.email_canonical);
 
     return {
       success: true,
@@ -147,9 +145,9 @@ export class ConsoleController {
   }
 
   private async getCompanyDataFromConsole(
-    company: ConsoleHookCompany | ConsoleHookCompany["details"],
+    company: ConsoleHookCompany | ConsoleHookCompany["details"] | { code: string },
   ): Promise<ConsoleHookCompany> {
-    return this.consoleService
+    return gr.services.console
       .getClient()
       .fetchCompanyInfo(
         (company as ConsoleHookCompany["details"])?.code ||
@@ -159,7 +157,7 @@ export class ConsoleController {
 
   private async updateCompany(company: ConsoleHookCompany): Promise<Company> {
     const companyDTO = await this.getCompanyDataFromConsole(company);
-    return this.consoleService.getClient().updateLocalCompanyFromConsole(companyDTO);
+    return gr.services.console.getClient().updateLocalCompanyFromConsole(companyDTO);
   }
 
   async hook(
@@ -195,15 +193,20 @@ export class ConsoleController {
           await this.planUpdated(request.body.content as ConsoleHookBodyContent);
           break;
         case "company_deleted":
-          await this.companyRemoved(request.body.content as ConsoleHookBodyContent);
+          await this.companyRemoved(request.body.content as ConsoleHookCompanyDeletedContent);
           break;
         case "company_created":
+          await this.companyUpdated(request.body.content as ConsoleHookBodyContent);
+          if ((request.body.content as ConsoleHookBodyContent)?.user?._id) {
+            await this.userUpdated((request.body.content as ConsoleHookBodyContent).user._id);
+          }
+          break;
         case "company_updated":
           await this.companyUpdated(request.body.content as ConsoleHookBodyContent);
           break;
         default:
           logger.info("Event not recognized");
-          throw CrudExeption.notImplemented("Unimplemented");
+          throw CrudException.notImplemented("Unimplemented");
       }
     } catch (e) {
       reply.status(400);
@@ -219,32 +222,31 @@ export class ConsoleController {
 
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
     const userDTO = content.user;
-    const user = await this.consoleService.getClient().updateLocalUserFromConsole(userDTO._id);
-    await this.consoleService.processPendingUser(user);
+    const user = await gr.services.console.getClient().updateLocalUserFromConsole(userDTO._id);
+    await this.updateCompany(content.company);
+    await gr.services.console.processPendingUser(user);
   }
 
   private async userDisabled(content: ConsoleHookBodyContent): Promise<void> {
     const company = await this.updateCompany(content.company);
-    await this.consoleService.getClient().removeCompanyUser(content.user._id, company);
+    await gr.services.console.getClient().removeCompanyUser(content.user._id, company);
   }
 
   private async userRemoved(content: ConsoleHookUser): Promise<void> {
-    await this.consoleService.getClient().removeUser(content._id);
+    await gr.services.console.getClient().removeUser(content._id);
   }
 
   private async userUpdated(code: string) {
-    const user = await this.consoleService.getClient().updateLocalUserFromConsole(code);
-    await this.consoleService.processPendingUser(user);
+    const user = await gr.services.console.getClient().updateLocalUserFromConsole(code);
+    await gr.services.console.processPendingUser(user);
   }
 
-  private async companyRemoved(content: ConsoleHookBodyContent) {
-    assert(content.company, "content.company is missing");
-    assert(content.company.details, "content.company.details is missing");
-    assert(content.company.details.code, "content.company.details.code is missing");
+  private async companyRemoved(content: ConsoleHookCompanyDeletedContent) {
+    assert(content.companyCode, "content.companyCode is missing");
 
-    await this.consoleService.getClient().removeCompany({
+    await gr.services.console.getClient().removeCompany({
       identity_provider: "console",
-      identity_provider_id: content.company.details.code,
+      identity_provider_id: content.companyCode,
     });
   }
 
@@ -257,38 +259,38 @@ export class ConsoleController {
   }
 
   private async authByPassword(email: string, password: string): Promise<AccessToken> {
-    const user = await this.userService.users.getByEmail(email);
+    const user = await gr.services.users.getByEmail(email);
     if (!user) {
-      throw CrudExeption.forbidden("User doesn't exists");
+      throw CrudException.forbidden("User doesn't exists");
     }
 
     // allow to login in development mode with any password. This can be used to test without the console provider because the password is not stored locally...
     if (process.env.NODE_ENV !== "development") {
-      const [storedPassword, salt] = await this.userService.users.getHashedPassword({
+      const [storedPassword, salt] = await gr.services.users.getHashedPassword({
         id: user.id,
       });
 
       if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
-        throw CrudExeption.forbidden("Password doesn't match");
+        throw CrudException.forbidden("Password doesn't match");
       }
     } else if (process.env.NODE_ENV === "development") {
       logger.warn("ERROR_NOTONPROD: YOU ARE RUNNING IN DEVELOPMENT MODE, AUTH IS DISABLED!!!");
     }
 
-    return this.authService.generateJWT(user.id, user.email_canonical, {
+    return gr.platformServices.auth.generateJWT(user.id, user.email_canonical, {
       track: user?.preferences?.allow_tracking || false,
       provider_id: user.identity_provider_id,
     });
   }
 
   private async authByToken(accessToken: string): Promise<AccessToken> {
-    const client = this.consoleService.getClient();
+    const client = gr.services.console.getClient();
     const userDTO = await client.getUserByAccessToken(accessToken);
     const user = await client.updateLocalUserFromConsole(userDTO._id);
     if (!user) {
-      throw CrudExeption.notFound(`User details not found for access token ${accessToken}`);
+      throw CrudException.notFound(`User details not found for access token ${accessToken}`);
     }
-    return this.authService.generateJWT(user.id, user.email_canonical, {
+    return gr.platformServices.auth.generateJWT(user.id, user.email_canonical, {
       track: user?.preferences?.allow_tracking || false,
       provider_id: user.identity_provider_id,
     });

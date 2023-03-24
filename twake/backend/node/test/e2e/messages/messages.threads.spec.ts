@@ -1,17 +1,12 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
-import { UserMessageBookmark } from "../../../src/services/messages/entities/user-message-bookmarks";
-import {
-  ResourceDeleteResponse,
-  ResourceListResponse,
-  ResourceUpdateResponse,
-} from "../../../src/utils/types";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
+import { ResourceUpdateResponse } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
-import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { v1 as uuidv1, v4 as uuidv4 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
 import { createMessage, createParticipant, e2e_createThread } from "./utils";
+import gr from "../../../src/services/global-resolver";
 
 describe("The Messages Threads feature", () => {
   const url = "/internal/services/messages/v1";
@@ -25,7 +20,7 @@ describe("The Messages Threads feature", () => {
         "applications",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "user",
         "search",
         "files",
@@ -125,10 +120,8 @@ describe("The Messages Threads feature", () => {
     });
 
     it("should update thread participants when add participant", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
       //Create thread
-      const thread = await service.threads.save(
+      const thread = await gr.services.messages.threads.save(
         {
           id: undefined,
           participants: [
@@ -184,10 +177,8 @@ describe("The Messages Threads feature", () => {
     });
 
     it("should update thread participants when remove participant", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
       //Create thread
-      const thread = await service.threads.save(
+      const thread = await gr.services.messages.threads.save(
         {
           id: undefined,
           participants: [

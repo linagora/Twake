@@ -10,6 +10,7 @@ services:
       - ./docker-data/scylladb:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
+
   node:
     image: twaketech/twake-node
     ports:
@@ -33,6 +34,8 @@ services:
       - elasticsearch
     links:
       - scylladb
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   php:
     image: twaketech/twake-php
     environment:

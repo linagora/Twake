@@ -1,30 +1,29 @@
-import { MessageLocalEvent, MessageNotification, specialMention } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
-import { Thread } from "../../../../entities/threads";
+import { MessageLocalEvent, MessageNotification } from "../../../../types";
+import { ParticipantObject, Thread } from "../../../../entities/threads";
 import { logger } from "../../../../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../../../../core/platform/services/pubsub/api";
 import { Channel } from "../../../../../channels/entities";
 import { isDirectChannel } from "../../../../../channels/utils";
 import { ChannelActivityNotification } from "../../../../../channels/types";
-import UserServiceAPI from "../../../../../user/api";
-import ChannelServiceAPI from "../../../../../channels/provider";
 import { getMentions } from "../../../utils";
+import {
+  ExecutionContext,
+  Pagination,
+} from "../../../../../../core/platform/framework/api/crud-service";
+import { Message } from "../../../../../../services/messages/entities/messages";
+import gr from "../../../../../global-resolver";
 
 export class MessageToNotificationsProcessor {
   private name = "MessageToNotificationsProcessor";
 
-  constructor(
-    readonly database: DatabaseServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    private user: UserServiceAPI,
-    private channels: ChannelServiceAPI,
-    readonly service: MessageServiceAPI,
-  ) {}
+  async init() {
+    //
+  }
 
-  async init() {}
-
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+  async process(
+    thread: Thread,
+    message: MessageLocalEvent,
+    context?: ExecutionContext,
+  ): Promise<void> {
     logger.debug(`${this.name} - Share message with notification microservice`);
 
     if (message.resource.ephemeral) {
@@ -40,50 +39,47 @@ export class MessageToNotificationsProcessor {
           continue;
         }
 
-        const channel: Channel = await this.channels.channels.get(
+        const channel: Channel = await gr.services.channels.channels.get(
           {
             id: participant.id,
             company_id: participant.company_id,
             workspace_id: participant.workspace_id,
           },
-          {
-            user: { server_request: true, id: null },
-            workspace: {
-              company_id: participant.company_id,
-              workspace_id: participant.workspace_id,
-            },
-          },
+          context,
         );
 
         if (!channel) {
           continue;
         }
 
-        const company = await this.user.companies.getCompany({ id: participant.company_id });
+        const company = await gr.services.companies.getCompany({ id: participant.company_id });
 
-        let companyName = company?.name || "";
+        const companyName = company?.name || "";
         let workspaceName = "";
         let senderName = "Twake";
         if (messageResource.user_id) {
-          const user = await this.user.users.get({ id: messageResource.user_id });
+          const user = await gr.services.users.get({ id: messageResource.user_id });
           senderName =
-            `${user?.first_name} ${user?.last_name}`.trim() || `@${user?.username_canonical}`;
+            `${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
+            `@${user?.username_canonical}`;
         }
 
         let title = "";
         let text = (messageResource.text || "").substr(0, 255);
-        let body = messageResource.text; // we need original body just in case text gets updated further on
+        const body = messageResource.text; // we need original body just in case text gets updated further on
         if (isDirectChannel(channel)) {
           title = `${senderName} in ${companyName}`;
         } else {
           const workspace =
-            (await this.user.companies.getCompany({ id: participant.workspace_id })) || null;
+            (await gr.services.companies.getCompany({ id: participant.workspace_id })) || null;
           workspaceName = workspace?.name || workspaceName;
           title = `${channel.name} in ${companyName} • ${workspaceName}`;
           text = `${senderName}: ${text}`;
         }
 
-        const mentions = getMentions(messageResource);
+        const mentions = await getMentions(messageResource, async (username: string) => {
+          return await gr.services.users.getByUsername(username);
+        });
 
         const messageEvent: MessageNotification = {
           company_id: participant.company_id,
@@ -122,14 +118,19 @@ export class MessageToNotificationsProcessor {
             `${this.name} - Forward message ${messageResource.id} to channel:activity and message:created / message:updated`,
           );
 
-          //Ignore system messages
-          if (message.created) {
-            await this.pubsub.publish<ChannelActivityNotification>("channel:activity", {
-              data: channelEvent,
-            });
+          if (
+            message.created ||
+            (await this.isLastActivityMessageDeleted(participant, messageResource, message))
+          ) {
+            await gr.platformServices.messageQueue.publish<ChannelActivityNotification>(
+              "channel:activity",
+              {
+                data: channelEvent,
+              },
+            );
           }
 
-          await this.pubsub.publish<MessageNotification>(
+          await gr.platformServices.messageQueue.publish<MessageNotification>(
             message.created ? "message:created" : "message:updated",
             {
               data: messageEvent,
@@ -141,6 +142,38 @@ export class MessageToNotificationsProcessor {
       }
     } catch (err) {
       logger.warn({ err }, `${this.name} - Error while publishing`);
+    }
+  }
+
+  async isLastActivityMessageDeleted(
+    participant: ParticipantObject,
+    messageResource: Message,
+    message: MessageLocalEvent,
+  ): Promise<boolean> {
+    if (participant.company_id && participant.workspace_id && participant.id) {
+      const list = await gr.services.messages.views.listChannel(
+        new Pagination("", "1"),
+        {
+          include_users: false,
+          replies_per_thread: 1,
+          emojis: false,
+        },
+        {
+          channel: {
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+            id: participant.id,
+          },
+          user: {
+            id: messageResource.user_id,
+          },
+        },
+      );
+
+      return (
+        list.getEntities().pop()?.id === message.resource.id &&
+        messageResource.subtype === "deleted"
+      );
     }
   }
 }

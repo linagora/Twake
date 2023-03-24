@@ -1,13 +1,16 @@
 import { Type } from "class-transformer";
-import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
-import { ChannelVisibility, ChannelType } from "../types";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { ChannelType, ChannelVisibility } from "../types";
 import { ChannelMember } from "./channel-member";
 import { UserObject } from "../../user/web/types";
 import { merge } from "lodash";
+import search from "./channel.search";
+import { ChannelActivity } from "./channel-activity";
 
 @Entity("channels", {
   primaryKey: [["company_id", "workspace_id"], "id"],
   type: "channels",
+  search,
 })
 export class Channel {
   // uuid-v4
@@ -20,7 +23,7 @@ export class Channel {
   workspace_id: string | ChannelType.DIRECT;
 
   @Type(() => String)
-  @Column("id", "timeuuid", { generator: "timeuuid" })
+  @Column("id", "uuid", { generator: "uuid" })
   id: string;
 
   @Column("name", "encoded_string")
@@ -52,6 +55,7 @@ export class Channel {
   @Type(() => String)
   owner: string;
 
+  //This is only used for direct channels
   @Column("members", "encoded_json")
   members: string[] = [];
 
@@ -86,6 +90,8 @@ export class Channel {
 
 export class UserChannel extends Channel {
   user_member: ChannelMember;
+  last_activity: ChannelActivity["last_activity"];
+  last_message: ChannelActivity["last_message"];
 }
 
 export class UsersIncludedChannel extends Channel {
@@ -95,3 +101,5 @@ export class UsersIncludedChannel extends Channel {
 export function getInstance(channel: Partial<Channel>): Channel {
   return merge(new Channel(), channel);
 }
+
+export type ChannelPrimaryKey = Pick<Channel, "company_id" | "workspace_id" | "id">;

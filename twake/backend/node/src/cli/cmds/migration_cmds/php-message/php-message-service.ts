@@ -1,15 +1,15 @@
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
   FindFilter,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { PhpMessagesServiceAPI } from "./types";
 import { PhpMessage, PhpMessagePrimaryKey } from "./php-message-entity";
-import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
+import gr from "../../../../services/global-resolver";
 
 export interface PhpMessageExecutionContext extends ExecutionContext {
   channel_id: string;
@@ -21,10 +21,8 @@ export class PhpMessagesService implements PhpMessagesServiceAPI {
   version: "1";
   public repository: Repository<PhpMessage>;
 
-  constructor(private database: DatabaseServiceAPI) {}
-
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository<PhpMessage>("message", PhpMessage);
+    this.repository = await gr.database.getRepository<PhpMessage>("message", PhpMessage);
     return this;
   }
 
@@ -33,7 +31,7 @@ export class PhpMessagesService implements PhpMessagesServiceAPI {
       pk.channel_id = `${pk.channel_id}`;
       pk.channel_id.substring(0, 14) + "1" + pk.channel_id.substring(14 + 1);
     }
-    return this.repository.findOne(pk);
+    return this.repository.findOne(pk, {}, undefined);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -55,7 +53,7 @@ export class PhpMessagesService implements PhpMessagesServiceAPI {
       //id: context.id,
     };
 
-    const list = await this.repository.find(findFilter, { pagination });
+    const list = await this.repository.find(findFilter, { pagination }, undefined);
     return list;
   }
 }

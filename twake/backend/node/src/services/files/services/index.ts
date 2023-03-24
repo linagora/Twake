@@ -1,60 +1,34 @@
 import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
-import { FileServiceAPI, UploadOptions } from "../api";
-import StorageAPI from "../../../core/platform/services/storage/provider";
+import { UploadOptions } from "../types";
 import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
-import {
-  PreviewClearPubsubRequest,
-  PreviewPubsubRequest,
-} from "../../../../src/services/previews/types";
+import { PreviewClearMessageQueueRequest, PreviewMessageQueueRequest } from "../../previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
-import { DeleteResult, CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  DeleteResult,
+  ExecutionContext,
+} from "../../../core/platform/framework/api/crud-service";
+import gr from "../../global-resolver";
 
-export function getService(
-  databaseService: DatabaseServiceAPI,
-  pubsub: PubsubServiceAPI,
-  storage: StorageAPI,
-): FileServiceAPI {
-  return getServiceInstance(databaseService, pubsub, storage);
-}
-
-function getServiceInstance(
-  databaseService: DatabaseServiceAPI,
-  pubsub: PubsubServiceAPI,
-  storage: StorageAPI,
-): FileServiceAPI {
-  return new Service(databaseService, pubsub, storage);
-}
-
-class Service implements FileServiceAPI {
+export class FileServiceImpl {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
   private max_preview_file_size = 50000000;
-  pubsub: PubsubServiceAPI;
-
-  constructor(
-    readonly database: DatabaseServiceAPI,
-    pubsub: PubsubServiceAPI,
-    readonly storage: StorageAPI,
-  ) {
-    this.pubsub = pubsub;
-  }
 
   async init(): Promise<this> {
     try {
       await Promise.all([
-        (this.repository = await this.database.getRepository<File>("files", File)),
-        this.pubsub.processor.addHandler(
-          new PreviewFinishedProcessor(this, this.pubsub, this.repository),
+        (this.repository = await gr.database.getRepository<File>("files", File)),
+        gr.platformServices.messageQueue.processor.addHandler(
+          new PreviewFinishedProcessor(this, this.repository),
         ),
       ]);
     } catch (err) {
@@ -74,10 +48,14 @@ class Service implements FileServiceAPI {
 
     let entity: File = null;
     if (id) {
-      entity = await this.repository.findOne({
-        company_id: context.company.id,
-        id: id,
-      });
+      entity = await this.repository.findOne(
+        {
+          company_id: context.company.id,
+          id: id,
+        },
+        {},
+        context,
+      );
       if (!entity) {
         throw new Error(`This file ${id} does not exist`);
       }
@@ -97,7 +75,7 @@ class Service implements FileServiceAPI {
       entity.application_id = applicationId;
       entity.upload_data = null;
 
-      this.repository.save(entity);
+      this.repository.save(entity, context);
     }
 
     if (file) {
@@ -119,7 +97,7 @@ class Service implements FileServiceAPI {
             size: options.totalSize,
             chunks: options.totalChunks || 1,
           };
-          this.repository.save(entity);
+          this.repository.save(entity, context);
         }
       }
 
@@ -127,7 +105,7 @@ class Service implements FileServiceAPI {
       file.file.on("data", function (chunk) {
         totalUploadedSize += chunk.length;
       });
-      await this.storage.write(getFilePath(entity), file.file, {
+      await gr.platformServices.storage.write(getFilePath(entity), file.file, {
         chunkNumber: options.chunkNumber,
         encryptionAlgo: this.algorithm,
         encryptionKey: entity.encryption_key,
@@ -135,16 +113,16 @@ class Service implements FileServiceAPI {
 
       if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         entity.upload_data.size = totalUploadedSize;
-        await this.repository.save(entity);
+        await this.repository.save(entity, context);
       }
 
       //Fixme: detect in multichunk when all chunks are uploaded to trigger this. For now we do only single chunks for preview
       if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         /** Send preview generation task */
         if (entity.upload_data.size < this.max_preview_file_size) {
-          const document: PreviewPubsubRequest["document"] = {
+          const document: PreviewMessageQueueRequest["document"] = {
             id: JSON.stringify(_.pick(entity, "id", "company_id")),
-            provider: this.storage.getConnectorType(),
+            provider: gr.platformServices.storage.getConnectorType(),
 
             path: getFilePath(entity),
             encryption_algo: this.algorithm,
@@ -155,7 +133,7 @@ class Service implements FileServiceAPI {
             mime: entity.metadata.mime,
           };
           const output = {
-            provider: this.storage.getConnectorType(),
+            provider: gr.platformServices.storage.getConnectorType(),
             path: `${getFilePath(entity)}/thumbnails/`,
             encryption_algo: this.algorithm,
             encryption_key: entity.encryption_key,
@@ -163,19 +141,26 @@ class Service implements FileServiceAPI {
           };
 
           entity.metadata.thumbnails_status = "waiting";
-          await this.repository.save(entity);
+          await this.repository.save(entity, context);
 
           try {
-            await this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
-              data: { document, output },
-            });
+            await gr.platformServices.messageQueue.publish<PreviewMessageQueueRequest>(
+              "services:preview",
+              {
+                data: { document, output },
+              },
+            );
 
             if (options.waitForThumbnail) {
-              for (let i = 1; i < 10; i++) {
-                entity = await this.repository.findOne({
-                  company_id: context.company.id,
-                  id: entity.id,
-                });
+              for (let i = 1; i < 100; i++) {
+                entity = await this.repository.findOne(
+                  {
+                    company_id: context.company.id,
+                    id: entity.id,
+                  },
+                  {},
+                  context,
+                );
                 if (entity.metadata.thumbnails_status === "done") {
                   break;
                 }
@@ -184,7 +169,7 @@ class Service implements FileServiceAPI {
             }
           } catch (err) {
             entity.metadata.thumbnails_status = "error";
-            await this.repository.save(entity);
+            await this.repository.save(entity, context);
 
             logger.warn({ err }, "Previewing - Error while sending ");
           }
@@ -197,16 +182,21 @@ class Service implements FileServiceAPI {
     return entity;
   }
 
+  async exists(id: string, companyId: string, context?: CompanyExecutionContext): Promise<boolean> {
+    const entity = await this.getFile({ id, company_id: companyId }, context);
+    return !!entity;
+  }
+
   async download(
     id: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; name: string; mime: string; size: number }> {
-    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    const entity = await this.get(id, context);
     if (!entity) {
       throw "File not found";
     }
 
-    const readable = await this.storage.read(getFilePath(entity), {
+    const readable = await gr.platformServices.storage.read(getFilePath(entity), {
       totalChunks: entity.upload_data.chunks,
       encryptionAlgo: this.algorithm,
       encryptionKey: entity.encryption_key,
@@ -225,7 +215,7 @@ class Service implements FileServiceAPI {
     index: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; type: string; size: number }> {
-    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    const entity = await this.get(id, context);
 
     if (!entity) {
       throw "File not found";
@@ -238,7 +228,7 @@ class Service implements FileServiceAPI {
 
     const thumbnailPath = `${getFilePath(entity)}/thumbnails/${thumbnail.id}`;
 
-    const readable = await this.storage.read(thumbnailPath, {
+    const readable = await gr.platformServices.storage.read(thumbnailPath, {
       encryptionAlgo: this.algorithm,
       encryptionKey: entity.encryption_key,
     });
@@ -251,7 +241,14 @@ class Service implements FileServiceAPI {
   }
 
   get(id: string, context: CompanyExecutionContext): Promise<File> {
-    return this.repository.findOne({ id, company_id: context.company.id });
+    if (!id || !context.company.id) {
+      return null;
+    }
+    return this.getFile({ id, company_id: context.company.id }, context);
+  }
+
+  async getFile(pk: Pick<File, "company_id" | "id">, context?: ExecutionContext): Promise<File> {
+    return this.repository.findOne(pk, {}, context);
   }
 
   getThumbnailRoute(file: File, index: string) {
@@ -263,31 +260,34 @@ class Service implements FileServiceAPI {
   }
 
   async delete(id: string, context: CompanyExecutionContext): Promise<DeleteResult<File>> {
-    const fileToDelete = await this.repository.findOne({ id, company_id: context.company.id });
+    const fileToDelete = await this.get(id, context);
 
     if (!fileToDelete) {
-      throw new CrudExeption("File not found", 404);
+      throw new CrudException("File not found", 404);
     }
 
-    await this.repository.remove(fileToDelete);
+    await this.repository.remove(fileToDelete, context);
 
     const path = getFilePath(fileToDelete);
 
-    await this.storage.remove(path, {
+    await gr.platformServices.storage.remove(path, {
       totalChunks: fileToDelete.upload_data.chunks,
     });
 
     if (fileToDelete.thumbnails.length > 0) {
-      await this.pubsub.publish<PreviewClearPubsubRequest>("services:preview:clear", {
-        data: {
-          document: {
-            id: JSON.stringify(_.pick(fileToDelete, "id", "company_id")),
-            provider: this.storage.getConnectorType(),
-            path: `${path}/thumbnails/`,
-            thumbnails_number: fileToDelete.thumbnails.length,
+      await gr.platformServices.messageQueue.publish<PreviewClearMessageQueueRequest>(
+        "services:preview:clear",
+        {
+          data: {
+            document: {
+              id: JSON.stringify(_.pick(fileToDelete, "id", "company_id")),
+              provider: gr.platformServices.storage.getConnectorType(),
+              path: `${path}/thumbnails/`,
+              thumbnails_number: fileToDelete.thumbnails.length,
+            },
           },
         },
-      });
+      );
     }
 
     return new DeleteResult("files", fileToDelete, true);

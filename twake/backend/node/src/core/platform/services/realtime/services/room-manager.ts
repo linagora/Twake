@@ -10,10 +10,10 @@ import {
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../services/websocket/provider";
 import { WebSocketUser, WebSocket } from "../../../services/websocket/types";
-import AuthServiceAPI from "../../auth/provider";
+import AuthService from "../../auth/provider";
 
 export default class RoomManager implements RealtimeRoomManager {
-  constructor(private ws: WebSocketAPI, private auth: AuthServiceAPI) {}
+  constructor(private ws: WebSocketAPI, private auth: AuthService) {}
 
   init(): void {
     this.ws.onUserConnected(event => {
@@ -60,8 +60,8 @@ export default class RoomManager implements RealtimeRoomManager {
   }
 
   getConnectedUsers(room: string): number {
-    if (this.ws.getIo().sockets.adapter.rooms[room]) {
-      return this.ws.getIo().sockets.adapter.rooms[room].length;
+    if (this.ws.getIo().sockets.adapter.rooms.has(room)) {
+      return this.ws.getIo().sockets.adapter.rooms.get(room).entries.length;
     }
 
     return 0;
@@ -79,7 +79,7 @@ export default class RoomManager implements RealtimeRoomManager {
 
     try {
       //Public rooms we just check the user is logged in
-      if (joinEvent.name === "/users/online" || joinEvent.name === "/ping") {
+      if (joinEvent.name.startsWith("/users/online") || joinEvent.name === "/ping") {
         return !!this.auth.verifyToken(joinEvent.token)?.sub;
       }
 
@@ -102,9 +102,12 @@ export default class RoomManager implements RealtimeRoomManager {
 
   userCanEmitInRoom = this.userCanJoinRoom;
 
-  join(websocket: WebSocket, room: string, user: WebSocketUser): void {
+  async join(websocket: WebSocket, room: string, user: WebSocketUser): Promise<void> {
     logger.info(`User ${user.id} is joining room ${room}`);
-    websocket.join(room, err => {
+
+    try {
+      await websocket.join(room);
+    } catch (err) {
       if (err) {
         logger.error(`Error while joining room ${room}`, err);
         this.sendError("join", websocket, {
@@ -113,17 +116,18 @@ export default class RoomManager implements RealtimeRoomManager {
         });
         return;
       }
+    }
 
-      this.sendSuccess("join", websocket, { name: room });
-      logger.info(`User ${user.id} joined room ${room}`);
-    });
+    this.sendSuccess("join", websocket, { name: room });
+    logger.info(`User ${user.id} joined room ${room}`);
   }
 
-  leave(websocket: WebSocket, room: string, user: WebSocketUser): void {
+  async leave(websocket: WebSocket, room: string, user: WebSocketUser): Promise<void> {
     logger.info(`User ${user.id} is leaving room ${room}`);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    websocket.leave(room, (err: any) => {
+    try {
+      await websocket.leave(room);
+    } catch (err) {
       if (err) {
         logger.error(`Error while leaving room ${room}`, err);
         this.sendError("leave", websocket, {
@@ -132,15 +136,15 @@ export default class RoomManager implements RealtimeRoomManager {
         });
         return;
       }
+    }
 
-      this.sendSuccess("leave", websocket, { name: room });
-      logger.info(`User ${user.id} left room ${room}`);
-    });
+    this.sendSuccess("leave", websocket, { name: room });
+    logger.info(`User ${user.id} left room ${room}`);
   }
 
   leaveAll(websocket: WebSocket, user: WebSocketUser): void {
     logger.info(`Leaving rooms for user ${user.id}`);
-    websocket.leaveAll();
+    websocket.rooms.forEach(room => websocket.leave(room));
   }
 
   sendError(event: string, websocket: WebSocket, error: JoinLeaveRoomError): void {

@@ -2,9 +2,8 @@ import yargs from "yargs";
 import ora from "ora";
 import twake from "../../../twake";
 import Table from "cli-table";
-import { ApplicationServiceAPI } from "../../../services/applications/api";
 import * as process from "process";
-
+import gr from "../../../services/global-resolver";
 /**
  * Merge command parameters. Check the builder definition below for more details.
  */
@@ -15,17 +14,17 @@ type CLIArgs = {
 const services = [
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "platform-services",
   "applications",
-  // "auth",
-  // "realtime",
-  // "websocket",
-  // "user",
+  "auth",
+  "realtime",
+  "websocket",
+  "user",
   "search",
   "database",
   "webserver",
-  // "statistics",
+  "statistics",
 ];
 
 const command: yargs.CommandModule<unknown, CLIArgs> = {
@@ -35,8 +34,8 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     if (argv.id) {
       let spinner = ora({ text: "Retrieving application" }).start();
       const platform = await twake.run(services);
-      const service = platform.getProvider<ApplicationServiceAPI>("applications");
-      let app = await service.applications.get({ id: argv.id });
+      await gr.doInit(platform);
+      let app = await gr.services.applications.marketplaceApps.get({ id: argv.id }, undefined);
       spinner.stop();
       if (!app) {
         console.error(`Application ${argv.id} not found`);
@@ -57,8 +56,8 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       }
 
       spinner = ora({ text: "Unpublishing application" }).start();
-      await service.applications.unpublish({ id: argv.id });
-      app = await service.applications.get({ id: argv.id });
+      await gr.services.applications.marketplaceApps.unpublish({ id: argv.id }, undefined);
+      app = await gr.services.applications.marketplaceApps.get({ id: argv.id }, undefined);
       spinner.stop();
       console.log("Application unpublished");
 

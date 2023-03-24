@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input.ant-input {
+    background-color: transparent;
+}
+
+[type='text']:not(.tw-input), [type='email']:not(.tw-input), [type='url']:not(.tw-input), [type='password']:not(.tw-input), [type='number']:not(.tw-input), [type='date']:not(.tw-input), [type='datetime-local']:not(.tw-input), [type='month']:not(.tw-input), [type='search']:not(.tw-input), [type='tel']:not(.tw-input), [type='time']:not(.tw-input), [type='week']:not(.tw-input), [multiple]:not(.tw-input), textarea:not(.tw-input), select:not(.tw-input) {
+    border-color: var(--grey-light);
+}
+
+[type='text']:hover:not(.tw-input), [type='email']:hover:not(.tw-input), [type='url']:hover:not(.tw-input), [type='password']:hover:not(.tw-input), [type='number']:hover:not(.tw-input), [type='date']:hover:not(.tw-input), [type='datetime-local']:hover:not(.tw-input), [type='month']:hover:not(.tw-input), [type='search']:hover:not(.tw-input), [type='tel']:hover:not(.tw-input), [type='time']:hover:not(.tw-input), [type='week']:hover:not(.tw-input), [multiple]:hover:not(.tw-input), textarea:hover:not(.tw-input), select:hover:not(.tw-input) {
+    border-color: var(--grey-light);
+}
+
+
+.bg-linear-purple {
+    background: linear-gradient(263.04deg, #007AFF 2.08%, #C600F9 97.25%);
+}
+
+a {
+    color: var(--primary) !important;
+}
+
+.ant-switch-checked {
+    background-color: #004dff !important;
+}
+
+@layer base {
+    ul,ol {
+        list-style: revert;
+        padding: revert;
+    }
+}
+
+.webkit-h-full, body {
+    height: 100vh;
+}
+
+.min-h-screen {
+    min-height: 100vh;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .webkit-h-full, body {
+        height: -webkit-fill-available;
+    }
+    .min-h-screen {
+        min-height: -webkit-fill-available;
+    }
+}

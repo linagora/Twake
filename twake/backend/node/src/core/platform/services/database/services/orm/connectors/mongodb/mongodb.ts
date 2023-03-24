@@ -188,6 +188,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
 
     const pk = unwrapPrimarykey(entityDefinition);
+
     const indexes = unwrapIndexes(entityDefinition);
     if (
       Object.keys(filters).some(key => pk.indexOf(key) < 0) &&

@@ -1,20 +1,14 @@
-import UserServiceAPI from "../services/user/api";
 import { User, Workspace } from "./types";
-import Company from "../services/user/entities/company";
-import CompanyUser from "../services/user/entities/company_user";
 import WorkspaceUser from "../services/workspaces/entities/workspace_user";
 import { hasCompanyAdminLevel } from "./company";
+import gr from "../services/global-resolver";
 
-export async function isWorkspaceAdmin(
-  userService: UserServiceAPI,
-  user?: User,
-  workspace?: Workspace,
-): Promise<boolean> {
+export async function isWorkspaceAdmin(user?: User, workspace?: Workspace): Promise<boolean> {
   if (!user || !workspace) {
     return false;
   }
 
-  const companyUser = await userService.companies.getCompanyUser(
+  const companyUser = await gr.services.companies.getCompanyUser(
     { id: workspace.company_id },
     { id: user.id },
   );
@@ -22,7 +16,7 @@ export async function isWorkspaceAdmin(
     return true;
   }
 
-  const workspaceUser = await getWorkspaceUser(userService, user, workspace);
+  const workspaceUser = await getWorkspaceUser(user, workspace);
 
   if (!workspaceUser) {
     return false;
@@ -31,24 +25,20 @@ export async function isWorkspaceAdmin(
   return workspaceUser.role === "moderator";
 }
 
-export function hasWorkspaceAdminLevel(role: string): boolean {
-  return role === "moderator";
+export function hasWorkspaceAdminLevel(role: string, companyRole: string): boolean {
+  return role === "moderator" || hasCompanyAdminLevel(companyRole);
 }
 
-export function hasWorkspaceMemberLevel(role: string): boolean {
-  return role === "member" || hasWorkspaceAdminLevel(role);
+export function hasWorkspaceMemberLevel(role: string, companyRole: string): boolean {
+  return role === "member" || hasWorkspaceAdminLevel(role, companyRole);
 }
 
-export async function getWorkspaceUser(
-  userService: UserServiceAPI,
-  user?: User,
-  workspace?: Workspace,
-): Promise<WorkspaceUser> {
+export async function getWorkspaceUser(user?: User, workspace?: Workspace): Promise<WorkspaceUser> {
   if (!user || !workspace) {
     return null;
   }
 
-  const workspaceUser = await userService.workspaces.getUser({
+  const workspaceUser = await gr.services.workspaces.getUser({
     workspaceId: workspace.workspace_id,
     userId: user.id,
   });
@@ -56,23 +46,19 @@ export async function getWorkspaceUser(
   return workspaceUser;
 }
 
-export async function getCompanyUser(
-  userService: UserServiceAPI,
-  user?: User,
-  company?: Company,
-): Promise<CompanyUser> {
-  if (!user || !company) {
-    return null;
-  }
-
-  const companyUser = await userService.companies.getCompanyUser(
-    {
-      id: company.id,
-    },
-    {
-      id: user.id,
-    },
-  );
-
-  return companyUser;
-}
+// export async function getCompanyUser(user?: User, company?: Company): Promise<CompanyUser> {
+//   if (!user || !company) {
+//     return null;
+//   }
+//
+//   const companyUser = await gr.services.companies.getCompanyUser(
+//     {
+//       id: company.id,
+//     },
+//     {
+//       id: user.id,
+//     },
+//   );
+//
+//   return companyUser;
+// }

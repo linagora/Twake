@@ -1,0 +1,129 @@
+.userListManager {
+  & > .no-users {
+    line-height: 32px;
+    height: 32px;
+  }
+
+  &.collapsed {
+    & > .users-list .text,
+    .users-list .more {
+      display: none;
+    }
+    & > .users-list .icon {
+      margin-right: 0px;
+    }
+    & > .users-list .icon .user_head {
+      width: 25px;
+      height: 25px;
+      border-radius: 14px;
+      border: 2px solid var(--white);
+      box-sizing: border-box;
+
+      &.email {
+        color: #444;
+        text-align: center;
+        line-height: 22px;
+        font-weight: bold;
+      }
+    }
+    & > .users-list {
+      height: 24px;
+      padding: 0px;
+      display: inline-block;
+      margin-bottom: 0px;
+      vertical-align: top;
+    }
+    & > .users-list > div:not(:first-child) {
+      margin-left: -12px;
+    }
+  }
+
+  &.mini {
+    & > .menu .icon .user_head {
+      width: 16px;
+      height: 16px;
+      margin-top: 4px;
+      border-radius: var(--border-radius-base);
+
+      &.email {
+        color: #444;
+        text-align: center;
+        line-height: 14px;
+        font-weight: bold;
+      }
+    }
+  }
+
+  /*&:not(.collapsed) {
+    & > .menu {
+      margin: 0 8px !important;
+    }
+  }*/
+
+  & > .users-list .ant-row {
+    display: flex;
+    flex-flow: nowrap;
+
+    & > * {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .icon {
+      margin-right: 8px;
+      .user_head {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--border-radius-large);
+
+        &.email {
+          color: #444;
+          text-align: center;
+          line-height: 22px;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .text {
+      flex: 1;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      line-height: 24px;
+      font-size: 14px;
+    }
+
+    .emoji-container {
+      margin-right: 5px;
+      top: 1px;
+      position: relative;
+    }
+  }
+
+  .more {
+    height: 24px;
+    .m-icon-small {
+      margin: 3px;
+      color: var(--black);
+      cursor: pointer;
+    }
+
+    &:hover {
+      .m-icon-small {
+        &.remove {
+          color: var(--red);
+        }
+        &.add {
+          color: var(--primary);
+        }
+      }
+    }
+  }
+  .add-user-input {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}

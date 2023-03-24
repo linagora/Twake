@@ -7,12 +7,12 @@ import PhpApplication, {
   DepreciatedDisplayConfiguration,
   TYPE as phpTYPE,
 } from "./php-application/php-application-entity";
-import { Pagination } from "../../../core/platform/framework/api/crud-service";
+import { ExecutionContext, Pagination } from "../../../core/platform/framework/api/crud-service";
 import Application, {
+  ApplicationPublication,
   TYPE,
-  getInstance,
 } from "../../../services/applications/entities/application";
-import _ from "lodash";
+import gr from "../../../services/global-resolver";
 
 type Options = {
   onlyApplication?: string;
@@ -32,18 +32,22 @@ class ApplicationMigrator {
 
     let page: Pagination = { limitStr: "100" };
     do {
-      const applicationListResult = await phpRepository.find({}, { pagination: page });
+      const applicationListResult = await phpRepository.find({}, { pagination: page }, undefined);
       page = applicationListResult.nextPage as Pagination;
 
       for (const application of applicationListResult.getEntities()) {
         if (
-          !(await repository.findOne({
-            id: application.id,
-          })) ||
+          !(await repository.findOne(
+            {
+              id: application.id,
+            },
+            {},
+            undefined,
+          )) ||
           options.replaceExisting
         ) {
           const newApplication = importDepreciatedFields(application);
-          await repository.save(newApplication);
+          await repository.save(newApplication, undefined);
         }
       }
     } while (page.page_token);
@@ -59,7 +63,7 @@ const services = [
   "channels",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "applications",
   "console",
   "auth",
@@ -86,6 +90,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Migrating php applications - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new ApplicationMigrator(platform);
 
     const onlyApplication = argv.onlyApplication as string | null;
@@ -124,32 +129,44 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
   }
 
   if (newApplication.publication?.published === undefined) {
-    //@ts-ignore
-    newApplication.publication = newApplication.publication || {};
+    newApplication.publication = newApplication.publication || {
+      published: false,
+      requested: false,
+    };
     newApplication.publication.published = application.depreciated_is_available_to_public;
     newApplication.publication.requested =
       application.depreciated_public && !application.depreciated_twake_team_validation;
   }
 
   if (!newApplication.stats?.version) {
-    //@ts-ignore
-    newApplication.stats = newApplication.stats || {};
+    newApplication.stats = newApplication.stats || {
+      created_at: null,
+      updated_at: null,
+      version: null,
+    };
     newApplication.stats.version = 1;
-    newApplication.stats.createdAt = Date.now();
-    newApplication.stats.updatedAt = Date.now();
+    newApplication.stats.created_at = Date.now();
+    newApplication.stats.updated_at = Date.now();
   }
 
-  if (!newApplication.api?.privateKey) {
-    //@ts-ignore
-    newApplication.api = newApplication.api || {};
-    newApplication.api.hooksUrl = application.depreciated_api_events_url;
-    newApplication.api.allowedIps = application.depreciated_api_allowed_ip;
-    newApplication.api.privateKey = application.depreciated_api_private_key;
+  if (!newApplication.api?.private_key) {
+    newApplication.api = newApplication.api || {
+      hooks_url: null,
+      allowed_ips: null,
+      private_key: null,
+    };
+    newApplication.api.hooks_url = application.depreciated_api_events_url;
+    newApplication.api.allowed_ips = application.depreciated_api_allowed_ip;
+    newApplication.api.private_key = application.depreciated_api_private_key;
   }
 
   if (newApplication.access?.write === undefined) {
-    //@ts-ignore
-    newApplication.access = newApplication.access || {};
+    newApplication.access = newApplication.access || {
+      read: null,
+      write: null,
+      delete: null,
+      hooks: null,
+    };
     try {
       newApplication.access.write = JSON.parse(application.depreciated_capabilities || "[]") || [];
       newApplication.access.delete = JSON.parse(application.depreciated_capabilities || "[]") || [];
@@ -197,9 +214,9 @@ export const importDepreciatedDisplayFields = (
     : undefined;
 
   display.twake.configuration = [];
-  if (depreciatedDisplay.configuration?.can_configure_in_workspace)
+  if (depreciatedDisplay?.configuration?.can_configure_in_workspace)
     display.twake.configuration.push("global");
-  if (depreciatedDisplay.configuration?.can_configure_in_channel)
+  if (depreciatedDisplay?.configuration?.can_configure_in_channel)
     display.twake.configuration.push("channel");
 
   display.twake.direct = depreciatedDisplay?.member_app

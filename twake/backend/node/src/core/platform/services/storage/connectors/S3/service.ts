@@ -1,4 +1,5 @@
 import * as Minio from "minio";
+import { logger } from "../../../../../../core/platform/framework";
 import { Readable } from "stream";
 import { StorageConnectorAPI, WriteMetadata } from "../../provider";
 
@@ -31,6 +32,27 @@ export default class S3ConnectorService implements StorageConnectorAPI {
   }
 
   async read(path: string): Promise<Readable> {
+    // Test if file exists in S3 bucket 10 times until we find it
+    const tries = 10;
+    let err = null;
+    for (let i = 0; i <= tries; i++) {
+      try {
+        const stat = await this.client.statObject(this.minioConfiguration.bucket, path);
+        if (stat?.size > 0) {
+          break;
+        }
+      } catch (e) {
+        err = e;
+      }
+
+      if (i === tries) {
+        logger.info(`Unable to get file after ${tries} tries:`);
+        throw err;
+      }
+
+      await new Promise(r => setTimeout(r, 500));
+      logger.info(`File ${path} not found in S3 bucket, retrying...`);
+    }
     return this.client.getObject(this.minioConfiguration.bucket, path);
   }
 

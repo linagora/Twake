@@ -1,33 +1,34 @@
 import "reflect-metadata";
-import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import {
   ListResult,
   OperationType,
   SaveResult,
 } from "../../../../../../../../src/core/platform/framework/api/crud-service";
-import { PubsubServiceAPI } from "../../../../../../../../src/core/platform/services/pubsub/api";
+import { MessageQueueServiceAPI } from "../../../../../../../../src/core/platform/services/message-queue/api";
 import { ChannelMemberNotificationLevel } from "../../../../../../../../src/services/channels/types";
-import { NotificationServiceAPI } from "../../../../../../../../src/services/notifications/api";
-import { ChannelMemberNotificationPreference } from "../../../../../../../../src/services/notifications/entities/channel-member-notification-preferences";
-import { ChannelThreadUsers } from "../../../../../../../../src/services/notifications/entities/channel-thread-users";
 import {
-  UserNotificationBadge,
+  ChannelMemberNotificationPreference,
+  ChannelThreadUsers,
+} from "../../../../../../../../src/services/notifications/entities";
+import {
   TYPE as UserNotificationBadgeType,
+  UserNotificationBadge,
 } from "../../../../../../../../src/services/notifications/entities/user-notification-badges";
-import { PushNotificationToUsersMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/push-to-users/index";
 import { MentionNotification } from "../../../../../../../../src/services/notifications/types";
 import { uniqueId } from "lodash";
+import { PushNotificationToUsersMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/push-to-users";
+import gr from "../../../../../../../../src/services/global-resolver";
 
 describe("The PushNotificationToUsersMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;
-  let service: NotificationServiceAPI;
-  let pubsubService: PubsubServiceAPI;
+  let pubsubService: MessageQueueServiceAPI;
   let processor: PushNotificationToUsersMessageProcessor;
   let getUsersInThread;
   let getChannelPreferencesForUsers;
   let saveBadge;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     channel_id = "channel_id";
     company_id = "company_id";
     workspace_id = "workspace_id";
@@ -40,20 +41,27 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
     setPreferences();
     setUsersInThread();
 
-    pubsubService = ({
+    pubsubService = {
       publish: jest.fn(),
-    } as unknown) as PubsubServiceAPI;
-
-    service = ({
+    } as unknown as MessageQueueServiceAPI;
+    //
+    const service = {
       badges: {
         save: saveBadge,
       },
       channelPreferences: {
         getChannelPreferencesForUsers,
       },
-    } as unknown) as NotificationServiceAPI;
+    };
 
-    processor = new PushNotificationToUsersMessageProcessor(service, pubsubService);
+    gr.platformServices = {
+      messageQueue: pubsubService,
+    } as any;
+
+    gr.services = {
+      notifications: service,
+    } as any;
+    processor = new PushNotificationToUsersMessageProcessor();
   });
 
   afterEach(() => {
@@ -149,7 +157,8 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       await processor.process(message);
 
-      expect(service.channelPreferences.getChannelPreferencesForUsers).not.toBeCalled;
+      expect(gr.services.notifications.channelPreferences.getChannelPreferencesForUsers).not
+        .toBeCalled;
       done();
     });
 
@@ -159,7 +168,8 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       await processor.process(message);
 
-      expect(service.channelPreferences.getChannelPreferencesForUsers).not.toBeCalled;
+      expect(gr.services.notifications.channelPreferences.getChannelPreferencesForUsers).not
+        .toBeCalled;
       done();
     });
 
@@ -169,7 +179,8 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       await processor.process(message);
 
-      expect(service.channelPreferences.getChannelPreferencesForUsers).not.toBeCalled;
+      expect(gr.services.notifications.channelPreferences.getChannelPreferencesForUsers).not
+        .toBeCalled;
       done();
     });
 
@@ -223,8 +234,8 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
 
       await processor.process(message);
 
-      expect(getChannelPreferencesForUsers).toBeCalledWith(channel, users, { lessThan });
-      expect(service.badges.save).toBeCalledTimes(2);
+      expect(getChannelPreferencesForUsers).toBeCalledWith(channel, users, { lessThan }, undefined);
+      expect(gr.services.notifications.badges.save).toBeCalledTimes(2);
       expect(pubsubService.publish).toBeCalledTimes(2);
 
       done();

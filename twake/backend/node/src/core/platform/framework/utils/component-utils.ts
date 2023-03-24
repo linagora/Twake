@@ -1,22 +1,21 @@
-import { Subject, combineLatest } from "rxjs";
-import { filter } from "rxjs/operators";
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types */
 import {
   logger,
-  TwakeServiceFactory,
-  TwakeContext,
   TwakeComponent,
+  TwakeContext,
+  TwakeServiceFactory,
   TwakeServiceState,
 } from "../index";
 import { Loader } from "./loader";
 
 export async function buildDependenciesTree(
   components: Map<string, TwakeComponent>,
-  loadComponent: Function,
+  loadComponent: (name: string) => any,
 ): Promise<void> {
   for (const [name, component] of components) {
     const dependencies: string[] = component.getServiceInstance().getConsumes() || [];
 
-    for (let dependencyName of dependencies) {
+    for (const dependencyName of dependencies) {
       if (name === dependencyName) {
         throw new Error(`There is a circular dependency for component ${dependencyName}`);
       }

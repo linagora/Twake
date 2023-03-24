@@ -1,5 +1,5 @@
 import { logger } from "../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
+import { MessageQueueServiceAPI } from "../../../core/platform/services/message-queue/api";
 import { Notifier } from ".";
 
 const TOPIC = "notification:push:mobile";
@@ -7,22 +7,22 @@ const TOPIC = "notification:push:mobile";
 export class MobilePushNotifier implements Notifier {
   private static instance: MobilePushNotifier;
 
-  static get(pubsub: PubsubServiceAPI): Notifier {
+  static get(messageQueue: MessageQueueServiceAPI): Notifier {
     if (!MobilePushNotifier.instance) {
-      MobilePushNotifier.instance = new MobilePushNotifier(pubsub);
+      MobilePushNotifier.instance = new MobilePushNotifier(messageQueue);
     }
 
     return MobilePushNotifier.instance;
   }
 
-  private constructor(private pubsub: PubsubServiceAPI) {}
+  private constructor(private messageQueue: MessageQueueServiceAPI) {}
 
   async notify<Message>(user: string, message: Message): Promise<void> {
     logger.info(`MobilePushNotifier - Push to mobile ${user}`);
     logger.debug(`MobilePushNotifier - Push to mobile ${user}, ${JSON.stringify(message)}`);
 
     try {
-      await this.pubsub.publish<Message>(TOPIC, {
+      await this.messageQueue.publish<Message>(TOPIC, {
         data: message,
       });
     } catch (err) {

@@ -1,6 +1,8 @@
-import socketIO from "socket.io";
-import SocketIORedis from "socket.io-redis";
-import socketIOJWT from "socketio-jwt";
+import socketIO, { Server } from "socket.io";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { createClient } = require("redis");
+import SocketIORedis from "@socket.io/redis-adapter";
+import jwt from "jsonwebtoken";
 import WebSocketAPI from "../provider";
 import {
   WebSocket,
@@ -10,6 +12,7 @@ import {
 } from "../types";
 import { EventEmitter } from "events";
 import { User } from "../../../../../utils/types";
+import { JwtType } from "../../types";
 
 export class WebSocketService extends EventEmitter implements WebSocketAPI {
   version: "1";
@@ -17,37 +20,60 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
 
   constructor(serviceConfiguration: WebSocketServiceConfiguration) {
     super();
-    this.io = socketIO(serviceConfiguration.server, serviceConfiguration.options);
 
-    if (serviceConfiguration.adapters?.types?.includes("redis")) {
-      this.io.adapter(SocketIORedis(serviceConfiguration.adapters.redis));
-    }
+    serviceConfiguration.ready(() => {
+      this.io = serviceConfiguration.server.io;
 
-    this.io.sockets
-      .on(
-        "connection",
-        socketIOJWT.authorize({
-          secret: serviceConfiguration.auth.secret,
-          timeout: 15000,
-        }),
-      )
-      .on("authenticated", (socket: WebSocket) => {
-        const user = this.getUser(socket);
+      if (serviceConfiguration.adapters?.types?.includes("redis")) {
+        const pubClient = createClient(serviceConfiguration.adapters.redis);
+        const subClient = pubClient.duplicate();
+        this.io.adapter(SocketIORedis.createAdapter(pubClient, subClient));
+      }
 
-        this.emit("user:connected", {
-          user,
-          socket,
-          event: "user:connected",
-        } as WebsocketUserEvent);
+      this.io.on("connection", socket => {
+        socket.on("authenticate", message => {
+          if (message.token) {
+            jwt.verify(
+              message.token as string,
+              serviceConfiguration.auth.secret as string,
+              (err, decoded) => {
+                if (err) {
+                  socket.emit("unauthorized", { err });
+                  socket.disconnect();
+                  return;
+                }
+                (socket as unknown as WebSocket).decoded_token = decoded as JwtType;
+                const user = this.getUser(socket as WebSocket);
 
-        socket.on("disconnect", () =>
-          this.emit("user:disconnected", {
-            user,
-            socket,
-            event: "user:disconnected",
-          } as WebsocketUserEvent),
-        );
+                socket.emit("authenticated");
+
+                socket.on("message", message => {
+                  this.io.emit("message", message);
+                });
+
+                this.emit("user:connected", {
+                  user,
+                  socket,
+                  event: "user:connected",
+                } as WebsocketUserEvent);
+
+                socket.on("disconnect", () =>
+                  this.emit("user:disconnected", {
+                    user,
+                    socket,
+                    event: "user:disconnected",
+                  } as WebsocketUserEvent),
+                );
+              },
+            );
+          } else {
+            socket.emit("unauthorized", { err: "No token provided" });
+            socket.disconnect();
+            return;
+          }
+        });
       });
+    });
   }
 
   onUserConnected(listener: (event: WebsocketUserEvent) => void): this {

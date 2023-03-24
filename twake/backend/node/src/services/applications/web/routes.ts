@@ -1,44 +1,58 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
-import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
-import { WorkspaceBaseRequest } from "../../workspaces/web/types";
+
 import Application from "../entities/application";
-import assert from "assert";
-import { applicationPostSchema } from "./schemas";
+import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
+import { logger as log } from "../../../core/platform/framework";
+import { checkUserBelongsToCompany, hasCompanyAdminLevel } from "../../../utils/company";
+import gr from "../../global-resolver";
 
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
 
-const routes: FastifyPluginCallback<{
-  service: ApplicationServiceAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const applicationController = new ApplicationController(options.service);
-  const companyApplicationController = new CompanyApplicationController(
-    options.realtime,
-    options.service,
-  );
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const applicationController = new ApplicationController();
+  const companyApplicationController = new CompanyApplicationController();
 
-  const adminCheck = async (request: FastifyRequest<{ Body: Application }>) => {
-    const companyId = request.body.company_id;
-    const userId = request.currentUser.id;
-    assert(companyId, "company_id is not defined");
-    const companyUser = await options.service.companies.getCompanyUser(
-      { id: companyId },
-      { id: userId },
-    );
+  const adminCheck = async (
+    request: FastifyRequest<{
+      Body: { resource: Application };
+      Params: { application_id: string };
+    }>,
+  ) => {
+    try {
+      let companyId: string = request.body?.resource?.company_id;
 
-    if (!companyUser) {
-      const company = await options.service.companies.getCompany({ id: companyId });
-      if (!company) {
-        throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
+      if (request.params.application_id) {
+        const application = await gr.services.applications.marketplaceApps.get(
+          {
+            id: request.params.application_id,
+          },
+          undefined,
+        );
+
+        if (!application) {
+          throw fastify.httpErrors.notFound("Application is not defined");
+        }
+
+        companyId = application.company_id;
       }
-      throw fastify.httpErrors.forbidden("User does not belong to this company");
-    }
-    if (companyUser.role !== "admin") {
-      throw fastify.httpErrors.forbidden("You must be an admin of this company");
+
+      const userId = request.currentUser.id;
+
+      if (!companyId) {
+        throw fastify.httpErrors.forbidden(`Company ${companyId} not found`);
+      }
+
+      const companyUser = await checkUserBelongsToCompany(userId, companyId);
+
+      if (!hasCompanyAdminLevel(companyUser.role)) {
+        throw fastify.httpErrors.forbidden("You must be an admin of this company");
+      }
+    } catch (e) {
+      log.error(e);
+      throw e;
     }
   };
 
@@ -85,6 +99,15 @@ const routes: FastifyPluginCallback<{
     handler: applicationController.save.bind(applicationController),
   });
 
+  // Delete application (must be my company application and I must be company admin)
+  fastify.route({
+    method: "DELETE",
+    url: `${applicationsUrl}/:application_id`,
+    preHandler: [adminCheck],
+    preValidation: [fastify.authenticate],
+    handler: applicationController.delete.bind(applicationController),
+  });
+
   /**
    * Company applications collection
    * Company-wide available applications
@@ -128,6 +151,7 @@ const routes: FastifyPluginCallback<{
     method: "POST",
     url: `${applicationsUrl}/:application_id/event`,
     preValidation: [fastify.authenticate],
+    schema: applicationEventHookSchema,
     handler: applicationController.event.bind(applicationController),
   });
 

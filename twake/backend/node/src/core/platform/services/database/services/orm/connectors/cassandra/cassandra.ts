@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import cassandra from "cassandra-driver";
+import cassandra, { types } from "cassandra-driver";
 import { md5 } from "../../../../../../../crypto";
 import { defer, Subject, throwError, timer } from "rxjs";
 import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
@@ -26,6 +26,11 @@ export interface CassandraConnectionOptions {
   username: string;
   password: string;
   keyspace: string;
+
+  /**
+   * Consistency level
+   */
+  queryOptions: { consistency: number };
 
   /**
    * Wait for keyspace and tables to be created at init
@@ -156,6 +161,7 @@ export class CassandraConnector extends AbstractConnector<
     const cassandraOptions: cassandra.DseClientOptions = {
       contactPoints: contactPoints,
       localDataCenter: this.options.localDataCenter,
+      queryOptions: {},
     };
 
     if (this.options.username && this.options.password) {
@@ -164,6 +170,10 @@ export class CassandraConnector extends AbstractConnector<
         this.options.password,
       );
     }
+
+    //Set default consistency level to quorum
+    cassandraOptions.queryOptions.consistency =
+      this.options?.queryOptions?.consistency || types.consistencies.quorum;
 
     this.client = new cassandra.Client(cassandraOptions);
     await this.client.connect();
@@ -456,7 +466,7 @@ export class CassandraConnector extends AbstractConnector<
     }
 
     const query = buildSelectQuery<Table>(
-      (entityType as unknown) as ObjectType<Table>,
+      entityType as unknown as ObjectType<Table>,
       filters,
       options,
       {

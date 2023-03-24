@@ -1,0 +1,60 @@
+.config_modal {
+  height: 100%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  position: absolute;
+  z-index: 200;
+  top: 0;
+
+  .modal {
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    .component {
+      background: white;
+      border-radius: var(--border-radius-base);
+      box-shadow: var(--box-shadow-base);
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      transform: translateX(-50%) translateY(-50%);
+      .header {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+
+        .app_logo {
+          height: 30px;
+          width: 30px;
+          background-size: contain;
+          background-position: center;
+          border-radius: var(--border-radius-base);
+          margin-right: 5px;
+        }
+        .app_name {
+          line-height: 30px;
+          flex: auto;
+        }
+        .close {
+          margin: 2px;
+          opacity: 0.5;
+          cursor: pointer;
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+      .content {
+        flex: 1;
+        overflow: auto;
+        padding: 15px;
+        box-sizing: border-box;
+      }
+    }
+  }
+}

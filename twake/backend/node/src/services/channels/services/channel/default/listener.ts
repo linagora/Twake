@@ -1,13 +1,13 @@
 import { Channel, getDefaultChannelInstance } from "../../../entities";
-import { Initializable, getLogger } from "../../../../../core/platform/framework";
-import { localEventBus } from "../../../../../core/platform/framework/pubsub";
+import { getLogger, Initializable } from "../../../../../core/platform/framework";
+import { localEventBus } from "../../../../../core/platform/framework/event-bus";
 import { ResourceEventsPayload } from "../../../../../utils/types";
-import { DefaultChannelService } from "../../../provider";
+import DefaultChannelServiceImpl from "./service";
 
 const logger = getLogger("channel:default:listener");
 
 export default class DefaultChannelListener implements Initializable {
-  constructor(private service: DefaultChannelService) {}
+  constructor(private service: DefaultChannelServiceImpl) {}
 
   async init(): Promise<this> {
     localEventBus.subscribe<ResourceEventsPayload>(
@@ -68,6 +68,7 @@ export default class DefaultChannelListener implements Initializable {
             company_id: event.channel.company_id,
             workspace_id: event.channel.workspace_id,
           }),
+          undefined,
         )
         .catch((err: Error) => {
           logger.error({ err }, "Default channel %id can not be updated", event.channel.id);
@@ -103,6 +104,7 @@ export default class DefaultChannelListener implements Initializable {
           company_id: event.channel.company_id,
           workspace_id: event.channel.workspace_id,
         }),
+        undefined,
       )
       .catch((err: Error) => {
         logger.warn({ err }, "Default channel %id can not be created", event.channel.id);

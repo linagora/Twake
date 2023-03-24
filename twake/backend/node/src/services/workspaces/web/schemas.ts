@@ -1,5 +1,5 @@
 import { webSocketSchema } from "../../../utils/types";
-import { userObjectSchema } from "../../user/web/schemas";
+import { companyObjectSchema, userObjectSchema } from "../../user/web/schemas";
 
 const workspaceObjectSchema = {
   type: "object",
@@ -244,25 +244,6 @@ export const inviteWorkspaceUserSchema = {
     },
     required: ["invitations"],
   },
-  response: {
-    "2xx": {
-      type: "object",
-      properties: {
-        resources: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              email: { type: "string" },
-              status: { type: "string", enum: ["ok", "error"] },
-              message: { type: "string" },
-            },
-          },
-        },
-      },
-      required: ["resources"],
-    },
-  },
 };
 
 export const getWorkspacePendingUsersSchema = {
@@ -349,7 +330,12 @@ export const joinInviteTokenSchema = {
           properties: {
             company: {
               type: "object",
-              properties: { id: { type: "string" }, name: { type: "string" } },
+              properties: {
+                id: { type: "string" },
+                name: { type: "string" },
+                plan: companyObjectSchema["properties"]["plan"],
+                stats: companyObjectSchema["properties"]["stats"],
+              },
             },
             workspace: {
               type: "object",

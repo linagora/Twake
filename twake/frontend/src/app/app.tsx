@@ -4,15 +4,17 @@ import { Router } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
-import Integration from 'app/scenes/Integration/Integration';
-import RouterServices, { RouteType } from './services/RouterService';
-import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
-import InitService from './services/InitService';
-import useTimeout from './services/hooks/useTimeout';
-import ApplicationLoader from './components/Loader/ApplicationLoader';
+import MobileRedirect from './views/mobile-redirect';
+import Integration from 'app/views/integration';
+import RouterServices, { RouteType } from './features/router/services/router-service';
+import ErrorBoundary from 'app/views/error/error-boundary';
+import InitService from './features/global/services/init-service';
+import useTimeout from 'app/features/global/hooks/use-timeout';
+import ApplicationLoader from './components/loader/application-loader';
 
-import 'app/ui.scss';
-import 'app/theme.less';
+import DebugState from './components/debug/debug-state';
+import 'app/styles/index.less';
+import DesktopRedirect from './views/desktop-redirect';
 
 const delayMessage = 5000;
 
@@ -37,7 +39,9 @@ export default () => {
       setDisplayDelayLoader(false);
       try {
         window.document.getElementById('app_loader')?.remove();
-      } catch (err) {}
+      } catch (err) {
+        //Null
+      }
     }
   }, [server_infos_loaded]);
 
@@ -51,41 +55,46 @@ export default () => {
 
   return (
     <RecoilRoot>
-      <Integration>
-        <Router history={RouterServices.history}>
-          <Switch>
-            {RouterServices.routes.map((route: RouteType, index: number) => (
-              <Route
-                key={`${route.key}_${index}`}
-                exact={route.exact ? route.exact : false}
-                path={route.path}
-                component={() =>
-                  route.options?.withErrorBoundary ? (
-                    <ErrorBoundary key={route.key}>
-                      <route.component />
-                    </ErrorBoundary>
-                  ) : (
-                    <route.component key={route.key} />
-                  )
+      <DebugState />
+      <MobileRedirect>
+        <Integration>
+          <DesktopRedirect>
+            <Router history={RouterServices.history}>
+              <Switch>
+                {RouterServices.routes.map((route: RouteType, index: number) => (
+                  <Route
+                    key={`${route.key}_${index}`}
+                    exact={route.exact ? route.exact : false}
+                    path={route.path}
+                    component={() =>
+                      route.options?.withErrorBoundary ? (
+                        <ErrorBoundary key={route.key}>
+                          <route.component />
+                        </ErrorBoundary>
+                      ) : (
+                        <route.component key={route.key} />
+                      )
+                    }
+                  />
+                ))}
+                {
+                  <Route
+                    path="/"
+                    component={() => {
+                      RouterServices.replace(
+                        `${
+                          RouterServices.pathnames.LOGIN
+                        }?auto&${RouterServices.history.location.search.substr(1)}`,
+                      );
+                      return <div />;
+                    }}
+                  />
                 }
-              />
-            ))}
-            {
-              <Route
-                path="/"
-                component={() => {
-                  RouterServices.replace(
-                    `${
-                      RouterServices.pathnames.LOGIN
-                    }?auto&${RouterServices.history.location.search.substr(1)}`,
-                  );
-                  return <div />;
-                }}
-              />
-            }
-          </Switch>
-        </Router>
-      </Integration>
+              </Switch>
+            </Router>
+          </DesktopRedirect>
+        </Integration>
+      </MobileRedirect>
     </RecoilRoot>
   );
 };

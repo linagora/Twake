@@ -1,10 +1,9 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { CrudExeption, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelTab, ChannelTabPrimaryKey } from "../../entities";
-import { TabService } from "../../provider";
 import {
-  ChannelTabParameters,
   ChannelParameters,
+  ChannelTabParameters,
   CreateChannelTabBody,
   PaginationQueryParameters,
   UpdateChannelTabBody,
@@ -21,9 +20,9 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { getTabsRealtimeRoom } from "../../services/tab/service";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
+import { getTabsRealtimeRoom } from "../../services/tab";
+import gr from "../../../global-resolver";
 
 export class ChannelTabCrudController
   implements
@@ -34,8 +33,6 @@ export class ChannelTabCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(protected websockets: RealtimeServiceAPI, protected service: TabService) {}
-
   getPrimaryKey(request: FastifyRequest<{ Params: ChannelTabParameters }>): ChannelTabPrimaryKey {
     return {
       id: request.params.tab_id,
@@ -49,13 +46,13 @@ export class ChannelTabCrudController
     request: FastifyRequest<{ Params: ChannelTabParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelTab>> {
-    const resource = await this.service.get(
+    const resource = await gr.services.tab.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
 
     if (!resource) {
-      throw CrudExeption.notFound(`Channel member ${request.params.tab_id} not found`);
+      throw CrudException.notFound(`Channel member ${request.params.tab_id} not found`);
     }
 
     return {
@@ -78,7 +75,7 @@ export class ChannelTabCrudController
 
     try {
       const context = getExecutionContext(request);
-      const result = await this.service.save(entity, {}, context);
+      const result = await gr.services.tab.save(entity, {}, context);
 
       if (result.entity) {
         localEventBus.publish<ResourceEventsPayload>("channel:tab:created", {
@@ -109,7 +106,7 @@ export class ChannelTabCrudController
     });
 
     try {
-      const result = await this.service.save(entity, {}, getExecutionContext(request));
+      const result = await gr.services.tab.save(entity, {}, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(200);
@@ -129,7 +126,7 @@ export class ChannelTabCrudController
   ): Promise<ResourceDeleteResponse> {
     try {
       const context = getExecutionContext(request);
-      const deleteResult = await this.service.delete(this.getPrimaryKey(request), context);
+      const deleteResult = await gr.services.tab.delete(this.getPrimaryKey(request));
 
       if (deleteResult.deleted) {
         localEventBus.publish<ResourceEventsPayload>("channel:tab:deleted", {
@@ -166,7 +163,7 @@ export class ChannelTabCrudController
     }>,
   ): Promise<ResourceListResponse<ChannelTab>> {
     const context = getExecutionContext(request);
-    const list = await this.service.list(
+    const list = await gr.services.tab.list(
       new Pagination(request.query.page_token, request.query.limit),
       {},
       context,
@@ -177,7 +174,7 @@ export class ChannelTabCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: this.websockets.sign(
+        websockets: gr.platformServices.realtime.sign(
           [{ room: getTabsRealtimeRoom(context.channel) }],
           context.user.id,
         ),

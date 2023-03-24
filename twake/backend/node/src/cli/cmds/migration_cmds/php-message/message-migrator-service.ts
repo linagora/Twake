@@ -1,13 +1,9 @@
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { PhpMessagesService } from "./php-message-service";
-import UserServiceAPI from "../../../../services/user/api";
-import ChannelServiceAPI from "../../../../services/channels/provider";
 import { convertUuidV4ToV1 } from "./utils";
 import Company from "../../../../services/user/entities/company";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { PhpMessage } from "./php-message-entity";
 import { TwakePlatform } from "../../../../core/platform/platform";
-import { MessageServiceAPI } from "../../../../services/messages/api";
 import {
   Message,
   MessageEdited,
@@ -19,6 +15,7 @@ import { MessageChannelRef } from "../../../../services/messages/entities/messag
 import { ParticipantObject, Thread } from "../../../../services/messages/entities/threads";
 import { Block } from "../../../../services/messages/blocks-types";
 import { WorkspaceExecutionContext } from "../../../../services/workspaces/types";
+import gr from "../../../../services/global-resolver";
 
 type MigratedChannel = {
   id: string;
@@ -37,29 +34,22 @@ type Options = {
   dryRun?: boolean;
 };
 class MessageMigrator {
-  private database: DatabaseServiceAPI;
-  private userService: UserServiceAPI;
-  private channelService: ChannelServiceAPI;
   private phpMessageService: PhpMessagesService;
-  private nodeMessageService: MessageServiceAPI;
-  private migratedMessages: number = 0;
+  private migratedMessages = 0;
   private options: Options = {};
 
   constructor(readonly platform: TwakePlatform) {
-    this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
-    this.userService = this.platform.getProvider<UserServiceAPI>("user");
-    this.channelService = this.platform.getProvider<ChannelServiceAPI>("channels");
-    this.phpMessageService = new PhpMessagesService(this.database);
-    this.nodeMessageService = this.platform.getProvider<MessageServiceAPI>("messages");
+    this.phpMessageService = new PhpMessagesService();
   }
 
   public async run(options: Options = {}): Promise<void> {
+    await gr.doInit(this.platform);
     this.options = options;
 
     await this.phpMessageService.init();
 
     if (this.options.onlyCompany) {
-      const company = await this.userService.companies.getCompany({ id: options.onlyCompany });
+      const company = await gr.services.companies.getCompany({ id: options.onlyCompany });
       await this.migrateCompanyMessages(company);
     } else {
       let waitForCompany = false;
@@ -71,7 +61,7 @@ class MessageMigrator {
       let page: Pagination = { limitStr: "100" };
       // For each companies find workspaces
       do {
-        const companyListResult = await this.userService.companies.getCompanies(page);
+        const companyListResult = await gr.services.companies.getCompanies(page);
         page = companyListResult.nextPage as Pagination;
 
         for (const company of companyListResult.getEntities()) {
@@ -111,10 +101,11 @@ class MessageMigrator {
    *  Set all direct messages in company and set them to channelPhpMessages
    */
   private async migrateCompanyDirectMessages(company: Company) {
+    await gr.doInit(this.platform);
     let pageDirectChannels: Pagination = { limitStr: "100" };
     // For each directChannels find messages
     do {
-      const directChannelsInCompanyResult = await this.channelService.channels.list(
+      const directChannelsInCompanyResult = await gr.services.channels.channels.list(
         pageDirectChannels,
         {},
         {
@@ -142,9 +133,11 @@ class MessageMigrator {
    * Set all messages in company and set them to channelPhpMessages
    */
   private async migrateCompanyChannelsMessages(company: Company) {
+    await gr.doInit(this.platform);
+
     // Get all workspaces in company
     const workspacesInCompany = (
-      await this.userService.workspaces.list({ limitStr: "" }, {}, {
+      await gr.services.workspaces.list({ limitStr: "" }, {}, {
         user: {
           id: null,
           server_request: true,
@@ -162,7 +155,7 @@ class MessageMigrator {
       // Get all channels in workspace
       let pageChannels: Pagination = { limitStr: "1" };
       do {
-        const channelsInWorkspace = await this.channelService.channels.list(
+        const channelsInWorkspace = await gr.services.channels.channels.list(
           pageChannels,
           {},
           {
@@ -235,12 +228,12 @@ class MessageMigrator {
     if (!message.id) {
       return;
     }
-
+    await gr.doInit(this.platform);
     //Create thread first if not exists
     const threadId = message.parent_message_id || message.id;
 
     if (this.options.ignoreExisting) {
-      const msg = await this.nodeMessageService.messages.get({
+      const msg = await gr.services.messages.messages.get({
         thread_id: threadId,
         id: message.id,
       });
@@ -271,11 +264,12 @@ class MessageMigrator {
   }
 
   private async migrateChannelsMessagesBackToPhp(company: Company, channel: MigratedChannel) {
-    const channelRefRepository = await this.database.getRepository(
+    await gr.doInit(this.platform);
+    const channelRefRepository = await gr.database.getRepository(
       "message_channel_refs",
       MessageChannelRef,
     );
-    const messageRepository = await this.database.getRepository("messages", Message);
+    const messageRepository = await gr.database.getRepository("messages", Message);
 
     //This function will migrate all messages in a channel
     let pageMessages: Pagination = { limitStr: "100" };
@@ -287,12 +281,17 @@ class MessageMigrator {
           channel_id: channel.id,
         },
         { pagination: pageMessages },
+        undefined,
       );
 
       for (const messageRef of messages.getEntities()) {
-        const messages = await messageRepository.find({
-          thread_id: messageRef.thread_id,
-        });
+        const messages = await messageRepository.find(
+          {
+            thread_id: messageRef.thread_id,
+          },
+          {},
+          undefined,
+        );
 
         for (const message of messages.getEntities()) {
           const uuidv1_channel_id =
@@ -359,7 +358,7 @@ class MessageMigrator {
             };
 
             if (!this.options.dryRun) {
-              await this.phpMessageService.repository.save(newPhpMessage);
+              await this.phpMessageService.repository.save(newPhpMessage, undefined);
             }
 
             this.migratedMessages++;
@@ -407,7 +406,7 @@ class MessageMigrator {
     }
 
     // Create nodeThread
-    return await this.nodeMessageService.threads.save(
+    return await gr.services.messages.threads.save(
       thread,
       {},
       { user: { id: null, server_request: true }, company },
@@ -544,7 +543,7 @@ class MessageMigrator {
     }
 
     // Create nodeMessage then add it to thread
-    return await this.nodeMessageService.messages.save(
+    return await gr.services.messages.messages.save(
       nodeMessage,
       {
         enforceViewPropagation: true,

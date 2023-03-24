@@ -1,5 +1,3 @@
-import { webSocketSchema } from "../../../utils/types";
-
 export const applicationsSchema = {
   type: "object",
   properties: {},
@@ -50,21 +48,21 @@ const responseApplicationPublication = {
 const applicationStats = {
   type: "object",
   properties: {
-    createdAt: { type: "number" },
-    updatedAt: { type: "number" },
+    created_at: { type: "number" },
+    updated_at: { type: "number" },
     version: { type: "number" },
   },
-  required: ["createdAt", "updatedAt", "version"],
+  required: ["created_at", "updated_at", "version"],
 };
 
 const apiObject = {
   type: "object",
   properties: {
-    hooksUrl: { type: "string" },
-    allowedIps: { type: "string" },
-    privateKey: { type: "string" },
+    hooks_url: { type: "string" },
+    allowed_ips: { type: "string" },
+    private_key: { type: "string" },
   },
-  required: ["hooksUrl", "allowedIps"],
+  required: ["hooks_url", "allowed_ips"],
 };
 
 const requestApplicationObject = {
@@ -108,10 +106,24 @@ const responseApplicationObject = {
 };
 
 export const applicationPostSchema = {
-  body: requestApplicationObject,
+  body: { type: "object", properties: { resource: requestApplicationObject } },
   response: {
     "2xx": {
       resource: responseApplicationObject,
     },
+  },
+};
+
+export const applicationEventHookSchema = {
+  body: {
+    type: "object",
+    properties: {
+      company_id: { type: "string" },
+      workspace_id: { type: "string" },
+      type: { type: "string" },
+      name: { type: "string" },
+      content: {},
+    },
+    required: ["company_id", "workspace_id", "type", "content"],
   },
 };

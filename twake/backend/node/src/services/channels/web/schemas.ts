@@ -39,16 +39,9 @@ const channelSchema = {
     owner: { type: "string" },
     visibility: { type: "string", enum: ["private", "public", "direct"] },
     last_activity: { type: "number" },
-    user_member: channelMemberSchema,
+    user_member: {},
     direct_channel_members: { type: "array" },
-    stats: {
-      type: "object",
-      properties: {
-        members: { type: "number" },
-        guests: { type: "number" },
-        messages: { type: "number" },
-      },
-    },
+    stats: {},
   },
 };
 

@@ -1,13 +1,13 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
 import {
-  IncomingPubsubMessage,
-  PubsubHandler,
-  PubsubServiceAPI,
-  PubsubServiceProcessor,
-} from "../../../../../../src/core/platform/services/pubsub/api";
+  IncomingMessageQueueMessage,
+  MessageQueueHandler,
+  MessageQueueServiceAPI,
+  MessageQueueServiceProcessor,
+} from "../../../../../../src/core/platform/services/message-queue/api";
 
-describe("The PubsubServiceProcessor class", () => {
-  let pubsubService: PubsubServiceAPI;
+describe("The MessageQueueServiceProcessor class", () => {
+  let pubsubService: MessageQueueServiceAPI;
   let subscribe;
   let publish;
   let topic;
@@ -20,10 +20,10 @@ describe("The PubsubServiceProcessor class", () => {
     outTopic = "outTopic";
     subscribe = jest.fn();
     publish = jest.fn();
-    pubsubService = ({
+    pubsubService = {
       publish,
       subscribe,
-    } as unknown) as PubsubServiceAPI;
+    } as unknown as MessageQueueServiceAPI;
   });
 
   afterEach(() => {
@@ -34,8 +34,8 @@ describe("The PubsubServiceProcessor class", () => {
   describe("The init function", () => {
     it("should not subscribe when topics is not defined", async () => {
       subscribe.mockResolvedValue(true);
-      const processor = new PubsubServiceProcessor(
-        {} as PubsubHandler<unknown, unknown>,
+      const processor = new MessageQueueServiceProcessor(
+        {} as MessageQueueHandler<unknown, unknown>,
         pubsubService,
       );
 
@@ -45,10 +45,10 @@ describe("The PubsubServiceProcessor class", () => {
 
     it("should not subscribe when topics.in is not defined", async () => {
       subscribe.mockResolvedValue(true);
-      const processor = new PubsubServiceProcessor(
+      const processor = new MessageQueueServiceProcessor(
         {
           topics: {},
-        } as PubsubHandler<unknown, unknown>,
+        } as MessageQueueHandler<unknown, unknown>,
         pubsubService,
       );
 
@@ -58,12 +58,12 @@ describe("The PubsubServiceProcessor class", () => {
 
     it("should subscribe when topics.in is defined", async () => {
       subscribe.mockResolvedValue(true);
-      const processor = new PubsubServiceProcessor(
+      const processor = new MessageQueueServiceProcessor(
         {
           topics: {
             in: topic,
           },
-        } as PubsubHandler<unknown, unknown>,
+        } as MessageQueueHandler<unknown, unknown>,
         pubsubService,
       );
 
@@ -78,17 +78,17 @@ describe("The PubsubServiceProcessor class", () => {
       it("should not process data when data is not valid", async () => {
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
         const validate = jest.fn().mockReturnValue(false);
         const process = jest.fn().mockReturnValue(true);
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
             },
             validate,
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -104,17 +104,17 @@ describe("The PubsubServiceProcessor class", () => {
       it("should process data when data is valid", async () => {
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
         const validate = jest.fn().mockReturnValue(true);
         const process = jest.fn().mockReturnValue(true);
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
             },
             validate,
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -132,15 +132,15 @@ describe("The PubsubServiceProcessor class", () => {
       it("should not publish error when topics.error is not defined", async () => {
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
         const process = jest.fn().mockRejectedValue(new Error("I failed to process"));
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -156,16 +156,16 @@ describe("The PubsubServiceProcessor class", () => {
       it("should publish error when topics.error is defined", async () => {
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
         const process = jest.fn().mockRejectedValue(new Error("I failed to process"));
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
               error: errorTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -182,17 +182,19 @@ describe("The PubsubServiceProcessor class", () => {
       it("should not publish when processing does not return result", async () => {
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(null);
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
               out: outTopic,
               error: errorTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -208,16 +210,18 @@ describe("The PubsubServiceProcessor class", () => {
       it("should not publish when out topic is not defined", async () => {
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(true);
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
               error: errorTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -234,17 +238,19 @@ describe("The PubsubServiceProcessor class", () => {
         const result = "processing result";
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(result);
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
               error: errorTopic,
               out: outTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -268,17 +274,19 @@ describe("The PubsubServiceProcessor class", () => {
         const result = "processing result";
         const message = {
           data: "foo",
-        } as IncomingPubsubMessage<string>;
+        } as IncomingMessageQueueMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(result);
-        const processor = new PubsubServiceProcessor(
-          ({
+        const processor = new MessageQueueServiceProcessor(
+          {
             topics: {
               in: topic,
               error: errorTopic,
               out: outTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as MessageQueueHandler<unknown, unknown>,
           pubsubService,
         );
 

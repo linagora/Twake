@@ -1,20 +1,18 @@
-import { FilePubsubHandler, FileServiceAPI } from "../api";
 import { logger, TwakeContext } from "../../../core/platform/framework";
-import _ from "lodash";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
-import { PreviewPubsubCallback } from "../../../../src/services/previews/types";
+import { PreviewMessageQueueCallback } from "../../../../src/services/previews/types";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { File } from "../entities/file";
+import { FileServiceImpl } from "./index";
+import { MessageQueueHandler } from "../../../core/platform/services/message-queue/api";
+import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 
 /**
  * Update the file metadata and upload the thumbnails in storage
  */
-export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsubCallback, string> {
-  constructor(
-    readonly service: FileServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    private repository: Repository<File>,
-  ) {}
+export class PreviewFinishedProcessor
+  implements MessageQueueHandler<PreviewMessageQueueCallback, string>
+{
+  constructor(readonly service: FileServiceImpl, private repository: Repository<File>) {}
 
   async init(context?: TwakeContext): Promise<this> {
     return this;
@@ -31,17 +29,17 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
 
   name = "FilePreviewProcessor";
 
-  validate(message: PreviewPubsubCallback): boolean {
+  validate(message: PreviewMessageQueueCallback): boolean {
     return !!(message && message.document && message.thumbnails);
   }
 
-  async process(message: PreviewPubsubCallback): Promise<string> {
+  async process(message: PreviewMessageQueueCallback, context?: ExecutionContext): Promise<string> {
     logger.info(
-      `${this.name} - Updating file metadata with preview generation ${message.thumbnails}`,
+      `${this.name} - Updating file metadata with preview generation ${message.thumbnails.length}`,
     );
 
     const pk: { company_id: string; id: string } = JSON.parse(message.document.id);
-    const entity = await this.repository.findOne(pk);
+    const entity = await this.repository.findOne(pk, {}, context);
 
     if (!entity) {
       logger.info(`This file ${message.document.id} does not exists anymore.`);
@@ -63,7 +61,7 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
     if (!entity.metadata) entity.metadata = {};
     entity.metadata.thumbnails_status = "done";
 
-    await this.repository.save(entity);
+    await this.repository.save(entity, context);
     return "done";
   }
 }

@@ -2,8 +2,7 @@ import yargs from "yargs";
 import ora from "ora";
 import Table from "cli-table";
 import twake from "../../../twake";
-import UserServiceAPI from "../../../services/user/api";
-
+import gr from "../../../services/global-resolver";
 /**
  * Merge command parameters. Check the builder definition below for more details.
  */
@@ -19,7 +18,7 @@ const services = [
   "notifications",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
 ];
 
 const command: yargs.CommandModule<ListParams, ListParams> = {
@@ -36,8 +35,8 @@ const command: yargs.CommandModule<ListParams, ListParams> = {
     const table = new Table({ head: ["ID", "Name"], colWidths: [40, 50] });
     const spinner = ora({ text: "List Twake workspaces" }).start();
     const platform = await twake.run(services);
-    const userService = platform.getProvider<UserServiceAPI>("user");
-    const workspaces = await userService.workspaces.list({ limitStr: argv.size });
+    await gr.doInit(platform);
+    const workspaces = await gr.services.workspaces.list({ limitStr: argv.size });
 
     spinner.stop();
     workspaces.getEntities().forEach(ws => table.push([ws.id, ws.name]));

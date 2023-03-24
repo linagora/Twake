@@ -16,7 +16,7 @@ describe("The /workspaces API", () => {
     platform = await init({
       services: [
         "database",
-        "pubsub",
+        "message-queue",
         "webserver",
         "user",
         "search",
@@ -380,7 +380,7 @@ describe("The /workspaces API", () => {
     it("should 200 when admin of company (full update)", async done => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
-      const userId = testDbService.workspaces[2].users[0].id; // company moderator
+      const userId = testDbService.workspaces[2].users[0].id; // company owner
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -390,7 +390,7 @@ describe("The /workspaces API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            name: "Another channel name",
+            name: "Another workspace name",
             logo: "logo",
             default: false,
             archived: false,
@@ -405,11 +405,11 @@ describe("The /workspaces API", () => {
       expect(resource).toMatchObject({
         id: workspaceId,
         company_id: companyId,
-        name: "Another channel name",
+        name: "Another workspace name",
         logo: expect.any(String),
         default: false,
         archived: false,
-        role: "member",
+        role: "moderator", //Company admin is a moderator
       });
 
       done();

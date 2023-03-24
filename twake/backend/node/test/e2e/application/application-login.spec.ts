@@ -1,18 +1,17 @@
-import { beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
 import { logger as log } from "../../../src/core/platform/framework";
-import { randomBytes } from "crypto";
 import { ApplicationLoginResponse } from "../../../src/services/applicationsapi/web/types";
-import { cloneDeep } from "lodash";
 
 describe("Applications", () => {
   let platform: TestPlatform;
   let testDbService: TestDbService;
   let api: Api;
   let appId: string;
-  let privateKey: string;
+  let private_key: string;
   let accessToken: ApplicationLoginResponse["access_token"];
 
   beforeAll(async ends => {
@@ -23,19 +22,18 @@ describe("Applications", () => {
 
     postPayload.company_id = platform.workspace.company_id;
 
-    const createdApplication = await api.post(
-      "/internal/services/applications/v1/applications",
-      postPayload,
-    );
+    const createdApplication = await api.post("/internal/services/applications/v1/applications", {
+      resource: postPayload,
+    });
 
     appId = createdApplication.resource.id;
-    privateKey = createdApplication.resource.api.privateKey;
+    private_key = createdApplication.resource.api.private_key;
 
     ends();
   });
 
   afterAll(done => {
-    platform.tearDown().then(done);
+    platform.tearDown().then(() => done());
   });
 
   describe("Login", function () {
@@ -44,7 +42,7 @@ describe("Applications", () => {
 
       const response = await api.post("/api/console/v1/login", {
         id: appId,
-        secret: privateKey,
+        secret: private_key,
       });
       expect(response.statusCode).toBe(200);
 
@@ -127,8 +125,8 @@ const postPayload = {
     compatibility: [],
   },
   api: {
-    hooksUrl: "hooksUrl",
-    allowedIps: "allowedIps",
+    hooks_url: "hooks_url",
+    allowed_ips: "allowed_ips",
   },
   access: {
     read: ["messages"],

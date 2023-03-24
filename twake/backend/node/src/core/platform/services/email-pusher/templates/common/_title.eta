@@ -1,0 +1,54 @@
+
+<table
+border="0" cellpadding="0" cellspacing="0" 
+role="presentation" style="vertical-align:top;" width="100%"
+>
+    <tbody>
+        <tr>
+            <td
+                align="center" style="font-size:0px;padding:0 0 35px;word-break:break-word;"
+                >
+                <div
+                style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:24px;font-weight:800;line-height:29px;text-align:center;color:#000000;"
+                >You have been invited</div>
+            </td>
+        </tr>
+        <tr>
+            <td
+                align="left" class="common-text"
+                style="font-size:0px;padding:0 0 20px;word-break:break-word;"
+                >
+                <div
+                style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;"
+                >Hi romaric.mollard@gmail
+                .com,
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td
+                align="left" 
+                class="common-text" style="font-size:0px;padding:0 0 20px;word-break:break-word;"
+                >
+                <div
+                style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;"
+                ><span>romaric.mollard@gmail.com has invited you to use Twake 
+                on</span>
+                <span style="color: #007AFF">Crayon Company</span>.
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td
+                align="left" 
+                class="common-text" style="font-size:0px;padding:0;word-break:break-word;"
+                >
+                <div
+                style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;"
+                >Since you already have an account, please sign in and switch your 
+                application as shown here.
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

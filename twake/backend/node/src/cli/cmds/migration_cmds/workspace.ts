@@ -8,6 +8,7 @@ import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Workspace, { TYPE, getInstance } from "../../../services/workspaces/entities/workspace";
 import _ from "lodash";
 import { logger } from "../../../core/platform/framework";
+import gr from "../../../services/global-resolver";
 
 type Options = {
   from?: string;
@@ -36,7 +37,7 @@ class WorkspaceMigrator {
     let page: Pagination = { limitStr: "100" };
     // For each companies find workspaces
     do {
-      const workspaceListResult = await phpRepository.find({}, { pagination: page });
+      const workspaceListResult = await phpRepository.find({}, { pagination: page }, undefined);
       page = workspaceListResult.nextPage as Pagination;
 
       for (const workspace of workspaceListResult.getEntities()) {
@@ -50,7 +51,11 @@ class WorkspaceMigrator {
             options.onlyCompany == `${workspace.group_id}`
           ) {
             if (
-              !(await repository.findOne({ company_id: workspace.group_id, id: workspace.id })) ||
+              !(await repository.findOne(
+                { company_id: workspace.group_id, id: workspace.id },
+                {},
+                undefined,
+              )) ||
               options.replaceExisting
             ) {
               const newWorkspace = getInstance(
@@ -68,7 +73,7 @@ class WorkspaceMigrator {
                 ),
               );
               newWorkspace.company_id = workspace.group_id;
-              await repository.save(newWorkspace);
+              await repository.save(newWorkspace, undefined);
             }
           }
         }
@@ -87,7 +92,7 @@ const services = [
   "channels",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "workspaces",
   "console",
   "auth",
@@ -122,6 +127,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Migrating php worskpaces - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new WorkspaceMigrator(platform);
 
     const from = argv.from as string | null;

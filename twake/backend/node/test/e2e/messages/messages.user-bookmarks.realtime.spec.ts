@@ -1,9 +1,10 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import io from "socket.io-client";
-import { TestPlatform, init } from "../setup";
-import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { TwakePlatform } from "../../../src/core/platform/platform";
+import { init, TestPlatform } from "../setup";
+import gr from "../../../src/services/global-resolver";
 
 describe("The Bookmarks Realtime feature", () => {
   const url = "/internal/services/messages/v1";
@@ -17,7 +18,7 @@ describe("The Bookmarks Realtime feature", () => {
         "database",
         "search",
         "storage",
-        "pubsub",
+        "message-queue",
         "files",
         "user",
         "websocket",
@@ -47,8 +48,6 @@ describe("The Bookmarks Realtime feature", () => {
 
   describe("On bookmark creation", () => {
     it("should notify the client", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
 
@@ -59,14 +58,13 @@ describe("The Bookmarks Realtime feature", () => {
           .on("authenticated", () => {
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              await service.userBookmarks.save(
+              await gr.services.messages.userBookmarks.save(
                 {
                   company_id: platform.workspace.company_id,
                   user_id: platform.currentUser.id,
                   name: "mybookmarksaved",
                   id: undefined,
                 },
-                {},
                 getContext(platform),
               );
             });
@@ -90,16 +88,13 @@ describe("The Bookmarks Realtime feature", () => {
 
   describe("On bookmark removal", () => {
     it("should notify the client", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
-      const instance = await service.userBookmarks.save(
+      const instance = await gr.services.messages.userBookmarks.save(
         {
           company_id: platform.workspace.company_id,
           user_id: platform.currentUser.id,
           name: "mybookmark",
           id: undefined,
         },
-        {},
         getContext(platform),
       );
 
@@ -113,7 +108,7 @@ describe("The Bookmarks Realtime feature", () => {
           .on("authenticated", () => {
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              await service.userBookmarks.delete(
+              await gr.services.messages.userBookmarks.delete(
                 {
                   company_id: platform.workspace.company_id,
                   user_id: platform.currentUser.id,

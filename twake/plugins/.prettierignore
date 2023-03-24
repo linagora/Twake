@@ -1,0 +1,11 @@
+dist
+vendor
+node_modules
+src/client/public
+src/client/images
+public
+build
+.idea
+.storybook
+.git
+utils/scaffolds

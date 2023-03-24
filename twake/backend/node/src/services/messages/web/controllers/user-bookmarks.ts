@@ -1,19 +1,16 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { MessageServiceAPI } from "../../api";
 import {
-  ResourceUpdateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-  ResourceWebsocket,
+  ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { getInstance, UserMessageBookmark } from "../../entities/user-message-bookmarks";
-import { ExecutionContext, SaveResult } from "../../../../core/platform/framework/api/crud-service";
+import { UserMessageBookmark } from "../../entities/user-message-bookmarks";
 import { handleError } from "../../../../utils/handleError";
 import { CompanyExecutionContext } from "../../types";
 import { getUserBookmarksWebsocketRoom } from "../realtime";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import gr from "../../../global-resolver";
 
 export class UserBookmarksController
   implements
@@ -24,8 +21,6 @@ export class UserBookmarksController
       ResourceDeleteResponse
     >
 {
-  constructor(protected realtime: RealtimeServiceAPI, protected service: MessageServiceAPI) {}
-
   async save(
     request: FastifyRequest<{
       Params: {
@@ -42,14 +37,13 @@ export class UserBookmarksController
   ): Promise<ResourceUpdateResponse<UserMessageBookmark>> {
     const context = getCompanyExecutionContext(request);
     try {
-      const result = await this.service.userBookmarks.save(
+      const result = await gr.services.messages.userBookmarks.save(
         {
           user_id: context.user.id,
           company_id: request.params.company_id,
           name: request.body.resource.name,
           id: request.params.id || undefined,
         },
-        {},
         context,
       );
       return {
@@ -71,7 +65,7 @@ export class UserBookmarksController
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
     try {
-      const result = await this.service.userBookmarks.delete(
+      const result = await gr.services.messages.userBookmarks.delete(
         {
           user_id: context.user.id,
           company_id: request.params.company_id,
@@ -97,16 +91,15 @@ export class UserBookmarksController
   ): Promise<ResourceListResponse<UserMessageBookmark>> {
     const context = getCompanyExecutionContext(request);
     try {
-      const list = await this.service.userBookmarks.list(
-        {},
+      const list = await gr.services.messages.userBookmarks.list(
         {
           user_id: context.user.id,
-          company_id: request.params.company_id,
+          company_id: context.company.id,
         },
         context,
       );
       return {
-        websockets: this.realtime.sign(
+        websockets: gr.platformServices.realtime.sign(
           [{ room: getUserBookmarksWebsocketRoom(context) }],
           context.user.id,
         ),

@@ -1,50 +1,49 @@
-import { from, Observable, concat, EMPTY } from "rxjs";
+import { concat, EMPTY, from, Observable } from "rxjs";
 import { filter, mergeMap, toArray } from "rxjs/operators";
-import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import { DefaultChannel, DefaultChannelPrimaryKey } from "../../../entities/default-channel";
-import ChannelServiceAPI, { DefaultChannelService } from "../../../provider";
+import {
+  Channel,
+  ChannelMember,
+  DefaultChannel,
+  DefaultChannelPrimaryKey,
+} from "../../../entities";
 import {
   CreateResult,
-  UpdateResult,
-  SaveResult,
+  CrudException,
   DeleteResult,
-  Paginable,
+  ExecutionContext,
   ListResult,
-  CrudExeption,
+  Paginable,
+  SaveResult,
+  UpdateResult,
 } from "../../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../../types";
 import DefaultChannelListener from "./listener";
 import { getLogger } from "../../../../../core/platform/framework";
-import UserServiceAPI from "../../../../user/api";
-import { ChannelMember } from "../../../../channels/entities/channel-member";
 
 import { User } from "../../../../../utils/types";
-import { Channel } from "../../../../../services/channels/entities";
 import WorkspaceUser from "../../../../workspaces/entities/workspace_user";
+import gr from "../../../../global-resolver";
 
 const logger = getLogger("channel.default");
 
-export default class DefaultChannelServiceImpl implements DefaultChannelService {
+export default class DefaultChannelServiceImpl {
   version: "1";
   repository: Repository<DefaultChannel>;
   listener: DefaultChannelListener;
 
-  constructor(
-    private database: DatabaseServiceAPI,
-    private channelService: ChannelServiceAPI,
-    private userService: UserServiceAPI,
-  ) {}
-
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository("default_channels", DefaultChannel);
+    this.repository = await gr.database.getRepository("default_channels", DefaultChannel);
     this.listener = new DefaultChannelListener(this);
     await this.listener.init();
     return this;
   }
 
-  async create(channel: DefaultChannel): Promise<CreateResult<DefaultChannel>> {
-    await this.repository.save(channel);
+  async create(
+    channel: DefaultChannel,
+    context: ExecutionContext,
+  ): Promise<CreateResult<DefaultChannel>> {
+    await this.repository.save(channel, context);
 
     // Once a default channel has been successfully created, we have to add all the workspace users as member of the channel
     // There are several ways to do it: Directly or using pubsub
@@ -54,8 +53,8 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     return new CreateResult<DefaultChannel>("default_channel", channel);
   }
 
-  get(pk: DefaultChannelPrimaryKey): Promise<DefaultChannel> {
-    return this.repository.findOne(pk);
+  get(pk: DefaultChannelPrimaryKey, context: ExecutionContext): Promise<DefaultChannel> {
+    return this.repository.findOne(pk, {}, context);
   }
 
   update(
@@ -80,14 +79,17 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     throw new Error("Method not implemented.");
   }
 
-  async delete(pk: DefaultChannelPrimaryKey): Promise<DeleteResult<DefaultChannel>> {
-    const defaultChannel = await this.get(pk);
+  async delete(
+    pk: DefaultChannelPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<DeleteResult<DefaultChannel>> {
+    const defaultChannel = await this.get(pk, context);
 
     if (!defaultChannel) {
-      throw CrudExeption.notFound("Default channel has not been found");
+      throw CrudException.notFound("Default channel has not been found");
     }
 
-    await this.repository.remove(defaultChannel);
+    await this.repository.remove(defaultChannel, context);
 
     return new DeleteResult("default_channel", defaultChannel, true);
   }
@@ -136,7 +138,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
   addWorkspaceUsersToChannel(
     channel: DefaultChannelPrimaryKey,
   ): Observable<{ user?: WorkspaceUser; member?: ChannelMember; added: boolean; err?: Error }> {
-    const workspaceUsers$ = this.userService.workspaces.getAllUsers$({
+    const workspaceUsers$ = gr.services.workspaces.getAllUsers$({
       workspaceId: channel.workspace_id,
     });
 
@@ -145,13 +147,13 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
       filter(wsUser => !wsUser.isExternal),
       mergeMap(wsUser =>
         from(
-          this.channelService.members
+          gr.services.channels.members
             .addUserToChannels({ id: wsUser.userId }, [
               {
                 company_id: channel.company_id,
                 workspace_id: channel.workspace_id,
                 id: channel.channel_id,
-              },
+              } as Channel,
             ])
             .then(result => ({
               user: wsUser,
@@ -176,7 +178,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     }
 
     try {
-      const companyUser = await this.userService.companies.getCompanyUser(
+      const companyUser = await gr.services.companies.getCompanyUser(
         { id: workspace.company_id },
         user,
       );
@@ -207,7 +209,11 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
 
       logger.info("Adding user %s to channels %s", user, JSON.stringify(channels));
 
-      return (await this.channelService.members.addUserToChannels(user, channels)).getEntities();
+      const regChannels = channels.map(c => ({ id: c.channel_id, ...c } as any as Channel));
+
+      return (
+        await gr.services.channels.members.addUserToChannels(user, regChannels)
+      ).getEntities();
     } catch (err) {
       logger.error({ err }, "Error while adding user for default channels");
       throw new Error("Error while adding user for default channels");
@@ -217,21 +223,27 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
   getDefaultChannels(
     workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
     pagination?: Paginable,
+    context?: ExecutionContext,
   ): Promise<DefaultChannel[]> {
-    return this.getDefaultChannels$(workspace, pagination).pipe(toArray()).toPromise();
+    return this.getDefaultChannels$(workspace, pagination, context).pipe(toArray()).toPromise();
   }
 
   getDefaultChannels$(
     workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
     pagination?: Paginable,
+    context?: ExecutionContext,
   ): Observable<DefaultChannel> {
     const list = (
       workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
       pagination: Paginable,
     ) => {
-      return this.repository.find(workspace, {
-        pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token },
-      });
+      return this.repository.find(
+        workspace,
+        {
+          pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token },
+        },
+        context,
+      );
     };
 
     return from(list(workspace, pagination)).pipe(

@@ -2,6 +2,7 @@
  * Common types for business services
  */
 
+import { WorkspacePrimaryKey } from "../services/workspaces/entities/workspace";
 import {
   Channel as ChannelEntity,
   ChannelMember,
@@ -112,6 +113,7 @@ export interface ResourceEventsPayload {
   resourcesAfter?: (User | ChannelEntity | ChannelTab | ChannelMember)[];
   tab?: ChannelTab;
   company?: { id: string };
+  workspace?: WorkspacePrimaryKey;
 }
 
 export interface PaginationQueryParameters {

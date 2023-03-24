@@ -1,3 +1,149 @@
+# Twake 2022.Q4.1120
+
+- Message delivery status 🟢
+- New quote-reply feature ⤴️
+- Notification when someone react to your message 👍
+- New file preview and medias gallery with navigation, caption, and message context 🕶
+- New badge notification system (mention, unread, etc)
+- Digest notifications by email ✉️
+- Ability to customize notification sound
+- Improved user live status indicator
+- See when user was last active on Twake ⏰
+- Big simplification of backend 👩‍💻
+
+# Twake 2022.Q3.1065
+
+- File and medias channel gallery view 🎞
+- New channel members invitation and management modal ⚙️
+- Fixed connection status of users 🟢
+- New messages search feature on mobile 🔎
+- Fixed bugs and translation #2425 #2424 #2420 #2442 #2436 #2435
+
+# Twake 2022.Q3.1050
+
+- Open desktop app if present in the system
+- Preview public channels before to join them
+- Updated [Search anything on Twake](https://github.com/linagora/Twake/issues/1710)
+- Started using Tailwindcss for future new design
+- Started using Storybooks
+
+# Twake 2022.Q2.975
+
+### Backend
+
+- [Implemented the list of uploaded in our backend](https://github.com/linagora/Twake/issues/2127)
+- [Jump to a message](https://github.com/linagora/Twake/issues/1926)
+- [Search for messages](https://github.com/linagora/Twake/issues/1710)
+- Generate links previews
+- Multiple bug fixes
+
+### Bug fixed
+
+- [Fixed thumbnail rotatation when uploaded from mobile](https://github.com/linagora/Twake/issues/2111)
+- [Scrolling message feed isn't smooth](https://github.com/linagora/Twake/issues/2039)
+- [Position of Close (x) buttons are not consistent](https://github.com/linagora/Twake/issues/2031)
+- [Mention user by any namu or identifier](https://github.com/linagora/Twake/issues/2042)
+- [Update workspace name reset the logo](https://github.com/linagora/Twake/issues/1950)
+- [Empty channel isn't working](https://github.com/linagora/Twake/issues/2146)
+- [On Twake desktop I have notifications only inside Twake window and when it's collapsed I don't see them](https://github.com/linagora/Twake/issues/2043)
+- [Windows notification has no redirection](https://github.com/linagora/Twake/issues/125)
+- [Clicking on push notification does not open the right message](https://github.com/linagora/Twake/issues/396)
+
+# Twake 2022.Q2.930
+
+### Backend
+
+- Refactoring of how we get services in our backend
+
+### Bug fixed
+
+- https://github.com/linagora/Twake/pull/2092
+
+# Twake 2022.Q2.910
+
+### Messages
+
+- Copy paste images to message editor fixed
+- Large files preview is now available
+- Mentions are back in messages
+- Giphy, n8n and Jitsi are back
+
+### General
+
+- New workspaces parameters page view
+- Ability to create and manage plugins from Twake
+
+### Backend
+
+- New backend routes to get files and pinned messages of a channel
+- New search messages routes
+
+### Bug fixed
+
+- Fixed thumbnail generation
+- https://github.com/linagora/Twake/issues/2083
+- https://github.com/linagora/Twake/issues/2091
+- https://github.com/linagora/Twake/issues/2095
+- https://github.com/linagora/Twake/issues/2037
+- https://github.com/linagora/Twake/issues/2036
+- https://github.com/linagora/Twake/issues/1918
+- https://github.com/linagora/Twake/issues/2102
+
+# Twake 2022.Q1.890
+
+### Messages
+
+- Shows that the last message was deleted on mobile channel list view
+- Now we can cancel failed file uploads
+- Add spell check to message editor
+
+### General
+
+- Save the user last visited companies to open them again after logout
+- Fixed magic links
+- Show a popup to decide to continue on web or open the mobile app
+- Notice users that the company reached the maximum number of users
+- Fixed some issues with workspace invitation
+- Minor bugs fixed
+
+# Twake 2022.Q1.874
+
+### Messages
+
+- Faster loading of message feed
+- Fix message input issues
+
+### General
+
+- Reduce magic links invite urls
+- Fix guest popup not visible on paid plans
+- Fix company owners and admins not able to manage workspaces
+- Fix channels members counters
+- Migrate channels to recoil state management for more stable channels (favorite, rename, create, join etc)
+
+# Twake 2021.Q4.860
+
+### Messages
+
+- Improved message top right menu
+- Fixed message sending / edition / reaction / pinned etc, now instant ⚡️
+- User availability indicator 🟢
+- User is writing indicator
+
+### Workspace parameters
+
+- Improved integrations management page 🧹
+- Improved workspace users management page 🧹
+- Improved workspace preferences management page 🧹
+
+### General
+
+- A lot of bug fixed, more to come on the 22 of January 🐞
+- Improved Twake loading time (still in progress) ⏰
+- New state management ( recoiljs.org ) on everything except channels and channels members
+- Everything except Drive Tasks and Calendar was migrated to node backend 🧹
+- Twake is now working with a simplified docker-compose with only node + mongodb. Note that this works only with messages (no Drive, Calendar or Tasks yet) 🚀
+
 # Twake 2021.Q3.640
 
 ### Messages

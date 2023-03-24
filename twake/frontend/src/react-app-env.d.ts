@@ -71,3 +71,6 @@ declare module 'draft-js-import-element';
 declare module 'draftjs-utils';
 // Deprecated: Need to remove the jquery dependency...
 declare module 'jquery';
+declare module 'react-highlight-words';
+declare module 'uuid-time';
+declare module 'emoji-name-map';

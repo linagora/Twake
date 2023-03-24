@@ -5,7 +5,6 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../../utils/types";
-import WorkspaceServicesAPI from "../../api";
 import {
   WorkspaceInviteTokenDeleteRequest,
   WorkspaceInviteTokenGetRequest,
@@ -16,8 +15,11 @@ import {
 import { FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
-import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import { pick } from "lodash";
+import { ConsoleCompany } from "../../../console/types";
+import { formatCompany, getCompanyStats } from "../../../../services/user/utils";
+import gr from "../../../global-resolver";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -28,23 +30,20 @@ export class WorkspaceInviteTokensCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(protected services: WorkspaceServicesAPI) {
-    this.services = services;
-  }
-
   async list(
     request: FastifyRequest<{ Params: WorkspaceInviteTokenGetRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
 
-    const res = await this.services.workspaces.getInviteToken(
+    const res = await gr.services.workspaces.getInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!res) {
-      throw CrudExeption.notFound("Invite token not found");
+      throw CrudException.notFound("Invite token not found");
     }
 
     return {
@@ -58,9 +57,10 @@ export class WorkspaceInviteTokensCrudController
   ): Promise<ResourceGetResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
 
-    const res = await this.services.workspaces.createInviteToken(
+    const res = await gr.services.workspaces.createInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     return {
@@ -74,13 +74,20 @@ export class WorkspaceInviteTokensCrudController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const deleted = await this.services.workspaces.deleteInviteToken(
+    const tokenInfo = gr.services.workspaces.decodeInviteToken(request.params.token);
+
+    if (!tokenInfo) {
+      throw CrudException.notFound("Invite token malformed");
+    }
+
+    const deleted = await gr.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!deleted) {
-      throw CrudExeption.notFound("Invite token not found");
+      throw CrudException.notFound("Invite token not found");
     }
 
     reply.code(204);
@@ -94,29 +101,29 @@ export class WorkspaceInviteTokensCrudController
     request: FastifyRequest<{ Body: WorkspaceJoinByTokenRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceJoinByTokenResponse>> {
-    const consoleUrl = this.services.console.consoleOptions.url;
-    // if (!consoleUrl) {
-    //   throw CrudExeption.badRequest("Console url is not defined");
-    // }
-
-    const entity = await this.services.workspaces.getInviteTokenInfo(request.body.token);
+    const entity = await gr.services.workspaces.getInviteTokenInfo(request.body.token);
 
     if (!entity) {
-      throw CrudExeption.notFound("Token not found");
+      throw CrudException.notFound("Token not found");
     }
 
     const { company_id, workspace_id } = entity;
 
     const [company, workspace] = await Promise.all([
-      this.services.companies.getCompany({ id: company_id }),
-      this.services.workspaces.get({
+      gr.services.companies.getCompany({ id: company_id }),
+      gr.services.workspaces.get({
         company_id: company_id,
         id: workspace_id,
       }),
     ]);
+    const total_messages = await gr.services.statistics.get(company.id, "messages");
 
     const resource: WorkspaceJoinByTokenResponse = {
-      company: { name: company.name },
+      company: {
+        name: company.name,
+        stats: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.stats,
+        plan: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.plan,
+      },
       workspace: { name: workspace.name },
       auth_required: false,
     };
@@ -125,24 +132,59 @@ export class WorkspaceInviteTokensCrudController
       resource.auth_required = true;
     } else {
       if (request.body.join) {
-        const user_id = request.currentUser.id;
+        const userId = request.currentUser.id;
+        const user = await gr.services.users.get({ id: userId });
 
-        const companyUser = await this.services.companies.getCompanyUser(
+        let companyUser = await gr.services.companies.getCompanyUser(
           { id: company_id },
-          { id: user_id },
+          { id: userId },
         );
         if (!companyUser) {
-          await this.services.companies.setUserRole(company_id, user_id, "member");
+          const inviter = await gr.services.users.get({
+            id: entity.user_id,
+          });
+
+          await gr.services.console
+            .getClient()
+            .addUserToCompany(
+              { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+              {
+                id: userId,
+                email: request.currentUser.email,
+                password: null,
+                firstName: null,
+                lastName: null,
+                name: null,
+                avatar: {
+                  type: null,
+                  value: null,
+                },
+                role: "member",
+                skipInvite: false,
+                inviterEmail: inviter.email_canonical,
+              },
+            );
+
+          await gr.services.console
+            .getClient()
+            .updateLocalUserFromConsole(user.identity_provider_id);
+          companyUser = await gr.services.companies.getCompanyUser(
+            { id: company_id },
+            { id: userId },
+          );
+        }
+        if (!companyUser) {
+          throw CrudException.badRequest("Unable to add user to the company");
         }
 
-        const workspaceUser = await this.services.workspaces.getUser({
+        const workspaceUser = await gr.services.workspaces.getUser({
           workspaceId: workspace.id,
-          userId: user_id,
+          userId: userId,
         });
         if (!workspaceUser) {
-          await this.services.workspaces.addUser(
+          await gr.services.workspaces.addUser(
             pick(workspace, ["company_id", "id"]),
-            { id: user_id },
+            { id: userId },
             "member",
           );
         }

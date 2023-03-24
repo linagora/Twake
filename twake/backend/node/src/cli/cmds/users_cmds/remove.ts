@@ -1,9 +1,9 @@
 import yargs from "yargs";
 import ora from "ora";
 import twake from "../../../twake";
-import UserServiceAPI from "../../../services/user/api";
-import { getInstance as getUserInstance } from "../../../services/user/entities/user";
 import Table from "cli-table";
+import { exit } from "process";
+import gr from "../../../services/global-resolver";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
@@ -15,13 +15,17 @@ type CLIArgs = {
 const services = [
   "storage",
   "counter",
-  "pubsub",
+  "message-queue",
   "platform-services",
   "user",
   "search",
   "database",
   "webserver",
   "statistics",
+  "applications",
+  "auth",
+  "realtime",
+  "websocket",
 ];
 
 const command: yargs.CommandModule<unknown, CLIArgs> = {
@@ -46,9 +50,9 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     const spinner = ora({ text: "Retrieving user" }).start();
 
     const platform = await twake.run(services);
-    const userService = platform.getProvider<UserServiceAPI>("user");
+    await gr.doInit(platform);
 
-    const user = await userService.users.get({ id: argv.id });
+    const user = await gr.services.users.get({ id: argv.id });
 
     if (!user) {
       console.error("Error: You need to provide User ID");
@@ -59,20 +63,22 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       // Table before
       tableBefore.push([user.id, user.username_canonical, user.deleted]);
 
-      await userService.users.anonymizeAndDelete(
+      await gr.services.users.anonymizeAndDelete(
         { id: user.id },
         {
           user: { id: user.id, server_request: true },
         },
       );
 
-      const finalUser = await userService.users.get(getUserInstance({ id: argv.id }));
+      const finalUser = await gr.services.users.get({ id: argv.id });
 
       // Table after
       tableAfter.push([finalUser.id, finalUser.username_canonical, finalUser.deleted]);
 
       spinner.stop();
     }
+
+    exit();
   },
 };
 

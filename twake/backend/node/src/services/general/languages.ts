@@ -1,4 +1,4 @@
-import { Languages, ServerConfiguration } from "./types";
+import { Languages } from "./types";
 
 export const languages: Languages = {
   default: "en",

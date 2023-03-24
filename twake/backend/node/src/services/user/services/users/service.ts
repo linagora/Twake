@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment */
 import {
   CreateResult,
-  CrudExeption,
+  CrudException,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -14,8 +14,7 @@ import Repository, {
   FindFilter,
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
-import User, { getInstance, UserPrimaryKey } from "../../entities/user";
-import { UsersServiceAPI } from "../../api";
+import User, { UserPrimaryKey } from "../../entities/user";
 import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import SearchRepository from "../../../../core/platform/services/search/repository";
@@ -26,49 +25,58 @@ import Device, {
 } from "../../entities/device";
 import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { localEventBus } from "../../../../core/platform/framework/event-bus";
 import { ResourceEventsPayload } from "../../../../utils/types";
-import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
-import { isNumber } from "lodash";
+import { isNumber, isString } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getUserRoom } from "../../realtime";
+import NodeCache from "node-cache";
+import gr from "../../../global-resolver";
+import {
+  KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
+} from "../../../../core/platform/services/knowledge-graph/types";
 
-export class UserService implements UsersServiceAPI {
+export class UserServiceImpl {
   version: "1";
   repository: Repository<User>;
   searchRepository: SearchRepository<User>;
   companyUserRepository: Repository<CompanyUser>;
   extUserRepository: Repository<ExternalUser>;
   private deviceRepository: Repository<Device>;
-
-  constructor(private platformServices: PlatformServicesAPI) {}
+  private cache: NodeCache;
 
   async init(): Promise<this> {
-    this.searchRepository = this.platformServices.search.getRepository<User>("user", User);
-    this.repository = await this.platformServices.database.getRepository<User>("user", User);
-    this.companyUserRepository = await this.platformServices.database.getRepository<CompanyUser>(
+    this.searchRepository = gr.platformServices.search.getRepository<User>("user", User);
+    this.repository = await gr.database.getRepository<User>("user", User);
+    this.companyUserRepository = await gr.database.getRepository<CompanyUser>(
       "group_user",
       CompanyUser,
     );
-    this.extUserRepository = await this.platformServices.database.getRepository<ExternalUser>(
+    this.extUserRepository = await gr.database.getRepository<ExternalUser>(
       "external_user_repository",
       ExternalUser,
     );
 
-    this.deviceRepository = await this.platformServices.database.getRepository<Device>(
-      DeviceType,
-      Device,
-    );
+    this.deviceRepository = await gr.database.getRepository<Device>(DeviceType, Device);
+
+    this.cache = new NodeCache({ stdTTL: 0.2, checkperiod: 120 });
+
+    //If user deleted from Twake, remove it from all companies
+    localEventBus.subscribe<ResourceEventsPayload>("user:deleted", async data => {
+      if (data?.user?.id) gr.services.companies.ensureDeletedUserNotInCompanies(data.user);
+    });
 
     return this;
   }
 
-  private async updateExtRepository(user: User) {
+  private async updateExtRepository(user: User, context?: ExecutionContext) {
     if (user.identity_provider_id) {
       const key = { service_id: user.identity_provider, external_id: user.identity_provider_id };
-      const extUser = (await this.extUserRepository.findOne(key)) || getExternalUserInstance(key);
+      const extUser =
+        (await this.extUserRepository.findOne(key, {}, context)) || getExternalUserInstance(key);
       extUser.user_id = user.id;
-      await this.extUserRepository.save(extUser);
+      await this.extUserRepository.save(extUser, context);
     }
   }
 
@@ -77,14 +85,36 @@ export class UserService implements UsersServiceAPI {
     if (user.identity_provider_id && !user.identity_provider) user.identity_provider = "console";
     if (user.email_canonical) user.email_canonical = user.email_canonical.toLocaleLowerCase();
     if (user.username_canonical)
-      user.username_canonical = user.username_canonical.toLocaleLowerCase();
+      user.username_canonical = (user.username_canonical || "")
+        .toLocaleLowerCase()
+        .replace(/[^a-z0-9_-]/, "");
   }
 
-  async create(user: User): Promise<CreateResult<User>> {
+  async create(user: User, context?: ExecutionContext): Promise<CreateResult<User>> {
     this.assignDefaults(user);
-    await this.repository.save(user);
+
+    await this.repository.save(user, context);
     await this.updateExtRepository(user);
-    return new CreateResult("user", user);
+    const result = new CreateResult("user", user);
+
+    if (result) {
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<User>>(
+        KnowledgeGraphEvents.USER_CREATED,
+        {
+          id: result.entity.id,
+          resource: result.entity,
+          links: [
+            {
+              // FIXME: We should provide the company id here
+              id: "",
+              relation: "parent",
+              type: "company",
+            },
+          ],
+        },
+      );
+    }
+    return result;
   }
 
   update(pk: Partial<User>, item: User, context?: ExecutionContext): Promise<UpdateResult<User>> {
@@ -99,20 +129,16 @@ export class UserService implements UsersServiceAPI {
       },
     ];
   })
-  async save<SaveOptions>(
-    user: User,
-    options?: SaveOptions,
-    context?: ExecutionContext,
-  ): Promise<SaveResult<User>> {
+  async save<SaveOptions>(user: User, context?: ExecutionContext): Promise<SaveResult<User>> {
     this.assignDefaults(user);
-    await this.repository.save(user);
+    await this.repository.save(user, context);
     await this.updateExtRepository(user);
     return new SaveResult("user", user, OperationType.UPDATE);
   }
 
   async delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
-    const instance = await this.repository.findOne(pk);
-    if (instance) await this.repository.remove(instance);
+    const instance = await this.repository.findOne(pk, {}, context);
+    if (instance) await this.repository.remove(instance, context);
     return new DeleteResult<User>("user", instance, !!instance);
   }
 
@@ -156,6 +182,7 @@ export class UserService implements UsersServiceAPI {
           $search: options.search,
         },
       },
+      context,
     );
   }
 
@@ -173,14 +200,14 @@ export class UserService implements UsersServiceAPI {
       findOptions.$in = [["id", options.userIds]];
     }
 
-    return this.repository.find(findFilter, findOptions);
+    return this.repository.find(findFilter, findOptions, context);
   }
 
-  getByEmail(email: string): Promise<User> {
-    return this.repository.findOne({ email_canonical: email });
+  getByEmail(email: string, context?: ExecutionContext): Promise<User> {
+    return this.repository.findOne({ email_canonical: email }, {}, context);
   }
 
-  getByEmails(emails: string[]): Promise<User[]> {
+  getByEmails(emails: string[], context?: ExecutionContext): Promise<User[]> {
     return Promise.all(emails.map(email => this.getByEmail(email))).then(emails =>
       emails.filter(a => a),
     );
@@ -189,40 +216,72 @@ export class UserService implements UsersServiceAPI {
   async setPreferences(
     pk: UserPrimaryKey,
     preferences: User["preferences"],
+    context?: ExecutionContext,
   ): Promise<User["preferences"]> {
-    const user = await this.repository.findOne(pk);
+    const user = await this.repository.findOne(pk, {}, context);
     if (!user.preferences) user.preferences = {};
     for (const key in preferences) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       user.preferences[key] = preferences[key];
     }
+
+    await this.save(user);
     return user.preferences;
   }
 
-  async get(pk: UserPrimaryKey): Promise<User> {
-    return await this.repository.findOne(pk);
+  async get(pk: UserPrimaryKey, context?: ExecutionContext): Promise<User> {
+    return await this.repository.findOne(pk, {}, context);
   }
 
-  async getByConsoleId(id: string, service_id: string = "console"): Promise<User> {
-    const extUser = await this.extUserRepository.findOne({ service_id, external_id: id });
+  async getCached(pk: UserPrimaryKey, context?: ExecutionContext): Promise<User> {
+    if (!(pk.id && isString(pk.id))) return null;
+    if (this.cache.has(pk.id)) return this.cache.get<User>(pk.id);
+    const entity = await this.get(pk);
+    this.cache.set<User>(pk.id, entity);
+    return entity;
+  }
+
+  async getByUsername(username: string, context?: ExecutionContext): Promise<User> {
+    return await this.repository.findOne(
+      {
+        username_canonical: (username || "").toLocaleLowerCase(),
+      },
+      {},
+      context,
+    );
+  }
+
+  async getByConsoleId(
+    id: string,
+    service_id: string = "console",
+    context?: ExecutionContext,
+  ): Promise<User> {
+    const extUser = await this.extUserRepository.findOne(
+      { service_id, external_id: id },
+      {},
+      context,
+    );
     if (!extUser) {
       return null;
     }
-    return this.repository.findOne({ id: extUser.user_id });
+    return this.repository.findOne({ id: extUser.user_id }, {}, context);
   }
 
-  async getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]> {
-    return await this.companyUserRepository.find({ user_id: pk.id }).then(a => a.getEntities());
+  async getUserCompanies(pk: UserPrimaryKey, context?: ExecutionContext): Promise<CompanyUser[]> {
+    return await this.companyUserRepository
+      .find({ user_id: pk.id }, {}, context)
+      .then(a => a.getEntities());
   }
 
-  async isEmailAlreadyInUse(email: string): Promise<boolean> {
-    return this.repository.findOne({ email_canonical: email }).then(user => Boolean(user));
+  async isEmailAlreadyInUse(email: string, context?: ExecutionContext): Promise<boolean> {
+    return this.repository
+      .findOne({ email_canonical: email }, {}, context)
+      .then(user => Boolean(user));
   }
-  async getAvailableUsername(username: string): Promise<string> {
-    const users = await this.repository.find({}).then(a => a.getEntities());
+  async getAvailableUsername(username: string, context?: ExecutionContext): Promise<string> {
+    const user = await this.getByUsername(username);
 
-    if (!users.find(user => user.username_canonical == username.toLocaleLowerCase())) {
+    if (!user) {
       return username;
     }
 
@@ -230,7 +289,7 @@ export class UserService implements UsersServiceAPI {
 
     for (let i = 1; i < 1000; i++) {
       const dynamicUsername = username + i;
-      if (!users.find(user => user.username_canonical == dynamicUsername.toLocaleLowerCase())) {
+      if (!(await this.getByUsername(dynamicUsername.toLocaleLowerCase()))) {
         suitableUsername = dynamicUsername;
         break;
       }
@@ -238,17 +297,20 @@ export class UserService implements UsersServiceAPI {
     return suitableUsername;
   }
 
-  async getUserDevices(userPrimaryKey: UserPrimaryKey): Promise<Device[]> {
+  async getUserDevices(
+    userPrimaryKey: UserPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<Device[]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey} not found`);
     }
     if (!user.devices || user.devices.length == 0) {
       return [];
     }
-    return Promise.all(user.devices.map(id => this.deviceRepository.findOne({ id }))).then(a =>
-      a.filter(a => a),
-    );
+    return Promise.all(
+      user.devices.map(id => this.deviceRepository.findOne({ id }, {}, context)),
+    ).then(a => a.filter(a => a));
   }
 
   async registerUserDevice(
@@ -256,49 +318,60 @@ export class UserService implements UsersServiceAPI {
     id: string,
     type: string,
     version: string,
+    context?: ExecutionContext,
   ): Promise<void> {
     await this.deregisterUserDevice(id);
 
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey} not found`);
     }
     user.devices = user.devices || [];
     user.devices.push(id);
 
-    await this.repository.save(user);
-    await this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id }));
+    await this.repository.save(user, context);
+    await this.deviceRepository.save(
+      getDeviceInstance({ id, type, version, user_id: user.id }),
+      context,
+    );
   }
 
-  async deregisterUserDevice(id: string): Promise<void> {
-    const existedDevice = await this.deviceRepository.findOne({ id });
+  async deregisterUserDevice(id: string, context?: ExecutionContext): Promise<void> {
+    const existedDevice = await this.deviceRepository.findOne({ id }, {}, context);
 
     if (existedDevice) {
       const user = await this.get({ id: existedDevice.user_id });
       if (user) {
         user.devices = (user.devices || []).filter(d => d !== id);
-        await this.repository.save(user);
+        await this.repository.save(user, context);
       }
-      await this.deviceRepository.remove(existedDevice);
+      await this.deviceRepository.remove(existedDevice, context);
     }
   }
 
-  async setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void> {
+  async setPassword(
+    userPrimaryKey: UserPrimaryKey,
+    password: string,
+    context?: ExecutionContext,
+  ): Promise<void> {
     assert(password, "UserAPI.setPassword: Password is not defined");
     const passwordEncoder = new PasswordEncoder();
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey.id} not found`);
     }
     user.password = await passwordEncoder.encodePassword(password);
     user.salt = null;
-    await this.repository.save(user);
+    await this.repository.save(user, context);
   }
 
-  async getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
+  async getHashedPassword(
+    userPrimaryKey: UserPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<[string, string]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey.id} not found`);
     }
 
     if (user.salt) {

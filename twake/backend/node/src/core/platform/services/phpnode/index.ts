@@ -10,14 +10,12 @@ import {
   ChannelParameters,
   CreateChannelBody,
 } from "../../../../services/channels/web/types";
-import ChannelServiceAPI from "../../../../services/channels/provider";
 import { Consumes, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "../websocket/provider";
 import PhpNodeAPI from "./provider";
 import { RealtimeServiceAPI } from "../realtime/api";
-import { UsersCrudController } from "../../../../services/user/web/controller";
-import UserServiceAPI from "../../../../services/user/api";
+import gr from "../../../../services/global-resolver";
 
 @Consumes(["webserver", "websocket", "user", "channels"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
@@ -25,8 +23,6 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
   version = "1";
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
   private ws: WebSocketAPI;
-  private channels: ChannelServiceAPI;
-  private users: UserServiceAPI;
   private realtime: RealtimeServiceAPI;
 
   api(): PhpNodeAPI {
@@ -72,8 +68,6 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
   }
 
   async doStart(): Promise<this> {
-    this.channels = this.context.getProvider<ChannelServiceAPI>("channels");
-    this.users = this.context.getProvider<UserServiceAPI>("user");
     return this;
   }
 
@@ -104,14 +98,11 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
       method: "GET",
       url: "/companies/:company_id/workspaces/:workspace_id/channels/:id/members/:member_id/exists",
       handler: (request: FastifyRequest<{ Params: ChannelMemberParameters }>, reply) => {
-        if (!this.channels) {
+        if (!gr.services) {
           reply.code(500).send(); //Server is not ready
           return;
         }
-        const membersController = new ChannelMemberCrudController(
-          this.realtime,
-          this.channels.members,
-        );
+        const membersController = new ChannelMemberCrudController();
         membersController.exists(request, reply);
       },
     });
@@ -123,16 +114,11 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
       method: "GET",
       url: "/companies/:company_id/workspaces/:workspace_id/channels/:id",
       handler: (request: FastifyRequest<{ Params: ChannelParameters }>, reply) => {
-        if (!this.channels) {
+        if (!gr.services) {
           reply.code(500).send(); //Server is not ready
           return;
         }
-        const channelsController = new ChannelCrudController(
-          this.realtime,
-          this.channels.channels,
-          this.channels.members,
-          this.channels.pendingEmails,
-        );
+        const channelsController = new ChannelCrudController();
         channelsController.getForPHP(request, reply);
       },
     });
@@ -147,18 +133,21 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
         request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
         reply,
       ) => {
-        if (!this.channels) {
+        if (!gr.services) {
           reply.code(500).send(); //Server is not ready
           return;
         }
-        const workspaces = await this.users.workspaces.getAllForCompany(request.params.company_id);
+        const workspaces = await gr.services.workspaces.getAllForCompany(request.params.company_id);
 
         for (const w of workspaces) {
-          const channel = await this.channels.channels.get({
-            company_id: request.params.company_id,
-            workspace_id: w.id,
-            id: request.params.id,
-          });
+          const channel = await gr.services.channels.channels.get(
+            {
+              company_id: request.params.company_id,
+              workspace_id: w.id,
+              id: request.params.id,
+            },
+            undefined,
+          );
           if (channel) {
             reply.send(channel);
             return;
@@ -183,16 +172,11 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
         }>,
         reply,
       ) => {
-        if (!this.channels) {
+        if (!gr.services) {
           reply.code(500).send(); //Server is not ready
           return;
         }
-        const channelsController = new ChannelCrudController(
-          this.realtime,
-          this.channels.channels,
-          this.channels.members,
-          this.channels.pendingEmails,
-        );
+        const channelsController = new ChannelCrudController();
         request.currentUser = {
           id: (request.body as any).user_id,
         };

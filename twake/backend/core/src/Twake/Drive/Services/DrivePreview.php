@@ -45,7 +45,6 @@ class DrivePreview
                 $filetype === 'image/gif' ||
                 $filetype === 'image/x-icon' ||
                 $filetype === 'image/jpeg' ||
-                $filetype === 'image/svg+xml' ||
                 $filetype === 'image/tiff' ||
                 $filetype === 'image/webp' ||
                 $this->isImage($ext)) {

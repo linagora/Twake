@@ -1,0 +1,197 @@
+.appsParameters {
+  .image {
+    background-color: rgba(0, 0, 50, 0.25);
+    background-size: cover;
+    background-position: center;
+    color: #000000aa;
+    font-size: 40px;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: var(--border-radius-large);
+    margin: auto;
+    margin-bottom: 8px;
+    background-size: cover;
+    background-position: center;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  .smalltext {
+    opacity: 0.5;
+    padding: 10px 0px;
+    margin-right: 30px;
+  }
+  .has_image {
+    font-size: 0px;
+  }
+  .action {
+    text-align: right;
+    svg {
+      cursor: pointer;
+      opacity: 0.5;
+    }
+    svg:hover {
+      opacity: 0.8;
+    }
+    .editLevel {
+      padding: 5px 10px;
+    }
+    .close svg {
+      width: 20px;
+    }
+  }
+  .confirm {
+    width: 70%;
+    margin: auto;
+    display: block;
+  }
+  .addMemberBtn {
+    text-align: right;
+  }
+  .addMember {
+    .buttonWithTimeout_container {
+      margin: auto;
+    }
+    .group_section {
+      margin-bottom: 50px;
+    }
+  }
+
+  .user_image {
+    vertical-align: top;
+    margin-right: 10px;
+    display: inline-block;
+    margin-top: 2px;
+    width: 24px;
+    height: 24px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+  }
+
+  .apps,
+  .app_editor,
+  .application_search {
+    .app_icon {
+      vertical-align: top;
+      margin-right: 10px;
+      display: inline-block;
+      margin-top: 2px;
+      width: 24px;
+      height: 24px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 2px;
+    }
+
+    .application {
+      display: flex;
+      flex-direction: row;
+      height: 45px;
+      margin-bottom: 5px;
+      margin-top: 5px;
+      padding-top: 5px;
+      padding-left: 5px;
+      padding-right: 5px;
+      box-sizing: border-box;
+      border-radius: var(--border-radius-large);
+
+      &:hover {
+        background: #f2f2f2;
+      }
+
+      .market_app_image {
+        width: 24px;
+        height: 24px;
+        background-position: center;
+        background-size: cover;
+        margin-right: 10px;
+        border-radius: 2px;
+      }
+
+      .market_app_content {
+        flex: 1;
+        min-width: 0;
+
+        .market_app_title {
+          font-weight: 600;
+          font-size: 14px;
+        }
+
+        .market_app_description {
+          opacity: 0.5;
+          font-size: 13px;
+          margin-top: 3px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .market_app_buttons {
+        input {
+          margin: 4px 0;
+          min-width: 0px;
+        }
+      }
+    }
+  }
+
+  .app_editor {
+    //box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    margin: 15px;
+    margin-top: 0px;
+    border-radius: var(--border-radius-large);
+    padding: 15px;
+    color: #000;
+  }
+
+  .application_search,
+  .app_editor {
+    .app_icon {
+      vertical-align: initial;
+      margin-bottom: -4px;
+      margin-right: 6px;
+      margin-left: 0px;
+      position: relative;
+    }
+
+    .buttonWithTimeout_container {
+      text-align: right;
+
+      input {
+        width: auto;
+        margin-bottom: 0px;
+      }
+    }
+
+    .buttonGoBack {
+      float: left;
+    }
+
+    .label.for_input {
+      margin-bottom: 0px;
+      margin-top: 10px;
+    }
+  }
+  .checkbox {
+    display: inline-block;
+    width: auto;
+    height: auto;
+  }
+}
+
+.error-button {
+  color: var(--error);
+  border: 1px solid var(--error);
+  &:hover {
+    color: var(--error);
+
+    border: 1px solid var(--error);
+  }
+}
+
+.ant-switch:not(.ant-switch-checked) {
+  background-color: var(--grey-dark) !important;
+}

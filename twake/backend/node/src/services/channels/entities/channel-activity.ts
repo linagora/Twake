@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import { Channel } from ".";
-import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { ChannelStats } from "../services/channel/types";
 import { ChannelType } from "../types";
 
 @Entity("channel_activity", {
@@ -26,10 +27,13 @@ export class ChannelActivity {
   @Column("last_activity", "number")
   last_activity: number;
 
+  @Column("stats", "encoded_json")
+  stats: ChannelStats;
+
   @Column("last_message", "encoded_json")
   last_message:
     | null
-    | {}
+    | Record<string, unknown>
     | {
         date: number;
         sender: string;

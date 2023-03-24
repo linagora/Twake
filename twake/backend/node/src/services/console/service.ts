@@ -1,38 +1,53 @@
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import UserServiceAPI from "../user/api";
-import { ConsoleServiceAPI } from "./api";
 import { MergeProcess } from "./processing/merge";
 import { ConsoleOptions, ConsoleType, MergeProgress } from "./types";
 import { ConsoleServiceClient } from "./client-interface";
 import { ConsoleClientFactory } from "./client-factory";
 import User from "../user/entities/user";
+import gr from "../global-resolver";
+import { Configuration, TwakeServiceProvider } from "../../core/platform/framework";
+import assert from "assert";
+import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 
-class ConsoleService implements ConsoleServiceAPI {
+export class ConsoleServiceImpl implements TwakeServiceProvider {
   version: "1";
 
   consoleType: ConsoleType;
   consoleOptions: ConsoleOptions;
   services: {
     database: DatabaseServiceAPI;
-    userService: UserServiceAPI;
   };
+  private configuration: Configuration;
 
-  constructor(
-    database: DatabaseServiceAPI,
-    userService: UserServiceAPI,
-    type: ConsoleType,
-    options: ConsoleOptions,
-  ) {
-    this.consoleType = type;
+  constructor(options?: ConsoleOptions) {
     this.consoleOptions = options;
-    this.services = {
-      database,
-      userService,
-    };
   }
 
-  getUserByAccessToken(accessToken: string): User {
-    throw new Error("Method not implemented.");
+  async init(): Promise<this> {
+    this.configuration = new Configuration("console");
+    assert(this.configuration, "console configuration is missing");
+    const type = this.configuration.get("type") as ConsoleType;
+    assert(type, "console configuration type is not defined");
+
+    const s = this.configuration.get(type) as ConsoleOptions;
+
+    this.consoleOptions = {
+      type: type,
+      new_console: s.new_console,
+      username: s.username,
+      password: s.password,
+      url: s.url,
+      hook: {
+        token: s.hook?.token,
+        public_key: s.hook?.public_key,
+      },
+      disable_account_creation: s.disable_account_creation,
+    };
+
+    this.consoleOptions.type = type;
+    this.consoleType = type;
+
+    return this;
   }
 
   merge(
@@ -43,36 +58,21 @@ class ConsoleService implements ConsoleServiceAPI {
     link: boolean = true,
     client: string,
     secret: string,
+    context?: ExecutionContext,
   ): MergeProgress {
-    return new MergeProcess(
-      this.services.database,
-      this.services.userService,
-      dryRun,
-      console,
-      link,
-      {
-        username: client,
-        password: secret,
-        url: baseUrl,
-      } as ConsoleOptions,
-    ).merge(concurrent);
+    return new MergeProcess(this.services.database, dryRun, console, link, {
+      type: "remote",
+      username: client,
+      password: secret,
+      url: baseUrl,
+    } as ConsoleOptions).merge(concurrent);
   }
 
   getClient(): ConsoleServiceClient {
     return ConsoleClientFactory.create(this);
   }
 
-  async processPendingUser(user: User): Promise<void> {
-    const services = this.services.userService;
-    await services.workspaces.processPendingUser(user);
+  async processPendingUser(user: User, context?: ExecutionContext): Promise<void> {
+    await gr.services.workspaces.processPendingUser(user, null, context);
   }
-}
-
-export function getService(
-  database: DatabaseServiceAPI,
-  userService: UserServiceAPI,
-  type: ConsoleType,
-  options: ConsoleOptions,
-): ConsoleServiceAPI {
-  return new ConsoleService(database, userService, type, options);
 }

@@ -1,5 +1,10 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { BaseChannelsParameters, ChannelParameters, PaginationQueryParameters } from "./types";
+import {
+  BaseChannelsParameters,
+  ChannelParameters,
+  PaginationQueryParameters,
+  RecentChannelsParameters,
+} from "./types";
 import {
   createChannelMemberSchema,
   createChannelSchema,
@@ -13,31 +18,25 @@ import {
   ChannelMemberCrudController,
   ChannelTabCrudController,
 } from "./controllers";
-import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
+import { checkUserBelongsToCompany } from "../../../utils/company";
 
 const channelsUrl = "/companies/:company_id/workspaces/:workspace_id/channels";
 const membersUrl = `${channelsUrl}/:id/members`;
 const tabsUrl = `${channelsUrl}/:id/tabs`;
 const pendingEmailsUrl = `${channelsUrl}/:channel_id/pending_emails`;
 
-const routes: FastifyPluginCallback<{
-  service: ChannelServiceAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const channelsController = new ChannelCrudController(
-    options.realtime,
-    options.service.channels,
-    options.service.members,
-    options.service.pendingEmails,
-  );
-  const membersController = new ChannelMemberCrudController(
-    options.realtime,
-    options.service.members,
-  );
-  const tabsController = new ChannelTabCrudController(options.realtime, options.service.tabs);
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const channelsController = new ChannelCrudController();
+  const membersController = new ChannelMemberCrudController();
+  const tabsController = new ChannelTabCrudController();
+
+  const accessControlCompanyOnly = async (
+    request: FastifyRequest<{ Params: RecentChannelsParameters }>,
+  ) => {
+    await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
+  };
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
     const authorized = await checkCompanyAndWorkspaceForUser(
@@ -113,6 +112,21 @@ const routes: FastifyPluginCallback<{
     handler: channelsController.updateRead.bind(channelsController),
   });
 
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/search",
+    preValidation: [fastify.authenticate],
+    handler: channelsController.search.bind(channelsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/channels/recent",
+    preHandler: accessControlCompanyOnly,
+    preValidation: [fastify.authenticate],
+    handler: channelsController.recent.bind(channelsController),
+  });
+
   // members
 
   fastify.route({
@@ -156,6 +170,22 @@ const routes: FastifyPluginCallback<{
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     handler: membersController.delete.bind(membersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${membersUrl}/read_sections`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: membersController.getAllChannelMembersReadSections.bind(membersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${membersUrl}/:member_id/read_sections`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: membersController.getChannelMemberReadSections.bind(membersController),
   });
 
   // pending_emails

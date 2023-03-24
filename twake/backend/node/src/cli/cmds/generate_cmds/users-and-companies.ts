@@ -8,9 +8,9 @@ import Company, {
   getInstance as getCompanyInstance,
 } from "../../../services/user/entities/company";
 import CompanyUser from "../../../services/user/entities/company_user";
-import UserServiceAPI from "../../../services/user/api";
 import twake from "../../../twake";
 import User, { getInstance as getUserInstance } from "../../../services/user/entities/user";
+import gr from "../../../services/global-resolver";
 
 type CLIArgs = {
   company: number;
@@ -19,6 +19,13 @@ type CLIArgs = {
 };
 
 const services = [
+  "storage",
+  "counter",
+  "applications",
+  "statistics",
+  "auth",
+  "realtime",
+  "push",
   "platform-services",
   "user",
   "search",
@@ -26,7 +33,7 @@ const services = [
   "notifications",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
 ];
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -57,21 +64,21 @@ const command: yargs.CommandModule<{}, CLIArgs> = {
     const nbUsersPerCompany = argv.user;
     const nbCompanies = argv.company;
     const platform = await twake.run(services);
-    const userService = platform.getProvider<UserServiceAPI>("user");
+    await gr.doInit(platform);
     const companies = getCompanies(nbCompanies);
     const createUser = async (userInCompany: {
       user: User;
       company: Company;
     }): Promise<CompanyUser> => {
       console.log("Creating user", userInCompany);
-      const created = await userService.users.create(getUserInstance(userInCompany.user));
+      const created = await gr.services.users.create(getUserInstance(userInCompany.user));
 
-      return (await userService.companies.setUserRole(userInCompany.company.id, created.entity.id))
+      return (await gr.services.companies.setUserRole(userInCompany.company.id, created.entity.id))
         ?.entity;
     };
     const createCompany = (company: Company) => {
       console.log("Creating company", company);
-      return userService.companies.createCompany(company);
+      return gr.services.companies.createCompany(company);
     };
 
     const obsv$ = from(companies).pipe(

@@ -60,7 +60,7 @@ export class Message {
   blocks: Block[];
 
   @Column("files", "encoded_json")
-  files: null | MessageFile[];
+  files: null | Partial<MessageFile>[];
 
   @Column("context", "encoded_json")
   context: any;
@@ -70,6 +70,9 @@ export class Message {
 
   @Column("pinned_info", "encoded_json")
   pinned_info: null | MessagePinnedInfo;
+
+  @Column("quote_message", "encoded_json")
+  quote_message: null | Partial<MessageWithUsers>;
 
   @Column("reactions", "encoded_json")
   reactions: null | MessageReaction[];
@@ -86,6 +89,12 @@ export class Message {
     workspace_id: string;
     channel_id: string;
   };
+
+  @Column("links", "encoded_json")
+  links: null | MessageLinks[];
+
+  @Column("status", "encoded_json")
+  status: null | MessageDeliveryStatus;
 }
 
 export type MessageReaction = { count: number; name: string; users: string[] };
@@ -125,7 +134,20 @@ export function getInstance(message: Partial<Message>): Message {
   });
 }
 
-export class MessageWithUsers extends Message {
-  users: UserObject[];
+export type MessageWithUsers = Message & {
+  users?: UserObject[];
   application?: Partial<Application>;
-}
+};
+
+export type MessageLinks = {
+  title: string;
+  description: string | null;
+  domain: string;
+  img: string | null;
+  favicon: string | null;
+  img_width: number | null;
+  img_height: number | null;
+  url: string;
+};
+
+export type MessageDeliveryStatus = "sent" | "delivered" | "read";

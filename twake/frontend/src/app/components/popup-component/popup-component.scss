@@ -1,0 +1,104 @@
+.popupComponent {
+  height: 100%;
+  width: 100%;
+  background: white;
+
+  position: absolute;
+  z-index: 100;
+  width: 90vw;
+  height: 90vh;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  box-shadow: 0 0 0px 1000px #00000088;
+  border-radius: 16px;
+  overflow: hidden;
+
+  display: flex;
+
+  @media (max-width: 800px) {
+    border-radius: 0px;
+    width: 100vw;
+    height: 100vh;
+    max-height: -webkit-fill-available;
+  }
+
+  .header {
+    .close {
+      background: #f2f2f2;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      line-height: 40px;
+      padding: 8px;
+      box-sizing: border-box;
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      border: 4px solid #fff;
+      cursor: pointer;
+      z-index: 10;
+      line-height: normal;
+
+      &:hover {
+        background: #eee;
+        & > * {
+          opacity: 0.8;
+        }
+      }
+      & > * {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .componentContainer {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+
+    .component {
+      overflow: hidden;
+      height: 100%;
+
+      & > div {
+        overflow: hidden;
+        height: 100%;
+      }
+
+      .main {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        box-sizing: border-box;
+
+        .sideBar {
+          width: 220px;
+          padding-top: 32px;
+          margin-left: 15px;
+        }
+
+        .content {
+          padding-top: 32px;
+          max-height: 100%;
+        }
+      }
+    }
+  }
+
+  @media only screen and (max-width: 600px) {
+    .header {
+      .close {
+        right: auto;
+        left: 16px;
+      }
+    }
+    .main .content {
+      margin-left: 0px !important;
+    }
+    .main .sideBar {
+      display: none;
+    }
+  }
+}

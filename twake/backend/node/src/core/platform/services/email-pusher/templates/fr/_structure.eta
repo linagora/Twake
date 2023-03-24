@@ -1,0 +1,12 @@
+<%~ includeFile("../common/_structure.eta", Object.assign(it, {
+   follow_us: "Retrouvez nous sur les réseaux",
+   sent_by: "Envoyé par LINAGORA | 100 Terrasse Boieldieu Tour Franklin 92042 Paris La Défense",
+   help: "Centre d'aide",
+   privacy: "Confidentialité",
+   terms: "CGU",
+   links: {
+       help: "https://twake.app/",
+       privacy: "https://twake.app/fr/privacy-policy/",
+       terms: "https://twake.app/fr/terms-of-service/"
+   }
+})) %>

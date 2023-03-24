@@ -3,6 +3,7 @@ import twake from "../../../twake";
 import ora from "ora";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { TwakePlatform } from "../../../core/platform/platform";
+import gr from "../../../services/global-resolver";
 
 type Options = {
   from?: string;
@@ -33,7 +34,7 @@ const services = [
   "channels",
   "database",
   "webserver",
-  "pubsub",
+  "message-queue",
   "messages",
 ];
 
@@ -71,6 +72,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Fixing messages references - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new MessageReferenceRepair(platform);
 
     const from = argv.from as string | null;

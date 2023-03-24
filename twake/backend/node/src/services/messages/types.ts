@@ -1,11 +1,14 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
+import { HookType } from "../applications-api/types";
+import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
-import { MessageFileMetadata } from "./entities/message-files";
+import { MessageFileRef } from "./entities/message-file-refs";
+import { MessageFile } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 
-export type specialMention = "all" | "here" | "everyone" | "channel";
+export type SpecialMention = "all" | "here" | "everyone" | "channel";
 
 export type MessageNotification = {
   company_id: uuid;
@@ -18,7 +21,7 @@ export type MessageNotification = {
   mentions?: {
     users?: uuid[];
     teams?: uuid[];
-    specials?: specialMention[];
+    specials?: SpecialMention[];
   };
 
   sender_name?: string;
@@ -30,8 +33,15 @@ export type MessageNotification = {
   text: string;
 };
 
+export type MessageHook = HookType & {
+  channel: Channel;
+  thread: Thread;
+  message: Message;
+};
+
 export type MessageWithReplies = Message & {
   last_replies: Message[];
+  thread?: MessageWithReplies;
   highlighted_replies?: Message[];
   stats: {
     last_activity: number;
@@ -41,6 +51,8 @@ export type MessageWithReplies = Message & {
 
 export type MessageWithRepliesWithUsers = MessageWithReplies & {
   last_replies: MessageWithUsers[];
+  thread?: MessageWithRepliesWithUsers;
+  highlighted_replies?: MessageWithUsers[];
   users: UserObject[];
 };
 
@@ -74,9 +86,12 @@ export interface PaginationQueryParameters {
   direction?: "history" | "future";
 }
 export interface MessageViewListOptions {
-  include_users: boolean;
-  replies_per_thread: number;
-  emojis: boolean;
+  include_users?: boolean;
+  replies_per_thread?: number;
+  flat?: boolean;
+  emojis?: boolean;
+  media_only?: boolean;
+  file_only?: boolean;
 }
 
 export interface MessageListQueryParameters extends PaginationQueryParameters {
@@ -99,6 +114,11 @@ export interface BookmarkOperation {
   active: boolean;
 }
 
+export type MessageFileDownloadEvent = {
+  user: { id: string };
+  operation: { message_id: string; thread_id: string; message_file_id: string };
+};
+
 export interface MessagesSaveOptions {
   threadInitialMessage?: boolean;
   enforceViewPropagation?: boolean;
@@ -107,4 +127,62 @@ export interface MessagesSaveOptions {
 }
 export interface MessagesGetThreadOptions {
   replies_per_thread?: number;
+  includeQuoteInMessage?: boolean;
 }
+
+export type SearchMessageOptions = {
+  search?: string;
+  companyId?: string;
+  workspaceId?: string;
+  channelId?: string;
+  hasFiles?: boolean;
+  hasMedias?: boolean;
+  sender?: string;
+};
+
+export type SearchMessageFilesOptions = {
+  search?: string;
+  companyId?: string;
+  workspaceId?: string;
+  channelId?: string;
+  sender?: string;
+  isFile?: boolean;
+  isMedia?: boolean;
+  extension?: string;
+};
+
+export type InboxOptions = {
+  companyId: string;
+};
+
+export type FlatFileFromMessage = {
+  file: MessageFile;
+  thread: MessageWithReplies;
+  context: MessageFileRef;
+};
+
+export type FlatPinnedFromMessage = {
+  message: any;
+  thread: any;
+};
+
+export interface DeleteLinkOperation {
+  message_id: string;
+  thread_id: string;
+  link: string;
+}
+
+export type UpdateDeliveryStatusOperation = {
+  status: "delivered" | "read";
+  self_message?: boolean;
+} & MessageIdentifier;
+
+export type MessageReadType = {
+  messages: MessageIdentifier[];
+  channel_id: string;
+};
+
+export type MessageIdentifier = {
+  message_id: string;
+  thread_id: string;
+};

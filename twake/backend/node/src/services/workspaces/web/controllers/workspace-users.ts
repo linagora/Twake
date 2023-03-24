@@ -6,7 +6,6 @@ import {
   ResourceListResponse,
   uuid,
 } from "../../../../utils/types";
-import { WorkspaceServiceAPI } from "../../api";
 import {
   WorkspacePendingUserRequest,
   WorkspaceUserInvitationResponse,
@@ -19,7 +18,6 @@ import {
   WorkspaceUsersRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../../../user/api";
 
 import { WorkspaceUsersExecutionContext } from "../../types";
 import WorkspaceUser from "../../entities/workspace_user";
@@ -29,13 +27,14 @@ import { CompanyShort, CompanyUserRole, CompanyUserStatus } from "../../../user/
 import Company from "../../../user/entities/company";
 import { chain } from "lodash";
 import {
-  CrudExeption,
+  CrudException,
   ListResult,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import WorkspacePendingUser from "../../entities/workspace_pending_users";
-import { ConsoleServiceAPI } from "../../../console/api";
 import { ConsoleCompany, CreateConsoleUser } from "../../../console/types";
+import { hasCompanyAdminLevel } from "../../../../utils/company";
+import gr from "../../../global-resolver";
 
 export class WorkspaceUsersCrudController
   implements
@@ -46,13 +45,6 @@ export class WorkspaceUsersCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(
-    protected workspaceService: WorkspaceServiceAPI,
-    protected companyService: CompaniesServiceAPI,
-    protected usersService: UsersServiceAPI,
-    protected consoleService: ConsoleServiceAPI,
-  ) {}
-
   private formatWorkspaceUser(
     workspaceUser: WorkspaceUser,
     currentCompanyId: uuid,
@@ -60,6 +52,15 @@ export class WorkspaceUsersCrudController
     userCompanies: CompanyUser[],
     companiesMap: Map<string, Company>,
   ): WorkspaceUserObject {
+    //Company admins should be workspace moderators automatically
+    if (
+      currentCompanyId &&
+      userCompanies &&
+      hasCompanyAdminLevel(userCompanies.find(uc => uc.group_id === currentCompanyId)?.role)
+    ) {
+      workspaceUser.role = "moderator";
+    }
+
     const res: WorkspaceUserObject = {
       id: workspaceUser.id,
       company_id: currentCompanyId,
@@ -82,6 +83,9 @@ export class WorkspaceUsersCrudController
         deleted: Boolean(user.deleted),
         status: user.status_icon,
         last_activity: user.last_activity,
+        cache: {
+          companies: user.cache?.companies || [],
+        },
         companies: userCompanies
           .filter(cu => companiesMap.get(cu.group_id))
           .map(cu => {
@@ -110,7 +114,7 @@ export class WorkspaceUsersCrudController
             .map("group_id")
             .uniq()
             .value()
-            .map(companyId => this.companyService.getCompany({ id: companyId })),
+            .map(companyId => gr.services.companies.getCompany({ id: companyId })),
         )
       )
         .filter(c => c)
@@ -131,7 +135,7 @@ export class WorkspaceUsersCrudController
 
     let allWorkspaceUsers: WorkspaceUser[] = [];
     if (request.query.search) {
-      const users: ListResult<User> = await this.usersService.search(
+      const users: ListResult<User> = await gr.services.users.search(
         new Pagination(request.query.page_token, request.query.limit),
         {
           search: request.query.search,
@@ -143,7 +147,7 @@ export class WorkspaceUsersCrudController
       nextPageToken = users.nextPage?.page_token;
 
       for (const user of users.getEntities()) {
-        const res = await this.workspaceService.getUser({
+        const res = await gr.services.workspaces.getUser({
           workspaceId: context.workspace_id,
           userId: user.id,
         });
@@ -151,7 +155,7 @@ export class WorkspaceUsersCrudController
         if (res) allWorkspaceUsers.push(res);
       }
     } else {
-      const result = await this.workspaceService.getUsers(
+      const result = await gr.services.workspaces.getUsers(
         {
           workspaceId: context.workspace_id,
         },
@@ -166,14 +170,14 @@ export class WorkspaceUsersCrudController
     const allUsersMap = new Map(
       (
         await Promise.all(
-          allWorkspaceUsers.map(wu => this.usersService.get({ id: wu.userId })),
+          allWorkspaceUsers.map(wu => gr.services.users.get({ id: wu.userId })),
         ).then(users => users.filter(a => a))
       ).map(user => [user.id, user]),
     );
 
     const allCompanyUsers: CompanyUser[] = [].concat(
       ...(await Promise.all(
-        allWorkspaceUsers.map(wu => this.usersService.getUserCompanies({ id: wu.userId })),
+        allWorkspaceUsers.map(wu => gr.services.users.getUserCompanies({ id: wu.userId })),
       )),
     );
 
@@ -210,18 +214,18 @@ export class WorkspaceUsersCrudController
     userId: uuid,
     context: WorkspaceUsersExecutionContext,
   ): Promise<WorkspaceUserObject> {
-    const workspaceUser = await this.workspaceService.getUser({
+    const workspaceUser = await gr.services.workspaces.getUser({
       workspaceId: context.workspace_id,
       userId: userId,
     });
 
-    const user = await this.usersService.get({ id: userId });
+    const user = await gr.services.users.get({ id: userId });
 
     if (!user) {
-      throw CrudExeption.badRequest("User entity not found");
+      throw CrudException.badRequest("User entity not found");
     }
 
-    const userCompanies: CompanyUser[] = await this.usersService.getUserCompanies({ id: userId });
+    const userCompanies: CompanyUser[] = await gr.services.users.getUserCompanies({ id: userId });
 
     const companiesMap = await this.getCompaniesMap(userCompanies);
 
@@ -255,16 +259,16 @@ export class WorkspaceUsersCrudController
     const userId = request.params.user_id || request.body.resource.user_id;
     const role = request.body.resource.role;
 
-    const companyUser = await this.companyService.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: context.company_id },
       { id: userId },
     );
 
     if (!companyUser) {
-      throw CrudExeption.badRequest(`User ${userId} does not belong to this company`);
+      throw CrudException.badRequest(`User ${userId} does not belong to this company`);
     }
 
-    const workspaceUser = await this.workspaceService.getUser({
+    const workspaceUser = await gr.services.workspaces.getUser({
       workspaceId: context.workspace_id,
       userId: userId,
     });
@@ -272,16 +276,16 @@ export class WorkspaceUsersCrudController
     if (request.params.user_id) {
       // ON UPDATE
       if (!workspaceUser) {
-        throw CrudExeption.notFound(`User ${userId} not found in this workspace`);
+        throw CrudException.notFound(`User ${userId} not found in this workspace`);
       }
-      await this.workspaceService.updateUserRole(
+      await gr.services.workspaces.updateUserRole(
         { workspaceId: context.workspace_id, userId },
         role,
       );
     } else {
       // ON ADD
       if (!workspaceUser) {
-        await this.workspaceService.addUser(
+        await gr.services.workspaces.addUser(
           { id: context.workspace_id, company_id: context.company_id },
           { id: userId },
           role,
@@ -297,25 +301,29 @@ export class WorkspaceUsersCrudController
       resource: resource,
     };
   }
+
   async delete(
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const workspaceUser = await this.workspaceService.getUser({
+    const workspaceUser = await gr.services.workspaces.getUser({
       workspaceId: context.workspace_id,
       userId: request.params.user_id,
     });
 
     if (!workspaceUser) {
-      throw CrudExeption.notFound("Default channel has not been found");
+      throw CrudException.notFound("Default channel has not been found");
     }
 
-    await this.workspaceService.removeUser({
-      workspaceId: context.workspace_id,
-      userId: request.params.user_id,
-    });
+    await gr.services.workspaces.removeUser(
+      {
+        workspaceId: context.workspace_id,
+        userId: request.params.user_id,
+      },
+      request.params.company_id,
+    );
 
     reply.status(204);
     return {
@@ -333,13 +341,13 @@ export class WorkspaceUsersCrudController
     const context = getExecutionContext(request);
 
     const usersInTwake: Map<string, User> = new Map(
-      await this.usersService
+      await gr.services.users
         .getByEmails(request.body.invitations.map(a => a.email))
         .then(users => users.map(user => [user.email_canonical, user])),
     );
 
     const workspacePendingUsers: Map<string, WorkspacePendingUser> = new Map(
-      await this.workspaceService
+      await gr.services.workspaces
         .getPendingUsers({
           workspace_id: context.workspace_id,
         })
@@ -349,7 +357,7 @@ export class WorkspaceUsersCrudController
     const responses: WorkspaceUserInvitationResponseItem[] = [];
 
     const putUserToPending = async (invitation: WorkspaceUsersInvitationItem) => {
-      await this.workspaceService.addPendingUser(
+      await gr.services.workspaces.addPendingUser(
         {
           workspace_id: context.workspace_id,
           email: invitation.email,
@@ -375,7 +383,7 @@ export class WorkspaceUsersCrudController
       let userInCompany = false;
       let user: User = null;
 
-      const consoleClient = this.consoleService.getClient();
+      const consoleClient = gr.services.console.getClient();
 
       if (usersInTwake.has(invitation.email)) {
         user = usersInTwake.get(invitation.email);
@@ -383,7 +391,7 @@ export class WorkspaceUsersCrudController
 
         if (user) {
           userInCompany = Boolean(
-            await this.companyService.getCompanyUser({ id: context.company_id }, { id: user.id }),
+            await gr.services.companies.getCompanyUser({ id: context.company_id }, { id: user.id }),
           );
         }
       } else {
@@ -394,7 +402,9 @@ export class WorkspaceUsersCrudController
       }
 
       if (!userInCompany) {
-        const company = await this.companyService.getCompany({ id: context.company_id });
+        const company = await gr.services.companies.getCompany({
+          id: context.company_id,
+        });
         const createUser: CreateConsoleUser = {
           id: user ? user.id : null,
           email: invitation.email,
@@ -417,11 +427,10 @@ export class WorkspaceUsersCrudController
             createUser,
           );
         } catch (err) {
-          console.error(err);
           responses.push({
             email: invitation.email,
             status: "error",
-            message: "Unable to invite this user to your company" + err,
+            message: "Unable to invite this user to your company " + err,
           });
           continue;
         }
@@ -429,7 +438,7 @@ export class WorkspaceUsersCrudController
 
       const userInWorkspace = Boolean(
         user &&
-          (await this.workspaceService.getUser({
+          (await gr.services.workspaces.getUser({
             workspaceId: context.workspace_id,
             userId: user.id,
           })),
@@ -447,7 +456,7 @@ export class WorkspaceUsersCrudController
     }
 
     await Promise.all(
-      usersToProcessImmediately.map(user => this.consoleService.processPendingUser(user)),
+      usersToProcessImmediately.map(user => gr.services.console.processPendingUser(user)),
     );
 
     return {
@@ -460,7 +469,7 @@ export class WorkspaceUsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
-      await this.workspaceService.removePendingUser({
+      await gr.services.workspaces.removePendingUser({
         workspace_id: request.params.workspace_id,
         email: request.params.email,
       });
@@ -478,7 +487,7 @@ export class WorkspaceUsersCrudController
     request: FastifyRequest<{ Params: WorkspacePendingUserRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUsersInvitationItem>> {
-    const resources = await this.workspaceService.getPendingUsers({
+    const resources = await gr.services.workspaces.getPendingUsers({
       workspace_id: request.params.workspace_id,
     });
 

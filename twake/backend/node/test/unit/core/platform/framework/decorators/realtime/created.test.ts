@@ -1,15 +1,17 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { CreateResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeCreated } from "../../../../../../../src/core/platform/framework/decorators";
-import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
+import { websocketEventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
 import { ResourcePath } from "../../../../../../../src/core/platform/services/realtime/types";
 
 describe("The RealtimeCreated decorator", () => {
   it("should call the original method send back original result but do not emit event if result type is wrong", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeCreated({ room: "/foo/bar" })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       reverseMeBaby(input: string): Promise<string> {
         return Promise.resolve(input.split("").reverse().join(""));
       }
@@ -29,10 +31,12 @@ describe("The RealtimeCreated decorator", () => {
   });
 
   it("should call the original method send back original result and emit event", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeCreated({ room: "/foo/bar", path: "/foo/bar/baz" })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       async reverseMeBaby(input: string): Promise<CreateResult<string>> {
         return new CreateResult<string>("string", input.split("").reverse().join(""));
       }
@@ -68,12 +72,14 @@ describe("The RealtimeCreated decorator", () => {
   });
 
   it("should emit event with path computed from function", async done => {
-    const emitSpy = jest.spyOn(eventBus, "emit");
+    const emitSpy = jest.spyOn(websocketEventBus, "emit");
 
     class TestMe {
       @RealtimeCreated<string>(input => [
         { room: ResourcePath.get(`/foo/bar/${input}`), path: "/foo/bar/baz" },
       ])
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       async reverseMeBaby(input: string): Promise<CreateResult<string>> {
         return new CreateResult<string>("string", input.split("").reverse().join(""));
       }

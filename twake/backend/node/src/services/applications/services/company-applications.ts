@@ -1,41 +1,35 @@
-import { CompanyApplicationServiceAPI, MarketplaceApplicationServiceAPI } from "../api";
 import CompanyApplication, {
-  TYPE,
   CompanyApplicationPrimaryKey,
   CompanyApplicationWithApplication,
+  TYPE,
 } from "../entities/company-application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger, RealtimeDeleted, RealtimeSaved } from "../../../core/platform/framework";
-import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import {
+  Initializable,
+  logger,
+  RealtimeDeleted,
+  RealtimeSaved,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import {
   DeleteResult,
   ListResult,
   OperationType,
+  Paginable,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { CompanyExecutionContext } from "../web/types";
 import { getCompanyApplicationRoom } from "../realtime";
+import gr from "../../global-resolver";
 
-export function getService(
-  platformService: PlatformServicesAPI,
-  applicationService: MarketplaceApplicationServiceAPI,
-): CompanyApplicationServiceAPI {
-  return new CompanyApplicationService(platformService, applicationService);
-}
-
-class CompanyApplicationService implements CompanyApplicationServiceAPI {
+export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<CompanyApplication>;
 
-  constructor(
-    readonly platformService: PlatformServicesAPI,
-    readonly applicationService: MarketplaceApplicationServiceAPI,
-  ) {}
-
   async init(): Promise<this> {
     try {
-      this.repository = await this.platformService.database.getRepository<CompanyApplication>(
+      this.repository = await gr.database.getRepository<CompanyApplication>(
         TYPE,
         CompanyApplication,
       );
@@ -46,16 +40,26 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     return this;
   }
 
+  // TODO: remove logic from context
   async get(
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<CompanyApplicationWithApplication> {
-    const companyApplication = await this.repository.findOne({
-      group_id: context.company.id,
-      app_id: pk.application_id,
-    });
+    const companyApplication = await this.repository.findOne(
+      {
+        group_id: context ? context.company.id : pk.company_id,
+        app_id: pk.application_id,
+      },
+      {},
+      context,
+    );
 
-    const application = await this.applicationService.get({ id: pk.application_id });
+    const application = await gr.services.applications.marketplaceApps.get(
+      {
+        id: pk.application_id,
+      },
+      context,
+    );
 
     return {
       ...companyApplication,
@@ -82,10 +86,14 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     }
 
     let operation = OperationType.UPDATE;
-    let companyApplication = await this.repository.findOne({
-      group_id: context?.company.id,
-      app_id: item.application_id,
-    });
+    let companyApplication = await this.repository.findOne(
+      {
+        group_id: context?.company.id,
+        app_id: item.application_id,
+      },
+      {},
+      context,
+    );
     if (!companyApplication) {
       operation = OperationType.CREATE;
 
@@ -95,7 +103,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
       companyApplication.created_at = new Date().getTime();
       companyApplication.created_by = context?.user?.id || "";
 
-      await this.repository.save(companyApplication);
+      await this.repository.save(companyApplication, context);
     }
 
     return new SaveResult(TYPE, companyApplication, operation);
@@ -105,7 +113,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     companyId: string,
     context: CompanyExecutionContext,
   ): Promise<void> {
-    const defaultApps = await this.applicationService.listDefaults();
+    const defaultApps = await gr.services.applications.marketplaceApps.listDefaults(context);
     for (const defaultApp of defaultApps.getEntities()) {
       await this.save({ company_id: companyId, application_id: defaultApp.id }, {}, context);
     }
@@ -124,14 +132,18 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<CompanyApplication>> {
-    const companyApplication = await this.repository.findOne({
-      group_id: context.company.id,
-      app_id: pk.application_id,
-    });
+    const companyApplication = await this.repository.findOne(
+      {
+        group_id: context.company.id,
+        app_id: pk.application_id,
+      },
+      {},
+      context,
+    );
 
     let deleted = false;
     if (companyApplication) {
-      this.repository.remove(companyApplication);
+      this.repository.remove(companyApplication, context);
       deleted = true;
     }
 
@@ -139,7 +151,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
   }
 
   async list<ListOptions>(
-    pagination: Pagination,
+    pagination: Paginable,
     options?: ListOptions,
     context?: CompanyExecutionContext,
   ): Promise<ListResult<CompanyApplicationWithApplication>> {
@@ -147,15 +159,19 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
       {
         group_id: context.company.id,
       },
-      { pagination },
+      { pagination: Pagination.fromPaginable(pagination) },
+      context,
     );
 
     const applications = [];
 
     for (const companyApplication of companyApplications.getEntities()) {
-      const application = await this.applicationService.get({
-        id: companyApplication.application_id,
-      });
+      const application = await gr.services.applications.marketplaceApps.get(
+        {
+          id: companyApplication.application_id,
+        },
+        context,
+      );
       if (application)
         applications.push({
           ...companyApplication,

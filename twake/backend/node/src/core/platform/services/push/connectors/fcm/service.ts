@@ -1,8 +1,7 @@
-import { option } from "yargs";
+import fetch from "node-fetch";
 import { logger } from "../../../../framework";
 import { PushConfiguration, PushMessageNotification, PushMessageOptions } from "../../types";
 import { PushConnector } from "../connector";
-import fetch from "node-fetch";
 
 export default class FcmPushConnector implements PushConnector {
   name = "FcmPushConnector";
@@ -32,12 +31,12 @@ export default class FcmPushConnector implements PushConnector {
     //Push to fcm
     try {
       const response = await fetch(firebaseEndpoint, {
+        method: "post",
+        body: JSON.stringify(pushMessage),
         headers: {
           "Content-Type": "application/json",
           Authorization: `key=${firebaseApiKey}`,
         },
-        method: "POST",
-        body: JSON.stringify(pushMessage),
       });
       if (response.status !== 200) {
         logger.error(`${this.name} - Reply from FCM status code : ${response.status}`);
