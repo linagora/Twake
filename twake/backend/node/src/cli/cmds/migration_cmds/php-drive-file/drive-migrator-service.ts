@@ -162,8 +162,6 @@ class DriveMigrator {
 
     try {
       await new Promise(async (resolve, reject) => {
-        const timeout = setTimeout(() => reject("Timeout"), 60000);
-
         const migrationRecord = await this.phpDriveService.getMigrationRecord(
           item.id,
           context.company.id,
@@ -237,6 +235,8 @@ class DriveMigrator {
 
           let createdVersions = 0;
 
+          const timeout = setTimeout(() => reject("Timeout"), 60000);
+
           do {
             const itemVersions = await this.phpDriveService.listItemVersions(
               versionPage,
@@ -307,6 +307,8 @@ class DriveMigrator {
             }
           } while (versionPage.page_token);
 
+          clearTimeout(timeout);
+
           if (createdVersions === 0) {
             await this.nodeRepository.remove(newDriveItem);
             return;
@@ -317,7 +319,6 @@ class DriveMigrator {
           await this.phpDriveService.markAsMigrated(item.id, newDriveItem.id, context.company.id);
         }
 
-        clearTimeout(timeout);
         resolve(true);
       });
     } catch (error) {
