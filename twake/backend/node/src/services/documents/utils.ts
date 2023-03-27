@@ -319,7 +319,7 @@ export const checkAccess = async (
   repository: Repository<DriveFile>,
   context: CompanyExecutionContext & { public_token?: string; twake_tab_token?: string },
 ): Promise<boolean> => {
-  if (context.user.server_request) {
+  if (context.user?.server_request) {
     return true;
   }
 
@@ -674,7 +674,7 @@ export const getFileMetadata = async (
       company_id: context.company.id,
     },
     context,
-    { ...(context.user.server_request ? {} : { waitForThumbnail: true }) },
+    { ...(context.user?.server_request ? {} : { waitForThumbnail: true }) },
   );
 
   if (!file) {
