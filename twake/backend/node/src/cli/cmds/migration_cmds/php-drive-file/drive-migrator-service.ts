@@ -228,6 +228,7 @@ class DriveMigrator {
           ) {
             logger.info(`item is already migrated - ${item.id} - skipping`);
             console.log(`item is already migrated - ${item.id} - skipping`);
+            resolve(true);
             return;
           }
 
@@ -311,6 +312,7 @@ class DriveMigrator {
 
           if (createdVersions === 0) {
             await this.nodeRepository.remove(newDriveItem);
+            resolve(true);
             return;
           }
         }
