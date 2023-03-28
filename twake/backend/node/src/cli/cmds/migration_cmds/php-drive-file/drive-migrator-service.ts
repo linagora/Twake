@@ -30,8 +30,19 @@ interface WorkspaceExecutionContext extends CompanyExecutionContext {
 class DriveMigrator {
   private phpDriveService: PhpDriveFileService;
   private nodeRepository: Repository<DriveFile>;
+  private options: {
+    fromCompany?: string;
+    onlyCompany?: string;
+  };
 
-  constructor(readonly _platform: TwakePlatform) {
+  constructor(
+    readonly _platform: TwakePlatform,
+    options?: {
+      fromCompany?: string;
+      onlyCompany?: string;
+    },
+  ) {
+    this.options = options;
     this.phpDriveService = new PhpDriveFileService();
   }
 
@@ -59,7 +70,15 @@ class DriveMigrator {
       const companyListResult = await globalResolver.services.companies.getCompanies(page);
       page = companyListResult.nextPage as Pagination;
 
+      let didPassFromCompany = false;
+
       for (const company of companyListResult.getEntities()) {
+        if (this.options.onlyCompany && this.options.onlyCompany !== company.id) continue;
+        if (this.options.fromCompany && this.options.fromCompany === company.id) {
+          didPassFromCompany = true;
+        }
+        if (this.options.fromCompany && !didPassFromCompany) continue;
+
         await this.migrateCompany(company, {
           ...context,
           company: { id: company.id },

@@ -24,13 +24,26 @@ const services = [
 const command: yargs.CommandModule<unknown, unknown> = {
   command: "drive",
   describe: "migrate php drive items to node",
-  builder: {},
-  handler: async _argv => {
-    console.log("test");
+  builder: {
+    from: {
+      default: null,
+      type: "string",
+      description: "Start migration from this company ID",
+    },
+    onlyCompany: {
+      default: null,
+      type: "string",
+      description: "Migrate only this company ID",
+    },
+  },
+  handler: async argv => {
+    const from = argv.from as string | null;
+    const onlyCompany = argv.onlyCompany as string | null;
+
     const spinner = ora({ text: "Migrating php drive - " }).start();
     const platform = await twake.run(services);
     await globalResolver.doInit(platform);
-    const migrator = new DriveMigrator(platform);
+    const migrator = new DriveMigrator(platform, {from, onlyCompany}});
 
     await migrator.run();
 
