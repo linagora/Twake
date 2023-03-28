@@ -23,6 +23,8 @@ import { ApplicationEventRequestBody } from "../types";
 import { logger as log } from "../../../../core/platform/framework";
 import { hasCompanyAdminLevel } from "../../../../utils/company";
 import gr from "../../../global-resolver";
+import config from "../../../../core/config";
+import axios from "axios";
 
 export class ApplicationController
   implements
@@ -83,6 +85,7 @@ export class ApplicationController
     try {
       const app = request.body.resource;
       const now = new Date().getTime();
+      const pluginsEndpoint = config.get("plugins.api");
 
       let entity: Application;
 
@@ -142,6 +145,34 @@ export class ApplicationController
 
         const res = await gr.services.applications.marketplaceApps.save(app);
         entity = res.entity;
+      }
+
+      // SYNC PLUGINS
+      if (app.identity.repository) {
+        try {
+          axios
+            .post(
+              `${pluginsEndpoint}/add`,
+              {
+                gitRepo: app.identity.repository,
+                pluginId: entity.getApplicationObject().id,
+                pluginSecret: entity.getApplicationObject().api.private_key,
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              },
+            )
+            .then(response => {
+              log.info(response.data);
+            })
+            .catch(error => {
+              log.error(error);
+            });
+        } catch (error) {
+          console.error(error);
+        }
       }
 
       return {

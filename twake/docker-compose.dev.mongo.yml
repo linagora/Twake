@@ -18,11 +18,13 @@ services:
     volumes:
       - ./plugins/plugins:/usr/src/app/plugins
       - ./plugins/plugins.json:/usr/src/app/plugins.json
+      - ./plugins/api:/usr/src/app/api
     build: 
       context: .
       dockerfile: ./docker/twake-plugins/Dockerfile
     ports:
       - 8080:8080
+      - 6000:6000
     networks:
       - twake_network
 
