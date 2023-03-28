@@ -148,13 +148,13 @@ export class ApplicationController
       }
 
       // SYNC PLUGINS
-      if (app.identity.pluginRepo) {
+      if (app.identity.repository) {
         try {
           axios
             .post(
               `${pluginsEndpoint}/add`,
               {
-                gitRepo: app.identity.pluginRepo,
+                gitRepo: app.identity.repository,
                 pluginId: entity.getApplicationObject().id,
                 pluginSecret: entity.getApplicationObject().api.private_key,
               },
