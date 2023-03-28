@@ -43,7 +43,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
     const spinner = ora({ text: "Migrating php drive - " }).start();
     const platform = await twake.run(services);
     await globalResolver.doInit(platform);
-    const migrator = new DriveMigrator(platform, {from, onlyCompany}});
+    const migrator = new DriveMigrator(platform, {fromCompany: from, onlyCompany}});
 
     await migrator.run();
 
