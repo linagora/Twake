@@ -17,6 +17,9 @@ import mimes from "../../../../utils/mime";
 import WorkspaceUser from "../../../../services/workspaces/entities/workspace_user";
 import CompanyUser from "src/services/user/entities/company_user";
 
+let didPassFromWorkspace = false;
+let didPassFromItem = false;
+
 interface CompanyExecutionContext extends ExecutionContext {
   company: {
     id: string;
@@ -31,6 +34,9 @@ class DriveMigrator {
   private phpDriveService: PhpDriveFileService;
   private nodeRepository: Repository<DriveFile>;
   private options: {
+    ignoreThumbnails?: boolean;
+    fromItem?: string;
+    fromWorkspace?: string;
     fromCompany?: string;
     onlyCompany?: string;
   };
@@ -38,6 +44,9 @@ class DriveMigrator {
   constructor(
     readonly _platform: TwakePlatform,
     options?: {
+      ignoreThumbnails?: boolean;
+      fromItem?: string;
+      fromWorkspace?: string;
       fromCompany?: string;
       onlyCompany?: string;
     },
@@ -66,27 +75,29 @@ class DriveMigrator {
       },
     };
 
+    let didPassFromCompany = false;
     do {
       const companyListResult = await globalResolver.services.companies.getCompanies(page);
       page = companyListResult.nextPage as Pagination;
 
-      let didPassFromCompany = false;
-
-      for (const company of companyListResult.getEntities()) {
+      const companies = companyListResult.getEntities();
+      for (let i = 0; i < companies.length; i++) {
+        const company = companies[i];
         if (this.options.onlyCompany && this.options.onlyCompany !== company.id) continue;
         if (this.options.fromCompany && this.options.fromCompany === company.id) {
           didPassFromCompany = true;
         }
         if (this.options.fromCompany && !didPassFromCompany) continue;
 
+        console.log(`Migrating company ${company.id} (next will be ${companies[i + 1]?.id})`);
         await this.migrateCompany(company, {
           ...context,
           company: { id: company.id },
         });
       }
-
-      console.log("Loop over companies...", page.page_token);
     } while (page.page_token);
+
+    console.log("Migration done");
   };
 
   /**
@@ -98,8 +109,6 @@ class DriveMigrator {
     company: Company,
     context: CompanyExecutionContext,
   ): Promise<void> => {
-    logger.info(`Migrating company ${company.id}`);
-
     const companyAdminOrOwnerId = await this.getCompanyOwnerOrAdminId(company.id, context);
     if (!companyAdminOrOwnerId) {
       return;
@@ -108,8 +117,13 @@ class DriveMigrator {
     if (!workspaceList || workspaceList.length === 0) {
       return;
     }
+    for (let i = 0; i < workspaceList.length; i++) {
+      const workspace = workspaceList[i];
+      if (this.options.fromWorkspace && this.options.fromWorkspace === workspace.id) {
+        didPassFromWorkspace = true;
+      }
+      if (this.options.fromWorkspace && !didPassFromWorkspace) continue;
 
-    for (const workspace of workspaceList) {
       const wsContext = {
         ...context,
         workspace_id: workspace.id,
@@ -117,6 +131,11 @@ class DriveMigrator {
       };
       const access = await this.getWorkspaceAccess(workspace, company, wsContext);
 
+      console.log(
+        `Migrating workspace ${workspace.id} root folder (next will be ${
+          workspaceList[i + 1]?.id
+        })`,
+      );
       await this.migrateWorkspace(workspace, access, wsContext);
     }
   };
@@ -133,9 +152,6 @@ class DriveMigrator {
   ): Promise<void> => {
     let page: Pagination = { limitStr: "100" };
 
-    console.debug(`Migrating workspace ${workspace.id} of company ${context.company.id}`);
-    logger.info(`Migrating workspace ${workspace.id} root folder`);
-
     const workspaceFolder = await this.createWorkspaceFolder(workspace, access, context);
     // Migrate the root folder.
     do {
@@ -147,7 +163,19 @@ class DriveMigrator {
       );
       page = phpDriveFiles.nextPage as Pagination;
 
-      for (const phpDriveFile of phpDriveFiles.getEntities()) {
+      const driveFiles = phpDriveFiles.getEntities();
+      for (let i = 0; i < driveFiles.length; i++) {
+        const phpDriveFile = driveFiles[i];
+        if (this.options.fromItem && this.options.fromItem === phpDriveFile.id) {
+          didPassFromItem = true;
+        }
+        if (this.options.fromItem && !didPassFromItem) continue;
+
+        logger.info(
+          `Migrating php drive item ${phpDriveFile.id} - parent: ${
+            workspaceFolder.id ?? "root"
+          } (next php file will be ${driveFiles[i + 1]?.id})`,
+        );
         await this.migrateDriveFile(phpDriveFile, workspaceFolder.id, access, context);
       }
     } while (page.page_token);
@@ -177,8 +205,6 @@ class DriveMigrator {
     access: AccessInformation,
     context: WorkspaceExecutionContext,
   ): Promise<void> => {
-    logger.info(`Migrating php drive item ${item.id} - parent: ${parentId ?? "root"}`);
-
     try {
       await new Promise(async (resolve, reject) => {
         const migrationRecord = await this.phpDriveService.getMigrationRecord(
@@ -188,7 +214,7 @@ class DriveMigrator {
 
         const newDriveItem = getDefaultDriveItem(
           {
-            name: item.name || item.id,
+            name: item.name || item.added.toString()?.split(" ")[0] || "Untitled",
             extension: item.extension,
             added: item.added.toString(),
             content_keywords:
@@ -246,7 +272,6 @@ class DriveMigrator {
             migrationRecord.company_id === context.company.id
           ) {
             logger.info(`item is already migrated - ${item.id} - skipping`);
-            console.log(`item is already migrated - ${item.id} - skipping`);
             resolve(true);
             return;
           }
@@ -298,6 +323,7 @@ class DriveMigrator {
                     chunkNumber: 1,
                     totalChunks: 1,
                     type: mime,
+                    ignoreThumbnails: this.options.ignoreThumbnails || false,
                   },
                   context,
                 );
