@@ -143,29 +143,31 @@ export class FileServiceImpl {
           entity.metadata.thumbnails_status = "waiting";
           await this.repository.save(entity, context);
 
-          try {
-            await gr.platformServices.messageQueue.publish<PreviewMessageQueueRequest>(
-              "services:preview",
-              {
-                data: { document, output },
-              },
-            );
-
-            if (options.waitForThumbnail) {
-              entity = await gr.services.files.getFile(
+          if (!options?.ignoreThumbnails) {
+            try {
+              await gr.platformServices.messageQueue.publish<PreviewMessageQueueRequest>(
+                "services:preview",
                 {
-                  id: entity.id,
-                  company_id: context.company.id,
+                  data: { document, output },
                 },
-                context,
-                { waitForThumbnail: true },
               );
-            }
-          } catch (err) {
-            entity.metadata.thumbnails_status = "error";
-            await this.repository.save(entity, context);
 
-            logger.warn({ err }, "Previewing - Error while sending ");
+              if (options.waitForThumbnail) {
+                entity = await gr.services.files.getFile(
+                  {
+                    id: entity.id,
+                    company_id: context.company.id,
+                  },
+                  context,
+                  { waitForThumbnail: true },
+                );
+              }
+            } catch (err) {
+              entity.metadata.thumbnails_status = "error";
+              await this.repository.save(entity, context);
+
+              logger.warn({ err }, "Previewing - Error while sending ");
+            }
           }
         }
 
