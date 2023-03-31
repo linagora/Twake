@@ -35,15 +35,39 @@ const command: yargs.CommandModule<unknown, unknown> = {
       type: "string",
       description: "Migrate only this company ID",
     },
+    ignoreThumbnails: {
+      default: false,
+      type: "boolean",
+      description: "Ignore thumbnails",
+    },
+    fromItem: {
+      default: null,
+      type: "string",
+      description: "Start migration from this item ID",
+    },
+    fromWorkspace: {
+      default: null,
+      type: "string",
+      description: "Start migration from this workspace ID",
+    },
   },
   handler: async argv => {
-    const from = argv.from as string | null;
+    const fromCompany = argv.from as string | null;
     const onlyCompany = argv.onlyCompany as string | null;
+    const ignoreThumbnails = argv.ignoreThumbnails as boolean;
+    const fromItem = argv.fromItem as string | null;
+    const fromWorkspace = argv.fromWorkspace as string | null;
 
     const spinner = ora({ text: "Migrating php drive - " }).start();
     const platform = await twake.run(services);
     await globalResolver.doInit(platform);
-    const migrator = new DriveMigrator(platform, { fromCompany: from, onlyCompany });
+    const migrator = new DriveMigrator(platform, {
+      fromCompany,
+      onlyCompany,
+      ignoreThumbnails,
+      fromItem,
+      fromWorkspace,
+    });
 
     await migrator.run();
 
