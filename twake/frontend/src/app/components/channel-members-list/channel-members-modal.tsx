@@ -68,7 +68,7 @@ export const ChannelMembersListModal = (): JSX.Element => {
           />
         )}
       </div>
-      <div className="-mx-3">
+      <div className="-mx-3 overflow-hidden grow">
         <PerfectScrollbar
           options={{ suppressScrollX: true, suppressScrollY: false }}
           component="div"
