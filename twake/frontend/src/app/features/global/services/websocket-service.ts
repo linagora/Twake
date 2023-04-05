@@ -207,7 +207,7 @@ class WebSocketService extends EventEmitter {
    * @param tag
    */
   public leave(path: string, tag: string) {
-    const name = path.replace(/\/$/, '');
+    const name = path ? path.replace(/\/$/, '') : '';
 
     this.wsListeners[name] = this.wsListeners[name] || {};
     delete this.wsListeners[name][tag];

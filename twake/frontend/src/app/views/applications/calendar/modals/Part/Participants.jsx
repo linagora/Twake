@@ -26,7 +26,6 @@ export default class Participants extends Component {
               return { id: participant.user_id_or_mail };
             })}
             scope="workspace"
-            allowMails
             onUpdate={ids_mails => {
               this.props.onChange &&
                 this.props.onChange(
