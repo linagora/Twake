@@ -153,7 +153,8 @@ export default class Collection extends Observable {
     if (
       routes.length === 0 ||
       (options.http_options || {})._http_force_load ||
-      !waiting_one_route
+      !waiting_one_route ||
+      true //Keep it working after making it highly deprecated
     ) {
       initHttp();
     }
