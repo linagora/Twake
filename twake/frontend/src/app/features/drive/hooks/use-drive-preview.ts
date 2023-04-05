@@ -11,7 +11,10 @@ export const useDrivePreviewModal = () => {
   const [status, setStatus] = useRecoilState(DriveViewerState);
 
   const open: (item: DriveItem) => void = (item: DriveItem) => {
-    if (item.last_version_cache?.file_metadata?.source === 'internal') {
+    if (
+      !item.last_version_cache?.file_metadata?.source ||
+      item.last_version_cache?.file_metadata?.source === 'internal'
+    ) {
       setStatus({ item, loading: true });
     }
   };
