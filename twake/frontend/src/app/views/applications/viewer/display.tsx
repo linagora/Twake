@@ -20,7 +20,7 @@ export default () => {
   }
 
   if (type === 'image') {
-    return <ImageDisplay loading={loading} setLoading={setLoading}  download={download} />;
+    return <ImageDisplay loading={loading} setLoading={setLoading} download={download} />;
   }
 
   if (type === 'video' || type === 'audio') {
@@ -37,6 +37,14 @@ export default () => {
 
   if (type === 'archive') {
     return <ArchiveDisplay download={download} name={name} />;
+  }
+
+  if (type === 'link') {
+    return (
+      <div className="text-white m-auto w-full text-center block h-full flex items-center">
+        <span className="block w-full text-center">Opening link...</span>
+      </div>
+    );
   }
 
   // /* Uncomment after https://github.com/linagora/Twake/issues/2453 is done

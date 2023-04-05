@@ -24,7 +24,8 @@ export const useFileViewerModal = () => {
 
   return {
     open: (file: MessageFileType) => {
-      if (file.metadata?.source === 'internal') setStatus({ file, loading: true });
+      if (!file.metadata?.source || file.metadata?.source === 'internal')
+        setStatus({ file, loading: true });
     },
     close: () => setStatus({ file: null, loading: true }),
     isOpen: !!status?.file,
