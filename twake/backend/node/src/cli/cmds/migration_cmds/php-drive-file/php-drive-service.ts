@@ -57,6 +57,11 @@ export class PhpDriveFileService implements PhpDriveServiceAPI {
     return this;
   }
 
+  getItem = async (itemId: string | "" | "trash"): Promise<PhpDriveFile> =>
+    await this.repository.findOne({
+      id: itemId,
+    });
+
   /**
    * Lists the drive item directory children.
    *

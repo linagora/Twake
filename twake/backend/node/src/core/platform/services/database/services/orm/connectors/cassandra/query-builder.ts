@@ -23,7 +23,7 @@ export function buildSelectQuery<Entity>(
       let result: string;
       const filter = filters[key];
 
-      if (!filter) {
+      if (!filter && filter !== "") {
         return;
       }
 
