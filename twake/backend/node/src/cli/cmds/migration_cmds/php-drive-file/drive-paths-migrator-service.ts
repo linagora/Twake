@@ -2,20 +2,13 @@ import { logger } from "../../../../core/platform/framework";
 import { ExecutionContext, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { TwakePlatform } from "../../../../core/platform/platform";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { DriveFile, AccessInformation } from "../../../../services/documents/entities/drive-file";
-import {
-  generateAccessToken,
-  getDefaultDriveItem,
-  getDefaultDriveItemVersion,
-} from "../../../../services/documents/utils";
+import { DriveFile } from "../../../../services/documents/entities/drive-file";
+
 import globalResolver from "../../../../services/global-resolver";
 import Company from "../../../../services/user/entities/company";
 import Workspace from "../../../../services/workspaces/entities/workspace";
 import { PhpDriveFile } from "./php-drive-file-entity";
 import { PhpDriveFileService } from "./php-drive-service";
-import mimes from "../../../../utils/mime";
-import WorkspaceUser from "../../../../services/workspaces/entities/workspace_user";
-import CompanyUser from "src/services/user/entities/company_user";
 import { DriveItemDetails } from "src/services/documents/types";
 
 let didPassFromWorkspace = false;

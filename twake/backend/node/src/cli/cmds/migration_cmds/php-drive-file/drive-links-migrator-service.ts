@@ -1,21 +1,15 @@
+import CompanyUser from "src/services/user/entities/company_user";
 import { logger } from "../../../../core/platform/framework";
 import { ExecutionContext, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { TwakePlatform } from "../../../../core/platform/platform";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { DriveFile, AccessInformation } from "../../../../services/documents/entities/drive-file";
-import {
-  generateAccessToken,
-  getDefaultDriveItem,
-  getDefaultDriveItemVersion,
-} from "../../../../services/documents/utils";
+import { AccessInformation, DriveFile } from "../../../../services/documents/entities/drive-file";
+import { generateAccessToken, getDefaultDriveItem } from "../../../../services/documents/utils";
 import globalResolver from "../../../../services/global-resolver";
 import Company from "../../../../services/user/entities/company";
 import Workspace from "../../../../services/workspaces/entities/workspace";
-import { PhpDriveFile } from "./php-drive-file-entity";
-import { PhpDriveFileService } from "./php-drive-service";
-import mimes from "../../../../utils/mime";
 import WorkspaceUser from "../../../../services/workspaces/entities/workspace_user";
-import CompanyUser from "src/services/user/entities/company_user";
+import { PhpDriveFileService } from "./php-drive-service";
 
 let didPassFromWorkspace = false;
 let didPassFromItem = false;
@@ -188,8 +182,8 @@ class DriveLinksMigrator {
       const phpDriveFiles = await this.phpDriveService.listDirectory(page, "trash", workspace.id);
       page = phpDriveFiles.nextPage as Pagination;
 
-      for (const phpDriveFile of phpDriveFiles.getEntities()) {
-        await this.migrateDriveFile(phpDriveFile, "trash", access, context);
+      for (const _ of phpDriveFiles.getEntities()) {
+        await this.migrateDriveFile(/*phpDriveFile, "trash", access, context*/);
       }
     } while (page.page_token);
   };
@@ -199,12 +193,7 @@ class DriveLinksMigrator {
    *
    * @param {PhpDriveItem} item - the php drive file to migrate.
    */
-  private migrateDriveFile = async (
-    item: PhpDriveFile,
-    parentId: string,
-    access: AccessInformation,
-    context: WorkspaceExecutionContext,
-  ): Promise<void> => {
+  private migrateDriveFile = async (): Promise<void> => {
     throw new Error("Not implemented yet");
   };
 
