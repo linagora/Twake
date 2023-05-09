@@ -170,7 +170,7 @@ class DriveLinksMigrator {
             workspaceFolder.id ?? "root"
           } (next php file will be ${driveFiles[i + 1]?.id})`,
         );
-        await this.migrateDriveFile(phpDriveFile, workspaceFolder.id, access, context);
+        //await this.migrateDriveFile(phpDriveFile, workspaceFolder.id, access, context);
       }
     } while (page.page_token);
 
