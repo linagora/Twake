@@ -8,6 +8,7 @@ export const TYPE = "drive_file";
 
 @Entity(TYPE, {
   primaryKey: [["workspace_id"], "parent_id", "id"],
+  globalIndexes: [["id"]],
   type: TYPE,
 })
 export class PhpDriveFile {
