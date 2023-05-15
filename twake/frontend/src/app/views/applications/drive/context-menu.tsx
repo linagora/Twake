@@ -80,7 +80,7 @@ export const useOnBuildContextMenu = (children: DriveItem[], initialParentId?: s
               text: 'Copy public link',
               hide: !item.access_info.public?.level || item.access_info.public?.level === 'none',
               onClick: () => {
-                copyToClipboard(getPublicLink(item));
+                copyToClipboard(getPublicLink(item || parent?.item));
                 ToasterService.success('Public link copied to clipboard');
               },
             },
@@ -244,7 +244,7 @@ export const useOnBuildContextMenu = (children: DriveItem[], initialParentId?: s
                     !parent?.item?.access_info?.public?.level ||
                     parent?.item?.access_info?.public?.level === 'none',
                   onClick: () => {
-                    copyToClipboard(getPublicLink(item));
+                    copyToClipboard(getPublicLink(item || parent?.item));
                     ToasterService.success('Public link copied to clipboard');
                   },
                 },
