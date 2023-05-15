@@ -1,6 +1,7 @@
 import Browser from './browser';
 import { SelectorModal } from './modals/selector';
 import TwakeTabConfiguration from './twake-tab-configuration';
+import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 
 export type EmbedContext = {
   companyId?: string;
@@ -18,6 +19,9 @@ export default ({
   context?: EmbedContext;
   inPublicSharing?: boolean;
 }) => {
+  //Preload applications for shared view
+  useCompanyApplications();
+
   return (
     <>
       <SelectorModal />
