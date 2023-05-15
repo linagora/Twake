@@ -42,7 +42,7 @@ export default () => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col h-full w-full dark:bg-zinc-900">
       <div className="flex flex-row items-center justify-center bg-blue-500 px-4 py-2">
         <div className="grow flex flex-row items-center">
           {group.logo && (
@@ -65,7 +65,7 @@ export default () => {
           </a>
         </div>
       </div>
-      <div className="main-view public ">
+      <div className="main-view public p-4">
         <Drive initialParentId={documentId} inPublicSharing />
       </div>
       <MenusBodyLayer />
