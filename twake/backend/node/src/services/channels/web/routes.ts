@@ -71,6 +71,12 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
 
   fastify.route({
     method: "GET",
+    url: `${channelsUrl}debug`,
+    handler: channelsController.list.bind(channelsController),
+  });
+
+  fastify.route({
+    method: "GET",
     url: `${channelsUrl}/:id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
