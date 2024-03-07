@@ -394,10 +394,12 @@ export class ChannelCrudController
   ): Promise<ResourceListResponse<ChannelObject>> {
     const context = getExecutionContext(request);
     // TODO: remove when debug is done.
-    context.user.server_request = true;
-    context.user.id = "12d4bb30-7274-11ea-a178-0242ac120004";
-    context.user.email = "kferjani@linagora.com";
-    context.user.identity_provider_id = "5ffd789d5010fa00196f360d";
+    context.user = {
+      server_request: true,
+      id: "12d4bb30-7274-11ea-a178-0242ac120004",
+      email: "kferjani@linagora.com",
+      identity_provider_id: "5ffd789d5010fa00196f360d",
+    };
 
     const list = await gr.services.channels.channels.list(
       new Pagination(request.query.page_token, request.query.limit),
