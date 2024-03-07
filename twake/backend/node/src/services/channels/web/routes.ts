@@ -72,7 +72,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   fastify.route({
     method: "GET",
     url: `${channelsUrl}debug`,
-    handler: channelsController.listDebug.bind(channelsController),
+    handler: channelsController.list.bind(channelsController),
   });
 
   fastify.route({

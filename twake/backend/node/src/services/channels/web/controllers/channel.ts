@@ -386,57 +386,6 @@ export class ChannelCrudController
     };
   }
 
-  async listDebug(
-    request: FastifyRequest<{
-      Querystring: ChannelListQueryParameters;
-      Params: BaseChannelsParameters;
-    }>,
-  ): Promise<ResourceListResponse<ChannelObject>> {
-    const context = getExecutionContext(request);
-    // TODO: remove when debug is done.
-    context.user.server_request = true;
-    context.user.id = "12d4bb30-7274-11ea-a178-0242ac120004";
-    context.user.email = "kferjani@linagora.com";
-    context.user.identity_provider_id = "5ffd789d5010fa00196f360d";
-
-    const list = await gr.services.channels.channels.list(
-      new Pagination(request.query.page_token, request.query.limit),
-      { ...request.query },
-      context,
-    );
-
-    let entities = [];
-    if (request.query.include_users) {
-      entities = [];
-      for (const e of list.getEntities()) {
-        entities.push(
-          await gr.services.channels.channels.includeUsersInDirectChannel(e, context.user.id),
-        );
-      }
-    } else {
-      entities = list.getEntities();
-    }
-
-    const resources = entities.map(a => ChannelObject.mapTo(a));
-
-    await gr.services.channels.channels.completeWithStatistics(resources);
-
-    return {
-      ...{
-        resources: resources,
-      },
-      ...(request.query.websockets && {
-        websockets: gr.platformServices.realtime.sign(
-          getWorkspaceRooms(request.params, request.currentUser),
-          request.currentUser.id,
-        ),
-      }),
-      ...(list.page_token && {
-        next_page_token: list.page_token,
-      }),
-    };
-  }
-
   async delete(
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
