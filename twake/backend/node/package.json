@@ -131,7 +131,7 @@
     "amqplib": "^0.8.0",
     "analytics-node": "^5.0.0",
     "archiver": "^5.3.1",
-    "axios": "^0.21.3",
+    "axios": "^1.6.0",
     "bcrypt": "^5.0.1",
     "cassandra-driver": "^4.6.0",
     "class-transformer": "^0.3.1",
