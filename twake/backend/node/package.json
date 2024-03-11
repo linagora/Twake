@@ -150,7 +150,7 @@
     "fastify-sensible": "=3.0.1",
     "fastify-socket.io": "^3.0.0",
     "fastify-static": "^4.7.0",
-    "fastify-swagger": "^4.12.6",
+    "fastify-swagger": "^5.2.0",
     "fastify-websocket": "^2.0.11",
     "find-my-way": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
