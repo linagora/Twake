@@ -239,7 +239,7 @@
     "resolve-url-loader": "3.1.2",
     "sass-loader": "8.0.2",
     "semaphore": "^1.1.0",
-    "semver": "6.3.0",
+    "semver": "7.5.2",
     "short-uuid": "^4.1.0",
     "shortcuts": "^1.6.1",
     "socket.io-client": "^2.3.1",
