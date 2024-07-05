@@ -1,6 +1,23 @@
-![](https://twake.app/medias/Twake-long.png)
+![Frame 1321317563](https://github.com/linagora/Twake/assets/146178981/0010bde1-4f60-4eaf-841f-0abf542c7d11)
 
-# Twake - The Open Digital Workplace
+## :warning: Repository Deprecated
+
+This repository, Twake, is no longer actively maintained and has been officially deprecated.
+
+ :arrow_right: For current and future updates, please visit our new repository:
+🔗 <a href="https://github.com/linagora/twake-workplace"><strong>Twake-workplace</strong></a>
+
+We encourage all users to migrate to Twake-workplace for the latest features and ongoing support. Thank you for your continued support and contribution to the Twake community!  
+  
+
+---
+***
+___
+
+##  Archive README
+
+
+Twake - The Open Digital Workplace
 
 ![update-saas-backend](https://github.com/TwakeApp/Twake/workflows/update-saas-backend/badge.svg?branch=main&style=flat)
 ![update-saas-frontend](https://github.com/TwakeApp/Twake/workflows/update-saas-frontend/badge.svg?branch=main&style=flat)
